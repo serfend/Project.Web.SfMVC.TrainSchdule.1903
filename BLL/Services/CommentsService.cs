@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.Interfaces;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.Interfaces;
 
-namespace PhotoHub.BLL.Services
+namespace TrainSchdule.BLL.Services
 {
     /// <summary>
     /// Contains methods with comments processing logic.

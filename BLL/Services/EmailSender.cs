@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using PhotoHub.BLL.Interfaces;
+using TrainSchdule.BLL.Interfaces;
 
-namespace PhotoHub.BLL.Services
+namespace TrainSchdule.BLL.Services
 {
     /// <summary>
     /// This class is used by the application to send email for account confirmation and password reset.

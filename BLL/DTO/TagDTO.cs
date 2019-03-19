@@ -1,4 +1,4 @@
-﻿namespace PhotoHub.BLL.DTO
+﻿namespace TrainSchdule.BLL.DTO
 {
     /// <summary>
     /// Tag data transfer object.

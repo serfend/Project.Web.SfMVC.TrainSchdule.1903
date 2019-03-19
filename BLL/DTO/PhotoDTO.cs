@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PhotoHub.BLL.DTO
+namespace TrainSchdule.BLL.DTO
 {
     /// <summary>
     /// Photo data transfer object.

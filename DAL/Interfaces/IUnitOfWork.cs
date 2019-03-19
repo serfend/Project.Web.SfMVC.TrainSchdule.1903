@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.DAL.Interfaces
+namespace TrainSchdule.DAL.Interfaces
 {
     /// <summary>
     /// Interface for accessing DB by repositories.

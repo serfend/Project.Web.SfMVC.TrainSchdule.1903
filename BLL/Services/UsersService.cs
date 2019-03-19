@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.Interfaces;
-using PhotoHub.BLL.DTO;
-using PhotoHub.BLL.Extensions;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.Extensions;
 
-namespace PhotoHub.BLL.Services
+namespace TrainSchdule.BLL.Services
 {
     /// <summary>
     /// Contains methods with users processing logic.

@@ -1,7 +1,7 @@
-﻿using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.DTO;
+﻿using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.DTO;
 
-namespace PhotoHub.BLL.Extensions
+namespace TrainSchdule.BLL.Extensions
 {
     /// <summary>
     /// Methods for mapping comment entities to comment data transfer objects.

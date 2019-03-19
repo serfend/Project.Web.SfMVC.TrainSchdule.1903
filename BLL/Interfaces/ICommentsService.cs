@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// Interface for comments services.

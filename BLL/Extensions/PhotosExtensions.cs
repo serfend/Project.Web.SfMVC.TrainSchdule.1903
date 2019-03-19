@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.DTO;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.DTO;
 
-namespace PhotoHub.BLL.Extensions
+namespace TrainSchdule.BLL.Extensions
 {
     /// <summary>
     /// Methods for mapping photo entities to photo data transfer objects.

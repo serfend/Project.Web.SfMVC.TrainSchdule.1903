@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.DAL.Data
+namespace TrainSchdule.DAL.Data
 {
     /// <summary>
     /// Main DB context in the application.

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Data;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Data;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.DAL.Repositories
+namespace TrainSchdule.DAL.Repositories
 {
     /// <summary>
     /// Contains properties with repositories, grant access to repositories and can save db state.

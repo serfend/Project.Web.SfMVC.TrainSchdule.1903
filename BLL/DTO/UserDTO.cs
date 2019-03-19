@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PhotoHub.BLL.DTO
+namespace TrainSchdule.BLL.DTO
 {
     /// <summary>
     /// 用户信息的实体

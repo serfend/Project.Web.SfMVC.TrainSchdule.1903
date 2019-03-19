@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.BLL.Helpers
+namespace TrainSchdule.BLL.Helpers
 {
     /// <summary>
     /// Extensions class with method for parsing strings with tag names. 

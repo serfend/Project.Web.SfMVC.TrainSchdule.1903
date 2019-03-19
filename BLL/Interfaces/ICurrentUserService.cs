@@ -1,8 +1,8 @@
 ﻿using System;
-using PhotoHub.BLL.DTO;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.BLL.DTO;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// Interface for getting current user services.

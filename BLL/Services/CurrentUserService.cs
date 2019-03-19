@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.Interfaces;
-using PhotoHub.BLL.DTO;
-using PhotoHub.BLL.Extensions;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.Extensions;
 
-namespace PhotoHub.BLL.Services
+namespace TrainSchdule.BLL.Services
 {
     /// <summary>
     /// Contains properties that returns current user.

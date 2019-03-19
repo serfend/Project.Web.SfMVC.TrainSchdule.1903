@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Data;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Data;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.DAL.Repositories
+namespace TrainSchdule.DAL.Repositories
 {
     /// <summary>
     /// Contains methods for processing DB entities in Users table.

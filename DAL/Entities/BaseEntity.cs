@@ -1,4 +1,4 @@
-﻿namespace PhotoHub.DAL.Entities
+﻿namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Base class for entities.

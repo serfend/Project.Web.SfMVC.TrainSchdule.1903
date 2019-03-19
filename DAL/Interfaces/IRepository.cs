@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PhotoHub.DAL.Interfaces
+namespace TrainSchdule.DAL.Interfaces
 {
     /// <summary>
     /// Interface for DB repositories.

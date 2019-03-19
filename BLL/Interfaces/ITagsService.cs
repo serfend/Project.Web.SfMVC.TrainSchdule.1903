@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PhotoHub.BLL.DTO;
+using TrainSchdule.BLL.DTO;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// Interface for tag services.

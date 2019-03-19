@@ -1,0 +1,18 @@
+﻿@using TrainSchdule.DAL.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+
+<nav class="buttons" id="manage-nav">
+    <a asp-action="Index" class="button is-rounded">Account</a>
+    <a asp-action="ChangeTheme" class="button is-rounded">App Theme</a>
+    <a asp-action="Blocklist" class="button is-rounded" title="Blocklist">Blocklist</a>
+    <a asp-action="Bookmarks" class="button is-rounded" title="Bookmarks">Bookmaks</a>
+    <a asp-action="ChangePassword" class="button is-rounded">Password</a>
+    @if (hasExternalLogins)
+    {
+        @*<a asp-action="ExternalLogins" class="button is-rounded">External logins</a>*@
+    }
+</nav>
+

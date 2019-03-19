@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using PhotoHub.DAL.Data;
+using TrainSchdule.DAL.Data;
 using System;
 
-namespace PhotoHub.DAL.Migrations
+namespace TrainSchdule.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20180715203110_Init")]
@@ -129,7 +129,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -180,7 +180,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.BlackList", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.BlackList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -198,7 +198,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("BlackLists");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Bookmark", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Bookmark", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -218,7 +218,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Bookmarks");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Comment", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -240,7 +240,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Confirmed", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -258,7 +258,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Confirmed");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Filter", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Filter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -270,7 +270,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Filters");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Following", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Following", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -288,7 +288,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Followings");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Like", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Like", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -308,7 +308,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Photo", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -346,7 +346,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Photos");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.PhotoReport", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PhotoReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -368,7 +368,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("PhotoReports");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Tag", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -380,7 +380,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Taging", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Taging", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -398,7 +398,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("Tagings");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.User", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -424,7 +424,7 @@ namespace PhotoHub.DAL.Migrations
                     b.ToTable("AppUsers");
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.UserReport", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -456,7 +456,7 @@ namespace PhotoHub.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.ApplicationUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -464,7 +464,7 @@ namespace PhotoHub.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.ApplicationUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -477,7 +477,7 @@ namespace PhotoHub.DAL.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.ApplicationUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -485,137 +485,137 @@ namespace PhotoHub.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.ApplicationUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.BlackList", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.BlackList", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "BlockedUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "BlockedUser")
                         .WithMany()
                         .HasForeignKey("BlockedUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Bookmark", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Bookmark", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.Photo", "Photo")
+                    b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Comment", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Comment", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "Owner")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.Photo", "Photo")
+                    b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany("Comments")
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Confirmed", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "Admin")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Following", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Following", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "FollowedUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "FollowedUser")
                         .WithMany()
                         .HasForeignKey("FollowedUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Like", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Like", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "Owner")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.Photo", "Photo")
+                    b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany("Likes")
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Photo", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.Filter", "Filter")
+                    b.HasOne("TrainSchdule.DAL.Entities.Filter", "Filter")
                         .WithMany("Photos")
                         .HasForeignKey("FilterId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "Owner")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.PhotoReport", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PhotoReport", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.Photo", "Photo")
+                    b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.Taging", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Taging", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.Photo", "Photo")
+                    b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.Tag", "Tag")
+                    b.HasOne("TrainSchdule.DAL.Entities.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PhotoHub.DAL.Entities.UserReport", b =>
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>
                 {
-                    b.HasOne("PhotoHub.DAL.Entities.User", "ReportedUser")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "ReportedUser")
                         .WithMany()
                         .HasForeignKey("ReportedUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PhotoHub.DAL.Entities.User", "User")
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

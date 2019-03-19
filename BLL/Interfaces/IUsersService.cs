@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.DTO;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.DTO;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// 用户服务接口.

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PhotoHub.BLL.DTO;
+using TrainSchdule.BLL.DTO;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// Interface for photos services.

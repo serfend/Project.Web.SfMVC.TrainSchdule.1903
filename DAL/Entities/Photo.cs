@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PhotoHub.DAL.Entities
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Photo entity.

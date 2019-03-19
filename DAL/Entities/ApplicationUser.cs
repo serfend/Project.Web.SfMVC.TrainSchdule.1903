@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace PhotoHub.DAL.Entities
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Application user entity.

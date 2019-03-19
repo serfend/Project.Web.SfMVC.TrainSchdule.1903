@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using PhotoHub.DAL.Entities;
+using TrainSchdule.DAL.Entities;
 
-namespace PhotoHub.DAL.Data
+namespace TrainSchdule.DAL.Data
 {
     /// <summary>
     /// Seeder for main DB context in the application.
@@ -109,8 +109,8 @@ namespace PhotoHub.DAL.Data
             },
             new ApplicationUser
             {
-                UserName = "photohub_admin",
-                Email = "photohub.admin@gmail.com"
+                UserName = "TrainSchdule_admin",
+                Email = "TrainSchdule.admin@gmail.com"
             }
         };
         private readonly List<User> _users = new List<User>
@@ -159,8 +159,8 @@ namespace PhotoHub.DAL.Data
             },
             new User//admin
             {
-                RealName = "PhotoHub Admin",
-                UserName = "photohub_admin",
+                RealName = "TrainSchdule Admin",
+                UserName = "TrainSchdule_admin",
                 About = "Official admin"
             }
         };
@@ -400,7 +400,7 @@ namespace PhotoHub.DAL.Data
                 await RoleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            ApplicationUser user = await UserManager.FindByNameAsync("photohub_admin");
+            ApplicationUser user = await UserManager.FindByNameAsync("TrainSchdule_admin");
 
             await UserManager.AddToRoleAsync(user, "Admin");
         }

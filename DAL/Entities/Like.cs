@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PhotoHub.DAL.Entities
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Like entity.

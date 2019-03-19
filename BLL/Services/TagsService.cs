@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using PhotoHub.DAL.Interfaces;
-using PhotoHub.DAL.Entities;
-using PhotoHub.BLL.Interfaces;
-using PhotoHub.BLL.DTO;
-using PhotoHub.BLL.Extensions;
+using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.Extensions;
 using System.Collections.Generic;
 
-namespace PhotoHub.BLL.Services
+namespace TrainSchdule.BLL.Services
 {
     /// <summary>
     /// Contains methods with tags processing logic.

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace PhotoHub.BLL.Interfaces
+namespace TrainSchdule.BLL.Interfaces
 {
     /// <summary>
     /// Interface for email sernder services.
