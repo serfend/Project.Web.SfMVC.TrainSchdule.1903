@@ -1,0 +1,122 @@
+﻿@model IndexViewModel
+@{
+    ViewBag.Title = "Account";
+    ViewData.AddActivePage(ManageNavPages.Index);
+}
+
+@section Scripts {
+    <script defer src="~/js/manage/avatar.js"></script>
+}
+
+<h2 class="is-uppercase has-text-centered has-text-weight-bold">Profile avatar</h2>
+<form method="post" asp-controller="Manage" asp-action="ChangeAvatar" class="adaptive-form has-text-centered" id="uploadAvatar" enctype="multipart/form-data">
+
+    <img alt="@Model.Username" v-bind:src="path?path:'@Model.Avatar'" class="is-circle has-tiny-shadow image is-172x172" style="margin: 10px;" />
+    <input type="hidden" value="@Model.Username" name="userName" />
+    <div style="width: 100%; display: flex; flex-direction: row; align-content: center; justify-content: center; align-items: center;">
+        <div class="field has-text-centered" style="margin-bottom: 10px; width: auto !important;">
+            <div class="file is-light" v-bind:class="{'is-light':!loaded, 'is-success':loaded}">
+                <label class="file-label">
+                    <input class="file-input" type="file" id="avatar" name="avatar" accept="image/*" v-on:change="filePreview($event)" required>
+                    <span class="file-cta">
+                        <span class="file-icon">
+                            <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                            Select file
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="field has-text-centered">
+        <button type="submit" class="button is-accent-button" title="Save avatar">Save avatar</button>
+    </div>
+</form>
+
+<hr />
+
+<h2 class="is-uppercase has-text-centered has-text-weight-bold">Account info</h2>
+<form method="post" class="adaptive-form">
+    <div class="field">
+        <div asp-validation-summary="All" class="has-text-danger"></div>
+    </div>
+
+    <div class="field">
+        <label asp-for="Username" class="label"></label>
+        <div class="control">
+            <input asp-for="Username" class="input" disabled />
+        </div>
+    </div>
+
+    <div class="field">
+        <label asp-for="RealName" class="label"></label>
+        <div class="control">
+            <input asp-for="RealName" class="input" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label asp-for="WebSite" class="label"></label>
+        <div class="control">
+            <input asp-for="WebSite" class="input" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label asp-for="About" class="label"></label>
+        <div class="control">
+            <input asp-for="About" class="input">
+        </div>
+    </div>
+
+    <div class="field has-text-centered">
+        <h3 class="has-text-centered is-uppercase has-text-weight-bold">Gender</h3>
+        <label class="radio">
+            <input type="radio" name="Gender" value="Male" @( String.IsNullOrEmpty(Model.Gender) || Model.Gender == "Male" ? "checked" : "")>
+            Male
+        </label>
+        <label class="radio">
+            <input type="radio" name="Gender" value="Female" @( Model.Gender == "Female" ? "checked" : "")>
+            Female
+        </label>
+    </div>
+
+    @*<div class="field">
+            <label asp-for="Email" class="label"></label>
+            <div class="control">
+                <input asp-for="Email" class="input" required />
+            </div>
+            @if (Model.IsEmailConfirmed)
+            {
+                <p class="help is-success">Verified</p>
+            }
+            <p asp-validation-for="Email" class="help is-danger"></p>
+            @if (!Model.IsEmailConfirmed)
+            {
+                <div class="has-text-centered">
+                    <button asp-action="SendVerificationEmail" class="button is-light" title="Send verification email">Send verification email</button>
+                </div>
+            }
+        </div>
+
+        <div class="field">
+            <label asp-for="PhoneNumber" class="label"></label>
+            <div class="control">
+                <input asp-for="PhoneNumber" class="input" />
+            </div>
+            <p asp-validation-for="PhoneNumber" class="help is-danger"></p>
+        </div>*@
+
+    <div class="field has-text-centered">
+        <button type="submit" class="button is-accent-button" title="Save info">Save info</button>
+    </div>
+</form>
+
+<hr />
+
+<form method="post" asp-controller="Account" asp-action="Logout" class="has-text-centered" style="margin-top: 30px;">
+    <button type="submit" class="button is-danger">Logout</button>
+</form>
