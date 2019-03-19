@@ -24,17 +24,17 @@
                         @if (Model.Owner.UserName == User.Identity.Name)
                         {
                             <form action="/photos/delete/@Model.Id" method="post">
-                                <button type="submit" class="button is-danger" title="Delete"><i class="far fa-trash-alt"></i></button>
+                                <button type="submit" class="button is-danger" title="Delete"><i class= "fa fa-trash-alt"></i></button>
                             </form>
-                            <a class="button is-white has-text-grey-darker" href="/photos/edit/@Model.Id" title="Edit photo"><i class="far fa-edit"></i></a>
+                            <a class="button is-white has-text-grey-darker" href="/photos/edit/@Model.Id" title="Edit photo"><i class="fa fa-edit"></i></a>
                         }
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)" v-if="post != null"><i class="fas fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
+                            <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)" v-if="post != null"><i class="fa fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
                         }
-                        <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="post != null && canShare"><i class="fas fa-share-alt"></i></a>
-                        <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard" v-if="post != null"><i class="far fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
+                        <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="post != null && canShare"><i class="fa fa-share-alt"></i></a>
+                        <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard" v-if="post != null"><i class= "fa fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
                     </div>
                 </header>
 
@@ -98,7 +98,7 @@
                                 </div>
 
                                 <div class="media-right" v-if="comment.$id && (currentAppUserName == comment.owner.userName || post.owner.userName == currentAppUserName || appPermission == 'True')">
-                                    <a class="close-button" v-on:click="deleteComment(comment)" title="Delete comment"><i class="fas fa-trash"></i></a>
+                                    <a class="close-button" v-on:click="deleteComment(comment)" title="Delete comment"><i class="fa fa-trash"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
             <div class="modal-card modal-card-custom">
                 <header class="modal-card-head">
                     <p class="modal-card-title is-uppercase">Likes</p>
-                    <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fas fa-times"></i></a>
+                    <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fa fa-times"></i></a>
                 </header>
                 <section class="modal-card-body" v-if="post && post.likes != null && post.likes.length > 0">
                     <div class="media" v-for="like in post.likes" :key="like.$id">
@@ -154,7 +154,7 @@
             <div class="modal-card modal-card-custom modal-card-custom-metadata">
                 <header class="modal-card-head">
                     <p class="modal-card-title is-uppercase">info</p>
-                    <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fas fa-times"></i></a>
+                    <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fa fa-times"></i></a>
                 </header>
                 <section class="modal-card-body modal-card-body-metadata">
                     <div>

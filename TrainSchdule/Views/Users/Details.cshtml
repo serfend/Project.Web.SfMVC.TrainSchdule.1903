@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = Model.UserName;
-    ViewBag.Keywords = Model.UserName + ",Log In to Follow,Manage Account,Giveaways,edit,Go to photo";
+    ViewBag.Keywords = Model.UserName + ",登录以对信息进行操纵";
     ViewBag.Description = Model.About;
 }
 
@@ -17,7 +17,7 @@
                 <div style="display: flex; justify-content: center; flex-direction: column; align-content: center; align-items: center;">
                     <img src="@Model.Avatar" alt="@Model.UserName" class="is-circle has-tiny-shadow image is-172x172" />
                     @if (!String.IsNullOrEmpty(Model.WebSite)) { 
-                        <a href="@Model.WebSite" class="user-website-href" title="Personal web site" target="_blank">website<i class="fas fa-external-link-square-alt"></i></a>
+                        <a href="@Model.WebSite" class="user-website-href" title="Personal web site" target="_blank">website<i class="fa fa-external-link-square-alt"></i></a>
                     }
                 </div>
                 <div>
@@ -28,31 +28,31 @@
                     <div id="user-follow-panel">
                         <div style="margin-bottom: 15px;">
                             <button class="button is-white" v-if="user.followers == null || user.followers.length <= 0" title="Followers">@Model.Followers.Count followers</button>
-                            <button class="button is-white" v-if="user.followers != null && user.followers.length > 0" v-on:click="showFollowers" title="Followers" v-cloak>@Model.Followers.Count followers</button>
+                            <button class="button is-white" v-if="user.followers != null && user.followers.length > 0" v-on:click="showFollowers" title="Followers" v-cloak>@Model.Followers.Count 粉丝</button>
                             <button class="button is-white" v-if="user.followings == null || user.followings.length <= 0" title="Followings">@Model.Followings.Count followings</button>
-                            <button class="button is-white" v-if="user.followings != null && user.followings.length > 0" v-on:click="showFollowings" title="Followings" v-cloak>@Model.Followings.Count followings</button>
+                            <button class="button is-white" v-if="user.followings != null && user.followings.length > 0" v-on:click="showFollowings" title="Followings" v-cloak>@Model.Followings.Count 关注</button>
                         </div>
                         <div style="margin-bottom: 15px;">
                             @if (User.Identity.IsAuthenticated)
                             {
                                 if (User.Identity.Name != Model.UserName)
                                 {
-                                    <button class="button" v-bind:title="user.followed?'Unfollow':'Follow'" v-bind:class="{'is-accent-button': !user.followed}" v-on:click="user.followed?disfollow():follow()" v-cloak>{{user.followed?'Unfollow':'Follow'}}</button>
-                                    <button class="button is-dark" v-bind:title="user.blocked?'Unblock':'Block'" v-on:click="user.blocked?disblock():block()" v-cloak>{{user.blocked?'Unblock':'Block'}}</button>
+                                    <button class="button" v-bind:title="user.followed?'Unfollow':'Follow'" v-bind:class="{'is-accent-button': !user.followed}" v-on:click="user.followed?disfollow():follow()" v-cloak>{{user.followed?'取消关注':'关注'}}</button>
+                                    <button class="button is-dark" v-bind:title="user.blocked?'Unblock':'Block'" v-on:click="user.blocked?disblock():block()" v-cloak>{{user.blocked?'取消黑名单':'加入黑名单'}}</button>
                                 }
                                 else
                                 {
                                     if (User.IsInRole("Admin"))
                                     {
-                                        <a class="button is-light" href="/admin" title="Admin panel" rel="nofollow"><i class="fas fa-tasks"></i></a>
+                                        <a class="button is-light" href="/admin" title="管理面板" rel="nofollow"><i class="fa fa-tasks"></i></a>
                                     }
-                                    <a href="/manage/index" class="button is-accent-button" title="Manage Account">Manage Account</a>
-                                    <a href="/manage/bookmarks" class="button is-light" title="Show bookmarks"><i class="fas fa-bookmark"></i></a>
+                                    <a href="/manage/index" class="button is-accent-button" title="管理账户">用户管理</a>
+                                    <a href="/manage/bookmarks" class="button is-light" title="查看书签">书签<i class="fa fa-bookmark"></i></a>
                                 }
                             }
                             else
                             {
-                                <a class="button is-accent-button" href="/account/login" title="Log In to Follow">Log in</a>
+                                <a class="button is-accent-button" href="/account/login" title="登录">登录</a>
                             }
                         </div>
                     </div>
@@ -62,8 +62,8 @@
             {
             <div id="user-mutual-panel" v-if="!user.followed && user.mutuals != null && user.mutuals.length > 0" v-cloak>
                 <a class="button is-small is-light mutual-friend-button" v-bind:href="`/users/${mutual.userName}`" v-for="mutual in mutuals" v-bind:title="mutual.realName || mutual.userName">{{mutual.userName}}</a>
-                <a class="button is-small is-white" v-if="mutualsActive && user.mutuals.length > 3" v-on:click="closeMutuals" title="Hide all mutuals">Hide</a>
-                <a class="button is-small is-white" v-if="!mutualsActive && user.mutuals.length > 3" v-on:click="showMutuals" title="Show all mutuals">All mutuals({{user.mutuals.length}})</a>
+                <a class="button is-small is-white" v-if="mutualsActive && user.mutuals.length > 3" v-on:click="closeMutuals" title="隐藏全部">隐藏全部</a>
+                <a class="button is-small is-white" v-if="!mutualsActive && user.mutuals.length > 3" v-on:click="showMutuals" title="显示全部">全部({{user.mutuals.length}})</a>
             </div>
             }
         </div>
@@ -74,8 +74,8 @@
         <div class="modal-background modal-custom-background" v-on:click="closeFollowers"></div>
         <div class="modal-card modal-card-custom">
             <header class="modal-card-head">
-                <p class="modal-card-title is-uppercase">followers</p>
-                <a class="close-button" v-on:click="closeFollowers" title="Close modal"><i class="fas fa-times"></i></a>
+                <p class="modal-card-title is-uppercase">粉丝</p>
+                <a class="close-button" v-on:click="closeFollowers" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body">
                 <a class="button is-white is-mobile-nav-item follower-modal-button" v-bind:href="`/users/${user.userName}`" v-bind:title="user.userName" v-for="user in filteredFollowers">
@@ -86,7 +86,7 @@
             <div class="followers-modal-input">
                 <input class="input" type="text" placeholder="User name" id="findFollowerInput" v-model="findFollower" />
             </div>
-            <a class="button is-white close-modal-mobile-button" title="Close modal" v-on:click="closeFollowers">Close</a>
+            <a class="button is-white close-modal-mobile-button" title="Close modal" v-on:click="closeFollowers">关闭</a>
         </div>
     </div>
 
@@ -96,7 +96,7 @@
         <div class="modal-card modal-card-custom">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">followings</p>
-                <a class="close-button" v-on:click="closeFollowings" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeFollowings" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body">
                 <a class="button is-white is-mobile-nav-item follower-modal-button" v-bind:href="`/users/${user.userName}`" v-bind:title="user.userName" v-for="user in filteredFollowings">
@@ -130,14 +130,14 @@
                     <div class="card-header-icon">
                         @if (Model.UserName == User.Identity.Name)
                         {
-                            <a class="button is-white has-text-grey-darker" v-bind:href="`/photos/edit/${post.$id}`" title="Edit photo"><i class="far fa-edit"></i></a>
+                            <a class="button is-white has-text-grey-darker" v-bind:href="`/photos/edit/${post.$id}`" title="Edit photo"><i class="fa fa-edit"></i></a>
                         }
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fas fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
+                            <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fa fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
                         }
-                        <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fas fa-share-alt"></i></a>
-                        <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class="far fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
+                        <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fa fa-share-alt"></i></a>
+                        <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class="fa fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
                     </div>
                 </header>
 
@@ -171,7 +171,7 @@
                         <div>
                             <button class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="post.liked?dislike(post):like(post)" v-bind:title="post.liked?'Dislike':'Like'" v-if="currentAppUserName"><i class="fa-heart" v-bind:class="post.liked?'fas':'far'"></i></button>
                             <button v-if="post.likes.length > 0" class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="showLikes(post)" title="Likes list">{{ post.likes.length }}</button>
-                            <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fas fa-comment"></i></button>
+                            <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fa fa-comment"></i></button>
                             <button class="button is-light" v-on:click="showComments(post)" title="Comments" v-if="post.comments.length > 0">{{ post.comments.length }}</button>
                         </div>
                         <div>
@@ -194,7 +194,7 @@
                                     </div>
 
                                     <div class="media-right" v-if="comment.$id && (currentAppUserName == comment.owner.userName || post.owner.userName == currentAppUserName || appPermission == 'True')">
-                                        <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fas fa-trash"></i></a>
+                                        <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fa fa-trash"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
                 <div class="modal-card modal-card-custom">
                     <header class="modal-card-head">
                         <p class="modal-card-title is-uppercase">likes</p>
-                        <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fas fa-times"></i></a>
+                        <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fa fa-times"></i></a>
                     </header>
                     <section class="modal-card-body" v-if="current.likes != null && current.likes.length > 0">
                         <div class="media" v-for="like in current.likes" :key="like.$id">
@@ -250,7 +250,7 @@
                 <div class="modal-card modal-card-custom modal-card-custom-metadata">
                     <header class="modal-card-head">
                         <p class="modal-card-title is-uppercase">info</p>
-                        <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fas fa-times"></i></a>
+                        <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fa fa-times"></i></a>
                     </header>
                     <section class="modal-card-body modal-card-body-metadata">
                         <div>
@@ -289,7 +289,7 @@
             <button class="button is-uppercase is-responsive" v-bind:class="{'is-loading': postsFetch.incallback}" v-on:click="fetchPhotos" v-if="!postsFetch.loaded && posts.length > 0 && posts.length%4 == 0" v-cloak>Load More</button>
         </div>
         <div class="empty-container" v-if="postsFetch.loaded && posts.length < 1" v-cloak>
-            <p>User has no photos</p>
+            <p>没有任何照片</p>
         </div>
     }
 </div>

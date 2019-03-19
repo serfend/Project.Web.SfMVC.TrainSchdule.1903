@@ -8,7 +8,7 @@
     <script defer src="~/js/home/search.js"></script>
 }
 
-<div id="search" class="container is-flex is-flex-centered is-flex-column" v-cloak>
+<div id="查找" class="container is-flex is-flex-centered is-flex-column" v-cloak>
     <div class="buttons" id="search-buttons-panel">
         <a class="button is-rounded" v-on:click="showUsers" v-bind:class="{'is-light': usersTab.active, 'is-white': !usersTab.active}">
             <span>用户</span>
@@ -26,7 +26,7 @@
             <input class="input" type="text" v-on:keyup.enter="handleSearch" v-model="usersTab.search" placeholder="输入用户名" v-cloak required>
         </p>
         <p class="control">
-            <button class="button is-accent-button" title="Search" v-bind:class="{'is-loading': usersTab.incallback }" v-on:submit.prevent="handleSearch" v-on:submit="handleSearch" v-on:click="handleSearch" v-cloak>
+            <button class="button is-accent-button" title="查找" v-bind:class="{'is-loading': usersTab.incallback }" v-on:submit.prevent="handleSearch" v-on:submit="handleSearch" v-on:click="handleSearch" v-cloak>
                 查找
             </button>
         </p>
@@ -37,7 +37,7 @@
             <input class="input" type="text" v-on:keyup.enter="handleSearch" v-model="projectsTab.search" placeholder="输入科目或专业" v-cloak required>
         </p>
         <p class="control">
-            <button class="button is-accent-button" title="Search" v-bind:class="{'is-loading': projectsTab.incallback}" v-on:submit.prevent="handleSearch" v-on:submit="handleSearch" v-on:click="handleSearch" v-cloak>
+            <button class="button is-accent-button" title="查找" v-bind:class="{'is-loading': projectsTab.incallback}" v-on:submit.prevent="handleSearch" v-on:submit="handleSearch" v-on:click="handleSearch" v-cloak>
                 查找
             </button>
         </p>
@@ -65,7 +65,7 @@
             <img class="image is-64x64 is-circle" v-bind:src="user.avatar" v-bind:alt="user.userName" style="margin-right: 7px;" />
             <span class="is-doted-end is-size-5">{{user.userName}}</span>
         </a>
-        <button class="button" v-bind:title="user.followed?'取消关注':'关注'" v-bind:class="{'is-accent-button': !user.followed}" v-on:click="user.followed?disfollow(user):follow(user)"><i class="fas fa-user-plus" v-bind:class="user.followed?'fa-user-times':'fa-user-plus'"></i></button>
+        <button class="button" v-bind:title="user.followed?'取消关注':'关注'" v-bind:class="{'is-accent-button': !user.followed}" v-on:click="user.followed?disfollow(user):follow(user)"><i class="fa fa-user-plus" v-bind:class="user.followed?'fa-user-times':'fa-user-plus'"></i></button>
     </article>
         
     <article class="card is-responsive" v-for="post in projectsTab.photos" v-if="projectsTab.active && projectsTab.photos != null" v-cloak>
@@ -79,10 +79,10 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fas fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
+                    <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fa fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
                 }
-                <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fas fa-share-alt"></i></a>
-                <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class="far fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
+                <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fa fa-share-alt"></i></a>
+                <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class="fa fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
             </div>
         </header>
 
@@ -116,7 +116,7 @@
                 <div>
                     <button class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="post.liked?dislike(post):like(post)" v-bind:title="post.liked?'Dislike':'Like'" v-if="currentAppUserName"><i class="fa-heart" v-bind:class="post.liked?'fas':'far'"></i></button>
                     <button v-if="post.likes.length > 0" class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="showLikes(post)" title="Likes list">{{ post.likes.length }}</button>
-                    <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fas fa-comment"></i></button>
+                    <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fa fa-comment"></i></button>
                     <button class="button is-light" v-on:click="showComments(post)" title="Comments" v-if="post.comments.length > 0">{{ post.comments.length }}</button>
                 </div>
                 <div>
@@ -139,7 +139,7 @@
                             </div>
 
                             <div class="media-right" v-if="comment.$id && (currentAppUserName == comment.owner.userName || post.owner.userName == currentAppUserName || appPermission == 'True')">
-                                <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fas fa-trash"></i></a>
+                                <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </div>
@@ -163,7 +163,7 @@
         <div class="modal-card modal-card-custom">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">likes</p>
-                <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body" v-if="current.likes != null && current.likes.length > 0">
                 <div class="media" v-for="like in current.likes">
@@ -195,7 +195,7 @@
         <div class="modal-card modal-card-custom modal-card-custom-metadata">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">info</p>
-                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body modal-card-body-metadata">
                 <div>
@@ -246,6 +246,6 @@
         <p>Can't find tag</p>
     </div>
 
-    <button class="button is-uppercase is-responsive" v-bind:class="{'is-loading': usersTab.incallback}" v-on:click="search" v-if="usersTab.active && !usersTab.loaded && usersTab.users != null && usersTab.users.length > 0 && usersTab.users.length%12 == 0" v-cloak>Load More</button>
-    <button class="button is-uppercase is-responsive" v-bind:class="{'is-loading': projectsTab.incallback}" v-on:click="search" v-if="projectsTab.active && !projectsTab.loaded && projectsTab.photos != null  && projectsTab.photos.length > 0 && projectsTab.photos.length%8 == 0" v-cloak>Load More</button>
+    <button class="button is-uppercase is-responsive" v-bind:class="{'is-loading': usersTab.incallback}" v-on:click="查找" v-if="usersTab.active && !usersTab.loaded && usersTab.users != null && usersTab.users.length > 0 && usersTab.users.length%12 == 0" v-cloak>Load More</button>
+    <button class="button is-uppercase is-responsive" v-bind:class="{'is-loading': projectsTab.incallback}" v-on:click="查找" v-if="projectsTab.active && !projectsTab.loaded && projectsTab.photos != null  && projectsTab.photos.length > 0 && projectsTab.photos.length%8 == 0" v-cloak>Load More</button>
 </div>

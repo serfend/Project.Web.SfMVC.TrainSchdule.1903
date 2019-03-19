@@ -77,7 +77,7 @@ namespace TrainSchdule.WEB.Controllers.Api
             return _photosService.GetTags(tagId, page, _getAllPageSize).ToViewModels();
         }
 
-        [HttpGet, Route("search")]
+        [HttpGet, Route("查找")]
         public IEnumerable<PhotoViewModel> Search(int page, string search, int? iso, double? exposure, double? aperture, double? focalLength)
         {
             return _photosService.Search(page, search, _getHomePageSize, iso, exposure, aperture, focalLength).ToViewModels();

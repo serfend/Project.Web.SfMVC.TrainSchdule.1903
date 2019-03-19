@@ -52,7 +52,7 @@ namespace TrainSchdule.WEB.Controllers.Api
             return _usersService.GetBlocked(page, _getSearchPageSize).ToViewModels();
         }
 
-        [HttpGet, Route("search")]
+        [HttpGet, Route("查找")]
         public IEnumerable<UserViewModel> Search(int page, string search)
         {
             return _usersService.Search(page, search, _getSearchPageSize).ToViewModels();

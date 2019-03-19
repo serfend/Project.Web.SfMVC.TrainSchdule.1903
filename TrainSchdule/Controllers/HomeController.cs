@@ -40,7 +40,7 @@ namespace TrainSchdule.WEB.Controllers
             return View("Cover");
         }
 
-        [Authorize, Route("search")]
+        [Authorize, Route("查找")]
         public IActionResult Search()
         { 
             ViewBag.Tags = _photosService.Tags.ToViewModels();

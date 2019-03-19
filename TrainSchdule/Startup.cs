@@ -19,7 +19,6 @@ namespace TrainSchdule.WEB
     public class Startup
     {
         #region Properties
-
         public IConfiguration Configuration { get; }
 
         #endregion
@@ -37,9 +36,11 @@ namespace TrainSchdule.WEB
 
         public void AddApplicationServices(IServiceCollection services)
         {
+			//每次调用均对应一个实例
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<ApplicationDbContextSeeder>();
 
+			//每个http请求对应一个实例
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<ICommentsService, CommentsService>();
@@ -47,9 +48,9 @@ namespace TrainSchdule.WEB
             services.AddScoped<IPhotosService, PhotosService>();
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITagsService, TagsService>();
-
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-
+			services.AddScoped<ICurrentUserService, CurrentUserService>();
+			
+			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
@@ -132,6 +133,11 @@ namespace TrainSchdule.WEB
                 app.UseHttpsRedirection();
             }
 
+			app.UseWelcomePage(new WelcomePageOptions() {
+				Path="/welcome"
+			});
+
+			//中间件方法
             app.UseStaticFiles();
 
             app.UseAuthentication();
@@ -145,8 +151,9 @@ namespace TrainSchdule.WEB
                     template: "{controller=Home}/{action=Cover}/{id?}");
             });
 
-            //seeder.Seed().Wait();
-            //seeder.CreateUserRoles(services).Wait();
+			//seeder.Seed().Wait();
+			//seeder.CreateUserRoles(services).Wait();
+			
         }
 
         #endregion

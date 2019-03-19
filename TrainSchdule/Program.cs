@@ -10,6 +10,10 @@ namespace TrainSchdule.WEB
             BuildWebHost(args).Run();
         }
 
+		//Kestrel Web Server
+		//UseIIS()
+		//UseIISIntegration()内网Web应用
+
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()

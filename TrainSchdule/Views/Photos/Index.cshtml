@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Explore";
+    ViewBag.Title = "探索";
     ViewBag.Keywords = "All photos,Search for People,Go to photo,photo with filter,photos with filter";
     ViewBag.Description = "Explore photos";
 }
@@ -20,10 +20,10 @@
             <div class="card-header-icon">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fas fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
+                    <a class="button is-white" title="Report photo" v-on:click="reportPhoto(post.$id)"><i class="fa fa-exclamation-circle" v-bind:data-report-id="post.$id"></i></a>
                 }
-                <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fas fa-share-alt"></i></a>
-                <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class="far fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
+                <a class="button is-white" title="Share" v-on:click="sharePhoto(post)" v-if="canShare"><i class="fa fa-share-alt"></i></a>
+                <a class="button is-white" title="Copy link to clipboard" v-on:click="copyToClipboard(post.$id)"><i class= "fa fa-clipboard" v-bind:data-copy-id="post.$id"></i></a>
             </div>
         </header>
 
@@ -56,7 +56,7 @@
                 <div>
                     <button class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="post.liked?dislike(post):like(post)" v-bind:title="post.liked?'Dislike':'Like'" v-if="currentAppUserName"><i class="fa-heart" v-bind:class="post.liked?'fas':'far'"></i></button>
                     <button v-if="post.likes.length > 0" class="button is-danger is-unselectable" v-bind:class="post.liked?'':'is-outlined'" v-on:click="showLikes(post)" title="Likes list">{{ post.likes.length }}</button>
-                    <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fas fa-comment"></i></button>
+                    <button class="button is-light comment-button" v-on:click="showComments(post)" title="Comments"><i class="fa fa-comment"></i></button>
                     <button class="button is-light" v-on:click="showComments(post)" title="Comments" v-if="post.comments.length > 0">{{ post.comments.length }}</button>
                 </div>
                 <div>
@@ -79,7 +79,7 @@
                             </div>
 
                             <div class="media-right" v-if="comment.$id && (currentAppUserName == comment.owner.userName || post.owner.userName == currentAppUserName || appPermission == 'True')">
-                                <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fas fa-trash"></i></a>
+                                <a class="close-button" v-on:click="deleteComment(comment, post)" title="Delete comment"><i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
         <div class="modal-card modal-card-custom">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">likes</p>
-                <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeLikes" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body" v-if="current.likes != null && current.likes.length > 0">
                 <div class="media" v-for="like in current.likes" :key="like.$id">
@@ -135,7 +135,7 @@
         <div class="modal-card modal-card-custom modal-card-custom-metadata">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">info</p>
-                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body modal-card-body-metadata">
                 <div>

@@ -22,8 +22,8 @@
                 <a class="has-text-grey-darker has-text-left has-text-justified" href="/users/@Model.UserName" title="@Model.UserName">@Model.UserName</a>
             </p>
             <div class="card-header-icon">
-                <a class="button is-white" title="Share"><i class="fas fa-share-alt"></i></a>
-                <a class="button is-white" title="Copy link to clipboard"><i class="far fa-copy"></i></a>
+                <a class="button is-white" title="Share"><i class="fa fa-share-alt"></i></a>
+                <a class="button is-white" title="Copy link to clipboard"><i class="fa fa-copy"></i></a>
             </div>
         </header>
 
@@ -68,7 +68,7 @@
 
         <div class="card-tags-panel" v-if="loaded" v-bind:class="{'is-display-none': submited}">
             <a class="button is-small is-light" v-on:click="removeTag(tag)" v-for="tag in pickedTags" v-bind:title="'Remove ' + tag + ' tag'">{{tag}}</a>
-            <a class="button is-small is-light" v-on:click="showAddTag" v-if="pickedTags.length < 5" title="Add tag"><i class="fas fa-plus"></i><span v-if="pickedTags < 1"> Add tag</span></a>
+            <a class="button is-small is-light" v-on:click="showAddTag" v-if="pickedTags.length < 5" title="Add tag"><i class="fa fa-plus"></i><span v-if="pickedTags < 1"> Add tag</span></a>
         </div>
 
         <div class="card-content">
@@ -78,12 +78,12 @@
 
             <div class="content card-button-panel">
                 <div>
-                    <a class="button is-white is-unselectable" title="Dislike"><i class="fas fa-heart"></i></a>
-                    <a class="button is-white comment-button" title="Comments"><i class="fas fa-comment"></i></a>
+                    <a class="button is-white is-unselectable" title="Dislike"><i class="fa fa-heart"></i></a>
+                    <a class="button is-white comment-button" title="Comments"><i class="fa fa-comment"></i></a>
                 </div>
                 <div>
                     <a class="button is-accent-button" title="Show metadata" v-on:click="showMetadata"><i class="fab fa-medapps"></i></a>
-                    <a class="button is-white bookmark-button" title="Save to bookmarks"><i class="far fa-bookmark"></i></a>
+                    <a class="button is-white bookmark-button" title="Save to bookmarks"><i class="fa fa-bookmark"></i></a>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
         <div class="modal-card modal-card-custom modal-card-custom-metadata">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">Info</p>
-                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeMetadata" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body modal-card-body-metadata">
                 <div>
@@ -143,7 +143,7 @@
         <div class="modal-card modal-card-custom modal-card-custom-metadata">
             <header class="modal-card-head">
                 <p class="modal-card-title is-uppercase">Add tag</p>
-                <a class="close-button" v-on:click="closeAddTag" title="Close modal"><i class="fas fa-times"></i></a>
+                <a class="close-button" v-on:click="closeAddTag" title="Close modal"><i class="fa fa-times"></i></a>
             </header>
             <section class="modal-card-body modal-card-body-tags">
                 <input class="input" type="text" placeholder="Tag name" id="findTagInput" v-model="findTag" v-on:keydown.enter="findTagEnter" v-on:keyup.enter="findTagEnter" v-on:keydown.space="findTagEnter" v-on:keyup.space="findTagEnter" />

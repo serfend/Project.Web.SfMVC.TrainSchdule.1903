@@ -39,4 +39,6 @@
     <Folder Include="wwwroot\data\settings\" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/ansible-stable-2.5" /></VisualStudio></ProjectExtensions>
+
 </Project>

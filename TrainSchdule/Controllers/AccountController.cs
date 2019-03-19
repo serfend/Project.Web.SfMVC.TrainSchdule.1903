@@ -387,8 +387,8 @@ namespace TrainSchdule.WEB.Controllers
                 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
-                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                await _emailSender.SendEmailAsync(model.Email, "重置密码",
+                   $": <a href='{callbackUrl}'>点击此处</a>重置密码");
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
@@ -409,7 +409,7 @@ namespace TrainSchdule.WEB.Controllers
         {
             if (code == null)
             {
-                throw new ApplicationException("A code must be supplied for password reset.");
+                throw new ApplicationException("安全码异常");
             }
             var model = new ResetPasswordViewModel { Code = code };
             return View(model);
