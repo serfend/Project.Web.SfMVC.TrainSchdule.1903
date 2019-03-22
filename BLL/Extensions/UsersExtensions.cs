@@ -24,7 +24,7 @@ namespace TrainSchdule.BLL.Extensions
                 UserName = item.UserName,
                 Avatar = item.Avatar,
                 Date = item.Date,
-                Gender = item.Gender,
+                Gender = (GenderEnum)item.Gender,
 
                 Confirmed = false,
                 Followed = false,
@@ -50,7 +50,7 @@ namespace TrainSchdule.BLL.Extensions
                 UserName = item.UserName,
                 Avatar = item.Avatar,
                 Date = item.Date,
-                Gender = item.Gender,
+                Gender = (GenderEnum)item.Gender,
 
                 Confirmed = confirmed,
                 Followed = followed,

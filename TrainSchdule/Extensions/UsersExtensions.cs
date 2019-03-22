@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TrainSchdule.BLL.DTO;
+using TrainSchdule.DAL.Entities;
 using TrainSchdule.WEB.ViewModels;
 
 namespace TrainSchdule.WEB.Extensions
@@ -23,14 +24,25 @@ namespace TrainSchdule.WEB.Extensions
             {
                 RealName = item.RealName,
                 UserName = item.UserName,
-                Avatar = item.Avatar != null ? $"/data/avatars/{item.UserName}/{item.Avatar}" : string.IsNullOrEmpty(item.Gender) || item.Gender == "Male" ? "/images/defaults/def-male-logo.png" : "/images/defaults/def-female-logo.png",
-                Date = item.Date.ToString("MMMM dd, yyyy"),
+                Avatar = GetAvatar(item),
+                Date = item.Date.ToString(Info_DateFormat),
                 Confirmed = item.Confirmed,
                 Followed = item.Followed,
                 Blocked = item.Blocked,
                 PrivateAccount = item.PrivateAccount,
                 IBlocked = item.IBlocked
             };
+        }
+
+        public const string ImgAvatarMale = "/images/defaults/def-male-logo.png";
+        public const string ImgAvatarFemale = "/images/defaults/def-female-logo.png";
+        public const string Info_DateFormat = "yyyy年MM月dd日";
+
+
+        public static string GetAvatar(UserDTO item)
+        {
+	        if (item?.Avatar == null || item.Gender==GenderEnum.Male || item.Gender==GenderEnum.Unknown) return ImgAvatarMale;
+	        return ImgAvatarFemale;
         }
 
         /// <summary>
@@ -51,8 +63,8 @@ namespace TrainSchdule.WEB.Extensions
                 {
                     RealName = item.RealName,
                     UserName = item.UserName,
-                    Avatar = item.Avatar != null ? $"/data/avatars/{item.UserName}/{item.Avatar}" : string.IsNullOrEmpty(item.Gender) || item.Gender == "Male" ? "/images/defaults/def-male-logo.png" : "/images/defaults/def-female-logo.png",
-                    Date = item.Date.ToString("MMMM dd, yyyy"),
+                    Avatar = GetAvatar(item),
+                    Date = item.Date.ToString(Info_DateFormat),
                     Confirmed = item.Confirmed,
                     Followed = item.Followed,
                     Blocked = item.Blocked,

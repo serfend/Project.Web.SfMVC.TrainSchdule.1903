@@ -149,7 +149,7 @@
             <a class="button is-white is-mobile-nav-item is-medium" href="/" title="主页"><i class="fa fa-hand-peace"></i></a>
             <a class="button is-white is-mobile-nav-item is-medium" href="/photos/create" title="创建"><i class="fa fa-plus"></i></a>
             <a class="button is-white is-mobile-nav-item is-medium" href="/search" title="查找"><i class="fa fa-search"></i></a>
-            @if (User.IsInRole("Admin"))
+            if (User.IsInRole("Admin"))
             {
                 <a class="button is-white is-mobile-nav-item is-medium" href="/admin" title="管理面板" rel="nofollow"><i class="fa fa-tasks"></i></a>
             }

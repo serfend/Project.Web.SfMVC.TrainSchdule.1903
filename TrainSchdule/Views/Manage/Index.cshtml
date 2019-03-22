@@ -1,4 +1,5 @@
-﻿@model IndexViewModel
+﻿@using TrainSchdule.DAL.Entities
+@model IndexViewModel
 @{
     ViewBag.Title = "Account";
     ViewData.AddActivePage(ManageNavPages.Index);
@@ -73,13 +74,13 @@
     </div>
 
     <div class="field has-text-centered">
-        <h3 class="has-text-centered is-uppercase has-text-weight-bold">Gender</h3>
+        <h3 class="has-text-centered is-uppercase has-text-weight-bold">Genderder</h3>
         <label class="radio">
-            <input type="radio" name="Gender" value="Male" @( String.IsNullOrEmpty(Model.Gender) || Model.Gender == "Male" ? "checked" : "")>
+            <input type="radio" name="Genderder" value="Male" @(Model.Gender == GenderEnum.Male ? "checked" : "")>
             Male
         </label>
         <label class="radio">
-            <input type="radio" name="Gender" value="Female" @( Model.Gender == "Female" ? "checked" : "")>
+            <input type="radio" name="Genderder" value="Female" @(Model.Gender == GenderEnum.Female ? "checked" : "")>
             Female
         </label>
     </div>

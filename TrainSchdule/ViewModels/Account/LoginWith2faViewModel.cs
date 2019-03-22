@@ -5,12 +5,12 @@ namespace TrainSchdule.WEB.ViewModels.Account
     public class LoginWith2faViewModel
     {
         [Required]
-        [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(7, ErrorMessage = "{0}的长度必须在{1}到{2}之间", MinimumLength = 6)]
         [DataType(DataType.Text)]
-        [Display(Name = "Authenticator code")]
+        [Display(Name = "授权码")]
         public string TwoFactorCode { get; set; }
 
-        [Display(Name = "Remember this machine")]
+        [Display(Name = "下次自动登录")]
         public bool RememberMachine { get; set; }
 
         public bool RememberMe { get; set; }

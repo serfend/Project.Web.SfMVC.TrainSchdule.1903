@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.WEB.Extensions;
 using TrainSchdule.WEB.ViewModels.Account;
 
 namespace TrainSchdule.WEB.Controllers
@@ -133,7 +134,7 @@ namespace TrainSchdule.WEB.Controllers
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
             }
 
             var authenticatorCode = model.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
@@ -239,17 +240,17 @@ namespace TrainSchdule.WEB.Controllers
 
                 if(user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Enter unique login and email");
+                    ModelState.AddModelError(string.Empty, "此账号已被使用");
                     return View(model);
                 }
 
                 _logger.LogInformation($"新的用户创建:{model.UserName}");
 
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+				var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+				var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+				await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
 
-                await _signInManager.SignInAsync(user, isPersistent: false);
+				await _signInManager.SignInAsync(user, isPersistent: false);
 
                 return RedirectToLocal(returnUrl);
             }
@@ -358,7 +359,7 @@ namespace TrainSchdule.WEB.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             var user = await _userManager.FindByIdAsync(userId) ??
-                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{userId}'.");
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");

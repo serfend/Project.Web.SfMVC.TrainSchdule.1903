@@ -56,7 +56,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public Photo Get(int id)
         {
-            return _context.Photos.Where(p => p.Id == id).FirstOrDefault();
+            return _context.Photos.FirstOrDefault(p => p.Id == id);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public async Task<Photo> GetAsync(int id)
         {
-            return await _context.Photos.Where(p => p.Id == id).FirstOrDefaultAsync();
+            return await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>

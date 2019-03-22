@@ -44,7 +44,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets user gender.
         /// </summary>
-        public string Gender { get; set; }
+        public int Gender { get; set; }
 
         /// <summary>
         /// Gets and sets user private account config.
@@ -60,7 +60,6 @@ namespace TrainSchdule.DAL.Entities
         /// </summary>
         public User()
         {
-            Gender = "Male";
             PrivateAccount = false;
             Date = DateTime.Now;
         }

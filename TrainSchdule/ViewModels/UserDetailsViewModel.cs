@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.WEB.ViewModels
 {
@@ -11,7 +12,7 @@ namespace TrainSchdule.WEB.ViewModels
         public string About { get; set; }
 
         [JsonProperty("gender")]
-        public string Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         [JsonProperty("webSite")]
         public string WebSite { get; set; }

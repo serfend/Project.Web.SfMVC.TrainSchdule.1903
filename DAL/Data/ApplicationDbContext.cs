@@ -76,6 +76,8 @@ namespace TrainSchdule.DAL.Data
         /// </summary>
         public DbSet<UserReport> UserReports { get; set; }
 
+
+		public DbSet<Student> Students { get; set; }
         #endregion
 
         #region .ctors

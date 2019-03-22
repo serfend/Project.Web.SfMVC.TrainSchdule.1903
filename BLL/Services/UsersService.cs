@@ -382,7 +382,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Edits user.
         /// </summary>
-        public void Edit(string userName, string realName, string about, string webSite, string gender, string avatar = null)
+        public void Edit(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null)
         {
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
@@ -406,9 +406,9 @@ namespace TrainSchdule.BLL.Services
                     _unitOfWork.Users.Update(user);
                 }
 
-                if(user.Gender != gender)
+                if(user.Gender != (int)gender)
                 {
-                    user.Gender = gender;
+                    user.Gender = (int)gender;
                     _unitOfWork.Users.Update(user);
                 }
 
@@ -425,7 +425,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async edits user.
         /// </summary>
-        public async Task EditAsync(string userName, string realName, string about, string webSite, string gender, string avatar = null)
+        public async Task EditAsync(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null)
         {
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
@@ -449,9 +449,9 @@ namespace TrainSchdule.BLL.Services
                     _unitOfWork.Users.Update(user);
                 }
 
-                if (user.Gender != gender)
+                if (user.Gender != (int)gender)
                 {
-                    user.Gender = gender;
+                    user.Gender = (int)gender;
                     _unitOfWork.Users.Update(user);
                 }
 

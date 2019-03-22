@@ -423,7 +423,7 @@ namespace TrainSchdule.BLL.Services
             {
                 foreach (var tag in tags.SplitTags(_unitOfWork.Tags.GetAll()))
                 {
-                    var tg = _unitOfWork.Tags.Find(t => t.Name == tag).FirstOrDefault();
+                    var tg = _unitOfWork.Tags.Find(t => t.Name == tag.Name).FirstOrDefault();
 
                     if (tg != null)
                     {
@@ -473,7 +473,7 @@ namespace TrainSchdule.BLL.Services
             {
                 foreach (var tag in tags.SplitTags(_unitOfWork.Tags.GetAll()))
                 {
-                    var tg = _unitOfWork.Tags.Find(t => t.Name == tag).FirstOrDefault();
+                    var tg = _unitOfWork.Tags.Find(t => t.Name == tag.Name).FirstOrDefault();
 
                     if (tg != null)
                     {
@@ -507,6 +507,7 @@ namespace TrainSchdule.BLL.Services
                     photo.FilterId = flt.Id;
                 }
 
+				//清空原Tag
                 foreach (var taging in _unitOfWork.Tagings.Find(t => t.PhotoId == photo.Id))
                 {
                     _unitOfWork.Tagings.Delete(taging.Id);
@@ -516,16 +517,11 @@ namespace TrainSchdule.BLL.Services
                 {
                     foreach (var tag in tags.SplitTags(_unitOfWork.Tags.GetAll()))
                     {
-                        var tg = _unitOfWork.Tags.Find(t => t.Name == tag).FirstOrDefault();
-
-                        if (tg != null)
-                        {
-                            _unitOfWork.Tagings.Create(new Taging
-                            {
-                                TagId = tg.Id,
-                                PhotoId = photo.Id
-                            });
-                        }
+	                    _unitOfWork.Tagings.Create(new Taging
+	                    {
+	                        TagId = tag.Id,
+	                        PhotoId = photo.Id
+	                    });
                     }
                 }
 
@@ -594,7 +590,7 @@ namespace TrainSchdule.BLL.Services
                 {
                     foreach (var tag in tags.SplitTags(_unitOfWork.Tags.GetAll()))
                     {
-                        var tg = _unitOfWork.Tags.Find(t => t.Name == tag).FirstOrDefault();
+                        var tg = _unitOfWork.Tags.Find(t => t.Name == tag.Name).FirstOrDefault();
 
                         if (tg != null)
                         {

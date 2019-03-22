@@ -47,7 +47,7 @@
                                         <a class="button is-light" href="/admin" title="管理面板" rel="nofollow"><i class="fa fa-tasks"></i></a>
                                     }
                                     <a href="/manage/index" class="button is-accent-button" title="管理账户">用户管理</a>
-                                    <a href="/manage/bookmarks" class="button is-light" title="查看书签">书签<i class="fa fa-bookmark"></i></a>
+                                    <a href="/manage/bookmarks" class="button is-light" title="查看书签"><i class="fa fa-bookmark"></i></a>
                                 }
                             }
                             else
@@ -175,7 +175,7 @@
                             <button class="button is-light" v-on:click="showComments(post)" title="Comments" v-if="post.comments.length > 0">{{ post.comments.length }}</button>
                         </div>
                         <div>
-                            <button class="button is-white" title="Show metadata" v-on:click="showMetadata(post)"><i class="fab fa-medapps"></i></button>
+                            <button class="button is-white" title="Show metadata" v-on:click="showMetadata(post)"><i class="fa fa-medapps"></i></button>
                             <button class="button bookmark-button" v-bind:class="post.bookmarked?'is-light':'is-white'" title="Save to bookmarks" v-if="currentAppUserName" v-on:click="post.bookmarked?disbookmark(post):bookmark(post)"><i class="fa-bookmark" v-bind:class="post.bookmarked?'fas':'far'"></i></button>
                         </div>
                     </div>

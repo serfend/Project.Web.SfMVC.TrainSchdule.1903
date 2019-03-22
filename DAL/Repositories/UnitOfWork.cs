@@ -32,6 +32,7 @@ namespace TrainSchdule.DAL.Repositories
         private IRepository<UserReport> _userReportsRepository;
 
         private bool _isDisposed;
+        private IRepository<Student> _studentRepository;
 
         #endregion
 
@@ -106,6 +107,9 @@ namespace TrainSchdule.DAL.Repositories
         /// Gets user report repository.
         /// </summary>
         public IRepository<UserReport> UserReports => _userReportsRepository ?? (_userReportsRepository = new UserReportsRepository(_context));
+
+        public IRepository<Student> Students =>
+	        _studentRepository ?? (_studentRepository = new StudentRepository(_context));
 
         #endregion
 

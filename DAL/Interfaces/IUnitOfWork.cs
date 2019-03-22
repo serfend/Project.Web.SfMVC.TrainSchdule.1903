@@ -81,6 +81,7 @@ namespace TrainSchdule.DAL.Interfaces
         /// </summary>
         IRepository<UserReport> UserReports { get; }
 
+		IRepository<Student> Students { get; }
         #endregion
 
         #region Methods

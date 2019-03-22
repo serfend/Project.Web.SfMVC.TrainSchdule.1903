@@ -1,4 +1,5 @@
 ﻿using System;
+using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.BLL.DTO
 {
@@ -31,7 +32,7 @@ namespace TrainSchdule.BLL.DTO
         /// <summary>
         /// Gets and sets user gender.
         /// </summary>
-        public string Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         /// <summary>
         /// Gets and sets user confirmed by amdmin state.

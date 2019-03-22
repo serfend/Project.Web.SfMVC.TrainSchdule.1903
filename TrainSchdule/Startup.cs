@@ -27,6 +27,7 @@ namespace TrainSchdule.WEB
 
         public Startup(IConfiguration configuration)
         {
+			//注入Configuration服务
             Configuration = configuration;
         }
 
@@ -49,6 +50,7 @@ namespace TrainSchdule.WEB
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ITagsService, TagsService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
+			services.AddScoped<IStudentService, StudentService>();
 			
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -58,28 +60,15 @@ namespace TrainSchdule.WEB
         {
 
             services.AddDbContext<ApplicationDbContext>(options=>{
-				var connectStr = Configuration.GetConnectionString("DefaultConnection");
+				var connectionString = Configuration.GetConnectionString("DefaultConnection");
 				options.UseLazyLoadingProxies()
-					   .UseSqlServer(connectStr);
+					   .UseSqlServer(connectionString);
 			});
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = "898819496715-g0dk8mimqmmsl93c6o3hlm6j65qhahqc.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "JTdwBEP7c0FN5r9Xk1WcMdVm";
-            }).AddFacebook(facebookOptions =>
-            {
-                facebookOptions.AppId = "1458237504267258";
-                facebookOptions.AppSecret = "cb13b1b64b2735b45f3837ecc5f79ad0";
-            }).AddTwitter(twitterOptions =>
-            {
-                twitterOptions.ConsumerKey = "oieC1IDbdXx9dJeWeADGBnYJY";
-                twitterOptions.ConsumerSecret = "tQG8nqAOzlUJqwcZix1yEecKjRAhrAM9jeUZLxFhfI6nvuS59z";
-            });
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -143,11 +132,13 @@ namespace TrainSchdule.WEB
             app.UseAuthentication();
 
             app.UseSession();
-
+			
+			//默认路由
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
+					//controller/action/param
                     template: "{controller=Home}/{action=Cover}/{id?}");
             });
 

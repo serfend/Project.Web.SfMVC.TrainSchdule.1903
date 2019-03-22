@@ -98,11 +98,11 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Edits user.
         /// </summary>
-        void Edit(string userName, string realName, string about, string webSite, string gender, string avatar = null);
+        void Edit(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null);
 
         /// <summary>
         /// Async edits user.
         /// </summary>
-        Task EditAsync(string userName, string realName, string about, string webSite, string gender, string avatar = null);
+        Task EditAsync(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null);
     }
 }

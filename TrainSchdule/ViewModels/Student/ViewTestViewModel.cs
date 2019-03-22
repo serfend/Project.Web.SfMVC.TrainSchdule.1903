@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TrainSchdule.WEB.ViewModels.My
+namespace TrainSchdule.WEB.ViewModels.Student
 {
 	public class ViewTestViewModel
 	{

@@ -12,19 +12,20 @@ namespace TrainSchdule.BLL.Helpers
         /// <summary>
         /// Extension method for parsing tags from string to <see cref="Tag"/> array.
         /// </summary>
-        public static IEnumerable<string> SplitTags(this string strings, IEnumerable<Tag> tags)
+        public static IEnumerable<Tag> SplitTags(this string strings, IEnumerable<Tag> tags)
         {
-            var response = new List<string>();
+            var response = new List<Tag>();
 
             foreach (var tagString in strings.Split(new char[] { ',', '.', '-', '_', ' ', ':', '/' }))
             {
-                var tag = tags.Where(t => t.Name == tagString).FirstOrDefault();
+				//新赋值的tag是否在tag库中
+                var tag = tags.FirstOrDefault(t => t.Name == tagString);
 
                 if(tag != null)
                 {
-                    response.Add(tag.Name);
+                    response.Add(tag);
                 }
-
+				//仅保留最多5个tag
                 if (response.Count > 5)
                 {
                     break;

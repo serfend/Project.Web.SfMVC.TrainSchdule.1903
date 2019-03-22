@@ -75,7 +75,7 @@ namespace TrainSchdule.WEB.Controllers
         public IActionResult Index()
         {
             var user = _usersService.Get(User.Identity.Name).ToViewModel() ??
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var model = new IndexViewModel
             {
@@ -102,7 +102,7 @@ namespace TrainSchdule.WEB.Controllers
 
             await _usersService.EditAsync(User.Identity.Name, model.RealName, model.About, model.WebSite, model.Gender);
 
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "个人信息已修改";
             return RedirectToAction(nameof(Index));
         }
 
@@ -124,11 +124,11 @@ namespace TrainSchdule.WEB.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View("Index",model);
             }
 
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
@@ -143,7 +143,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> ChangePassword()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
             if (!hasPassword)
@@ -165,7 +165,7 @@ namespace TrainSchdule.WEB.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
@@ -270,7 +270,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> SetPassword()
         {
             var user = await _userManager.GetUserAsync(User) ??
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
 
@@ -293,7 +293,7 @@ namespace TrainSchdule.WEB.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User) ??
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
             if (!addPasswordResult.Succeeded)
@@ -312,7 +312,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> ExternalLogins()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
             model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
@@ -329,7 +329,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
@@ -346,7 +346,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> TwoFactorAuthentication()
         {
             var user = await _userManager.GetUserAsync(User) ??
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var model = new TwoFactorAuthenticationViewModel
             {
@@ -362,7 +362,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> Disable2faWarning()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             if (!user.TwoFactorEnabled)
             {
@@ -377,7 +377,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> Disable2fa()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!disable2faResult.Succeeded)
@@ -393,7 +393,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> EnableAuthenticator()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             var model = new EnableAuthenticatorViewModel();
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
@@ -406,7 +406,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> EnableAuthenticator(EnableAuthenticatorViewModel model)
         {
             var user = await _userManager.GetUserAsync(User) ??
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             if (!ModelState.IsValid)
             {
@@ -422,7 +422,7 @@ namespace TrainSchdule.WEB.Controllers
 
             if (!is2faTokenValid)
             {
-                ModelState.AddModelError("Code", "Verification code is invalid.");
+                ModelState.AddModelError("Code", "安全码无效");
                 await LoadSharedKeyAndQrCodeUriAsync(user, model);
                 return View(model);
             }
@@ -459,11 +459,11 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> ResetAuthenticator()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             await _userManager.SetTwoFactorEnabledAsync(user, false);
             await _userManager.ResetAuthenticatorKeyAsync(user);
-            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
+            _logger.LogInformation("用户 '{UserId}' 重置了安全码", user.Id);
 
             return RedirectToAction(nameof(EnableAuthenticator));
         }
@@ -472,7 +472,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> GenerateRecoveryCodesWarning()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             if (!user.TwoFactorEnabled)
             {
@@ -487,7 +487,7 @@ namespace TrainSchdule.WEB.Controllers
         public async Task<IActionResult> GenerateRecoveryCodes()
         {
             var user = await _userManager.GetUserAsync(User) ?? 
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"无法加载当前用户信息 '{_userManager.GetUserId(User)}'.");
 
             if (!user.TwoFactorEnabled)
             {
@@ -574,5 +574,11 @@ namespace TrainSchdule.WEB.Controllers
         }
 
         #endregion
+
+		[HttpPost]
+        public IActionResult LinkLogin()
+        {
+	        throw new NotImplementedException();
+        }
     }
 }

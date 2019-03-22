@@ -16,6 +16,7 @@ namespace TrainSchdule.DAL.Entities
         public ApplicationUser() : base()
         {
 
+
         }
 
         #endregion
