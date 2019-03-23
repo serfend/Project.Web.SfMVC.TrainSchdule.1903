@@ -1,4 +1,6 @@
-﻿namespace TrainSchdule.DAL.Entities
+﻿using System;
+
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Confirmed entity.
@@ -11,7 +13,7 @@
         /// <summary>
         /// Gets and sets foreign key to user by id.
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets and sets user by <see cref="UserId"/> foreign key.
@@ -21,7 +23,7 @@
         /// <summary>
         /// Gets and sets foreign key to admin by id.
         /// </summary>
-        public int AdminId { get; set; }
+        public Guid AdminId { get; set; }
 
         /// <summary>
         /// Gets and sets admin by <see cref="AdminId"/> foreign key.

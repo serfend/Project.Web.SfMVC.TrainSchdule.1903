@@ -1,4 +1,6 @@
-﻿namespace TrainSchdule.DAL.Entities
+﻿using System;
+
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Following entity.
@@ -11,7 +13,7 @@
         /// <summary>
         /// Gets and sets foreign key to user by id.
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.
@@ -21,7 +23,7 @@
         /// <summary>
         /// Gets and sets foreign key to followed user by id.
         /// </summary>
-        public int FollowedUserId { get; set; }
+        public Guid FollowedUserId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.

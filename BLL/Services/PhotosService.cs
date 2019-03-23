@@ -78,7 +78,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Loads photo, returns photo DTO.
         /// </summary>
-        public PhotoDTO Get(int id)
+        public PhotoDTO Get(Guid id)
         {
             var photo = _unitOfWork.Photos.Get(id);
 
@@ -93,7 +93,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async loads photo, returns photo DTO.
         /// </summary>
-        public async Task<PhotoDTO> GetAsync(int id)
+        public async Task<PhotoDTO> GetAsync(Guid id)
         {
             var photo =  await _unitOfWork.Photos.GetAsync(id);
 
@@ -205,7 +205,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Loads photos for tag page with paggination, returns collection of photo DTOs.
         /// </summary>
-        public IEnumerable<PhotoDTO> GetTags(int tagId, int page, int pageSize)
+        public IEnumerable<PhotoDTO> GetTags(Guid tagId, int page, int pageSize)
         {
             var currentUser = _currentUserService.CurrentUser;
 
@@ -280,7 +280,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Bookmarks photo by photo id.
         /// </summary>
-        public void Bookmark(int id)
+        public void Bookmark(Guid id)
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -300,7 +300,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async bookmarks photo by photo id.
         /// </summary>
-        public async Task BookmarkAsync(int id)
+        public async Task BookmarkAsync(Guid id)
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -320,7 +320,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Dismiss photo bookmark by photo id.
         /// </summary>
-        public void DismissBookmark(int id)
+        public void DismissBookmark(Guid id)
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -336,7 +336,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async dismiss photo bookmark by photo id.
         /// </summary>
-        public async Task DismissBookmarkAsync(int id)
+        public async Task DismissBookmarkAsync(Guid id)
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -352,7 +352,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Reports photo by photo id and report text.
         /// </summary>
-        public void Report(int id, string text)
+        public void Report(Guid id, string text)
         {
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -373,7 +373,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async reports photo by photo id and report text.
         /// </summary>
-        public async Task ReportAsync(int id, string text)
+        public async Task ReportAsync(Guid id, string text)
         {
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
@@ -394,11 +394,11 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Creates photo by photo properties.
         /// </summary>
-        public int Create(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags)
+        public Guid Create(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags)
         {
             var photo = new Photo
             {
-                FilterId = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault().Id,
+                FilterId = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault()?.Id??Guid.Empty,
                 Description = description,
                 Path = path,
                 OwnerId = _currentUserService.CurrentUser.Id,
@@ -444,11 +444,10 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async creates photo by photo properties.
         /// </summary>
-        public async ValueTask<int> CreateAsync(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags)
+        public async ValueTask<Guid> CreateAsync(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags)
         {
             var photo = new Photo
             {
-                FilterId = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault().Id,
                 Description = description,
                 Path = path,
                 OwnerId = _currentUserService.CurrentUser.Id,
@@ -461,7 +460,8 @@ namespace TrainSchdule.BLL.Services
                 Aperture = aperture,
                 FocalLength = null
             };
-
+            var tmp = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault();
+            photo.FilterId =tmp?.Id ?? Guid.Empty;
             if (focalLength >= 3)
             {
                 photo.FocalLength = focalLength;
@@ -494,7 +494,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Edits photo by photo properties.
         /// </summary>
-        public void Edit(int id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
+        public void Edit(Guid id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
         {
             var photo = _unitOfWork.Photos.Get(id);
 
@@ -568,7 +568,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async edits photo by photo properties.
         /// </summary>
-        public async Task EditAsync(int id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
+        public async Task EditAsync(Guid id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
         {
             var photo = await _unitOfWork.Photos.GetAsync(id);
 
@@ -646,7 +646,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Deletes photo by photo id.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             Photo photo = _unitOfWork.Photos.Get(id);
 
@@ -660,7 +660,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async deletes photo by photo id.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var photo = await _unitOfWork.Photos.GetAsync(id);
 

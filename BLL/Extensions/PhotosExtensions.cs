@@ -9,6 +9,7 @@ namespace TrainSchdule.BLL.Extensions
     /// </summary>
     public static class PhotosExtensions
     {
+
         /// <summary>
         /// Maps photo entity to photo DTO.
         /// </summary>
@@ -21,7 +22,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new PhotoDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Path = item.Path,
                 Filter = item.Filter.Name,
                 Description = item.Description,
@@ -57,7 +58,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new PhotoDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Path = item.Path,
                 Filter = item.Filter.Name,
                 Description = item.Description,

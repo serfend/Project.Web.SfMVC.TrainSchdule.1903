@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace TrainSchdule.WEB.ViewModels
 {
@@ -7,7 +8,7 @@ namespace TrainSchdule.WEB.ViewModels
         #region Properties
 
         [JsonProperty("$id")]
-        public int Id { get; set; }
+        public Guid id { get; set; }
 
         [JsonProperty("text")]
         public string Text { get; set; }

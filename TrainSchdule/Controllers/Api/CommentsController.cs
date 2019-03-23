@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using TrainSchdule.BLL.Interfaces;
@@ -28,13 +29,13 @@ namespace TrainSchdule.WEB.Controllers.Api
         #region Logic
 
         [Authorize, HttpPost, Route("add")]
-        public async Task<int?> Add(int photoId, string text)
+        public async Task<Guid?> Add(Guid photoId, string text)
         {
             return await _commentsService.AddAsync(photoId, text);
         }
         
         [Authorize, HttpPost, Route("delete/{id}")]
-        public async Task Delete(int id)
+        public async Task Delete(Guid id)
         {
             await _commentsService.DeleteAsync(id);
         }

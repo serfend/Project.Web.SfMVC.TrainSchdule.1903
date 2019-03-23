@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="Tag"/> by id (primary key).
         /// </summary>
-        public Tag Get(int id)
+        public Tag Get(Guid id)
         {
             return _context.Tags.Where(c => c.Id == id).FirstOrDefault();
         }
@@ -70,7 +70,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="Tag"/> by id (primary key).
         /// </summary>
-        public async Task<Tag> GetAsync(int id)
+        public async Task<Tag> GetAsync(Guid id)
         {
             return await _context.Tags.Where(c => c.Id == id).FirstOrDefaultAsync();
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="Tag"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.Tags.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="Tag"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.Tags.FindAsync(id);
 

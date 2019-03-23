@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Photo";
-    ViewBag.Keywords = "Photo #" + Model.Id + ",Like,User,Post,Photo,Filter,Comment,Comments,Edit photo";
+    ViewBag.Keywords = "Photo #" + Model.id + ",Like,User,Post,Photo,Filter,Comment,Comments,Edit photo";
     ViewBag.Description = Model.Description;
 }
 
@@ -10,7 +10,7 @@
     <script defer src="~/js/photos/details.js"></script>
 }
 
-<div class="content" id="photosDetails" data-post-id="@Model.Id">
+<div class="content" id="photosDetails" data-post-id="@Model.id">
     <div class="content">
         <div class="is-flex is-flex-centered">
             <article class="card is-responsive">
@@ -23,10 +23,10 @@
                     <div class="card-header-icon">
                         @if (Model.Owner.UserName == User.Identity.Name)
                         {
-                            <form action="/photos/delete/@Model.Id" method="post">
+                            <form action="/photos/delete/@Model.id" method="post">
                                 <button type="submit" class="button is-danger" title="Delete"><i class= "fa fa-trash-alt"></i></button>
                             </form>
-                            <a class="button is-white has-text-grey-darker" href="/photos/edit/@Model.Id" title="Edit photo"><i class="fa fa-edit"></i></a>
+                            <a class="button is-white has-text-grey-darker" href="/photos/edit/@Model.id" title="Edit photo"><i class="fa fa-edit"></i></a>
                         }
 
                         @if (User.Identity.IsAuthenticated)

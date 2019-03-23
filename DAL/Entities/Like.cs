@@ -18,7 +18,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to photo by id.
         /// </summary>
-        public int PhotoId { get; set; }
+        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets photo entity by foreign key.
@@ -28,7 +28,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to owner by id.
         /// </summary>
-        public int OwnerId { get; set; }
+        public Guid OwnerId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.

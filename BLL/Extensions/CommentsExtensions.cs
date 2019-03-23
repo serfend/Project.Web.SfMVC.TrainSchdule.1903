@@ -20,7 +20,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new CommentDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Text = item.Text,
                 Owner = owner,
                 Date = item.Date

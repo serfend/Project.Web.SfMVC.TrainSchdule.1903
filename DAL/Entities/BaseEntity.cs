@@ -1,4 +1,6 @@
-﻿namespace TrainSchdule.DAL.Entities
+﻿using System;
+
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Base class for entities.
@@ -9,6 +11,6 @@
         /// <summary>
         /// Gets and sets id.
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

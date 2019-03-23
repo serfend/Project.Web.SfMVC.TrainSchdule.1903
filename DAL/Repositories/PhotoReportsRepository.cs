@@ -54,7 +54,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="PhotoReport"/> by id (primary key).
         /// </summary>
-        public PhotoReport Get(int id)
+        public PhotoReport Get(Guid id)
         {
             return _context.PhotoReports.Where(b => b.Id == id).FirstOrDefault();
         }
@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="PhotoReport"/> by id (primary key).
         /// </summary>
-        public async Task<PhotoReport> GetAsync(int id)
+        public async Task<PhotoReport> GetAsync(Guid id)
         {
             return await _context.PhotoReports.Where(b => b.Id == id).FirstOrDefaultAsync();
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="PhotoReport"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.PhotoReports.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="PhotoReport"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.PhotoReports.FindAsync(id);
 

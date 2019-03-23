@@ -54,7 +54,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="UserReport"/> by id (primary key).
         /// </summary>
-        public UserReport Get(int id)
+        public UserReport Get(Guid id)
         {
             return _context.UserReports.Where(b => b.Id == id).FirstOrDefault();
         }
@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="UserReport"/> by id (primary key).
         /// </summary>
-        public async Task<UserReport> GetAsync(int id)
+        public async Task<UserReport> GetAsync(Guid id)
         {
             return await _context.UserReports.Where(b => b.Id == id).FirstOrDefaultAsync();
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="UserReport"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.UserReports.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="UserReport"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.UserReports.FindAsync(id);
 

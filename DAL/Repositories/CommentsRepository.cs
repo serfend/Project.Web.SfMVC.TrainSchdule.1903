@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="Comment"/> by id (primary key).
         /// </summary>
-        public Comment Get(int id)
+        public Comment Get(Guid id)
         {
             return _context.Comments.Where(c => c.Id == id).FirstOrDefault();
         }
@@ -70,7 +70,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="Comment"/> by id (primary key).
         /// </summary>
-        public async Task<Comment> GetAsync(int id)
+        public async Task<Comment> GetAsync(Guid id)
         {
             return await _context.Comments.Where(c => c.Id == id).FirstOrDefaultAsync();
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="Comment"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.Comments.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="Comment"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.Comments.FindAsync(id);
 

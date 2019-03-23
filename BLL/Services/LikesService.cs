@@ -43,7 +43,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Adds like by liked photo id.
         /// </summary>
-        public void Add(int photoId)
+        public void Add(Guid photoId)
         {
             var photo = _unitOfWork.Photos.Get(photoId);
             var user = _currentUserService.CurrentUser;
@@ -67,7 +67,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async adds like by liked photo id.
         /// </summary>
-        public async Task AddAsync(int photoId)
+        public async Task AddAsync(Guid photoId)
         {
             var photo = await _unitOfWork.Photos.GetAsync(photoId);
             var user = _currentUserService.CurrentUser;
@@ -91,7 +91,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Deletes like by photo id.
         /// </summary>
-        public void Delete(int photoId)
+        public void Delete(Guid photoId)
         {
             var photo = _unitOfWork.Photos.Get(photoId);
             var user = _currentUserService.CurrentUser;
@@ -107,7 +107,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async deletes like by photo id.
         /// </summary>
-        public async Task DeleteAsync(int photoId)
+        public async Task DeleteAsync(Guid photoId)
         {
             var photo = await _unitOfWork.Photos.GetAsync(photoId);
             var user = _currentUserService.CurrentUser;

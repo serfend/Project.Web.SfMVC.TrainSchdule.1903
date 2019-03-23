@@ -20,7 +20,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new LikeDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Owner = null,
                 Date = item.Date
             };
@@ -38,7 +38,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new LikeDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Owner = owner,
                 Date = item.Date
             };

@@ -54,7 +54,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="User"/> by id (primary key).
         /// </summary>
-        public User Get(int id)
+        public User Get(Guid id)
         {
             return _context.AppUsers.Find(id);
         }
@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="User"/> by id (primary key).
         /// </summary>
-        public async Task<User> GetAsync(int id)
+        public async Task<User> GetAsync(Guid id)
         {
             return await _context.AppUsers.FindAsync(id);
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="User"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.AppUsers.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="User"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.AppUsers.FindAsync(id);
 

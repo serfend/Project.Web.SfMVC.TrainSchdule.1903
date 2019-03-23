@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace TrainSchdule.WEB.Controllers.Api
         }
         
         [HttpGet, Route("details/{id}")]
-        public async Task<PhotoViewModel> Get(int id)
+        public async Task<PhotoViewModel> Get(Guid id)
         {
             return (await _photosService.GetAsync(id)).ToViewModel();
         }
@@ -72,7 +73,7 @@ namespace TrainSchdule.WEB.Controllers.Api
         }
 
         [HttpGet, Route("tags/{tagId}/{page}")]
-        public IEnumerable<PhotoViewModel> GetTags(int tagId, int page)
+        public IEnumerable<PhotoViewModel> GetTags(Guid tagId, int page)
         {
             return _photosService.GetTags(tagId, page, _getAllPageSize).ToViewModels();
         }
@@ -84,19 +85,19 @@ namespace TrainSchdule.WEB.Controllers.Api
         }
 
         [Authorize, HttpPost, Route("bookmark/{id}")]
-        public async Task Bookmark(int id)
+        public async Task Bookmark(Guid id)
         {
             await _photosService.BookmarkAsync(id);
         }
 
         [Authorize, HttpPost, Route("report/{id}")]
-        public async Task Report(int id, string text)
+        public async Task Report(Guid id, string text)
         {
             await _photosService.ReportAsync(id, text);
         }
 
         [Authorize, HttpPost, Route("dismiss/bookmark/{id}")]
-        public async Task DismissBookmark(int id)
+        public async Task DismissBookmark(Guid id)
         {
             await _photosService.DismissBookmarkAsync(id);
         }

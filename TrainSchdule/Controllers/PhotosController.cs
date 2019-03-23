@@ -48,7 +48,7 @@ namespace TrainSchdule.WEB.Controllers
         }
         
         [HttpGet, Route("photos/{id}")]
-        public async Task<ActionResult> Details(int id)
+        public async Task<ActionResult> Details(Guid id)
         {
             var item = await _photosService.GetAsync(id);
 
@@ -118,7 +118,7 @@ namespace TrainSchdule.WEB.Controllers
                     }
                 }
 
-                int pid = await _photosService.CreateAsync(item.Filter, item.Description, item.Path, manufacturer, model, Iso, Exposure, Aperture, FocalLength, tags);
+                Guid pid = await _photosService.CreateAsync(item.Filter, item.Description, item.Path, manufacturer, model, Iso, Exposure, Aperture, FocalLength, tags);
 
                 return RedirectToAction("Details", "Photos", new { id = pid });
             }
@@ -127,7 +127,7 @@ namespace TrainSchdule.WEB.Controllers
         }
         
         [Authorize, HttpGet, Route("photos/edit/{id}")]
-        public async Task<ActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(Guid id)
         {
             var item = await _photosService.GetAsync(id);
             var user = _usersService.Get(item.Owner.UserName).ToViewModel();
@@ -140,7 +140,7 @@ namespace TrainSchdule.WEB.Controllers
                 return View(item.ToViewModel());
             }
 
-            return RedirectToAction("Details", "Photos", new { id = item.Id });
+            return RedirectToAction("Details", "Photos", new { id = item.id });
         }
         
         [Authorize, HttpPost, ValidateAntiForgeryToken, Route("photos/edit/{id}")]
@@ -148,14 +148,14 @@ namespace TrainSchdule.WEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _photosService.EditAsync(item.Id, item.Filter, item.Description, tags, model, brand, iso, aperture, exposure, focalLength);
+                await _photosService.EditAsync(item.id, item.Filter, item.Description, tags, model, brand, iso, aperture, exposure, focalLength);
             }
 
-            return RedirectToAction("Details", "Photos", new { id = item.Id });
+            return RedirectToAction("Details", "Photos", new { id = item.id });
         }
         
         [Authorize, HttpPost, Route("photos/delete/{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             var item = await _photosService.GetAsync(id);
             var user = _usersService.Get(item.Owner.UserName).ToViewModel();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.DAL.Data
@@ -88,7 +89,7 @@ namespace TrainSchdule.DAL.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
+	       
         }
 
         #endregion

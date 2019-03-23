@@ -33,26 +33,26 @@ namespace TrainSchdule.BLL.Interfaces
 		/// <summary>
 		/// Loads student, returns student DTO.
 		/// </summary>
-		StudentDTO Get(int id);
+		StudentDTO Get(Guid id);
 
 		/// <summary>
 		/// Async loads student, returns student DTO.
 		/// </summary>
-		Task<StudentDTO> GetAsync(int id);
+		Task<StudentDTO> GetAsync(Guid id);
 
-		int Create(StudentDTO item);
-
-
-		ValueTask<int> CreateAsync(StudentDTO item);
-
-		void Edit(int id, StudentDTO item);
+		Guid Create(StudentDTO item);
 
 
-		Task EditAsync(int id, StudentDTO item);
+		ValueTask<Guid> CreateAsync(StudentDTO item);
 
-		void Delete(int id);
+		void Edit(Guid id, StudentDTO item);
 
-		Task DeleteAsync(int id);
+
+		Task EditAsync(Guid id, StudentDTO item);
+
+		void Delete(Guid id);
+
+		Task DeleteAsync(Guid id);
 
 		#endregion
 	}

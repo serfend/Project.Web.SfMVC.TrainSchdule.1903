@@ -1,4 +1,6 @@
-﻿namespace TrainSchdule.BLL.DTO
+﻿using System;
+
+namespace TrainSchdule.BLL.DTO
 {
     /// <summary>
     /// Filter data transfer object.
@@ -9,7 +11,7 @@
         /// <summary>
         /// Gets and sets filter id.
         /// </summary>
-        public int Id { get; set; }
+        public Guid id { get; set; }
 
         /// <summary>
         /// Gets and sets filter name.

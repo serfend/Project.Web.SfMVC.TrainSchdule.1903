@@ -29,12 +29,12 @@ namespace TrainSchdule.DAL.Repositories
 			return _context.Students.Skip(pageSize * page).Take(pageSize);
 		}
 
-		public Student Get(int id)
+		public Student Get(Guid id)
 		{
 			return _context.Students.FirstOrDefault(p => p.Id == id);
 		}
 
-		public Task<Student> GetAsync(int id)
+		public Task<Student> GetAsync(Guid id)
 		{
 			return _context.Students.FirstOrDefaultAsync(p => p.Id == id);
 		}
@@ -59,13 +59,13 @@ namespace TrainSchdule.DAL.Repositories
 			_context.Entry(item).State = EntityState.Modified;
 		}
 
-		public void Delete(int id)
+		public void Delete(Guid id)
 		{
 			var item = _context.Students.Find(id);
 			if(item!=null)_context.Students.Remove(item);
 		}
 
-		public async Task DeleteAsync(int id)
+		public async Task DeleteAsync(Guid id)
 		{
 			var item = await _context.Students.FindAsync(id);
 			if (item != null)  _context.Students.Remove(item);

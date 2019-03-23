@@ -1,4 +1,6 @@
-﻿namespace TrainSchdule.DAL.Entities
+﻿using System;
+
+namespace TrainSchdule.DAL.Entities
 {
     /// <summary>
     /// Taging entity.
@@ -14,7 +16,7 @@
         /// <summary>
         /// Gets and sets foreign key to photo by id.
         /// </summary>
-        public int PhotoId { get; set; }
+        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets tag entity by foreign key.
@@ -24,6 +26,6 @@
         /// <summary>
         /// Gets and sets foreign key to tag by id.
         /// </summary>
-        public int TagId { get; set; }
+        public Guid TagId { get; set; }
     }
 }

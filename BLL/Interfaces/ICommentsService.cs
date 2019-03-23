@@ -12,21 +12,21 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Adds comment by commented photo id and comment text.
         /// </summary>
-        int? Add(int photoId, string text);
+        Guid? Add(Guid photoId, string text);
 
         /// <summary>
         /// Async adds comment by commented photo id and comment text.
         /// </summary>
-        Task<int?> AddAsync(int photoId, string text);
+        Task<Guid?> AddAsync(Guid photoId, string text);
 
         /// <summary>
         /// Deletes comment by comment id.
         /// </summary>
-        void Delete(int id);
+        void Delete(Guid id);
 
         /// <summary>
         /// Async deletes comment by comment id.
         /// </summary>
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
     }
 }

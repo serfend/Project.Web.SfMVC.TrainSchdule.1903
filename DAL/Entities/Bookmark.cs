@@ -13,7 +13,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to user by id.
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets and sets user by <see cref="UserId"/> foreign key.
@@ -23,7 +23,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to photo by id.
         /// </summary>
-        public int PhotoId { get; set; }
+        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets photo by <see cref="PhotoId"/> foreign key.

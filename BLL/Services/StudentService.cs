@@ -41,19 +41,19 @@ namespace TrainSchdule.BLL.Services
 			return list;
 		}
 
-		public StudentDTO Get(int id)
+		public StudentDTO Get(Guid id)
 		{
 			var student = _unitOfWork.Students.Get(id);
 			return student.ToDTO();
 		}
 
-		public async Task<StudentDTO> GetAsync(int id)
+		public async Task<StudentDTO> GetAsync(Guid id)
 		{
 			var student = await _unitOfWork.Students.GetAsync(id);
 			return student.ToDTO();
 		}
 
-		public int Create(StudentDTO item)
+		public Guid Create(StudentDTO item)
 		{
 			var student = item.ToEntity();
 			_unitOfWork.Students.Create(student);
@@ -61,7 +61,7 @@ namespace TrainSchdule.BLL.Services
 			return student.Id;
 		}
 
-		public async ValueTask<int> CreateAsync(StudentDTO item)
+		public async ValueTask<Guid> CreateAsync(StudentDTO item)
 		{
 			var student = item.ToEntity();
 			await _unitOfWork.Students.CreateAsync(student);
@@ -69,7 +69,7 @@ namespace TrainSchdule.BLL.Services
 			return student.Id;
 		}
 
-		public void Edit(int id, StudentDTO item)
+		public void Edit(Guid id, StudentDTO item)
 		{
 			//var student = _unitOfWork.Students.Get(id);
 			//if (student == null) return;
@@ -79,7 +79,7 @@ namespace TrainSchdule.BLL.Services
 			_unitOfWork.Save();
 		}
 
-		public async Task EditAsync(int id, StudentDTO item)
+		public async Task EditAsync(Guid id, StudentDTO item)
 		{
 			var s = item.ToEntity();
 			s.Id = id;
@@ -87,13 +87,13 @@ namespace TrainSchdule.BLL.Services
 			await _unitOfWork.SaveAsync();
 		}
 
-		public void Delete(int id)
+		public void Delete(Guid id)
 		{
 			_unitOfWork.Students.Delete(id);
 			_unitOfWork.Save();
 		}
 
-		public async Task DeleteAsync(int id)
+		public async Task DeleteAsync(Guid id)
 		{
 			await _unitOfWork.Students.DeleteAsync(id);
 			await _unitOfWork.SaveAsync();

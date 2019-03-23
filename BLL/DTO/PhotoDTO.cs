@@ -12,7 +12,7 @@ namespace TrainSchdule.BLL.DTO
         /// <summary>
         /// Gets and sets photo id.
         /// </summary>
-        public int Id { get; set; }
+        public Guid id { get; set; }
 
         /// <summary>
         /// Gets and sets path to photo.

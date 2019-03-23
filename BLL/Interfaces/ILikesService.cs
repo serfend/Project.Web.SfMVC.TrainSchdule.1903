@@ -12,21 +12,21 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Adds like by liked photo id.
         /// </summary>
-        void Add(int photoId);
+        void Add(Guid photoId);
 
         /// <summary>
         /// Async adds like by liked photo id.
         /// </summary>
-        Task AddAsync(int photoId);
+        Task AddAsync(Guid photoId);
 
         /// <summary>
         /// Deletes like by photo id.
         /// </summary>
-        void Delete(int photoId);
+        void Delete(Guid photoId);
 
         /// <summary>
         /// Async deletes like by photo id.
         /// </summary>
-        Task DeleteAsync(int photoId);
+        Task DeleteAsync(Guid photoId);
     }
 }

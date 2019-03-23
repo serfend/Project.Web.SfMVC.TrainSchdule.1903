@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Edit photo";
-    ViewBag.Keywords = "Edit photo #" + Model.Id + "," + Model.Owner.UserName + ",Edit photo,Filters,User,Like,Post";
+    ViewBag.Keywords = "Edit photo #" + Model.id + "," + Model.Owner.UserName + ",Edit photo,Filters,User,Like,Post";
     ViewBag.Description = "Create new post page on TrainSchdule";
 }
 
@@ -11,10 +11,10 @@
     <script defer src="~/js/photos/edit.js"></script>
 }
 
-<form action="/photos/edit/@Model.Id" class="is-flex is-flex-row is-flex-centered is-flex-wrap" method="POST" id="photosEdit" data-current-photo-id="@Model.Id">
+<form action="/photos/edit/@Model.id" class="is-flex is-flex-row is-flex-centered is-flex-wrap" method="POST" id="photosEdit" data-current-photo-id="@Model.id">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+    <input type="hidden" id="Id" name="Id" value="@Model.id" />
     <input type="hidden" id="Path" name="Path" value="@Model.Path" />
 
     <article class="card is-responsive">

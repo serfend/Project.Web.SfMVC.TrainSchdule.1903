@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace TrainSchdule.DAL.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,16 +12,15 @@ namespace TrainSchdule.DAL.Migrations
                 name: "AppUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    About = table.Column<string>(nullable: true),
-                    Avatar = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Gender = table.Column<string>(nullable: true),
-                    PrivateAccount = table.Column<bool>(nullable: false),
-                    RealName = table.Column<string>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
                     UserName = table.Column<string>(nullable: true),
-                    WebSite = table.Column<string>(nullable: true)
+                    RealName = table.Column<string>(nullable: true),
+                    Avatar = table.Column<string>(nullable: true),
+                    About = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    WebSite = table.Column<string>(nullable: true),
+                    Gender = table.Column<int>(nullable: false),
+                    PrivateAccount = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,9 +32,9 @@ namespace TrainSchdule.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,20 +46,20 @@ namespace TrainSchdule.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    SecurityStamp = table.Column<string>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,8 +70,7 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Filters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -82,11 +79,24 @@ namespace TrainSchdule.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Students",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Alias = table.Column<string>(nullable: true),
+                    Birth = table.Column<DateTime>(nullable: false),
+                    Gender = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Students", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -98,10 +108,9 @@ namespace TrainSchdule.DAL.Migrations
                 name: "BlackLists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    BlockedUserId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    BlockedUserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -112,20 +121,31 @@ namespace TrainSchdule.DAL.Migrations
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlackLists_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Confirmed",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AdminId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    AdminId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Confirmed", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Confirmed_AppUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Confirmed_AppUsers_UserId",
                         column: x => x.UserId,
@@ -138,14 +158,19 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Followings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FollowedUserId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    FollowedUserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Followings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Followings_AppUsers_FollowedUserId",
+                        column: x => x.FollowedUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Followings_AppUsers_UserId",
                         column: x => x.UserId,
@@ -158,12 +183,11 @@ namespace TrainSchdule.DAL.Migrations
                 name: "UserReports",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Date = table.Column<DateTime>(nullable: false),
-                    ReportedUserId = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    ReportedUserId = table.Column<Guid>(nullable: false),
                     Text = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -171,6 +195,12 @@ namespace TrainSchdule.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_UserReports_AppUsers_ReportedUserId",
                         column: x => x.ReportedUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserReports_AppUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -182,9 +212,9 @@ namespace TrainSchdule.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
-                    RoleId = table.Column<string>(nullable: false)
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -203,9 +233,9 @@ namespace TrainSchdule.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -286,20 +316,19 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Photos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Aperture = table.Column<double>(nullable: true),
-                    CountViews = table.Column<int>(nullable: false),
-                    Date = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    Path = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    Exposure = table.Column<double>(nullable: true),
-                    FilterId = table.Column<int>(nullable: false),
-                    FocalLength = table.Column<double>(nullable: true),
-                    Iso = table.Column<int>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    CountViews = table.Column<int>(nullable: false),
                     Manufacturer = table.Column<string>(nullable: true),
                     Model = table.Column<string>(nullable: true),
-                    OwnerId = table.Column<int>(nullable: false),
-                    Path = table.Column<string>(nullable: true)
+                    Iso = table.Column<int>(nullable: true),
+                    Exposure = table.Column<double>(nullable: true),
+                    Aperture = table.Column<double>(nullable: true),
+                    FocalLength = table.Column<double>(nullable: true),
+                    OwnerId = table.Column<Guid>(nullable: false),
+                    FilterId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -322,11 +351,10 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Bookmarks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Date = table.Column<DateTime>(nullable: false),
-                    PhotoId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    PhotoId = table.Column<Guid>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -337,22 +365,33 @@ namespace TrainSchdule.DAL.Migrations
                         principalTable: "Photos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
+                    Text = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
-                    OwnerId = table.Column<int>(nullable: false),
-                    PhotoId = table.Column<int>(nullable: false),
-                    Text = table.Column<string>(nullable: true)
+                    PhotoId = table.Column<Guid>(nullable: false),
+                    OwnerId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AppUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Comments_Photos_PhotoId",
                         column: x => x.PhotoId,
@@ -365,15 +404,20 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Likes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    OwnerId = table.Column<int>(nullable: false),
-                    PhotoId = table.Column<int>(nullable: false)
+                    PhotoId = table.Column<Guid>(nullable: false),
+                    OwnerId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Likes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Likes_AppUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Likes_Photos_PhotoId",
                         column: x => x.PhotoId,
@@ -386,12 +430,11 @@ namespace TrainSchdule.DAL.Migrations
                 name: "PhotoReports",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Date = table.Column<DateTime>(nullable: false),
-                    PhotoId = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    PhotoId = table.Column<Guid>(nullable: false),
                     Text = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -402,16 +445,21 @@ namespace TrainSchdule.DAL.Migrations
                         principalTable: "Photos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PhotoReports_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Tagings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    PhotoId = table.Column<int>(nullable: false),
-                    TagId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    PhotoId = table.Column<Guid>(nullable: false),
+                    TagId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -607,6 +655,9 @@ namespace TrainSchdule.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "PhotoReports");
+
+            migrationBuilder.DropTable(
+                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "Tagings");

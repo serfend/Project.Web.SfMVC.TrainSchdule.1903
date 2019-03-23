@@ -38,12 +38,12 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Loads photo, returns photo DTO.
         /// </summary>
-        PhotoDTO Get(int id);
+        PhotoDTO Get(Guid id);
 
         /// <summary>
         /// Async loads photo, returns photo DTO.
         /// </summary>
-        Task<PhotoDTO> GetAsync(int id);
+        Task<PhotoDTO> GetAsync(Guid id);
 
         /// <summary>
         /// Loads photos for home page with paggination, returns collection of photo DTOs.
@@ -68,7 +68,7 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Loads photos for tag page with paggination, returns collection of photo DTOs.
         /// </summary>
-        IEnumerable<PhotoDTO> GetTags(int tagId, int page, int pageSize);
+        IEnumerable<PhotoDTO> GetTags(Guid tagId, int page, int pageSize);
 
         /// <summary>
         /// Loads photos by search parameters with paggination, returns collection of photo DTOs.
@@ -78,62 +78,62 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Bookmarks photo by photo id.
         /// </summary>
-        void Bookmark(int id);
+        void Bookmark(Guid id);
 
         /// <summary>
         /// Async bookmarks photo by photo id.
         /// </summary>
-        Task BookmarkAsync(int id);
+        Task BookmarkAsync(Guid id);
 
         /// <summary>
         /// Dismiss photo bookmark by photo id.
         /// </summary>
-        void DismissBookmark(int id);
+        void DismissBookmark(Guid id);
 
         /// <summary>
         /// Async dismiss photo bookmark by photo id.
         /// </summary>
-        Task DismissBookmarkAsync(int id);
+        Task DismissBookmarkAsync(Guid id);
 
         /// <summary>
         /// Reports photo by photo id and report text.
         /// </summary>
-        void Report(int id, string text);
+        void Report(Guid id, string text);
 
         /// <summary>
         /// Async reports photo by photo id and report text.
         /// </summary>
-        Task ReportAsync(int id, string text);
+        Task ReportAsync(Guid id, string text);
 
         /// <summary>
         /// Creates photo by photo properties.
         /// </summary>
-        int Create(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags);
+        Guid Create(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags);
 
         /// <summary>
         /// Async creates photo by photo properties.
         /// </summary>
-        ValueTask<int> CreateAsync(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags);
+        ValueTask<Guid> CreateAsync(string filter, string description, string path, string manufacturer, string model, int? iso, double? exposure, double? aperture, double? focalLength, string tags);
 
         /// <summary>
         /// Edits photo by photo properties.
         /// </summary>
-        void Edit(int id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength);
+        void Edit(Guid id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength);
 
         /// <summary>
         /// Async edits photo by photo properties.
         /// </summary>
-        Task EditAsync(int id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength);
+        Task EditAsync(Guid id, string filter, string description, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength);
 
         /// <summary>
         /// Deletes photo by photo id.
         /// </summary>
-        void Delete(int id);
+        void Delete(Guid id);
 
         /// <summary>
         /// Async deletes photo by photo id.
         /// </summary>
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
 
         #endregion
     }

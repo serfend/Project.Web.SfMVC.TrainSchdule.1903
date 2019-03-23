@@ -42,7 +42,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Adds comment by commented photo id and comment text.
         /// </summary>
-        public int? Add(int photoId, string text)
+        public Guid? Add(Guid photoId, string text)
         {
             var user = _currentUserService.CurrentUser;
             var photo = _unitOfWork.Photos.Get(photoId);
@@ -69,7 +69,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async adds comment by commented photo id and comment text.
         /// </summary>
-        public async Task<int?> AddAsync(int photoId, string text)
+        public async Task<Guid?> AddAsync(Guid photoId, string text)
         {
             var user = _currentUserService.CurrentUser;
             var photo = await _unitOfWork.Photos.GetAsync(photoId);
@@ -97,7 +97,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Deletes comment by comment id.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var user = _currentUserService.CurrentUser;
             var comment = _unitOfWork.Comments.Get(id);
@@ -113,7 +113,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async deletes comment by comment id.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var user = _currentUserService.CurrentUser;
             var comment = _unitOfWork.Comments.Get(id);

@@ -21,7 +21,7 @@ namespace TrainSchdule.WEB.Extensions
 
             return new PhotoViewModel
             {
-                Id = item.Id,
+                id = item.id,
                 Path = item.Path,
                 Filter = item.Filter,
                 Description = item.Description,
@@ -61,7 +61,7 @@ namespace TrainSchdule.WEB.Extensions
             {
                 photos.Add(new PhotoViewModel
                 {
-                    Id = item.Id,
+                    id = item.id,
                     Path = item.Path,
                     Filter = item.Filter,
                     Description = item.Description,

@@ -21,7 +21,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new FilterDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Name = item.Name
             };
         }
@@ -42,7 +42,7 @@ namespace TrainSchdule.BLL.Extensions
             {
                 filters.Add(new FilterDTO
                 {
-                    Id = filter.Id,
+                    id = filter.Id,
                     Name = filter.Name
                 });
             }

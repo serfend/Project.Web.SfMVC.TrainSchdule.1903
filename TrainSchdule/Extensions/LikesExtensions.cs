@@ -21,7 +21,7 @@ namespace TrainSchdule.WEB.Extensions
 
             return new LikeViewModel
             {
-                Id = item.Id,
+                id = item.id,
                 Date = item.Date.ToString("MMMM dd, yyyy"),
                 Owner = item.Owner.ToViewModel()
             };
@@ -43,7 +43,7 @@ namespace TrainSchdule.WEB.Extensions
             {
                 likes.Add(new LikeViewModel
                 {
-                    Id = item.Id,
+                    id = item.id,
                     Date = item.Date.ToString("MMMM dd, yyyy"),
                     Owner = item.Owner.ToViewModel()
                 });

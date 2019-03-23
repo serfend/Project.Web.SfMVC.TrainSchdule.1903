@@ -21,7 +21,7 @@ namespace TrainSchdule.WEB.Extensions
 
             return new FilterViewModel
             {
-                Id = item.Id,
+                id = item.id,
                 Name = item.Name
             };
         }
@@ -42,7 +42,7 @@ namespace TrainSchdule.WEB.Extensions
             {
                 filters.Add(new FilterViewModel
                 {
-                    Id = item.Id,
+                    id = item.id,
                     Name = item.Name
                 });
             }

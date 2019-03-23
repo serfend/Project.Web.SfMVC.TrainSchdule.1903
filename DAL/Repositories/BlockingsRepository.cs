@@ -54,7 +54,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="BlackList"/> by id (primary key).
         /// </summary>
-        public BlackList Get(int id)
+        public BlackList Get(Guid id)
         {
             return _context.BlackLists.Where(c => c.Id == id).FirstOrDefault();
         }
@@ -62,7 +62,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for fetching <see cref="BlackList"/> by id (primary key).
         /// </summary>
-        public async Task<BlackList> GetAsync(int id)
+        public async Task<BlackList> GetAsync(Guid id)
         {
             return await _context.BlackLists.Where(c => c.Id == id).FirstOrDefaultAsync();
         }
@@ -102,7 +102,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for deleting <see cref="BlackList"/>.
         /// </summary>
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var item = _context.BlackLists.Find(id);
 
@@ -115,7 +115,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Async method for deleting <see cref="BlackList"/>.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var item = await _context.BlackLists.FindAsync(id);
 

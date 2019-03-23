@@ -61,18 +61,18 @@ namespace TrainSchdule.WEB.Controllers
 				birth = std.Birth,
 				Gender = std.Gender
 			});
-			return RedirectToAction(nameof(Detail),new {id=std.ID});
+			return RedirectToAction(nameof(Detail),new {id=std.id});
 		}
 
 		[HttpGet]
 		[AutoValidateAntiforgeryToken]
-		public ActionResult Detail(int id)
+		public ActionResult Detail(Guid id)
 		{
 			var studentDto = _studentService.Get(id);
 			if(studentDto==null)studentDto=new StudentDTO(){id = id};
 			var std = new StudentViewModel()
 			{
-				ID = studentDto.id,
+				id = studentDto.id,
 				Age = (int)(studentDto.birth.Subtract(DateTime.Now).TotalDays / 365),
 				Alias = studentDto.Alias
 			};

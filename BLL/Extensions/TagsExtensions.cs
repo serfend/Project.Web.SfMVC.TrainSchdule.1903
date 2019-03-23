@@ -21,7 +21,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new TagDTO
             {
-                Id = item.Id,
+                id = item.Id,
                 Name = item.Name
             };
         }
@@ -42,7 +42,7 @@ namespace TrainSchdule.BLL.Extensions
             {
                 tags.Add(new TagDTO
                 {
-                    Id = tag.Id,
+                    id = tag.Id,
                     Name = tag.Name
                 });
             }

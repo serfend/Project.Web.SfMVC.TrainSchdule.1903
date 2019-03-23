@@ -21,7 +21,7 @@ namespace TrainSchdule.WEB.Extensions
 
             return new CommentViewModel
             {
-                Id = item.Id,
+                id = item.id,
                 Text = item.Text,
                 Date = item.Date.ToString("MMMM dd, yyyy"),
                 Owner = item.Owner.ToViewModel()
@@ -44,7 +44,7 @@ namespace TrainSchdule.WEB.Extensions
             {
                 comments.Add(new CommentViewModel
                 {
-                    Id = item.Id,
+                    id = item.id,
                     Text = item.Text,
                     Date = item.Date.ToString("MMMM dd, yyyy"),
                     Owner = item.Owner.ToViewModel()

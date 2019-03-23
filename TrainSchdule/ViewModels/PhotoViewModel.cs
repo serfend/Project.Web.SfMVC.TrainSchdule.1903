@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace TrainSchdule.WEB.ViewModels
@@ -17,7 +18,7 @@ namespace TrainSchdule.WEB.ViewModels
         #region Properties
 
         [JsonProperty("$id")]
-        public int Id { get; set; }
+        public Guid id { get; set; }
 
         [JsonProperty("path")]
         public string Path { get; set; }

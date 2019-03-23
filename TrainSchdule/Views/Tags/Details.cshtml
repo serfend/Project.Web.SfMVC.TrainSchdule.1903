@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = Model.Name;
-    ViewBag.Keywords = "Tag #" + Model.Id + ",Like,User,Post,Photo,Filter,Comment,Comments,Edit photo";
+    ViewBag.Keywords = "Tag #" + Model.id + ",Like,User,Post,Photo,Filter,Comment,Comments,Edit photo";
     ViewBag.Description = Model.Name;
 }
 
@@ -10,7 +10,7 @@
     <script defer src="~/js/tags/details.js"></script>
 }
 
-<div id="posts" class="is-flex" data-cur-tag="@Model.Id">
+<div id="posts" class="is-flex" data-cur-tag="@Model.id">
     <article class="card is-responsive" v-for="post in posts" :key="post.$id" v-cloak>
         <header class="card-header">
             <p class="card-header-title">

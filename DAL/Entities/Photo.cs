@@ -64,7 +64,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to owner by id.
         /// </summary>
-        public int OwnerId { get; set; }
+        public Guid OwnerId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.
@@ -74,7 +74,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets foreign key to filter by id.
         /// </summary>
-        public int FilterId { get; set; }
+        public Guid FilterId { get; set; }
 
         /// <summary>
         /// Gets and sets filter entity by foreign key.
@@ -100,7 +100,6 @@ namespace TrainSchdule.DAL.Entities
         /// </summary>
         public Photo()
         {
-            FilterId = 1;
             Date = DateTime.Now;
             CountViews = 0;
         }

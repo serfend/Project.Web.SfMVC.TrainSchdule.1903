@@ -22,12 +22,12 @@ namespace TrainSchdule.DAL.Interfaces
         /// <summary>
         /// Method for fetching entity by id (primary key).
         /// </summary>
-        T Get(int id);
+        T Get(Guid id);
 
         /// <summary>
         /// Async method for fetching entity by id (primary key).
         /// </summary>
-        Task<T> GetAsync(int id);
+        Task<T> GetAsync(Guid id);
 
         /// <summary>
         /// Method for fetching entity(ies) by predicate.
@@ -52,11 +52,11 @@ namespace TrainSchdule.DAL.Interfaces
         /// <summary>
         /// Method for deleting entity.
         /// </summary>
-        void Delete(int id);
+        void Delete(Guid id);
 
         /// <summary>
         /// Async method for deleting entity.
         /// </summary>
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
     }
 }
