@@ -55,13 +55,14 @@ namespace TrainSchdule.WEB.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Create(StudentViewModel std)
 		{
-			_studentService.Create(new StudentDTO()
+			var model = new StudentDTO()
 			{
 				Alias = std.Alias,
 				birth = std.Birth,
 				Gender = std.Gender
-			});
-			return RedirectToAction(nameof(Detail),new {id=std.id});
+			};
+			_studentService.Create(model);
+			return RedirectToAction(nameof(Detail),new {id=model.id});
 		}
 
 		[HttpGet]

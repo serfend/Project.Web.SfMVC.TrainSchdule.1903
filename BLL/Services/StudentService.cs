@@ -58,6 +58,7 @@ namespace TrainSchdule.BLL.Services
 			var student = item.ToEntity();
 			_unitOfWork.Students.Create(student);
 			_unitOfWork.Save();
+			item.id = student.Id;
 			return student.Id;
 		}
 
@@ -66,6 +67,7 @@ namespace TrainSchdule.BLL.Services
 			var student = item.ToEntity();
 			await _unitOfWork.Students.CreateAsync(student);
 			await _unitOfWork.SaveAsync();
+			item.id = student.Id;
 			return student.Id;
 		}
 

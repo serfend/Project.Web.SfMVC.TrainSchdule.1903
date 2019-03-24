@@ -6,12 +6,12 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
-    <Copyright>Copyright © 2018 PhotoHub. All rights reserved.</Copyright>
+    <Copyright>Copyright © 2018 TrainScdule. All rights reserved.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Properties\PublishProfiles\PhotoHub - FTP.pubxml" />
-    <None Remove="Properties\PublishProfiles\PhotoHub - Web Deploy.pubxml" />
+    <None Remove="Properties\PublishProfiles\TrainScdule - FTP.pubxml" />
+    <None Remove="Properties\PublishProfiles\TrainScdule - Web Deploy.pubxml" />
   </ItemGroup>
 
 
