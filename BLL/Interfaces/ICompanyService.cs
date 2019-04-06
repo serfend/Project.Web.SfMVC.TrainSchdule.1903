@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TrainSchdule.DAL.Entities;
+using TrainSchdule.BLL.DTO;
+
+namespace TrainSchdule.BLL.Interfaces
+{
+    /// <summary>
+    /// 用户服务接口.
+    /// 包含用户信息的相关处理.
+    /// </summary>
+    /// <remarks>
+    /// 此接口需要反射调用.
+    /// </remarks>
+    public interface ICompanyService : IDisposable
+    {
+        /// <summary>
+        /// 加载所有单位的信息
+        /// </summary>
+        IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
+
+        /// <summary>
+        /// 通过单位路径
+        /// </summary>
+        CompanyDTO Get(string path);
+		/// <summary>
+		/// 通过单位路径找到所有子单位
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+        IEnumerable<CompanyDTO> FindAllChild(string path);
+        /// <summary>
+        /// 设置单位的父单位
+        /// </summary>
+        void SetParent(string path,string ParentPath);
+
+        /// <summary>
+        /// 异步设置单位的父单位
+        /// </summary>
+        Task SetParentAsync(string path,string ParentPath);
+
+       /// <summary>
+	   /// 新增一个单位
+	   /// </summary>
+	   /// <param name="name">本单位的名称</param>
+	   /// <param name="node">单位所处路径 默认为<see cref="root"/></param>
+	   /// <returns></returns>
+        Company Create(string name,string node="root");
+
+        /// <summary>
+        /// 异步新增一个单位
+        /// </summary>
+        Task<Company> CreateAsync(string name,string node="root");
+
+    }
+}

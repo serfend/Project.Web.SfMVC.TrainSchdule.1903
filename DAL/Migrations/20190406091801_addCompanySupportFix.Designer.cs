@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrainSchdule.DAL.Data;
 
 namespace TrainSchdule.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190406091801_addCompanySupportFix")]
+    partial class addCompanySupportFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -441,8 +443,6 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<Guid?>("CompanyId");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("Gender");
@@ -456,8 +456,6 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<string>("WebSite");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.ToTable("AppUsers");
                 });
@@ -651,13 +649,6 @@ namespace TrainSchdule.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TrainSchdule.DAL.Entities.User", b =>
-                {
-                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>

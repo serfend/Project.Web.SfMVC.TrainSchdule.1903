@@ -20,6 +20,7 @@ namespace TrainSchdule.WEB
     {
         #region Properties
         public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         #endregion
 
@@ -51,14 +52,13 @@ namespace TrainSchdule.WEB
             services.AddScoped<ITagsService, TagsService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<IStudentService, StudentService>();
-			
+			services.AddScoped<ICompanyService, CompanyService > ();
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddDbContext<ApplicationDbContext>(options=>{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");
 				options.UseLazyLoadingProxies()
@@ -94,7 +94,7 @@ namespace TrainSchdule.WEB
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(150);
-                options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
+                options.LoginPath = "/Account/ApiLogin"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/ApiLogin
                 options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
                 options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
@@ -105,6 +105,14 @@ namespace TrainSchdule.WEB
             AddApplicationServices(services);
 
             services.AddSession(s => s.IdleTimeout = TimeSpan.FromMinutes(30));
+            services.AddCors(options =>
+            {
+	            options.AddPolicy(MyAllowSpecificOrigins,
+		            builder =>
+		            {
+			            builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
+		            });
+            });
 
             services.AddMvc();
         }
@@ -125,14 +133,13 @@ namespace TrainSchdule.WEB
 			app.UseWelcomePage(new WelcomePageOptions() {
 				Path="/welcome"
 			});
-
 			//中间件方法
             app.UseStaticFiles();
 
             app.UseAuthentication();
 
             app.UseSession();
-			
+            app.UseCors(MyAllowSpecificOrigins);
 			//默认路由
             app.UseMvc(routes =>
             {

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Http;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Entities;
@@ -461,7 +462,18 @@ namespace TrainSchdule.BLL.Services
                 FocalLength = null
             };
             var tmp = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault();
-            photo.FilterId =tmp?.Id ?? Guid.Empty;
+            if (tmp == null)
+            {
+				photo.Filter=new Filter()
+				{
+					Name = filter.IsNullOrEmpty()?"Default":filter,
+				};
+	            await _unitOfWork.Filters.CreateAsync(photo.Filter);
+            }
+            else
+            {
+	            photo.FilterId = tmp.Id;
+            }
             if (focalLength >= 3)
             {
                 photo.FocalLength = focalLength;

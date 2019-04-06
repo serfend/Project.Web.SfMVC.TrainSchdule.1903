@@ -1,0 +1,27 @@
+{
+	"project_id":1,"project_code":"PRJ201811010001","project_name":"西三环高架桥建设项目","start_date":"2017-6-20","end_date":"2019-3-30","tasks":[
+	{"task_id":1,"task_code":"TASK201811010001","task_name":"地基挖掘任务","start_date":"2017-5-20","end_date":"2018-5-25","rates":"50%","wbs":[
+		{"prefix_str":"A01","node_name":"地基清理","description":"xx","rates":"50%"},
+		{"prefix_str":"A01","node_name":"地基清理","description":"xx","rates":"60%","child":[
+			{"node_id":1,"parent_id":"","prefix_str":"A01","node_name":"土方挖掘","description":"","rates":"65%","child":[
+				{"node_id":1,"parent_id":"","prefix_str":"A01","node_name":"土方挖掘","description":"","rates":"15%","child":[]}
+			]},
+			{"node_id":1,"parent_id":"","prefix_str":"A01","node_name":"土方挖掘","description":"","rates":"15%","child":[]}
+		]}
+	]},
+	{"task_id":2,"task_code":"TASK201811010001","task_name":"立柱安装任务","start_date":"2017-11-26","end_date":"2018-11-30","rates":"20%","wbs":[
+		{"prefix_str":"A01","node_name":"地基清理","description":"xx","rates":"50%"},
+		{"prefix_str":"A01","node_name":"地基清理","description":"xx","rates":"50%","child":[
+			{"node_id":1,"parent_id":"","prefix_str":"A01","node_name":"土方挖掘","description":"","rates":"15%","child":[
+				
+			]},
+			{"node_id":1,"parent_id":"","prefix_str":"A01","node_name":"土方挖掘","description":"","rates":"15%","child":[]}
+		]}
+	]},
+	{"task_id":3,"task_code":"TASK201811010001","task_name":"立柱安装任务","start_date":"2018-5-26","end_date":"2019-3-30","rates":"10%","wbs":[]},
+	{"task_id":4,"task_name":"收尾","start_date":"2017-5-1","end_date":"2019-5-1","rates":"80%","wbs":[
+		{"prefix_str":"A01","node_name":"地基清理1","description":"xx","rates":"100%"},
+		{"prefix_str":"A01","node_name":"地基清理2","description":"xx","rates":"80%"},
+		{"prefix_str":"A01","node_name":"地基清理3","description":"xx","rates":"0%"}
+	]}
+]}

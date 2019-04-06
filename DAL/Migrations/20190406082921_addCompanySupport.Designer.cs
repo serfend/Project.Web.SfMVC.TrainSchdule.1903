@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrainSchdule.DAL.Data;
 
 namespace TrainSchdule.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190406082921_addCompanySupport")]
+    partial class addCompanySupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -245,15 +247,7 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("ParentId");
-
-                    b.Property<string>("Path");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
 
                     b.ToTable("Companys");
                 });
@@ -441,8 +435,6 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<Guid?>("CompanyId");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("Gender");
@@ -456,8 +448,6 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<string>("WebSite");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.ToTable("AppUsers");
                 });
@@ -568,13 +558,6 @@ namespace TrainSchdule.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("TrainSchdule.DAL.Entities.Company", b =>
-                {
-                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Parent")
-                        .WithMany("Child")
-                        .HasForeignKey("ParentId");
-                });
-
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Admin")
@@ -651,13 +634,6 @@ namespace TrainSchdule.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("TrainSchdule.DAL.Entities.User", b =>
-                {
-                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>

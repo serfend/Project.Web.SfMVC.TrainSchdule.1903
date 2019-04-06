@@ -19,7 +19,7 @@
     <div class="field">
         <label asp-for="UserName" class="label"></label>
         <div class="control">
-            <input asp-for="UserName" class="input" placeholder="Login" required>
+            <input asp-for="UserName" class="input" placeholder="用户名" required>
         </div>
         <span asp-validation-for="UserName" class="help is-danger"></span>
     </div>
@@ -27,7 +27,7 @@
     <div class="field">
         <label asp-for="Password" class="label"></label>
         <div class="control">
-            <input asp-for="Password" type="password" class="input" placeholder="Password" required>
+            <input asp-for="Password" type="password" class="input" placeholder="密码" required>
         </div>
         <span asp-validation-for="Password" class="help is-danger"></span>
     </div>
@@ -56,7 +56,7 @@
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     if (loginProviders.Count != 0)
     {
-        <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+        <form asp-action="ExternalApiLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
             <div class="buttons" style="padding: 5px; margin-top: 20px; justify-content: center;">
                 @foreach (var provider in loginProviders)
                 {

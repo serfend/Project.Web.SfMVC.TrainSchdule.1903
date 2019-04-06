@@ -50,6 +50,10 @@ namespace TrainSchdule.DAL.Entities
         /// Gets and sets user private account config.
         /// </summary>
         public bool PrivateAccount { get; set; }
+		/// <summary>
+		/// 用户所处的单位
+		/// </summary>
+        public virtual Company Company { get; set; }
 
         #endregion
 

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TrainSchdule.BLL.Helpers;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.WEB.Extensions;
@@ -36,7 +39,7 @@ namespace TrainSchdule.WEB.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            IUsersService usersService)
+            IUsersService usersService) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -70,39 +73,73 @@ namespace TrainSchdule.WEB.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl )
         {
             ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            var result =(JsonResult) await Login(model);
+            switch (result.StatusCode)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation($"用户登录:{model.UserName}");
-                    return RedirectToLocal(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("账号异常");
-                    return RedirectToAction(nameof(Lockout));
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "登录失败");
-                    return View(model);
-                }
+	            case 200:
+	            {
+		            return RedirectToLocal(returnUrl);
+	            }
+	            case 1:
+	            {
+		            return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
+	            }
+	            case 2:
+	            {
+		            return RedirectToAction(nameof(Lockout));
+	            }
+	            case 4:
+	            {
+		            
+					break;
+	            }
             }
-
+            ModelState.AddModelError(string.Empty, "登录失败");
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
+		[HttpPost]
+		[AllowAnonymous]
+		[Route("rest")]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+	        var rst = new StringBuilder();
+	        if (ModelState.IsValid)
+	        {
+		        var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+		        if (result.Succeeded)
+		        {
+			        _logger.LogInformation($"用户登录:{model.UserName}");
+			        return  new JsonResult(ActionStatusMessage.Success);
+		        }
+		        else if (result.RequiresTwoFactor)
+		        {return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthException);
+		        }
+		        else if (result.IsLockedOut)
+		        {
+			        _logger.LogWarning("账号异常");
+			        return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthBlock);
+		        }
+		        else
+		        {
+			        return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthAccountOrPsw);
+		        }
+	        }
+	        else
+	        {
+		        foreach (var item in ModelState.Root.Children)
+		        {
+			        foreach (var err in item.Errors)
+			        {
+				        rst.AppendLine(err.ErrorMessage);
+			        }
+		        }
+		        return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
+	        }
+        }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)

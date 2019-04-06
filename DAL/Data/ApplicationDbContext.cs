@@ -79,6 +79,7 @@ namespace TrainSchdule.DAL.Data
 
 
 		public DbSet<Student> Students { get; set; }
+		public DbSet<Company> Companys { get; set; }
         #endregion
 
         #region .ctors
@@ -89,7 +90,6 @@ namespace TrainSchdule.DAL.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-	       
         }
 
         #endregion

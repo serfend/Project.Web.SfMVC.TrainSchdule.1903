@@ -58,5 +58,9 @@ namespace TrainSchdule.BLL.DTO
         /// Gets and sets user block current user state.
         /// </summary>
         public bool IBlocked { get; set; }
+		/// <summary>
+		/// 用户所在单位
+		/// </summary>
+        public Company Company { get; set; }
     }
 }
