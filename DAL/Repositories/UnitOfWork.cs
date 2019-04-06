@@ -34,6 +34,7 @@ namespace TrainSchdule.DAL.Repositories
         private bool _isDisposed;
         private IRepository<Student> _studentsRepository;
         private IRepository<Company> _companysRepository;
+        private IRepository<PermissionCompany> _permissionCompanyRepository;
         #endregion
 
         #region Properties
@@ -112,6 +113,8 @@ namespace TrainSchdule.DAL.Repositories
 	        _studentsRepository ?? (_studentsRepository = new StudentRepository(_context));
         public IRepository<Company> Companys =>
 	        _companysRepository ?? (_companysRepository = new CompanyRepository(_context));
+        public IRepository<PermissionCompany> PermissionCompanys =>
+	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionCompanyRepository(_context));
 
         #endregion
 

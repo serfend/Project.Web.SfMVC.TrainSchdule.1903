@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -54,7 +55,10 @@ namespace TrainSchdule.DAL.Entities
 		/// 用户所处的单位
 		/// </summary>
         public virtual Company Company { get; set; }
-
+		/// <summary>
+		/// 用户可操作的单位
+		/// </summary>
+		public virtual IEnumerable<PermissionCompany> PermissionCompanies { get; set; }
         #endregion
 
         #region .ctors

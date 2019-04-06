@@ -58,18 +58,23 @@ namespace TrainSchdule.Web.Controllers
 	    public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
 			
-		    var currentCompany = _currentUserService.CurrentUser.Company.Path;
-		    var newCompany = company.ParentPath;
-		    if (newCompany.Substring(0, currentCompany.Length) == currentCompany)
+		    var currentCompany = _currentUserService.CurrentUser.PermissionCompanies;
+		    if (currentCompany!= null)
 		    {
-			    var newCompanyDTO= await _companyService.CreateAsync(company.Name, company.ParentPath);
-			    await _companyService.SetParentAsync(newCompanyDTO.Path,company.ParentPath);
-				return new JsonResult(ActionStatusMessage.Success);
+			    var newCompany = company.ParentPath;
+			    foreach (var permissionCompany in currentCompany)
+			    {
+				    if (newCompany.Substring(0, permissionCompany.Path.Length) == permissionCompany.Path)
+				    {
+					    var newCompanyDTO= await _companyService.CreateAsync(company.Name, company.ParentPath);
+					    await _companyService.SetParentAsync(newCompanyDTO.Path,company.ParentPath);
+					    return new JsonResult(ActionStatusMessage.Success);
+				    }
+			    }
 		    }
-		    else
-		    {
-				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-		    }
+		   
+		   
+			return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 	    }
     }
 }

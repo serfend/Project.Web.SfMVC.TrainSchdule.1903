@@ -18,6 +18,7 @@ namespace TrainSchdule.BLL.Helpers
 		public static readonly Status AccountAuth_Invalid = new Status(40301,"登录凭证已失效");
 
 		public static readonly Status Company_NotExist = new Status(140001,"单位不存在");
+		public static readonly Status Company_NoneCompanyBelong = new Status(140002,"用户不属于任何一个单位");
 
 	}
 
