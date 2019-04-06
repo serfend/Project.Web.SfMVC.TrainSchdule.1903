@@ -111,9 +111,9 @@ namespace TrainSchdule.DAL.Repositories
 
         public IRepository<Student> Students =>
 	        _studentsRepository ?? (_studentsRepository = new StudentRepository(_context));
-        public IRepository<Company> Companys =>
+        public IRepository<Company> Companies =>
 	        _companysRepository ?? (_companysRepository = new CompanyRepository(_context));
-        public IRepository<PermissionCompany> PermissionCompanys =>
+        public IRepository<PermissionCompany> PermissionCompanies =>
 	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionCompanyRepository(_context));
 
         #endregion

@@ -77,28 +77,13 @@ namespace TrainSchdule.WEB.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
             var result =(JsonResult) await Login(model);
-            switch (result.StatusCode)
-            {
-	            case 200:
-	            {
-		            return RedirectToLocal(returnUrl);
-	            }
-	            case 1:
-	            {
-		            return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
-	            }
-	            case 2:
-	            {
-		            return RedirectToAction(nameof(Lockout));
-	            }
-	            case 4:
-	            {
-		            
-					break;
-	            }
-            }
-            ModelState.AddModelError(string.Empty, "登录失败");
-            // If we got this far, something failed, redisplay form
+            int code = ((Status) result.Value).Code;
+            if (code==ActionStatusMessage.Success.Code)return RedirectToLocal(returnUrl);
+			else if(code==ActionStatusMessage.AccountLogin_InvalidAuthException.Code)return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
+            else if(code==ActionStatusMessage.AccountLogin_InvalidAuthBlock.Code)  return RedirectToAction(nameof(Lockout));
+
+	        ModelState.AddModelError(string.Empty, $"登录失败:{((Status)result.Value).Message}");
+	        // If we got this far, something failed, redisplay form
             return View(model);
         }
 		[HttpPost]

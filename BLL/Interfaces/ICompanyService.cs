@@ -25,33 +25,32 @@ namespace TrainSchdule.BLL.Interfaces
         /// </summary>
         CompanyDTO Get(string path);
 		/// <summary>
-		/// 通过单位路径找到所有子单位
+		/// 找到所有子单位
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-        IEnumerable<CompanyDTO> FindAllChild(string path);
+        IEnumerable<CompanyDTO> FindAllChild(Guid path);
         /// <summary>
         /// 设置单位的父单位
         /// </summary>
-        void SetParent(string path,string ParentPath);
+        void SetParent(Guid path,string ParentPath);
 
         /// <summary>
         /// 异步设置单位的父单位
         /// </summary>
-        Task SetParentAsync(string path,string ParentPath);
+        Task SetParentAsync(Guid id,string ParentPath);
 
        /// <summary>
 	   /// 新增一个单位
 	   /// </summary>
 	   /// <param name="name">本单位的名称</param>
-	   /// <param name="node">单位所处路径 默认为<see cref="root"/></param>
 	   /// <returns></returns>
-        Company Create(string name,string node="root");
+        Company Create(string name);
 
         /// <summary>
         /// 异步新增一个单位
         /// </summary>
-        Task<Company> CreateAsync(string name,string node="root");
+        Task<Company> CreateAsync(string name);
 
     }
 }

@@ -11,7 +11,7 @@ using TrainSchdule.DAL.Interfaces;
 namespace TrainSchdule.DAL.Repositories
 {
 	/// <summary>
-	/// Contains methods for processing DB entities in Companys table.
+	/// Contains methods for processing DB entities in Companies table.
 	/// Implementation of <see cref="IRepository{T}"/>.
 	/// </summary>
 	public class CompanyRepository : IRepository<Company>

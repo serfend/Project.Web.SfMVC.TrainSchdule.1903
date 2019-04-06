@@ -257,7 +257,7 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Companys");
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>

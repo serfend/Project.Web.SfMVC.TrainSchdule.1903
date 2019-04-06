@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +37,7 @@ namespace TrainSchdule.Web.Controllers
 		    var nowCompany = _companyService.Get(path);
 		    if (nowCompany != null)
 		    {
-			    var list = _companyService.FindAllChild(path);
+			    var list = _companyService.FindAllChild(nowCompany.id);
 				return new JsonResult(new GetDicViewModel()
 				{
 					Child=list,
@@ -57,24 +58,48 @@ namespace TrainSchdule.Web.Controllers
 		[HttpPost]
 	    public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
-			
+		    if (!ModelState.IsValid)
+		    {
+			    var rst = new StringBuilder();
+			    foreach (var item in ModelState.Root.Children)
+			    {
+				    foreach (var err in item.Errors)
+				    {
+					    rst.AppendLine(err.ErrorMessage);
+				    }
+			    }
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidAuthFormat.Code,rst.ToString()));
+		    }
+			if(!CheckPermissionCompany(company.ParentPath))
+				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+		    var anyExist = _companyService.Get($"{company.ParentPath}/{company.Name}");
+		    if (anyExist == null)
+		    {
+			    var newCompanyDTO= await _companyService.CreateAsync(company.Name);
+			    await _companyService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+			    return new JsonResult(ActionStatusMessage.Success);
+		    }
+
+		    return new JsonResult(ActionStatusMessage.Company_CreateExisted);
+		    
+	    }
+
+	    private bool CheckPermissionCompany(string target)
+	    {
 		    var currentCompany = _currentUserService.CurrentUser.PermissionCompanies;
 		    if (currentCompany!= null)
 		    {
-			    var newCompany = company.ParentPath;
 			    foreach (var permissionCompany in currentCompany)
 			    {
-				    if (newCompany.Substring(0, permissionCompany.Path.Length) == permissionCompany.Path)
+				    if (target.Substring(0, permissionCompany.Path.Length) == permissionCompany.Path)
 				    {
-					    var newCompanyDTO= await _companyService.CreateAsync(company.Name, company.ParentPath);
-					    await _companyService.SetParentAsync(newCompanyDTO.Path,company.ParentPath);
-					    return new JsonResult(ActionStatusMessage.Success);
+					    return true;
 				    }
 			    }
 		    }
-		   
-		   
-			return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+
+		    return false;
+
 	    }
     }
 }

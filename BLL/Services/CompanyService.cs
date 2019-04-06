@@ -54,12 +54,12 @@ namespace TrainSchdule.BLL.Services
 		#endregion
 		private Company GetCompanyByPath(string path)
 		{
-			var company =  _unitOfWork.Companys.Find(x => x.Path == path).FirstOrDefault();
+			var company =  _unitOfWork.Companies.Find(x => x.Path == path).FirstOrDefault();
 			return company;
 		}
 		public IEnumerable<CompanyDTO> GetAll(int page, int pageSize)
 		{
-			var companys= _unitOfWork.Companys.GetAll(page, pageSize);
+			var companys= _unitOfWork.Companies.GetAll(page, pageSize);
 			var result = new List<CompanyDTO>(companys.Count());
 			foreach (var company in companys)
 			{
@@ -74,9 +74,9 @@ namespace TrainSchdule.BLL.Services
 			return MapCompany(company);
 		}
 
-		public IEnumerable<CompanyDTO> FindAllChild(string path)
+		public IEnumerable<CompanyDTO> FindAllChild(Guid id)
 		{
-			var list = _unitOfWork.Companys.Find(x => x.Parent.Path == path);
+			var list = _unitOfWork.Companies.Find(x => x.Parent.Id==id);
 			var result=new List<CompanyDTO>(list.Count());
 			foreach (var company in list)
 			{
@@ -86,9 +86,9 @@ namespace TrainSchdule.BLL.Services
 			return result;
 		}
 
-		public void SetParent(string path, string parentPath)
+		public void SetParent(Guid id, string parentPath)
 		{
-			var company = GetCompanyByPath(path);
+			var company = _unitOfWork.Companies.Get(id);
 			var parentCompany = GetCompanyByPath(parentPath);
 			if (company != null && parentCompany!=null)
 			{
@@ -98,9 +98,9 @@ namespace TrainSchdule.BLL.Services
 			}
 		}
 
-		public async Task SetParentAsync(string path, string parentPath)
+		public async Task SetParentAsync(Guid id, string parentPath)
 		{
-			var company = GetCompanyByPath(path);
+			var company = _unitOfWork.Companies.Get(id);
 			var parentCompany = GetCompanyByPath(parentPath);
 			if (company != null && parentCompany!=null)
 			{
@@ -111,25 +111,23 @@ namespace TrainSchdule.BLL.Services
 		}
 
 
-		public Company Create(string name, string node = "root")
+		public Company Create(string name)
 		{
 			var company=new Company()
 			{
 				Name = name,
-				Path = $"{node}/{name}"
 			};
-			_unitOfWork.Companys.Create(company);
+			_unitOfWork.Companies.Create(company);
 			return company;
 		}
 
-		public async Task<Company> CreateAsync(string name, string node = "root")
+		public async Task<Company> CreateAsync(string name)
 		{
 			var company=new Company()
 			{
-				Name = name,
-				Path = $"{node}/{name}"
+				Name = name
 			};
-			await  _unitOfWork.Companys.CreateAsync(company);
+			await  _unitOfWork.Companies.CreateAsync(company);
 			return company;
 		}
 

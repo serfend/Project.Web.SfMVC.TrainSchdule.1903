@@ -249,7 +249,7 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companys");
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>

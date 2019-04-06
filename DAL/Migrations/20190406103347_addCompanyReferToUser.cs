@@ -21,7 +21,7 @@ namespace TrainSchdule.DAL.Migrations
                 name: "FK_AppUsers_Companys_CompanyId",
                 table: "AppUsers",
                 column: "CompanyId",
-                principalTable: "Companys",
+                principalTable: "Companies",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }

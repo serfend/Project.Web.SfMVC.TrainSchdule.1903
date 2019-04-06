@@ -9,29 +9,29 @@ namespace TrainSchdule.DAL.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "Name",
-                table: "Companys",
+                table: "Companies",
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
                 name: "ParentId",
-                table: "Companys",
+                table: "Companies",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "Path",
-                table: "Companys",
+                table: "Companies",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Companys_ParentId",
-                table: "Companys",
+                table: "Companies",
                 column: "ParentId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Companys_Companys_ParentId",
-                table: "Companys",
+                table: "Companies",
                 column: "ParentId",
-                principalTable: "Companys",
+                principalTable: "Companies",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -40,23 +40,23 @@ namespace TrainSchdule.DAL.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Companys_Companys_ParentId",
-                table: "Companys");
+                table: "Companies");
 
             migrationBuilder.DropIndex(
                 name: "IX_Companys_ParentId",
-                table: "Companys");
+                table: "Companies");
 
             migrationBuilder.DropColumn(
                 name: "Name",
-                table: "Companys");
+                table: "Companies");
 
             migrationBuilder.DropColumn(
                 name: "ParentId",
-                table: "Companys");
+                table: "Companies");
 
             migrationBuilder.DropColumn(
                 name: "Path",
-                table: "Companys");
+                table: "Companies");
         }
     }
 }
