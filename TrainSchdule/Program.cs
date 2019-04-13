@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-
 namespace TrainSchdule.WEB
 {
     public class Program
@@ -8,7 +7,8 @@ namespace TrainSchdule.WEB
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
-        }
+			
+		}
 
 		//Kestrel Web Server
 		//UseIIS()

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TrainSchdule.DAL.Migrations
 {
-    public partial class addCompanySupport : Migration
+    public partial class addCompaniesupport : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,7 +15,7 @@ namespace TrainSchdule.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Companys", x => x.Id);
+                    table.PrimaryKey("PK_Companies", x => x.Id);
                 });
         }
 

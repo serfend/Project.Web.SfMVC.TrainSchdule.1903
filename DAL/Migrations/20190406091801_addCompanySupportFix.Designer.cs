@@ -10,8 +10,8 @@ using TrainSchdule.DAL.Data;
 namespace TrainSchdule.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190406091801_addCompanySupportFix")]
-    partial class addCompanySupportFix
+    [Migration("20190406091801_addCompaniesupportFix")]
+    partial class addCompaniesupportFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

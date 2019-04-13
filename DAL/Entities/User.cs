@@ -11,6 +11,10 @@ namespace TrainSchdule.DAL.Entities
     public class User : BaseEntity
     {
         #region Properties
+        /// <summary>
+        /// 用户权限，0为默认无权限
+        /// </summary>
+        public int Privilege { get; set; }
 
         /// <summary>
         /// Gets and sets user name.

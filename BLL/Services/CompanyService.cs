@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ using TrainSchdule.DAL.Interfaces;
 
 namespace TrainSchdule.BLL.Services
 {
-	public class CompanyService:ICompanyService
+	public class Companieservice:ICompanieservice
 	{
 		
 		private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +22,7 @@ namespace TrainSchdule.BLL.Services
 		#region Disposing
 		private bool _isDisposed;
 
-		public CompanyService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+		public Companieservice(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
 		{
 			_unitOfWork = unitOfWork;
 			_httpContextAccessor = httpContextAccessor;
@@ -46,7 +47,7 @@ namespace TrainSchdule.BLL.Services
 			}
 		}
 
-		~CompanyService()
+		~Companieservice()
 		{
 			Dispose(false);
 		}
@@ -59,9 +60,9 @@ namespace TrainSchdule.BLL.Services
 		}
 		public IEnumerable<CompanyDTO> GetAll(int page, int pageSize)
 		{
-			var companys= _unitOfWork.Companies.GetAll(page, pageSize);
-			var result = new List<CompanyDTO>(companys.Count());
-			foreach (var company in companys)
+			var Companies= _unitOfWork.Companies.GetAll(page, pageSize);
+			var result = new List<CompanyDTO>(Companies.Count());
+			foreach (var company in Companies)
 			{
 				result.Add(MapCompany(company));
 			}
@@ -76,7 +77,7 @@ namespace TrainSchdule.BLL.Services
 
 		public IEnumerable<CompanyDTO> FindAllChild(Guid id)
 		{
-			var list = _unitOfWork.Companies.Find(x => x.Parent.Id==id);
+			var list = _unitOfWork.Companies.Find(x => x.Parent != null && x.Parent.Id==id);
 			var result=new List<CompanyDTO>(list.Count());
 			foreach (var company in list)
 			{
@@ -90,7 +91,8 @@ namespace TrainSchdule.BLL.Services
 		{
 			var company = _unitOfWork.Companies.Get(id);
 			var parentCompany = GetCompanyByPath(parentPath);
-			if (company != null && parentCompany!=null)
+			parentCompany = CheckParentCompany(parentCompany, parentPath);
+			if (company != null)
 			{
 				company.Parent = parentCompany;
 				company.Path = $"{parentCompany.Path}/{company.Name}";
@@ -98,24 +100,66 @@ namespace TrainSchdule.BLL.Services
 			}
 		}
 
+		private Company CheckParentCompany( Company parentCompany,string parentName)
+		{
+			if (parentCompany == null)
+			{
+				if (parentName == "Root")
+				{
+					return Create(parentName);
+				}else 
+				throw  new CompanyNotExistException("父单位尚未被创建");
+			}
+
+			return parentCompany;
+		}
 		public async Task SetParentAsync(Guid id, string parentPath)
 		{
 			var company = _unitOfWork.Companies.Get(id);
 			var parentCompany = GetCompanyByPath(parentPath);
-			if (company != null && parentCompany!=null)
+			parentCompany=CheckParentCompany( parentCompany, parentPath);
+			if (company != null)
 			{
 				company.Parent = parentCompany;
 				company.Path = $"{parentCompany.Path}/{company.Name}";
 				await _unitOfWork.SaveAsync();
 			}
 		}
+		[Serializable]
+		public class CompanyNotExistException : Exception
+		{
+			//
+			// For guidelines regarding the creation of new exception types, see
+			//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
+			// and
+			//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
+			//
 
+			public CompanyNotExistException()
+			{
+			}
+
+			public CompanyNotExistException(string message) : base(message)
+			{
+			}
+
+			public CompanyNotExistException(string message, Exception inner) : base(message, inner)
+			{
+			}
+
+			protected CompanyNotExistException(
+				SerializationInfo info,
+				StreamingContext context) : base(info, context)
+			{
+			}
+		}
 
 		public Company Create(string name)
 		{
 			var company=new Company()
 			{
 				Name = name,
+				Path = name
 			};
 			_unitOfWork.Companies.Create(company);
 			return company;
@@ -125,7 +169,8 @@ namespace TrainSchdule.BLL.Services
 		{
 			var company=new Company()
 			{
-				Name = name
+				Name = name,
+				Path = name
 			};
 			await  _unitOfWork.Companies.CreateAsync(company);
 			return company;

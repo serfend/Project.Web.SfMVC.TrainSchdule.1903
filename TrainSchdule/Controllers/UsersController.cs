@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.WEB.Extensions;
 
@@ -39,7 +40,17 @@ namespace TrainSchdule.WEB.Controllers
 
             return View(item);
         }
+		
 
+        [HttpGet]
+        public IActionResult UserInfo(string username)
+        {
+	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+
+	        var item = _usersService.Get(username);
+			if(item.Privilege>_currentUserService.CurrentUser.Privilege)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			return new JsonResult(item);
+        }
 		
         #endregion
 

@@ -18,7 +18,7 @@ namespace TrainSchdule.DAL.Migrations
                 column: "CompanyId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AppUsers_Companys_CompanyId",
+                name: "FK_AppUsers_Companies_CompanyId",
                 table: "AppUsers",
                 column: "CompanyId",
                 principalTable: "Companies",
@@ -29,7 +29,7 @@ namespace TrainSchdule.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AppUsers_Companys_CompanyId",
+                name: "FK_AppUsers_Companies_CompanyId",
                 table: "AppUsers");
 
             migrationBuilder.DropIndex(

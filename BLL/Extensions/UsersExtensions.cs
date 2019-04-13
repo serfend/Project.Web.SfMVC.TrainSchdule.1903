@@ -20,6 +20,7 @@ namespace TrainSchdule.BLL.Extensions
 
             return new UserDTO
             {
+				Privilege = item.Privilege,
                 RealName = item.RealName,
                 UserName = item.UserName,
                 Avatar = item.Avatar,

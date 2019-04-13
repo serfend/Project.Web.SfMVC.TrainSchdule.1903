@@ -13,7 +13,7 @@ namespace TrainSchdule.BLL.Interfaces
     /// <remarks>
     /// 此接口需要反射调用.
     /// </remarks>
-    public interface ICompanyService : IDisposable
+    public interface ICompanieservice : IDisposable
     {
         /// <summary>
         /// 加载所有单位的信息

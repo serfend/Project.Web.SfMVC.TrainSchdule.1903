@@ -316,7 +316,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Creates user.
         /// </summary>
-        public ApplicationUser Create(string userName, string email, string password)
+        public ApplicationUser Create(string userName, string email, string password,string company)
         {
             if (_unitOfWork.IdentityUsers.Find(u => u.UserName == userName || u.Email == email).FirstOrDefault() != null)
             {
@@ -338,9 +338,15 @@ namespace TrainSchdule.BLL.Services
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
             identity.PasswordHash = passwordHasher.HashPassword(identity, password);
-
+            
             _unitOfWork.IdentityUsers.Create(identity);
-            _unitOfWork.Users.Create(new User { UserName = userName });
+
+            var userCompany = _unitOfWork.Companies.Find(x => x.Path == company).FirstOrDefault();
+            _unitOfWork.Users.Create(new User
+            {
+	            UserName = userName,
+				Company = userCompany
+            });
             _unitOfWork.Save();
 
             return identity;
@@ -349,7 +355,7 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Async creates user.
         /// </summary>
-        public async Task<ApplicationUser> CreateAsync(string userName, string email, string password)
+        public async Task<ApplicationUser> CreateAsync(string userName, string email, string password,string company)
         {
             if (_unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault() != null)
             {
@@ -373,7 +379,13 @@ namespace TrainSchdule.BLL.Services
             identity.PasswordHash = passwordHasher.HashPassword(identity, password);
 
             await _unitOfWork.IdentityUsers.CreateAsync(identity);
-            await _unitOfWork.Users.CreateAsync(new User { UserName = userName });
+
+            var userCompany = _unitOfWork.Companies.Find(x => x.Path == company).FirstOrDefault();
+            await _unitOfWork.Users.CreateAsync(new User
+            {
+	            UserName = userName,
+				Company = userCompany
+            });
             await _unitOfWork.SaveAsync();
 
             return identity;

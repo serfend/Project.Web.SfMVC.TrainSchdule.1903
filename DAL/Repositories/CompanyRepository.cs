@@ -41,7 +41,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public IEnumerable<Company> GetAll()
         {
-            return _context.Companys;
+            return _context.Companies;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public IEnumerable<Company> GetAll(int page, int pageSize)
         {
-            return _context.Companys.Skip(page * pageSize).Take(pageSize);
+            return _context.Companies.Skip(page * pageSize).Take(pageSize);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public Company Get(Guid id)
         {
-            return _context.Companys.Find(id);
+            return _context.Companies.Find(id);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public async Task<Company> GetAsync(Guid id)
         {
-            return await _context.Companys.FindAsync(id);
+            return await _context.Companies.FindAsync(id);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public IEnumerable<Company> Find(Func<Company, bool> predicate)
         {
-            return _context.Companys.Where(predicate);
+            return _context.Companies.Where(predicate);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public void Create(Company item)
         {
-            _context.Companys.Add(item);
+            _context.Companies.Add(item);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public async Task CreateAsync(Company item)
         {
-            await _context.Companys.AddAsync(item);
+            await _context.Companies.AddAsync(item);
         }
 
         /// <summary>
@@ -105,11 +105,11 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public void Delete(Guid id)
         {
-            var item = _context.Companys.Find(id);
+            var item = _context.Companies.Find(id);
 
             if (item != null)
             {
-                _context.Companys.Remove(item);
+                _context.Companies.Remove(item);
             }
         }
 
@@ -118,11 +118,11 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public async Task DeleteAsync(Guid id)
         {
-            var item = await _context.Companys.FindAsync(id);
+            var item = await _context.Companies.FindAsync(id);
 
             if (item != null)
             {
-                _context.Companys.Remove(item);
+                _context.Companies.Remove(item);
             }
         }
 

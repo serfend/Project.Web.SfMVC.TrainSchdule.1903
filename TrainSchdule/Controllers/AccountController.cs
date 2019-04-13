@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.ViewModels.Account;
 using TrainSchdule.WEB.Extensions;
 using TrainSchdule.WEB.ViewModels.Account;
 
@@ -91,10 +93,10 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-	        var rst = new StringBuilder();
+			var rst = new StringBuilder();
 	        if (ModelState.IsValid)
 	        {
-		        var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 		        if (result.Succeeded)
 		        {
 			        _logger.LogInformation($"用户登录:{model.UserName}");
@@ -115,16 +117,24 @@ namespace TrainSchdule.WEB.Controllers
 	        }
 	        else
 	        {
-		        foreach (var item in ModelState.Root.Children)
+		        ModelState.Root.Children.All(x => x.Errors.All(y =>
 		        {
-			        foreach (var err in item.Errors)
-			        {
-				        rst.AppendLine(err.ErrorMessage);
-			        }
-		        }
+			        rst.AppendLine(y.ErrorMessage);
+			        return true;
+		        }));
 		        return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
 	        }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+	        await _signInManager.SignOutAsync();
+	        _logger.LogInformation("User logged out.");
+	       
+			return new JsonResult(ActionStatusMessage.Success);
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
@@ -252,42 +262,53 @@ namespace TrainSchdule.WEB.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+		[AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            var result =(JsonResult)await Register(model);
+            var status = (Status) result.Value;
+            if (status.Code == ActionStatusMessage.Success.Code)
             {
-                var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password);
-
-                if(user == null)
-                {
-                    ModelState.AddModelError(string.Empty, "此账号已被使用");
-                    return View(model);
-                }
-
-                _logger.LogInformation($"新的用户创建:{model.UserName}");
-
-				var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-				var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-				await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-				await _signInManager.SignInAsync(user, isPersistent: false);
-
-                return RedirectToLocal(returnUrl);
+	            return RedirectToLocal(returnUrl);
+            }else if (status.Code == ActionStatusMessage.AccountRegister_UserExist.Code)
+            {
+	            ModelState.AddModelError(string.Empty, "此账号已被使用");
+	            return View(model);
             }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            else
+            {
+	            return View(model);
+            }
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+		[HttpPost]
+		[AllowAnonymous]
+		[Route("rest")]
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            return RedirectToAction("Login", "Account");
+			var rst=new StringBuilder();
+			if (!ModelState.IsValid)
+			{
+				ModelState.Root.Children.All(x => x.Errors.All(y =>
+				{
+					rst.AppendLine(y.ErrorMessage);
+					return true;
+				}));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
+			}
+	        var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
+	        if (user == null)
+	        {
+				return new JsonResult(ActionStatusMessage.AccountRegister_UserExist);
+	        }
+	        _logger.LogInformation($"新的用户创建:{model.UserName}");
+
+	        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+	        var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+	        await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+
+	        await _signInManager.SignInAsync(user, isPersistent: false);
+			return new JsonResult(ActionStatusMessage.Success);
         }
 
         [HttpPost]
@@ -300,6 +321,7 @@ namespace TrainSchdule.WEB.Controllers
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
+		
 
         [HttpGet]
         [AllowAnonymous]

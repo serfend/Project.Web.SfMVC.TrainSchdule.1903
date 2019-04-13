@@ -88,12 +88,12 @@ namespace TrainSchdule.BLL.Interfaces
         /// <summary>
         /// Creates user.
         /// </summary>
-        ApplicationUser Create(string userName, string email, string password);
+        ApplicationUser Create(string userName, string email, string password,string company);
 
         /// <summary>
         /// Async creates user.
         /// </summary>
-        Task<ApplicationUser> CreateAsync(string userName, string email, string password);
+        Task<ApplicationUser> CreateAsync(string userName, string email, string password,string company);
 
         /// <summary>
         /// Edits user.

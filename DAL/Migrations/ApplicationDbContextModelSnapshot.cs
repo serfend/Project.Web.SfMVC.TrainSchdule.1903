@@ -465,6 +465,8 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<bool>("PrivateAccount");
 
+                    b.Property<int>("Privilege");
+
                     b.Property<string>("RealName");
 
                     b.Property<string>("UserName");

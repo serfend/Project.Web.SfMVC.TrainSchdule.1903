@@ -5,15 +5,18 @@ namespace TrainSchdule.WEB.ViewModels.Account
     public class LoginViewModel
     {
         [Required]
-        [StringLength(32, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        [Display(Name = "Login")]
+        [StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 6)]
+        [Display(Name = "用户名")]
         public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me")]
+        [Display(Name = "记住登录")]
         public bool RememberMe { get; set; }
+
+		[Display(Name = "验证码")]
+		public string Verify { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Http;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Entities;
@@ -466,7 +465,7 @@ namespace TrainSchdule.BLL.Services
             {
 				photo.Filter=new Filter()
 				{
-					Name = filter.IsNullOrEmpty()?"Default":filter,
+					Name = string.IsNullOrEmpty(filter)?"Default":filter
 				};
 	            await _unitOfWork.Filters.CreateAsync(photo.Filter);
             }

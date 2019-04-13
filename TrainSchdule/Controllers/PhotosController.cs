@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.WEB.ViewModels;
 using TrainSchdule.WEB.Extensions;
-using ImageMagick;
 
 namespace TrainSchdule.WEB.Controllers
 {
@@ -95,28 +94,7 @@ namespace TrainSchdule.WEB.Controllers
                 var manufacturer = Brand;
                 var model = Model;
 
-                if(manufacturer == null || model == null)
-                {
-                    using (var image = new MagickImage(fileName))
-                    {
-                        var profile = image.GetExifProfile();
-                        
-                        if (profile != null)
-                        {
-                            foreach (var value in profile.Values)
-                            {
-                                if (value.Tag == ExifTag.Make && manufacturer == null)
-                                {
-                                    manufacturer = value.ToString();
-                                }
-                                else if (value.Tag == ExifTag.Model && model == null)
-                                {
-                                    model = value.ToString();
-                                }
-                            }
-                        }
-                    }
-                }
+               
 
                 Guid pid = await _photosService.CreateAsync(item.Filter, item.Description, item.Path, manufacturer, model, Iso, Exposure, Aperture, FocalLength, tags);
 

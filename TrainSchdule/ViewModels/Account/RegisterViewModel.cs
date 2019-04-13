@@ -24,5 +24,7 @@ namespace TrainSchdule.WEB.ViewModels.Account
         [Display(Name = "确认密码")]
         [Compare("Password", ErrorMessage = "两次输入的密码不一致")]
         public string ConfirmPassword { get; set; }
+		[Display(Name = "单位")]
+		public string Company { get; set; }
     }
 }

@@ -52,7 +52,7 @@ namespace TrainSchdule.WEB
             services.AddScoped<ITagsService, TagsService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<IStudentService, StudentService>();
-			services.AddScoped<ICompanyService, CompanyService > ();
+			services.AddScoped<ICompanieservice, Companieservice > ();
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
@@ -110,7 +110,10 @@ namespace TrainSchdule.WEB
 	            options.AddPolicy(MyAllowSpecificOrigins,
 		            builder =>
 		            {
-			            builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
+			            builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) =>
+				            {
+					            return true;
+				            });
 		            });
             });
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TrainSchdule.DAL.Migrations
 {
-    public partial class addCompanySupportFix : Migration
+    public partial class addCompaniesupportFix : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,12 +23,12 @@ namespace TrainSchdule.DAL.Migrations
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companys_ParentId",
+                name: "IX_Companies_ParentId",
                 table: "Companies",
                 column: "ParentId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Companys_Companys_ParentId",
+                name: "FK_Companies_Companies_ParentId",
                 table: "Companies",
                 column: "ParentId",
                 principalTable: "Companies",
@@ -39,11 +39,11 @@ namespace TrainSchdule.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Companys_Companys_ParentId",
+                name: "FK_Companies_Companies_ParentId",
                 table: "Companies");
 
             migrationBuilder.DropIndex(
-                name: "IX_Companys_ParentId",
+                name: "IX_Companies_ParentId",
                 table: "Companies");
 
             migrationBuilder.DropColumn(

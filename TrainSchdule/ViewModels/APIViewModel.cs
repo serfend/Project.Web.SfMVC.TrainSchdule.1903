@@ -13,4 +13,10 @@ namespace TrainSchdule.Web.ViewModels
 		[JsonProperty("message")]
 		public string Message { get; set; }
 	}
+
+	public class APIVerifyViewModel
+	{
+		[JsonProperty("verifyCode")]
+		public string VerifyCode { get; set; }
+	}
 }

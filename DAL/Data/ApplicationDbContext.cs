@@ -79,7 +79,7 @@ namespace TrainSchdule.DAL.Data
 
 
 		public DbSet<Student> Students { get; set; }
-		public DbSet<Company> Companys { get; set; }
+		public DbSet<Company> Companies { get; set; }
 		public DbSet<PermissionCompany>PermissionCompanies { get; set; }
         #endregion
 

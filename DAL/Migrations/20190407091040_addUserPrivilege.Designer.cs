@@ -10,8 +10,8 @@ using TrainSchdule.DAL.Data;
 namespace TrainSchdule.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190406082921_addCompaniesupport")]
-    partial class addCompaniesupport
+    [Migration("20190407091040_addUserPrivilege")]
+    partial class addUserPrivilege
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -247,7 +247,15 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("ParentId");
+
+                    b.Property<string>("Path");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Companies");
                 });
@@ -318,6 +326,22 @@ namespace TrainSchdule.DAL.Migrations
                     b.HasIndex("PhotoId");
 
                     b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PermissionCompany", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("OwnerId");
+
+                    b.Property<string>("Path");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("PermissionCompanies");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
@@ -435,11 +459,15 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<string>("Avatar");
 
+                    b.Property<Guid?>("CompanyId");
+
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("Gender");
 
                     b.Property<bool>("PrivateAccount");
+
+                    b.Property<int>("Privilege");
 
                     b.Property<string>("RealName");
 
@@ -448,6 +476,8 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<string>("WebSite");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("AppUsers");
                 });
@@ -558,6 +588,13 @@ namespace TrainSchdule.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Company", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Parent")
+                        .WithMany("Child")
+                        .HasForeignKey("ParentId");
+                });
+
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Admin")
@@ -597,6 +634,13 @@ namespace TrainSchdule.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PermissionCompany", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
+                        .WithMany("PermissionCompanies")
+                        .HasForeignKey("OwnerId");
+                });
+
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.Filter", "Filter")
@@ -634,6 +678,13 @@ namespace TrainSchdule.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.User", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>

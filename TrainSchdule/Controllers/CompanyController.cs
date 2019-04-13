@@ -17,12 +17,12 @@ namespace TrainSchdule.Web.Controllers
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
-	    private readonly ICompanyService _companyService;
+	    private readonly ICompanieservice _Companieservice;
 	    private readonly ICurrentUserService _currentUserService;
 
-	    public CompanyController(ICompanyService companyService, ICurrentUserService currentUserService)
+	    public CompanyController(ICompanieservice Companieservice, ICurrentUserService currentUserService)
 	    {
-		    _companyService = companyService;
+		    _Companieservice = Companieservice;
 		    _currentUserService = currentUserService;
 	    }
 
@@ -30,14 +30,11 @@ namespace TrainSchdule.Web.Controllers
 	    [AllowAnonymous]
 	    public IActionResult GetDic(string path)
 	    {
-		    if (path == null)
-		    {
-				return new JsonResult(new {code=404,message="无效的单位"});
-		    }
-		    var nowCompany = _companyService.Get(path);
+		    if (path == null)path = "Root";
+		    var nowCompany = _Companieservice.Get(path);
 		    if (nowCompany != null)
 		    {
-			    var list = _companyService.FindAllChild(nowCompany.id);
+			    var list = _Companieservice.FindAllChild(nowCompany.id);
 				return new JsonResult(new GetDicViewModel()
 				{
 					Child=list,
@@ -47,11 +44,7 @@ namespace TrainSchdule.Web.Controllers
 		    }
 		    else
 		    {
-			    return new JsonResult(new GetDicViewModel()
-			    {
-					Code = -1,
-					Message = "无效的单位路径"
-			    });
+			    return new JsonResult(ActionStatusMessage.Company_NotExist);
 		    }
 
 	    }
@@ -72,11 +65,18 @@ namespace TrainSchdule.Web.Controllers
 		    }
 			if(!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-		    var anyExist = _companyService.Get($"{company.ParentPath}/{company.Name}");
+		    var anyExist = _Companieservice.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)
 		    {
-			    var newCompanyDTO= await _companyService.CreateAsync(company.Name);
-			    await _companyService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+			    var newCompanyDTO= await _Companieservice.CreateAsync(company.Name);
+			    try
+			    {
+				    await _Companieservice.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+			    }
+			    catch (Exception ex)
+			    {
+					return new JsonResult(new Status(ActionStatusMessage.Company_NotExist.Code,ex.Message));
+			    }
 			    return new JsonResult(ActionStatusMessage.Success);
 		    }
 
