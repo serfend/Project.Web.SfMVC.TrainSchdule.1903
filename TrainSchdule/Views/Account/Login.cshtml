@@ -31,6 +31,15 @@
         </div>
         <span asp-validation-for="Password" class="help is-danger"></span>
     </div>
+	
+    <div class="field">
+	    <label asp-for="Verify" class="label"/>
+	    <div class="control">
+		    <input asp-for="Verify" class="input" placeholder="验证码" required>
+	    </div>
+		<img src="/static/verify-bg.png"/>
+	    <span asp-validation-for="Verify" class="help is-danger"></span>
+    </div>
 
     <div class="field">
         <div class="control">
@@ -40,6 +49,7 @@
             </label>
         </div>
     </div>
+	
 
     <div class="field has-text-centered">
         <button type="submit" class="button is-accent-button">@ViewBag.Title</button>

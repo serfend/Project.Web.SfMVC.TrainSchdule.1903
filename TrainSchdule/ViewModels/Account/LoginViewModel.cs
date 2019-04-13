@@ -17,6 +17,6 @@ namespace TrainSchdule.WEB.ViewModels.Account
         public bool RememberMe { get; set; }
 
 		[Display(Name = "验证码")]
-		public string Verify { get; set; }
+		public int Verify { get; set; }
     }
 }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Castle.Core.Internal;
+using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.WEB.Extensions;
 
 namespace TrainSchdule.WEB.Controllers
 {
+	[Route("[controller]/[action]")]
     public class UsersController : Controller
     {
         #region Fields
@@ -24,11 +26,11 @@ namespace TrainSchdule.WEB.Controllers
             _currentUserService = currentUserService;
         }
 
-        #endregion
+		#endregion
 
-        #region Logic
-
-        [HttpGet, Route("users/{userName}")]
+		#region Logic
+		[HttpGet]
+		[HttpGet, Route("users/{userName}")]
         public ActionResult Details(string userName)
         {
             var item = _usersService.Get(userName).ToViewModel();
@@ -43,12 +45,12 @@ namespace TrainSchdule.WEB.Controllers
 		
 
         [HttpGet]
-        public IActionResult UserInfo(string username)
+        public IActionResult UserInfo(string username=null)
         {
 	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
-
-	        var item = _usersService.Get(username);
-			if(item.Privilege>_currentUserService.CurrentUser.Privilege)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;
+			var item=_usersService.Get(username);
+			if (item.Privilege>_currentUserService.CurrentUser.Privilege)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 			return new JsonResult(item);
         }
 		

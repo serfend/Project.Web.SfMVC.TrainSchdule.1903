@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using BLL.Interfaces;
+using BLL.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
@@ -55,9 +59,13 @@ namespace TrainSchdule.WEB
 			services.AddScoped<ICompanieservice, Companieservice > ();
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        }
+            services.AddSingleton<IVerifyService,VerifyService>();
+            services.AddSingleton<IFileProvider>(
+	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 
-        public void ConfigureServices(IServiceCollection services)
+		}
+
+		public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options=>{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -104,7 +112,7 @@ namespace TrainSchdule.WEB
             
             AddApplicationServices(services);
 
-            services.AddSession(s => s.IdleTimeout = TimeSpan.FromMinutes(30));
+            services.AddSession(s => s.IdleTimeout = TimeSpan.FromMinutes(60));
             services.AddCors(options =>
             {
 	            options.AddPolicy(MyAllowSpecificOrigins,

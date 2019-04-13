@@ -4,11 +4,14 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.Interfaces;
@@ -29,6 +32,7 @@ namespace TrainSchdule.WEB.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly IUsersService _usersService;
+        private readonly IVerifyService _verifyService;
 
         private bool _isDisposed;
 
@@ -41,13 +45,14 @@ namespace TrainSchdule.WEB.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            IUsersService usersService) 
+            IUsersService usersService, IVerifyService verifyService) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _usersService = usersService;
+            _verifyService = verifyService;
         }
 
         #endregion
@@ -61,6 +66,7 @@ namespace TrainSchdule.WEB.Controllers
 
         #region Logic
 
+        
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
@@ -88,6 +94,8 @@ namespace TrainSchdule.WEB.Controllers
 	        // If we got this far, something failed, redisplay form
             return View(model);
         }
+		
+
 		[HttpPost]
 		[AllowAnonymous]
 		[Route("rest")]
@@ -96,6 +104,16 @@ namespace TrainSchdule.WEB.Controllers
 			var rst = new StringBuilder();
 	        if (ModelState.IsValid)
 	        {
+		        var codeResult = _verifyService.Verify(model.Verify);
+		        if (_verifyService.Status != string.Empty)
+		        {
+					return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,_verifyService.Status));
+		        }
+
+		        if (!codeResult)
+		        {
+					return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
+		        }
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 		        if (result.Succeeded)
 		        {
