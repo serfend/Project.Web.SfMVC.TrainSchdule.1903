@@ -19,7 +19,13 @@ namespace TrainSchdule.BLL.Extensions
                 return null;
             }
 
-            return new UserDetailsDTO
+            var permissionCompanies = new List<PermissionCompanyDTO>();
+            foreach (var itemPermissionCompany in item.PermissionCompanies)
+            {
+	            permissionCompanies.Add(itemPermissionCompany.ToDTO());
+            }
+
+			return new UserDetailsDTO
             {
                 RealName = item.RealName,
                 UserName = item.UserName,
@@ -28,14 +34,12 @@ namespace TrainSchdule.BLL.Extensions
                 Date = item.Date,
                 Gender = (GenderEnum)item.Gender,
                 WebSite = item.WebSite,
-                Confirmed = false,
-                Followed = false,
-                Blocked = false,
                 PrivateAccount = item.PrivateAccount,
-                IBlocked = false,
-                Followings = null,
-                Followers = null,
-                Mutuals = null
+				PermissionCompanies = permissionCompanies,
+				Address = item.Address,
+				Phone = item.Phone,
+				Company = item.Company.ToDTO()
+
             };
         }
 
@@ -49,24 +53,15 @@ namespace TrainSchdule.BLL.Extensions
                 return null;
             }
 
-            return new UserDetailsDTO
-            {
-                RealName = item.RealName,
-                UserName = item.UserName,
-                Avatar = item.Avatar,
-                About = item.About,
-                Date = item.Date,
-                Gender = (GenderEnum)item.Gender,
-                WebSite = item.WebSite,
-                Confirmed = confirmed,
-                Followed = followed,
-                Blocked = blocked,
-                PrivateAccount = item.PrivateAccount,
-                IBlocked = iBlocked,
-                Followings = followings,
-                Followers = followers,
-                Mutuals = mutuals
-            };
+            var result = ToDTO(item);
+            result.Confirmed = confirmed;
+            result.Followed = followed;
+            result.Blocked = blocked;
+            result.IBlocked = iBlocked;
+            result.Followings = followings;
+            result.Followers = followers;
+            result.Mutuals = mutuals;
+            return result;
         }
     }
 }

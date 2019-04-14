@@ -29,11 +29,10 @@ namespace TrainSchdule.WEB.Controllers
 		#endregion
 
 		#region Logic
-		[HttpGet]
-		[HttpGet, Route("users/{userName}")]
-        public ActionResult Details(string userName)
+		[HttpGet,Route("{username}")]
+        public ActionResult Details(string username)
         {
-            var item = _usersService.Get(userName).ToViewModel();
+            var item = _usersService.Get(username).ToViewModel();
 
             if (User.Identity.IsAuthenticated)
             {
@@ -45,7 +44,7 @@ namespace TrainSchdule.WEB.Controllers
 		
 
         [HttpGet]
-        public IActionResult UserInfo(string username=null)
+        public IActionResult Info(string username=null)
         {
 	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
 			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;

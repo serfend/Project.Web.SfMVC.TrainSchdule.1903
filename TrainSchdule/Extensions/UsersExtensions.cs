@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Castle.Core.Internal;
 using TrainSchdule.BLL.DTO;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.WEB.ViewModels;
@@ -41,7 +42,8 @@ namespace TrainSchdule.WEB.Extensions
 
         public static string GetAvatar(UserDTO item)
         {
-	        if (item?.Avatar == null || item.Gender==GenderEnum.Male || item.Gender==GenderEnum.Unknown) return ImgAvatarMale;
+	        if (!item.Avatar.IsNullOrEmpty()) return item.Avatar;
+	        if ( item.Gender==GenderEnum.Male || item.Gender==GenderEnum.Unknown) return ImgAvatarMale;
 	        return ImgAvatarFemale;
         }
 

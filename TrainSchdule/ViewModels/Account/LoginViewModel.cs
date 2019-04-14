@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TrainSchdule.ViewModels.Static;
 
 namespace TrainSchdule.WEB.ViewModels.Account
 {
-    public class LoginViewModel
+    public class LoginViewModel:VerifyViewModel
     {
         [Required]
         [StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 6)]
@@ -16,7 +17,6 @@ namespace TrainSchdule.WEB.ViewModels.Account
         [Display(Name = "记住登录")]
         public bool RememberMe { get; set; }
 
-		[Display(Name = "验证码")]
-		public int Verify { get; set; }
+	
     }
 }

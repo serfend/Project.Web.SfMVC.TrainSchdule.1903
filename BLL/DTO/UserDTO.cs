@@ -61,7 +61,7 @@ namespace TrainSchdule.BLL.DTO
 		/// <summary>
 		/// 用户所在单位
 		/// </summary>
-        public Company Company { get; set; }
+        public CompanyDTO Company { get; set; }
 		/// <summary>
 		/// 用户权限，0为默认无权限
 		/// </summary>

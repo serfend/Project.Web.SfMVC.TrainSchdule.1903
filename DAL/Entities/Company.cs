@@ -14,10 +14,6 @@ namespace TrainSchdule.DAL.Entities
 		public virtual Company Parent { get; set; }
 
 		/// <summary>
-		/// 寻找所有父单位是此单位的单位
-		/// </summary>
-		public virtual List<Company> Child { get; set; }
-		/// <summary>
 		/// 单位所在路径
 		/// </summary>
 		public string Path{get; set;}

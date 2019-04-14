@@ -314,6 +314,7 @@ namespace TrainSchdule.WEB.Controllers
 				}));
 				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
 			}
+			if(!_verifyService.Verify(model.Verify))return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
 	        var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
 	        if (user == null)
 	        {

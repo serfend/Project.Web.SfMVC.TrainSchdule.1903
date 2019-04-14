@@ -17,13 +17,12 @@ namespace TrainSchdule.BLL.Extensions
 			{
 				return null;
 			}
-
+			var child=new List<string>();
 			return new CompanyDTO
 			{
-				id=item.Id,
 				Name = item.Name,
 				Path = item.Path,
-				Members = null
+				id=item.Id
 			};
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DAL.Entities;
 
 namespace TrainSchdule.BLL.DTO
 {
@@ -8,6 +9,17 @@ namespace TrainSchdule.BLL.DTO
     /// </summary>
     public class UserDetailsDTO : UserDTO
     {
+	    /// <summary>
+		/// 用户修改单位的权限
+		/// </summary>
+	    public IEnumerable<PermissionCompanyDTO> PermissionCompanies;
+		public string Address { get; set; }
+	    public string Phone { get; set; }
+	    /// <summary>
+	    /// 用户职务
+	    /// </summary>
+	    public Duties Duties { set; get; }
+    
         /// <summary>
         /// Gets and sets user about.
         /// </summary>

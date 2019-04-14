@@ -9,6 +9,7 @@ namespace TrainSchdule.BLL.DTO
 		public Guid id { get; set; }
 		public string Name { get; set; }
 		public string Path { get; set; }
+
 		/// <summary>
 		/// 此单位是否是当前父单位
 		/// </summary>

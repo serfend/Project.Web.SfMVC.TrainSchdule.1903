@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DAL.Entities;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -59,6 +60,12 @@ namespace TrainSchdule.DAL.Entities
 		/// 用户所处的单位
 		/// </summary>
         public virtual Company Company { get; set; }
+
+		public string Address { get; set; }
+
+		public virtual Duties Duties { get; set; }
+
+		public string Phone { get; set; }
 		/// <summary>
 		/// 用户可操作的单位
 		/// </summary>

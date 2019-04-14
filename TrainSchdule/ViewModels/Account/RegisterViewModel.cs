@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TrainSchdule.ViewModels.Static;
 
 namespace TrainSchdule.WEB.ViewModels.Account
 {
-    public class RegisterViewModel
-    {
+    public class RegisterViewModel : VerifyViewModel
+	{
         [Required]
         [StringLength(32, ErrorMessage = "{0}的长度应在{2}-{1}之间", MinimumLength = 6)]
         [Display(Name = "账号")]
