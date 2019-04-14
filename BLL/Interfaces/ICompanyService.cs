@@ -15,10 +15,11 @@ namespace TrainSchdule.BLL.Interfaces
     /// </remarks>
     public interface ICompanieservice : IDisposable
     {
-        /// <summary>
-        /// 加载所有单位的信息
-        /// </summary>
-        IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
+	    Company GetCompanyByPath(string path);
+		/// <summary>
+		/// 加载所有单位的信息
+		/// </summary>
+		IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
 
         /// <summary>
         /// 通过单位路径

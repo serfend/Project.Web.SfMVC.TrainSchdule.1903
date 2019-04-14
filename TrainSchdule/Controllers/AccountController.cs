@@ -105,15 +105,12 @@ namespace TrainSchdule.WEB.Controllers
 	        if (ModelState.IsValid)
 	        {
 		        var codeResult = _verifyService.Verify(model.Verify);
-		        if (_verifyService.Status != string.Empty)
-		        {
-					return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,_verifyService.Status));
-		        }
-
 		        if (!codeResult)
 		        {
+			        _verifyService.Generate();
 					return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
 		        }
+
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 		        if (result.Succeeded)
 		        {
@@ -314,7 +311,12 @@ namespace TrainSchdule.WEB.Controllers
 				}));
 				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
 			}
-			if(!_verifyService.Verify(model.Verify))return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
+
+			if (!_verifyService.Verify(model.Verify))
+			{
+				_verifyService.Generate();
+				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
+			}
 	        var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
 	        if (user == null)
 	        {

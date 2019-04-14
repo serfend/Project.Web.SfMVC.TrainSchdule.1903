@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DAL.Entities;
 using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.DAL.Interfaces
@@ -84,6 +85,7 @@ namespace TrainSchdule.DAL.Interfaces
 		IRepository<Student> Students { get; }
 		IRepository<Company> Companies { get; }
 		IRepository<PermissionCompany>PermissionCompanies { get; }
+		IRepository<Duties> Duties { get; }
 		#endregion
 
         #region Methods

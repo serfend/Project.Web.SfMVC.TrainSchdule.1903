@@ -394,87 +394,26 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Edits user.
         /// </summary>
-        public void Edit(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null)
+        public bool Edit(string userName, Action<User> editCallBack)
         {
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
-
-            if (user != null)
-            {
-                if (user.RealName != realName)
-                {
-                    user.RealName = realName;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (user.About != about)
-                {
-                    user.About = about;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (user.WebSite != webSite)
-                {
-                    user.WebSite = webSite;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if(user.Gender != (int)gender)
-                {
-                    user.Gender = (int)gender;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (!string.IsNullOrEmpty(avatar))
-                {
-                    user.Avatar = avatar;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                _unitOfWork.Save();
-            }
-        }
+            if (user == null) return false;
+            editCallBack.Invoke(user);
+			_unitOfWork.Users.Update(user);
+            return true;
+		}
 
         /// <summary>
         /// Async edits user.
         /// </summary>
-        public async Task EditAsync(string userName, string realName, string about, string webSite, GenderEnum gender, string avatar = null)
+        public async Task<bool> EditAsync(string userName, Action<User> editCallBack)
         {
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
-            if (user != null)
-            {
-                if (user.RealName != realName)
-                {
-                    user.RealName = realName;
-                    _unitOfWork.Users.Update(user);
-                }
-                
-                if (user.About != about)
-                {
-                    user.About = about;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (user.WebSite != webSite)
-                {
-                    user.WebSite = webSite;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (user.Gender != (int)gender)
-                {
-                    user.Gender = (int)gender;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                if (!string.IsNullOrEmpty(avatar))
-                {
-                    user.Avatar = avatar;
-                    _unitOfWork.Users.Update(user);
-                }
-
-                await _unitOfWork.SaveAsync();
-            }
+			if(user==null)return false;
+			await Task.Run(()=> editCallBack.Invoke(user));
+			_unitOfWork.Users.Update(user);
+			return true;
         }
 
         #endregion

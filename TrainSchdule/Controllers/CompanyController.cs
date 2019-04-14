@@ -28,7 +28,7 @@ namespace TrainSchdule.Web.Controllers
 
 	    [HttpGet]
 	    [AllowAnonymous]
-	    public IActionResult GetDic(string path)
+	    public IActionResult Child(string path)
 	    {
 		    if (path == null)path = "Root";
 		    var nowCompany = _Companieservice.Get(path);
@@ -83,7 +83,11 @@ namespace TrainSchdule.Web.Controllers
 		    return new JsonResult(ActionStatusMessage.Company_CreateExisted);
 		    
 	    }
-
+		/// <summary>
+		/// 检查当前用户是否具有操作对应路径单位的权限
+		/// </summary>
+		/// <param name="target"></param>
+		/// <returns></returns>
 	    private bool CheckPermissionCompany(string target)
 	    {
 		    var currentCompany = _currentUserService.CurrentUser.PermissionCompanies;

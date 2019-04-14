@@ -53,7 +53,7 @@ namespace TrainSchdule.BLL.Services
 		}
 
 		#endregion
-		private Company GetCompanyByPath(string path)
+		public Company GetCompanyByPath(string path)
 		{
 			var company =  _unitOfWork.Companies.Find(x => x.Path == path).FirstOrDefault();
 			return company;

@@ -42,7 +42,7 @@ namespace TrainSchdule.WEB.Extensions
 
         public static string GetAvatar(UserDTO item)
         {
-	        if (!item.Avatar.IsNullOrEmpty()) return item.Avatar;
+	        if (!item.Avatar.IsNullOrEmpty()) return $"data/avatars/{item.UserName}/item.Avatar";
 	        if ( item.Gender==GenderEnum.Male || item.Gender==GenderEnum.Unknown) return ImgAvatarMale;
 	        return ImgAvatarFemale;
         }

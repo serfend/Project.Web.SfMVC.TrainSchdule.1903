@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.DrawingCore;
+using System.DrawingCore.Drawing2D;
 using System.DrawingCore.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 namespace BLL.Services
 {
@@ -26,13 +28,17 @@ namespace BLL.Services
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_fileProvider = fileProvider;
-			verifyImgNum = fileProvider.GetDirectoryContents("verify").Count();
+			ReloadPath();
 			_cache = new MemoryCache(new MemoryCacheOptions()
 			{
 				ExpirationScanFrequency = TimeSpan.FromMinutes(30)
 			});
 		}
 
+		private void ReloadPath()
+		{
+			verifyImgNum = _fileProvider.GetDirectoryContents(verifyPath).Count();
+		}
 		public void Dispose()
 		{
 			Dispose(true);
@@ -63,32 +69,36 @@ namespace BLL.Services
 
 
 		private static int verifyImgNum = 0;
-		private static int RndIndex => new Random().Next(1, verifyImgNum);
+		private static int RndIndex => new Random().Next(0, verifyImgNum);
 
 		public byte[] Front()
 		{
 			return GetImg()?.Front;
 		}
 
-		private static int GenerateCode()
-		{
-			return new Random().Next(0,1000);
-		}
 		public byte[] Background()
 		{
 			return GetImg()?.Background;
 		}
 
+		private const string verifyPath = "wwwroot\\images\\verify";
 		private readonly MemoryCache _cache;
 		public Guid Generate()
 		{
 			var newCodeValue = Guid.NewGuid();
-			var newCodeByte = newCodeValue.ToByteArray();
 			_httpContextAccessor.HttpContext.Session.Set(KEY_VerifyCode, Encoding.UTF8.GetBytes(newCodeValue.ToString()));
-			var file=_fileProvider.GetFileInfo($"verify\\{RndIndex}.png");
-			using (var sr = file.CreateReadStream())
+			int index = RndIndex;
+			var file=_fileProvider.GetDirectoryContents(verifyPath).Skip(index)?.FirstOrDefault();
+			if (file == null)
 			{
-				_cache.Set(newCodeValue.ToString(), new VerifyImg(Image.FromStream(sr)),TimeSpan.FromMinutes(30));
+				ReloadPath();
+			}
+			else
+			{
+				using (var sr = file.CreateReadStream())
+				{
+					_cache.Set(newCodeValue.ToString(), new VerifyImg(Image.FromStream(sr)));
+				}
 			}
 
 			return newCodeValue;
@@ -139,11 +149,31 @@ namespace BLL.Services
 			this.code = new Random().Next(50, 1000- percentWidth);
 			int top = (int) (size.Height * (0.6*new Random().NextDouble()+0.1));
 			int left = (this.code * size.Width) / 1000;
+
+			//创建剪影
+			var gp=new GraphicsPath(FillMode.Winding);
+			gp.StartFigure();
+			float r = (float) (width * 0.5);
+			PointF rightEllipsePos=new PointF((float)(width-r*0.5), (float)(width*0.5 - r*0.5));//右侧中间的小圈
+			PointF bottomEllipsePos = new PointF((float)(width*0.5 - r*0.5), (float)(width - r*0.5));//下侧中间的小圈
+			gp.AddEllipse(rightEllipsePos.X, rightEllipsePos.Y,r,r);
+			gp.AddEllipse(bottomEllipsePos.X, bottomEllipsePos.Y,r,r);
+			gp.AddRectangle(new Rectangle(0,0,width,width));
+			gp.CloseAllFigures();
+			var matrix = new Matrix();
+			matrix.Translate(left, top);
+			gp.Transform(matrix);
+			g.FillPath(new SolidBrush(Color.FromArgb(200,0,0,0)),gp );
+			//g.FillPath(new TextureBrush(raw), gp);
+			g.FillPath(new PathGradientBrush(gp)
+			{
+				SurroundColors = new Color[] { Color.FromArgb(100, 0, 0, 0), Color.FromArgb(0, 0, 0, 0) },
+			}, gp);
+
 			var srcRect = new Rectangle(left, top, width, width);
-			gchild.Clip=new Region(new Rectangle(0,0, srcRect.Width, srcRect.Height));
-			gchild.DrawImage(raw,new Rectangle(0,0,srcRect.Width,srcRect.Height),srcRect,GraphicsUnit.Pixel);
-			//gchild.DrawString("test",new Font(new FontFamily("微软雅黑"),20 ),Brushes.Black,gchild.ClipBounds );
-			g.FillRectangle(new SolidBrush(Color.FromArgb(100,0,0,0)),srcRect );
+			gchild.Clip=new Region(new Rectangle(0,0, srcRect.Width, srcRect.Height)); 
+			gchild.FillPath(new TextureBrush(imgChild), gp);
+
 			Front = ImageToBytes(imgChild) ;
 			Background = ImageToBytes(raw);
 		}

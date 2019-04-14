@@ -102,7 +102,15 @@ namespace TrainSchdule.WEB.Controllers
                 return View(model);
             }
 
-            await _usersService.EditAsync(User.Identity.Name, model.RealName, model.About, model.WebSite, model.Gender);
+
+            await _usersService.EditAsync(User.Identity.Name, (u) =>
+            {
+	            u.RealName=model.RealName;
+				u.About=model.About;
+				u.WebSite=model.WebSite;
+				u.Gender=(int)model.Gender;
+
+			});
 
             StatusMessage = "个人信息已修改";
             return RedirectToAction(nameof(Index));
@@ -217,7 +225,16 @@ namespace TrainSchdule.WEB.Controllers
                     await fs.FlushAsync();
                 }
 
-                await _usersService.EditAsync(user.UserName, user.RealName, user.About, user.WebSite, user.Gender, user.Avatar);
+                await _usersService.EditAsync(userName,(u) =>
+                {
+	                u.UserName = user.UserName;
+	                u.RealName = user.RealName;
+	                u.About = user.About;
+	                u.WebSite = user.WebSite;
+	                u.Gender = (int)user.Gender;
+	                u.Avatar = user.Avatar;
+
+                });
             }
 
             return RedirectToAction(nameof(Index));

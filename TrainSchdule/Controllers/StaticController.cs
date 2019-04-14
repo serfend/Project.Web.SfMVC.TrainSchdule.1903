@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Interfaces;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using TrainSchdule.BLL.Helpers;
+using TrainSchdule.ViewModels.Static;
 using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.Controllers
@@ -26,8 +29,17 @@ namespace TrainSchdule.Controllers
 		[Route("verify")]
 		public IActionResult VerifyCode()
 		{
-			return new JsonResult(_verifyService.Generate());
-			//return new FileStreamResult(_verifyService.Generate(), "image/png");
+			var imgId = _verifyService.Generate().ToString();
+			if (!_verifyService.Status.IsNullOrEmpty())
+			{
+				var status = _verifyService.Status;
+				_verifyService.Generate();
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, status));
+			}
+			return new JsonResult(new VerifyGeneratedViewModel()
+			{
+				id= imgId
+			});
 		}
 		[HttpGet]
 		[AllowAnonymous]

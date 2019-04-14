@@ -67,7 +67,8 @@ namespace TrainSchdule.WEB
 
 		public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options=>{
+
+			services.AddDbContext<ApplicationDbContext>(options=>{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
@@ -102,14 +103,13 @@ namespace TrainSchdule.WEB
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(150);
-                options.LoginPath = "/Account/ApiLogin"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/ApiLogin
+                options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/ApiLogin
                 options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
                 options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 				
             });
-            
             AddApplicationServices(services);
 
             services.AddSession(s => s.IdleTimeout = TimeSpan.FromMinutes(60));
@@ -160,9 +160,9 @@ namespace TrainSchdule.WEB
                     template: "{controller=Home}/{action=Cover}/{id?}");
             });
 
-			//seeder.Seed().Wait();
-			//seeder.CreateUserRoles(services).Wait();
-			
+            //seeder.Seed().Wait();
+            //seeder.CreateUserRoles(services).Wait();
+
         }
 
         #endregion

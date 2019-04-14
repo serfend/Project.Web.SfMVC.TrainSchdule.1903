@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DAL.Entities;
+using DAL.Repositories;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
@@ -35,6 +37,7 @@ namespace TrainSchdule.DAL.Repositories
         private IRepository<Student> _studentsRepository;
         private IRepository<Company> _CompaniesRepository;
         private IRepository<PermissionCompany> _permissionCompanyRepository;
+        private IRepository<Duties> _duties;
         #endregion
 
         #region Properties
@@ -116,6 +119,7 @@ namespace TrainSchdule.DAL.Repositories
         public IRepository<PermissionCompany> PermissionCompanies =>
 	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionCompanyRepository(_context));
 
+        public IRepository<Duties> Duties => _duties ?? (_duties = new DutiesRepository(_context));
         #endregion
 
         #region .ctors
