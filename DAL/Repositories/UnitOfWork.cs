@@ -38,14 +38,15 @@ namespace TrainSchdule.DAL.Repositories
         private IRepository<Company> _CompaniesRepository;
         private IRepository<PermissionCompany> _permissionCompanyRepository;
         private IRepository<Duties> _duties;
-        #endregion
+        private IRepository<Apply> _applies;
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        /// <summary>
-        /// Gets application user repository.
-        /// </summary>
-        public IRepository<ApplicationUser> IdentityUsers => _identityUsersRepository ?? (_identityUsersRepository = new UsersIdentityRepository(_context));
+		/// <summary>
+		/// Gets application user repository.
+		/// </summary>
+		public IRepository<ApplicationUser> IdentityUsers => _identityUsersRepository ?? (_identityUsersRepository = new UsersIdentityRepository(_context));
 
         /// <summary>
         /// Gets user repository.
@@ -120,14 +121,16 @@ namespace TrainSchdule.DAL.Repositories
 	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionCompanyRepository(_context));
 
         public IRepository<Duties> Duties => _duties ?? (_duties = new DutiesRepository(_context));
-        #endregion
 
-        #region .ctors
+        public IRepository<Apply> Applies => _applies ?? (_applies = new AppliesRepository(_context));
+		#endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWork"/>.
-        /// </summary>
-        public UnitOfWork(ApplicationDbContext context)
+		#region .ctors
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnitOfWork"/>.
+		/// </summary>
+		public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }

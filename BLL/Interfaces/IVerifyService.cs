@@ -10,6 +10,7 @@ namespace BLL.Interfaces
 {
 	public interface IVerifyService:IDisposable
 	{
+
 		/// <summary>
 		/// 初始化验证码
 		/// </summary>
@@ -31,5 +32,6 @@ namespace BLL.Interfaces
 		bool Verify(int code);
 
 		string Status { get;  }
+		Point Pos { get; }
 	}
 }

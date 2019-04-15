@@ -107,7 +107,6 @@ namespace TrainSchdule.WEB.Controllers
 		        var codeResult = _verifyService.Verify(model.Verify);
 		        if (!codeResult)
 		        {
-			        _verifyService.Generate();
 					return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
 		        }
 
@@ -314,7 +313,6 @@ namespace TrainSchdule.WEB.Controllers
 
 			if (!_verifyService.Verify(model.Verify))
 			{
-				_verifyService.Generate();
 				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
 			}
 	        var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);

@@ -9,5 +9,6 @@ namespace TrainSchdule.ViewModels.Static
 	public class VerifyGeneratedViewModel:APIViewModel
 	{
 		public string id { get; set; }
+		public int ypos { get; set; }
 	}
 }

@@ -180,7 +180,7 @@ namespace TrainSchdule.BLL.Services
 		#region Helpers
 
 		/// <summary>
-		/// Helps map user entity to user data transfer object.
+		/// 
 		/// </summary>
 		protected CompanyDTO MapCompany(Company company)
 		{

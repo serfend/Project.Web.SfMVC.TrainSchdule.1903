@@ -83,6 +83,7 @@ namespace TrainSchdule.DAL.Data
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<PermissionCompany>PermissionCompanies { get; set; }
 		public DbSet<Duties> Duties { get; set; }
+		public DbSet<Apply> Applies { get; set; }
         #endregion
 
         #region .ctors

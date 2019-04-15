@@ -5,19 +5,15 @@ using TrainSchdule.DAL.Entities;
 
 namespace DAL.Entities
 {
-	/// <summary>
-	/// 用户的申请请求
-	/// </summary>
-	public class ApplyRequest:BaseEntity
+	public class ApplyStamp:BaseEntity
 	{
 		/// <summary>
-		/// 休假天数
+		/// 离队时间
 		/// </summary>
-		public int xjts { get; set; }
+		public DateTime ldsj { get; set; }
 		/// <summary>
-		/// 路途天数
+		/// 归队时间
 		/// </summary>
-		public int ltts { get; set; }
-
+		public DateTime gdsj { get; set; }
 	}
 }

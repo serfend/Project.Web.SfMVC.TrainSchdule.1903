@@ -66,19 +66,27 @@ namespace TrainSchdule.WEB.Controllers
 					var rst = new StringBuilder();
 					_usersService.Edit(username,async (u) =>
 					{
-						u.Address=model.Address;
-						var cmp=_companiesService.GetCompanyByPath(model.Company);
-						u.Company = cmp;
-						var duties = _unitOfWork.Duties.Find(x => x.Name == model.Duties)?.FirstOrDefault();
-						u.Duties=duties;
-						if (duties == null)
+						if(model.Address!=null)u.Address=model.Address;
+						if (model.Company != null)
 						{
-							rst.AppendLine($"当前不存在对应职务:{model.Duties}，同时已创建此职务并交管理员审核");
-							duties = new Duties() { Name = model.Duties };
-							await _unitOfWork.Duties.CreateAsync(duties);
+							var cmp =_companiesService.GetCompanyByPath(model.Company);
+							u.Company = cmp;
 						}
-						u.Phone=model.Phone;
-						u.RealName=model.RealName;
+
+						if (model.Duties != null)
+						{
+							var duties = _unitOfWork.Duties.Find(x => x.Name == model.Duties)?.FirstOrDefault();
+							u.Duties = duties;
+							if (duties == null)
+							{
+								rst.AppendLine($"当前不存在对应职务:{model.Duties}，同时已创建此职务并交管理员审核");
+								duties = new Duties() { Name = model.Duties };
+								await _unitOfWork.Duties.CreateAsync(duties);
+							}
+						}
+						
+						if(model.Phone!=null)u.Phone=model.Phone;
+						if(model.RealName!=null)u.RealName=model.RealName;
 						if (u.Company == null) rst.AppendLine($"当前不存在对应单位:{model.Company}");
 					});
 					return rst.Length==0 ? new JsonResult(ActionStatusMessage.Success) : 
