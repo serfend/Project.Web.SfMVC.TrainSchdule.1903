@@ -52,7 +52,7 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    public async Task<IActionResult> Detail(string path = null)
+	    public IActionResult Detail(string path = null)
 	    {
 		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
 		    var cmp = _companieService.Get(path);
