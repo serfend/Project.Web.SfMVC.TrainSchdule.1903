@@ -40,7 +40,7 @@ namespace TrainSchdule.WEB.Controllers
 
 		#region Logic
 		[HttpGet,Route("{username}")]
-        public ActionResult Details(string username)
+        public IActionResult Details(string username)
         {
             var item = _usersService.Get(username).ToViewModel();
 
@@ -111,7 +111,10 @@ namespace TrainSchdule.WEB.Controllers
 			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;
 			var item=_usersService.Get(username);
 			if (item.Privilege>_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-			return new JsonResult(item);
+			return new JsonResult(new UserDetailViewModel()
+			{
+				data=item
+			});
         }
 		
         #endregion

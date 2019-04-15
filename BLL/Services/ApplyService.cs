@@ -55,43 +55,62 @@ namespace BLL.Services
 
 		public IEnumerable<ApplyDTO> GetAll(int page, int pageSize)
 		{
+			return GetAll((item) => true,page,pageSize);
+		}
+
+		public IEnumerable<ApplyDTO> GetAll(string userName,int page,int pageSize)
+		{
+			return GetAll((item) => item.From.UserName == userName,page,pageSize);
+		}
+
+		public IEnumerable<ApplyDTO> GetAll(string userName, AuditStatus status,int page,int pageSize)
+		{
+			return GetAll((item) => item.From.UserName == userName && status == item.Status,page,pageSize);
+		}
+
+		public IEnumerable<ApplyDTO> GetAll(Func<Apply,bool> predicate, int page, int pageSize)
+		{
 			var list = new List<ApplyDTO>();
-			_unitOfWork.Applies.GetAll(page, pageSize).All(item =>
+			var items = _unitOfWork.Applies.Find(predicate).Skip(page * pageSize).Take(pageSize);
+			items.All((item) =>
 			{
 				list.Add(item.ToDTO());
 				return true;
 			});
 			return list;
 		}
-
-		public IEnumerable<ApplyDTO> GetAll(string userName)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IEnumerable<ApplyDTO> GetAll(string userName, AuditStatus status)
-		{
-			throw new NotImplementedException();
-		}
-
 		public Apply Create(Apply item)
 		{
-			throw new NotImplementedException();
+			_unitOfWork.Applies.Create(item);
+			_unitOfWork.Save();
+			return item;
 		}
 
-		public Task<Apply> CreateAsync(Apply item)
+		public async Task<Apply> CreateAsync(Apply item)
 		{
-			throw new NotImplementedException();
+			await _unitOfWork.Applies.CreateAsync(item);
+			await _unitOfWork.SaveAsync();
+			return item;
 		}
 
 		public bool Edit(string userName, Action<Apply> editCallBack)
 		{
-			throw new NotImplementedException();
+			var target = _unitOfWork.Applies.Find((item) => item.From.UserName == userName).FirstOrDefault();
+			if (target == null) return false;
+			editCallBack.Invoke(target);
+			_unitOfWork.Applies.Update(target);
+			_unitOfWork.Save();
+			return true;
 		}
 
-		public Task<bool> EditAsync(string userName, Action<Apply> editCallBack)
+		public async Task<bool> EditAsync(string userName, Action<Apply> editCallBack)
 		{
-			throw new NotImplementedException();
+			var target = _unitOfWork.Applies.Find((item) => item.From.UserName == userName).FirstOrDefault();
+			if (target == null) return false;
+			editCallBack.Invoke(target);
+			_unitOfWork.Applies.Update(target);
+			await _unitOfWork.SaveAsync();
+			return true;
 		}
 	}
 }

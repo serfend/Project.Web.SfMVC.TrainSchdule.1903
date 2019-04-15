@@ -8,7 +8,9 @@ namespace TrainSchdule.ViewModels.Static
 {
 	public class VerifyViewModel
 	{
-		[Display(Name = "验证码")]
+		[Display(Name = "VerifyCode")]
+		[Required]
 		public int Verify { get; set; }
 	}
+
 }

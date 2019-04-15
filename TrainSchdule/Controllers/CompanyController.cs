@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.BLL.Services;
+using TrainSchdule.ViewModels.Company;
 using TrainSchdule.Web.ViewModels.Company;
 
 namespace TrainSchdule.Web.Controllers
@@ -17,12 +18,12 @@ namespace TrainSchdule.Web.Controllers
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
-	    private readonly ICompanieservice _Companieservice;
+	    private readonly ICompanieservice _companieService;
 	    private readonly ICurrentUserService _currentUserService;
 
-	    public CompanyController(ICompanieservice Companieservice, ICurrentUserService currentUserService)
+	    public CompanyController(ICompanieservice companieService, ICurrentUserService currentUserService)
 	    {
-		    _Companieservice = Companieservice;
+		    _companieService = companieService;
 		    _currentUserService = currentUserService;
 	    }
 
@@ -31,10 +32,11 @@ namespace TrainSchdule.Web.Controllers
 	    public IActionResult Child(string path)
 	    {
 		    if (path == null)path = "Root";
-		    var nowCompany = _Companieservice.Get(path);
+
+		    var nowCompany = _companieService.Get(path);
 		    if (nowCompany != null)
 		    {
-			    var list = _Companieservice.FindAllChild(nowCompany.id);
+			    var list = _companieService.FindAllChild(nowCompany.id);
 				return new JsonResult(new GetDicViewModel()
 				{
 					Child=list,
@@ -47,6 +49,18 @@ namespace TrainSchdule.Web.Controllers
 			    return new JsonResult(ActionStatusMessage.Company_NotExist);
 		    }
 
+	    }
+
+	    [HttpGet]
+	    public async Task<IActionResult> Detail(string path = null)
+	    {
+		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
+		    var cmp = _companieService.Get(path);
+			if(cmp==null)return new JsonResult(ActionStatusMessage.Company_NotExist);
+			return new JsonResult(new CompanyDetailViewModel()
+			{
+				data=cmp
+			});
 	    }
 		[HttpPost]
 	    public async Task<IActionResult> Create(CompanyViewModel company)
@@ -65,13 +79,13 @@ namespace TrainSchdule.Web.Controllers
 		    }
 			if(!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-		    var anyExist = _Companieservice.Get($"{company.ParentPath}/{company.Name}");
+		    var anyExist = _companieService.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)
 		    {
-			    var newCompanyDTO= await _Companieservice.CreateAsync(company.Name);
+			    var newCompanyDTO= await _companieService.CreateAsync(company.Name);
 			    try
 			    {
-				    await _Companieservice.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+				    await _companieService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
 			    }
 			    catch (Exception ex)
 			    {
@@ -88,22 +102,8 @@ namespace TrainSchdule.Web.Controllers
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
-	    private bool CheckPermissionCompany(string target)
-	    {
-		    var currentCompany = _currentUserService.CurrentUser.PermissionCompanies;
-		    if (currentCompany!= null)
-		    {
-			    foreach (var permissionCompany in currentCompany)
-			    {
-				    if (target.Substring(0, permissionCompany.Path.Length) == permissionCompany.Path)
-				    {
-					    return true;
-				    }
-			    }
-		    }
-
-		    return false;
-
-	    }
+	    public bool CheckPermissionCompany(string target)
+		     => _currentUserService.CurrentUser.PermissionCompanies.Any((company)=>target.StartsWith(company.Path));
+		 
     }
 }

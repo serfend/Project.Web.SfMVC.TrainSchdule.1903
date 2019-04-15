@@ -18,14 +18,12 @@ namespace TrainSchdule.BLL.Services
 		
 		private readonly IUnitOfWork _unitOfWork;
 		
-		private readonly IHttpContextAccessor _httpContextAccessor;
 		#region Disposing
 		private bool _isDisposed;
 
 		public Companieservice(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
 		{
 			_unitOfWork = unitOfWork;
-			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public void Dispose()
