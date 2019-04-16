@@ -13,7 +13,7 @@ namespace TrainSchdule.BLL.Interfaces
     /// <remarks>
     /// 此接口需要反射调用.
     /// </remarks>
-    public interface ICompanieservice : IDisposable
+    public interface ICompaniesService : IDisposable
     {
 	    Company GetCompanyByPath(string path);
 		/// <summary>

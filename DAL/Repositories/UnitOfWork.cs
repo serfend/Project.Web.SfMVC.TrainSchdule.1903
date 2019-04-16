@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DAL.Entities;
 using DAL.Repositories;
+using DAL.Repositories.Applies;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
@@ -39,7 +40,11 @@ namespace TrainSchdule.DAL.Repositories
         private IRepository<PermissionCompany> _permissionCompanyRepository;
         private IRepository<Duties> _duties;
         private IRepository<Apply> _applies;
-		#endregion
+        private IRepository<ApplyResponse> _applyResponses;
+        private IRepository<ApplyRequest> _applyRequests;
+        private IRepository<ApplyStamp> _applyStamps;
+
+        #endregion
 
 		#region Properties
 
@@ -123,7 +128,12 @@ namespace TrainSchdule.DAL.Repositories
         public IRepository<Duties> Duties => _duties ?? (_duties = new DutiesRepository(_context));
 
         public IRepository<Apply> Applies => _applies ?? (_applies = new AppliesRepository(_context));
-		#endregion
+        public IRepository<ApplyResponse> ApplyResponses => _applyResponses ?? (_applyResponses = new ApplyResponsesRepository(_context));
+        public IRepository<ApplyRequest > ApplyRequests => _applyRequests ?? (_applyRequests = new ApplyRequestsRepository(_context));
+        public IRepository<ApplyStamp > ApplyStamps => _applyStamps ?? (_applyStamps = new ApplyStampsRepository(_context));
+
+
+        #endregion
 
 		#region .ctors
 

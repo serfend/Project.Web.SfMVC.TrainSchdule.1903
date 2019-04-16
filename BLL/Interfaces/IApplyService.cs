@@ -11,6 +11,7 @@ namespace BLL.Interfaces
 {
 	public interface IApplyService : IDisposable
 	{
+		ApplyDTO Get(Guid id);
 		/// <summary>
 		/// 加载所有申请
 		/// </summary>

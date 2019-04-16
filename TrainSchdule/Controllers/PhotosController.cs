@@ -118,7 +118,7 @@ namespace TrainSchdule.WEB.Controllers
                 return View(item.ToViewModel());
             }
 
-            return RedirectToAction("Details", "Photos", new { id = item.id });
+            return RedirectToAction("Details", "Photos", new {item.id });
         }
         
         [Authorize, HttpPost, ValidateAntiForgeryToken, Route("photos/edit/{id}")]
@@ -129,7 +129,7 @@ namespace TrainSchdule.WEB.Controllers
                 await _photosService.EditAsync(item.id, item.Filter, item.Description, tags, model, brand, iso, aperture, exposure, focalLength);
             }
 
-            return RedirectToAction("Details", "Photos", new { id = item.id });
+            return RedirectToAction("Details", "Photos", new {item.id });
         }
         
         [Authorize, HttpPost, Route("photos/delete/{id}")]

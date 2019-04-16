@@ -12,6 +12,8 @@ namespace TrainSchdule.ViewModels.Apply
 	public class ApplySubmitViewModel:VerifyViewModel
 	{
 		public ApplySubmitData Param { get; set; }
+
+		public bool NotAutoStart { get; set; }
 	}
 
 	public class ApplySubmitData

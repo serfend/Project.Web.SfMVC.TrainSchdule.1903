@@ -87,6 +87,10 @@ namespace TrainSchdule.DAL.Interfaces
 		IRepository<PermissionCompany>PermissionCompanies { get; }
 		IRepository<Duties> Duties { get; }
 		IRepository<Apply> Applies { get; }
+
+		IRepository<ApplyResponse> ApplyResponses { get; }
+		IRepository<ApplyRequest> ApplyRequests { get; }
+		IRepository<ApplyStamp> ApplyStamps { get; }
 		#endregion
 
         #region Methods

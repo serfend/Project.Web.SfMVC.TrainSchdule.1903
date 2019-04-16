@@ -24,7 +24,7 @@ namespace TrainSchdule.WEB.Extensions
                 RealName = item.RealName,
                 UserName = item.UserName,
                 Avatar =UsersExtensions.GetAvatar(item),
-                About = item.About != null ? item.About : string.Empty,
+                About = item.About ?? string.Empty,
                 Date = item.Date.ToString(UsersExtensions.Info_DateFormat),
                 Confirmed = item.Confirmed,
                 Followed = item.Followed,

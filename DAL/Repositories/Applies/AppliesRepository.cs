@@ -9,7 +9,7 @@ using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Repositories;
 
-namespace DAL.Repositories
+namespace DAL.Repositories.Applies
 {
 		/// <summary>
 		/// Contains methods for processing DB entities in Companies table.

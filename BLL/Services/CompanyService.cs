@@ -13,7 +13,7 @@ using TrainSchdule.DAL.Interfaces;
 
 namespace TrainSchdule.BLL.Services
 {
-	public class Companieservice:ICompanieservice
+	public class CompaniesService:ICompaniesService
 	{
 		
 		private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ namespace TrainSchdule.BLL.Services
 		#region Disposing
 		private bool _isDisposed;
 
-		public Companieservice(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+		public CompaniesService(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork;
 		}
@@ -45,7 +45,7 @@ namespace TrainSchdule.BLL.Services
 			}
 		}
 
-		~Companieservice()
+		~CompaniesService()
 		{
 			Dispose(false);
 		}

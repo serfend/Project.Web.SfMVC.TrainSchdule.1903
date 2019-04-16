@@ -23,7 +23,7 @@ namespace BLL.Extensions
 					FromId = item.From.Id,
 					Request = item.Request,
 					Stamp = item.stamp,
-					xjlb = item.xjlb
+					Xjlb = item.xjlb
 				},
 			};
 			var list = new List<ApplyResponseDTO>(item.Response.Count());

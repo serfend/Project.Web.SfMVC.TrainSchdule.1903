@@ -18,10 +18,10 @@ namespace TrainSchdule.Web.Controllers
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
-	    private readonly ICompanieservice _companieService;
+	    private readonly ICompaniesService _companieService;
 	    private readonly ICurrentUserService _currentUserService;
 
-	    public CompanyController(ICompanieservice companieService, ICurrentUserService currentUserService)
+	    public CompanyController(ICompaniesService companieService, ICurrentUserService currentUserService)
 	    {
 		    _companieService = companieService;
 		    _currentUserService = currentUserService;

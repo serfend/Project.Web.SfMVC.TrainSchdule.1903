@@ -106,7 +106,7 @@ namespace BLL.Services
 			return newCodeValue;
 		}
 
-		private VerifyImg GetImg(bool autoGenerate=true)
+		private VerifyImg GetImg()
 		{
 			Status = string.Empty;
 			_httpContextAccessor.HttpContext.Session.TryGetValue(KEY_VerifyCode, out var codeIndex);

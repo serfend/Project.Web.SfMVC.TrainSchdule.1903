@@ -19,7 +19,7 @@ namespace TrainSchdule.WEB.Controllers
 
         private readonly IUsersService _usersService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly ICompanieservice _companiesService;
+        private readonly ICompaniesService _companiesService;
         private readonly IUnitOfWork _unitOfWork;
 
         private bool _isDisposed;
@@ -28,7 +28,7 @@ namespace TrainSchdule.WEB.Controllers
 
         #region .ctors
 
-        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompanieservice companiesService, IUnitOfWork unitOfWork)
+        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IUnitOfWork unitOfWork)
         {
             _usersService = usersService;
             _currentUserService = currentUserService;

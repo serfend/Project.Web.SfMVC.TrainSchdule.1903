@@ -56,7 +56,7 @@ namespace TrainSchdule.WEB
             services.AddScoped<ITagsService, TagsService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<IStudentService, StudentService>();
-			services.AddScoped<ICompanieservice, Companieservice > ();
+			services.AddScoped<ICompaniesService, CompaniesService > ();
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
@@ -128,7 +128,7 @@ namespace TrainSchdule.WEB
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider services, ApplicationDbContextSeeder seeder) 
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services, ApplicationDbContextSeeder seeder) 
         {
             if (env.IsDevelopment())
             {

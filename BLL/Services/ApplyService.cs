@@ -53,6 +53,10 @@ namespace BLL.Services
 		}
 		#endregion
 
+		public ApplyDTO Get(Guid id)
+		{
+			return _unitOfWork.Applies.Get(id).ToDTO();
+		}
 		public IEnumerable<ApplyDTO> GetAll(int page, int pageSize)
 		{
 			return GetAll((item) => true,page,pageSize);

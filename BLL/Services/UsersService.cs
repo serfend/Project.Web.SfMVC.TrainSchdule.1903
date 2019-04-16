@@ -21,7 +21,6 @@ namespace TrainSchdule.BLL.Services
         #region Fields
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICurrentUserService _currentUserService;
 
         private bool _isDisposed;
@@ -36,7 +35,6 @@ namespace TrainSchdule.BLL.Services
         public UsersService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
-            _httpContextAccessor = httpContextAccessor;
             _currentUserService = new CurrentUserService(unitOfWork, httpContextAccessor);
         }
 
