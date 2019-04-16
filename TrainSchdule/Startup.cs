@@ -57,6 +57,8 @@ namespace TrainSchdule.WEB
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<IStudentService, StudentService>();
 			services.AddScoped<ICompaniesService, CompaniesService > ();
+			services.AddScoped<IApplyService,ApplyService>();
+
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
