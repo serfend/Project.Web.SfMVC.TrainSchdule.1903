@@ -132,6 +132,23 @@ namespace TrainSchdule.Web.Controllers
 			if(item==null)return new JsonResult(ActionStatusMessage.Apply_NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply_OperationAuditBegan);
+			var anyCrashApply = _applyService.GetAll(prevItem =>
+			{
+				if (prevItem.Status == AuditStatus.Auditing || prevItem.Status == AuditStatus.Accept ||
+				    prevItem.Status == AuditStatus.AcceptAndWaitAdmin)
+				{
+					var prevStart = prevItem.stamp.ldsj.Ticks;
+					var prevEnd = prevItem.stamp.ldsj.AddDays(prevItem.Request.xjts).AddDays(prevItem.Request.ltts).Ticks;
+					var curStart = item.stamp.ldsj.Ticks;
+					var curEnd = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts).Ticks;
+					return (prevStart >= curStart && prevStart <= curEnd)||(prevEnd>=curStart&&prevEnd<=curEnd);
+				}
+				else return false;
+			},0,1).FirstOrDefault();
+			if (anyCrashApply != null)
+			{
+				return new JsonResult(ActionStatusMessage.Apply_OperationAuditCrash);
+			}
 			item.Status = AuditStatus.Auditing;
 			item.Response.First().Status = Auditing.Received;
 			return new JsonResult(ActionStatusMessage.Success);

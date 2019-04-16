@@ -6,7 +6,7 @@ namespace TrainSchdule.BLL.Helpers
 {
 	public static class ActionStatusMessage
 	{
-		public static readonly Status Success=new Status(0,"");
+		public static readonly Status Success=new Status(0,null);
 
 		public static readonly Status AccountLogin_InvalidAuth=new Status(600,"登录验证失败");
 		public static readonly Status AccountLogin_InvalidByUnknown=new Status(60000,"存在异常导致登录失败");
@@ -37,6 +37,7 @@ namespace TrainSchdule.BLL.Helpers
 		public static readonly Status Apply_NotExist = new Status(150404, "申请不存在");
 		public static readonly Status Apply_OperationInvalid = new Status(150004, "申请不存在");
 		public static readonly Status Apply_OperationAuditBegan = new Status(150005, "申请已处于审核状态中");
+		public static readonly Status Apply_OperationAuditCrash = new Status(150006, "当前存在正在进行的申请（审核中、审核通过状态）");
 
 
 
