@@ -17,6 +17,6 @@ namespace TrainSchdule.ViewModels.Apply
 	public class ApplyDetailViewModel : APIViewModel
 	{
 		[JsonProperty("data")]
-		public ApplyDTO Data { get; set; }
+		public ApplyAllDataDTO Data { get; set; }
 	}
 }

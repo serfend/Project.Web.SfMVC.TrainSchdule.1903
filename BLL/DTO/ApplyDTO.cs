@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace BLL.DTO
 {
+	/// <summary>
+	/// 基础数据
+	/// </summary>
 	public class ApplyDTO
 	{
 		[JsonProperty("id")]
@@ -41,6 +44,14 @@ namespace BLL.DTO
 		/// </summary>
 		[JsonProperty("current")]
 		public string Current { get; set; }
+
+	}
+	/// <summary>
+	/// 详细数据
+	/// </summary>
+	public class ApplyAllDataDTO: ApplyDTO
+	{
+
 		/// <summary>
 		/// 申请的详细审批情况
 		/// </summary>

@@ -9,9 +9,28 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
-		public static ApplyDTO ToDTO(this Apply item)
+		public static ApplyDTO ToSummaryDTO(this ApplyAllDataDTO all)
 		{
-			var apply=new ApplyDTO()
+			return new ApplyDTO()
+			{
+				Company = all.Company,
+				Create = all.Create,
+				From = all.From,
+				FromUserName = all.FromUserName,
+				Id = all.Id,
+				Current = all.Current,
+				Status = all.Status
+			};
+		}
+		public static ApplyDTO ToSummaryDTO(this Apply item)
+		{
+			var all= ToAllDataDTO(item);
+			return all.ToSummaryDTO();
+		}
+		
+		public static ApplyAllDataDTO ToAllDataDTO(this Apply item)
+		{
+			var apply=new ApplyAllDataDTO()
 			{
 				Company = item.Company,
 				Create = item.Create,

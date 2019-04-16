@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.DTO;
+using BLL.Extensions;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Entities;
@@ -141,11 +143,19 @@ namespace TrainSchdule.Web.Controllers
 		{
 			if (path == null) path = _currentUserService.CurrentUser.Company?.Path;
 			if (path == null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.Code, $"检查当前用户{_currentUserService.CurrentUser.RealName}({_currentUserService.CurrentUser.UserName})的申请，但此人无归属单位"));
-			if (!_currentUserService.CurrentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+
+			//因权限关系，用户不一定具有查看自己本单位申请的权限
+			if (  !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 			var list = _applyService.GetAll((item)=>item.To.Any(cmp=>cmp.Path==path),page,pageSize);
+			var summaryList=new List<ApplyDTO>();
+			list.All(item =>
+			{
+				summaryList.Add(item.ToSummaryDTO());
+				return true;
+			});
 			return new JsonResult(new ApplyProfileViewModel()
 			{
-				Applies = list
+				Applies = summaryList
 			});
 		}
 
@@ -160,9 +170,15 @@ namespace TrainSchdule.Web.Controllers
 			if(path==null)return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.Code, $"来自{targetUser.RealName}({targetUser.UserName})的申请，但此人无归属单位"));
 			if (_currentUserService.CurrentUser.UserName!=username && !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp => path.StartsWith(cmp.Path))) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 			var list = _applyService.GetAll((item) => item.From.UserName==targetUser.UserName, page, pageSize);
+			var summaryList = new List<ApplyDTO>();
+			list.All(item =>
+			{
+				summaryList.Add(item.ToSummaryDTO());
+				return true;
+			});
 			return new JsonResult(new ApplyProfileViewModel()
 			{
-				Applies = list
+				Applies = summaryList
 			});
 		}
 

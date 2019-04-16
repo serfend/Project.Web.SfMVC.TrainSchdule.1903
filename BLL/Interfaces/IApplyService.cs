@@ -11,21 +11,21 @@ namespace BLL.Interfaces
 {
 	public interface IApplyService : IDisposable
 	{
-		ApplyDTO Get(Guid id);
+		ApplyAllDataDTO Get(Guid id);
 		/// <summary>
 		/// 加载所有申请
 		/// </summary>
-		IEnumerable<ApplyDTO> GetAll(int page, int pageSize);
+		IEnumerable<ApplyAllDataDTO> GetAll(int page, int pageSize);
 
 		/// <summary>
 		/// 通过userName加载申请
 		/// </summary>
-		IEnumerable<ApplyDTO> GetAll(string userName, int page, int pageSize);
+		IEnumerable<ApplyAllDataDTO> GetAll(string userName, int page, int pageSize);
 
 		/// <summary>
 		/// 通过userName和status加载申请
 		/// </summary>
-		IEnumerable<ApplyDTO> GetAll(string userName,AuditStatus status, int page, int pageSize);
+		IEnumerable<ApplyAllDataDTO> GetAll(string userName,AuditStatus status, int page, int pageSize);
 		/// <summary>
 		/// 任意条件获取申请
 		/// </summary>
@@ -33,7 +33,7 @@ namespace BLL.Interfaces
 		/// <param name="page"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
-		IEnumerable<ApplyDTO> GetAll(Func<Apply, bool> predicate, int page, int pageSize);
+		IEnumerable<ApplyAllDataDTO> GetAll(Func<Apply, bool> predicate, int page, int pageSize);
 
 		/// <summary>
 		/// 创建申请.

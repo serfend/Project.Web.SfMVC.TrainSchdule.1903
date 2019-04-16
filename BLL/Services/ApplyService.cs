@@ -53,32 +53,32 @@ namespace BLL.Services
 		}
 		#endregion
 
-		public ApplyDTO Get(Guid id)
+		public ApplyAllDataDTO Get(Guid id)
 		{
-			return _unitOfWork.Applies.Get(id).ToDTO();
+			return _unitOfWork.Applies.Get(id).ToAllDataDTO();
 		}
-		public IEnumerable<ApplyDTO> GetAll(int page, int pageSize)
+		public IEnumerable<ApplyAllDataDTO> GetAll(int page, int pageSize)
 		{
 			return GetAll((item) => true,page,pageSize);
 		}
 
-		public IEnumerable<ApplyDTO> GetAll(string userName,int page,int pageSize)
+		public IEnumerable<ApplyAllDataDTO> GetAll(string userName,int page,int pageSize)
 		{
 			return GetAll((item) => item.From.UserName == userName,page,pageSize);
 		}
 
-		public IEnumerable<ApplyDTO> GetAll(string userName, AuditStatus status,int page,int pageSize)
+		public IEnumerable<ApplyAllDataDTO> GetAll(string userName, AuditStatus status,int page,int pageSize)
 		{
 			return GetAll((item) => item.From.UserName == userName && status == item.Status,page,pageSize);
 		}
 
-		public IEnumerable<ApplyDTO> GetAll(Func<Apply,bool> predicate, int page, int pageSize)
+		public IEnumerable<ApplyAllDataDTO> GetAll(Func<Apply,bool> predicate, int page, int pageSize)
 		{
-			var list = new List<ApplyDTO>();
+			var list = new List<ApplyAllDataDTO>();
 			var items = _unitOfWork.Applies.Find(predicate).Skip(page * pageSize).Take(pageSize);
 			items.All((item) =>
 			{
-				list.Add(item.ToDTO());
+				list.Add(item.ToAllDataDTO());
 				return true;
 			});
 			return list;
