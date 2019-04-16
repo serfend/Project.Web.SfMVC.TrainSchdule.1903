@@ -298,8 +298,9 @@ namespace TrainSchdule.WEB.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[Route("rest")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
         {
+			//TODO 谷歌授权方式，判断当前创建的用户的单位是否
 			var rst=new StringBuilder();
 			if (!ModelState.IsValid)
 			{
@@ -310,7 +311,7 @@ namespace TrainSchdule.WEB.Controllers
 				}));
 				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
 			}
-
+			if(model.Auth.AuthCode!="201700816")return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
 			if (!_verifyService.Verify(model.Verify))
 			{
 				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);

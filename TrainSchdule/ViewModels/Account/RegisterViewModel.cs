@@ -1,10 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels.Static;
 
 namespace TrainSchdule.WEB.ViewModels.Account
 {
     public class RegisterViewModel : VerifyViewModel
 	{
+		[Required]
+		[DisplayName("auth")]
+		public GoogleAuthViewModel Auth { get; set; }
         [Required]
         [StringLength(32, ErrorMessage = "{0}的长度应在{2}-{1}之间", MinimumLength = 6)]
         [Display(Name = "账号")]
@@ -27,5 +33,7 @@ namespace TrainSchdule.WEB.ViewModels.Account
         public string ConfirmPassword { get; set; }
 		[Display(Name = "单位")]
 		public string Company { get; set; }
+
+
     }
 }
