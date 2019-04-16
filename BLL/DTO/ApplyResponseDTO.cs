@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using DAL.Entities;
+using TrainSchdule.DAL.Entities;
 
 namespace BLL.DTO
 {
-	public class ApplyResponseDTO
+	public class ApplyResponseDTO:BaseEntity
 	{
 		/// <summary>
 		/// 处理单位的名称
 		/// </summary>
 		public string Company { get; set; }
+		/// <summary>
+		/// 处理单位的路径
+		/// </summary>
+		public string CompanyPath { get; set; }
 		/// <summary>
 		/// 处理人姓名
 		/// </summary>

@@ -217,6 +217,54 @@ namespace TrainSchdule.Web.Controllers
 			}else
 				return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
 		}
+
+		[HttpPost]
+		public IActionResult Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
+		{
+			var errorlist=new List<Status>();
+			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+			var currentUser = _currentUserService.CurrentUser;
+			foreach (var applyAuth in Param)
+			{
+				var item = _applyService.Get(applyAuth.Id);
+				if (item == null) errorlist.Add(new Status(ActionStatusMessage.Apply_NotExist.Code,applyAuth.Id.ToString()));
+				else
+				{
+					var auditCompany = _companiesService.GetCompanyByPath(applyAuth.AuditAs);
+					if(auditCompany==null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.Code,applyAuth.AuditAs));
+					else
+					{
+						bool havePermission =
+							currentUser.PermissionCompanies.Any(cmp => auditCompany.Path.StartsWith(cmp.Path));
+						if(!havePermission)errorlist.Add(new Status(ActionStatusMessage.AccountAuth_Forbidden.Code,applyAuth.AuditAs));
+						else
+						{
+							var proDTO = item.Progress.TakeWhile(progress => progress.CompanyPath == applyAuth.AuditAs).FirstOrDefault();
+							var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
+							if (pro==null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.Code,applyAuth.AuditAs));
+							switch (applyAuth.Apply)
+							{
+								case ApplyReponseHandleStatus.Accept:
+									pro.Status = Auditing.Accept;
+									break;
+								case ApplyReponseHandleStatus.Deny:
+									pro.Status = Auditing.Denied;
+									break;
+							}
+
+							pro.AuditingBy = currentUser;
+							pro.Remark = applyAuth.Remark;
+							pro.HandleStamp=DateTime.Now;
+							_unitOfWork.ApplyResponses.Update(pro);
+						}
+					}
+					
+				}
+			}
+			_unitOfWork.Save();
+			if(errorlist.Count==0)return new JsonResult(ActionStatusMessage.Success);
+			return new JsonResult(new {code=-1,errors= errorlist });
+		}
 		#region Disposing
 
 		protected override void Dispose(bool disposing)

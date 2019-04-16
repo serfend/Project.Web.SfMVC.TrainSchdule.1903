@@ -8,5 +8,9 @@ namespace TrainSchdule.DAL.Entities
 	{
 		public string Path { get; set; }
 		public virtual User Owner { get; set; }
+		/// <summary>
+		/// 授权人
+		/// </summary>
+		public Guid AuthBy { get; set; }
 	}
 }

@@ -61,7 +61,7 @@ namespace DAL.Entities
 		Auditing=2,
 		AcceptAndWaitAdmin=4,
 		Accept=8,
-		Declined=16,
+		Denied=16,
 	}
 
 }

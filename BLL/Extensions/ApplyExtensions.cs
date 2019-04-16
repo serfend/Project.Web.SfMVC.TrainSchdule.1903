@@ -50,9 +50,11 @@ namespace BLL.Extensions
 			{
 				var resDTO = new ApplyResponseDTO()
 				{
+					Id = res.Id,
 					AuditBy = res.AuditingBy?.RealName,
 					AuditUserName = res.AuditingBy?.UserName,
 					Company = res.Company.Name,
+					CompanyPath = res.Company.Path,
 					HdlStamp = res.HandleStamp,
 					Remark = res.Remark,
 					Status = res.Status
@@ -70,9 +72,9 @@ namespace BLL.Extensions
 						apply.Current = res.Company.Name;
 						return false;
 					}
-					case Auditing.Declined:
+					case Auditing.Denied:
 						apply.Current = res.Company.Name;
-						apply.Status = AuditStatus.Declined;
+						apply.Status = AuditStatus.Denied;
 						return false;
 					case Auditing.UnReceive:
 					{

@@ -97,50 +97,6 @@ namespace TrainSchdule.WEB.Controllers
 		
 
 		[HttpPost]
-		[AllowAnonymous]
-		[Route("rest")]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-			var rst = new StringBuilder();
-	        if (ModelState.IsValid)
-	        {
-		        var codeResult = _verifyService.Verify(model.Verify);
-		        if (!codeResult)
-		        {
-					return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
-		        }
-
-				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-		        if (result.Succeeded)
-		        {
-			        _logger.LogInformation($"用户登录:{model.UserName}");
-			        return  new JsonResult(ActionStatusMessage.Success);
-		        }
-		        else if (result.RequiresTwoFactor)
-		        {return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthException);
-		        }
-		        else if (result.IsLockedOut)
-		        {
-			        _logger.LogWarning("账号异常");
-			        return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthBlock);
-		        }
-		        else
-		        {
-			        return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthAccountOrPsw);
-		        }
-	        }
-	        else
-	        {
-		        ModelState.Root.Children.All(x => x.Errors.All(y =>
-		        {
-			        rst.AppendLine(y.ErrorMessage);
-			        return true;
-		        }));
-		        return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
-	        }
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Logout()
         {
 	        await _signInManager.SignOutAsync();
@@ -295,42 +251,7 @@ namespace TrainSchdule.WEB.Controllers
 	            return View(model);
             }
         }
-		[HttpPost]
-		[AllowAnonymous]
-		[Route("rest")]
-        public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
-        {
-			//TODO 谷歌授权方式，判断当前创建的用户的单位是否
-			var rst=new StringBuilder();
-			if (!ModelState.IsValid)
-			{
-				ModelState.Root.Children.All(x => x.Errors.All(y =>
-				{
-					rst.AppendLine(y.ErrorMessage);
-					return true;
-				}));
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code,rst.ToString()));
-			}
-			if(model.Auth.AuthCode!="201700816")return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
-			if (!_verifyService.Verify(model.Verify))
-			{
-				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
-			}
-	        var user =  await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
-	        if (user == null)
-	        {
-				return new JsonResult(ActionStatusMessage.AccountRegister_UserExist);
-	        }
-	        _logger.LogInformation($"新的用户创建:{model.UserName}");
-
-	        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-	        var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-	        await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-	        await _signInManager.SignInAsync(user, isPersistent: false);
-			return new JsonResult(ActionStatusMessage.Success);
-        }
-
+		
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -518,11 +439,96 @@ namespace TrainSchdule.WEB.Controllers
             return View();
         }
 
-        #endregion
+		#endregion
 
-        #region Helpers
+		#region Rest
 
-        private void AddErrors(IdentityResult result)
+
+		[HttpPost]
+		[AllowAnonymous]
+		[Route("rest")]
+		public async Task<IActionResult> Login(LoginViewModel model)
+		{
+			var rst = new StringBuilder();
+			if (ModelState.IsValid)
+			{
+				var codeResult = _verifyService.Verify(model.Verify);
+				if (!codeResult)
+				{
+					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
+				}
+
+				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+				if (result.Succeeded)
+				{
+					_logger.LogInformation($"用户登录:{model.UserName}");
+					return new JsonResult(ActionStatusMessage.Success);
+				}
+				else if (result.RequiresTwoFactor)
+				{
+					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthException);
+				}
+				else if (result.IsLockedOut)
+				{
+					_logger.LogWarning("账号异常");
+					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthBlock);
+				}
+				else
+				{
+					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthAccountOrPsw);
+				}
+			}
+			else
+			{
+				ModelState.Root.Children.All(x => x.Errors.All(y =>
+				{
+					rst.AppendLine(y.ErrorMessage);
+					return true;
+				}));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, rst.ToString()));
+			}
+		}
+		[HttpPost]
+		[AllowAnonymous]
+		[Route("rest")]
+		public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
+		{
+			//TODO 谷歌授权方式，判断当前创建的用户的单位是否
+			var rst = new StringBuilder();
+			if (!ModelState.IsValid)
+			{
+				ModelState.Root.Children.All(x => x.Errors.All(y =>
+				{
+					rst.AppendLine(y.ErrorMessage);
+					return true;
+				}));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, rst.ToString()));
+			}
+			if (model.Auth.AuthCode != "201700816") return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+			if (!_verifyService.Verify(model.Verify))
+			{
+				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
+			}
+			var user = await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
+			if (user == null)
+			{
+				return new JsonResult(ActionStatusMessage.AccountRegister_UserExist);
+			}
+			_logger.LogInformation($"新的用户创建:{model.UserName}");
+
+			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+			await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+
+			await _signInManager.SignInAsync(user, isPersistent: false);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+
+		#endregion
+		#region Helpers
+
+		private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {

@@ -17,7 +17,9 @@ namespace TrainSchdule.BLL.Extensions
 
 			return new PermissionCompanyDTO
 			{
-				Path = item.Path
+				Path = item.Path,
+				Id=item.Id,
+				AuthBy = item.AuthBy
 			};
 		}
 

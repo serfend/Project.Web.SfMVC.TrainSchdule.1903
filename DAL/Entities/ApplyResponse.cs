@@ -33,6 +33,6 @@ namespace DAL.Entities
 		UnReceive=0,
 		Received=1,
 		Accept=4,
-		Declined=8
+		Denied=8
 	}
 }
