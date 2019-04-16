@@ -2,6 +2,7 @@
 using System.Text;
 using Castle.Core.Internal;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.BLL.DTO;
 using TrainSchdule.BLL.Helpers;
@@ -12,6 +13,7 @@ using TrainSchdule.WEB.Extensions;
 
 namespace TrainSchdule.WEB.Controllers
 {
+	[Authorize]
 	[Route("[controller]/[action]")]
     public class UsersController : Controller
     {

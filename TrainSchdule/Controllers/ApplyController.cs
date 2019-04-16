@@ -8,6 +8,7 @@ using BLL.Extensions;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
@@ -17,6 +18,7 @@ using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Web.Controllers
 {
+	[Authorize]
 	[Route("[controller]/[action]")]
 	public class ApplyController: Controller
 	{
@@ -240,12 +242,21 @@ namespace TrainSchdule.Web.Controllers
 						else
 						{
 							var proDTO = item.Progress.TakeWhile(progress => progress.CompanyPath == applyAuth.AuditAs).FirstOrDefault();
+							
+							if (proDTO == null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.Code,applyAuth.AuditAs));
 							var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
-							if (pro==null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.Code,applyAuth.AuditAs));
+							if(pro.Status!=Auditing.Received)return new JsonResult(ActionStatusMessage.Apply_OperationInvalid);
 							switch (applyAuth.Apply)
 							{
 								case ApplyReponseHandleStatus.Accept:
 									pro.Status = Auditing.Accept;
+									var nextProDTO = item.Progress.TakeWhile(nextProgress => nextProgress.Status == Auditing.UnReceive)
+										.FirstOrDefault();
+									if (nextProDTO != null)
+									{
+										var nextPro = _unitOfWork.ApplyResponses.Get(nextProDTO.Id);
+										nextPro.Status = Auditing.Received;
+									}
 									break;
 								case ApplyReponseHandleStatus.Deny:
 									pro.Status = Auditing.Denied;

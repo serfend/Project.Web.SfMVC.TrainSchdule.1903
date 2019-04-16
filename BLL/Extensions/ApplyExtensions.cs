@@ -70,17 +70,17 @@ namespace BLL.Extensions
 					case Auditing.Received:
 					{
 						apply.Current = res.Company.Name;
-						return false;
+						break;
 					}
 					case Auditing.Denied:
 						apply.Current = res.Company.Name;
 						apply.Status = AuditStatus.Denied;
-						return false;
+						break;
 					case Auditing.UnReceive:
 					{
 						apply.Current = res.Company.Name;
 						apply.Status = AuditStatus.Auditing;
-						return false;
+						break;
 					}
 				}
 				return true;
