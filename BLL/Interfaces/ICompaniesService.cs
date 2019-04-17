@@ -21,16 +21,17 @@ namespace TrainSchdule.BLL.Interfaces
 		/// </summary>
 		IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
 
-        /// <summary>
-        /// 通过单位路径
-        /// </summary>
-        CompanyDTO Get(string path);
+		IEnumerable<CompanyDTO> GetAll(Func<Company, bool> predicate, int page, int pageSize);
+		/// <summary>
+		/// 通过单位路径
+		/// </summary>
+		CompanyDTO Get(string path);
 		/// <summary>
 		/// 找到所有子单位
 		/// </summary>
-		/// <param name="path"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
-        IEnumerable<CompanyDTO> FindAllChild(Guid path);
+		IEnumerable<CompanyDTO> FindAllChild(Guid id);
         /// <summary>
         /// 设置单位的父单位
         /// </summary>
@@ -53,5 +54,8 @@ namespace TrainSchdule.BLL.Interfaces
         /// </summary>
         Task<Company> CreateAsync(string name);
 
+        bool Edit(string path, Action<Company> editCallBack);
+
+        Task<bool> EditAsync(string path, Action<Company> editCallBack);
     }
 }

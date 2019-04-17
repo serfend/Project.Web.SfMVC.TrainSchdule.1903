@@ -9,5 +9,7 @@ namespace TrainSchdule.Web.ViewModels.Company
 	{
 		public string Name { get; set; }
 		public string ParentPath { get; set; }
+
+		public bool IsPrivate { get; set; }
 	}
 }

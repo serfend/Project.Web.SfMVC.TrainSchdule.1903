@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace TrainSchdule.Extensions
@@ -17,10 +18,10 @@ namespace TrainSchdule.Extensions
 			foreach (var item in errorFieldsAndMsgs)
 			{
 				//获取键
-				var fieldKey = item.Key;
+				var fieldKey = item.Key.IsNullOrEmpty()?"Unknown":item.Key;
 				//获取键对应的错误信息
 				var fieldErrors = item.Errors
-					.Select(e => new ShowError(fieldKey, e.ErrorMessage));
+					.Select(e => new ShowError(fieldKey, e.ErrorMessage.IsNullOrEmpty()?e.Exception.Message:e.ErrorMessage));
 				result.AddRange(fieldErrors);
 			}
 			return result;

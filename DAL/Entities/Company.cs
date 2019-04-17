@@ -12,7 +12,7 @@ namespace TrainSchdule.DAL.Entities
 		/// 由<see cref="Path"/>决定的父单位
 		/// </summary>
 		public virtual Company Parent { get; set; }
-
+		public bool IsPrivate { get; set; }
 		/// <summary>
 		/// 单位所在路径
 		/// </summary>

@@ -21,25 +21,25 @@ namespace TrainSchdule.Web.Controllers
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
-	    private readonly ICompaniesService _companieService;
+	    private readonly ICompaniesService _companiesService;
 	    private readonly ICurrentUserService _currentUserService;
 
-	    public CompanyController(ICompaniesService companieService, ICurrentUserService currentUserService)
+	    public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService)
 	    {
-		    _companieService = companieService;
+		    _companiesService = companiesService;
 		    _currentUserService = currentUserService;
 	    }
 
 	    [HttpGet]
 	    [AllowAnonymous]
-	    public IActionResult Child(string path)
+	    public IActionResult Child(string path,string showPrivate=null)
 	    {
 		    if (path == null)path = "Root";
-
-		    var nowCompany = _companieService.Get(path);
+		    bool canShowPrivate = showPrivate == "201700816";
+		    var nowCompany = _companiesService.Get(path);
 		    if (nowCompany != null)
 		    {
-			    var list = _companieService.FindAllChild(nowCompany.id);
+			    var list = _companiesService.FindAllChild(nowCompany.id).Where(item=> canShowPrivate || !item.IsPrivate);
 				return new JsonResult(new GetDicViewModel()
 				{
 					Child=list,
@@ -58,7 +58,7 @@ namespace TrainSchdule.Web.Controllers
 	    public IActionResult Detail(string path = null)
 	    {
 		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
-		    var cmp = _companieService.Get(path);
+		    var cmp = _companiesService.Get(path);
 			if(cmp==null)return new JsonResult(ActionStatusMessage.Company_NotExist);
 			return new JsonResult(new CompanyDetailViewModel()
 			{
@@ -72,13 +72,17 @@ namespace TrainSchdule.Web.Controllers
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-		    var anyExist = _companieService.Get($"{company.ParentPath}/{company.Name}");
+		    var anyExist = _companiesService.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)
 		    {
-			    var newCompanyDTO= await _companieService.CreateAsync(company.Name);
+			    var newCompanyDTO= await _companiesService.CreateAsync(company.Name);
 			    try
 			    {
-				    await _companieService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+				    await _companiesService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
+				    await _companiesService.EditAsync(newCompanyDTO.Path, item =>
+					    {
+						    item.IsPrivate = company.IsPrivate;
+					    });
 			    }
 			    catch (Exception ex)
 			    {

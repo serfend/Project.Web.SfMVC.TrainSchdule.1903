@@ -58,15 +58,28 @@ namespace TrainSchdule.BLL.Services
 		}
 		public IEnumerable<CompanyDTO> GetAll(int page, int pageSize)
 		{
-			var Companies= _unitOfWork.Companies.GetAll(page, pageSize);
-			var result = new List<CompanyDTO>(Companies.Count());
-			foreach (var company in Companies)
+			var list = _unitOfWork.Companies.GetAll(page, pageSize);
+			var result = new List<CompanyDTO>(list.Count());
+			list.All(item =>
 			{
-				result.Add(MapCompany(company));
-			}
-
+				result.Add(MapCompany(item));
+				return true;
+			});
 			return result;
 		}
+
+		public IEnumerable<CompanyDTO> GetAll(Func<Company, bool> predicate, int page, int pageSize)
+		{
+			var list= _unitOfWork.Companies.Find(predicate).Skip(page*pageSize).Take(pageSize);
+			var result=new List<CompanyDTO>(list.Count());
+			list.All(item =>
+			{
+				result.Add(MapCompany(item));
+				return true;
+			});
+			return result;
+		}
+
 		public CompanyDTO Get(string path)
 		{
 			var company = GetCompanyByPath(path);
@@ -123,6 +136,60 @@ namespace TrainSchdule.BLL.Services
 				await _unitOfWork.SaveAsync();
 			}
 		}
+		
+
+		public Company Create(string name)
+		{
+			var company=new Company()
+			{
+				Name = name,
+				Path = name
+			};
+			_unitOfWork.Companies.Create(company);
+			return company;
+		}
+
+		public async Task<Company> CreateAsync(string name)
+		{
+			var company=new Company()
+			{
+				Name = name,
+				Path = name
+			};
+			await  _unitOfWork.Companies.CreateAsync(company);
+			return company;
+		}
+
+		public bool Edit(string path, Action<Company> editCallBack)
+		{
+			var target = _unitOfWork.Companies.Find((item) => item.Path == path).FirstOrDefault();
+			if (target == null) return false;
+			editCallBack.Invoke(target);
+			_unitOfWork.Companies.Update(target);
+			_unitOfWork.Save();
+			return true;
+		}
+
+		public async Task<bool> EditAsync(string path, Action<Company> editCallBack)
+		{
+			var target = _unitOfWork.Companies.Find((item) => item.Path == path).FirstOrDefault();
+			if (target == null) return false;
+			editCallBack.Invoke(target);
+			_unitOfWork.Companies.Update(target);
+			await _unitOfWork.SaveAsync();
+			return true;
+		}
+
+
+		#region Helpers
+
+		/// <summary>
+		/// 
+		/// </summary>
+		protected CompanyDTO MapCompany(Company company)
+		{
+			return company.ToDTO();
+		}
 		[Serializable]
 		public class CompanyNotExistException : Exception
 		{
@@ -151,40 +218,6 @@ namespace TrainSchdule.BLL.Services
 			{
 			}
 		}
-
-		public Company Create(string name)
-		{
-			var company=new Company()
-			{
-				Name = name,
-				Path = name
-			};
-			_unitOfWork.Companies.Create(company);
-			return company;
-		}
-
-		public async Task<Company> CreateAsync(string name)
-		{
-			var company=new Company()
-			{
-				Name = name,
-				Path = name
-			};
-			await  _unitOfWork.Companies.CreateAsync(company);
-			return company;
-		}
-
-
-		#region Helpers
-
-		/// <summary>
-		/// 
-		/// </summary>
-		protected CompanyDTO MapCompany(Company company)
-		{
-			return company.ToDTO();
-		}
-
 		#endregion
 	}
 }

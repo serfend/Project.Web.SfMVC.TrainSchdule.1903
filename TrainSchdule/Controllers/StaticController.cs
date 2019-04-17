@@ -53,6 +53,7 @@ namespace TrainSchdule.Controllers
 				Code = -1,
 				Message = _verifyService.Status
 			});
+			HttpContext.Response.Cookies.Append("posY",_verifyService.Pos.Y.ToString());
 			return new FileContentResult(img,"image/png");
 		}
 

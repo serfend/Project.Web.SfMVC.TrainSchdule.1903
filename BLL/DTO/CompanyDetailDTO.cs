@@ -10,5 +10,6 @@ namespace TrainSchdule.BLL.DTO
 		/// 单位的描述
 		/// </summary>
 		public string Description { get; set; }
+
 }
 }

@@ -22,11 +22,12 @@ namespace TrainSchdule.BLL.Extensions
 			{
 				Name = item.Name,
 				Path = item.Path,
-				id=item.Id
+				id=item.Id,
+				IsPrivate = item.IsPrivate
 			};
 		}
 
-		public static CompanyDTO ToDTO(this Company item,bool isParent,IEnumerable<UserDTO>members)
+		public static CompanyDTO ToDTO(this Company item,IEnumerable<UserDTO>members)
 		{
 			if (item == null)
 			{
@@ -34,7 +35,6 @@ namespace TrainSchdule.BLL.Extensions
 			}
 
 			var company = ToDTO(item);
-			company.IsParent = isParent;
 			company.Members = members;
 			return company;
 		}
