@@ -2,6 +2,7 @@
 using System.IO;
 using BLL.Interfaces;
 using BLL.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +59,7 @@ namespace TrainSchdule.WEB
 			services.AddScoped<IStudentService, StudentService>();
 			services.AddScoped<ICompaniesService, CompaniesService > ();
 			services.AddScoped<IApplyService,ApplyService>();
-
+			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
 			//单例
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
@@ -75,13 +76,52 @@ namespace TrainSchdule.WEB
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
+			services.AddCors(options =>
+			{
+				options.AddPolicy(MyAllowSpecificOrigins,
+					builder =>
+					{
+						builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) =>
+						{
+							return true;
+						});
+					});
+			});
+
+			services.Configure<CookiePolicyOptions>(options =>
+			{
+				options.MinimumSameSitePolicy = SameSiteMode.None;
+			});
+			services.ConfigureExternalCookie(options =>
+			{
+				// Other options
+				options.Cookie.SameSite = SameSiteMode.None;
+			});
+			services.ConfigureApplicationCookie(options =>
+			{
+				// Other options
+				options.Cookie.SameSite = SameSiteMode.None;
+			});
+			services.AddAuthentication()
+				.AddCookie(options =>
+				{
+					options.Cookie.SameSite = SameSiteMode.None;
+				});
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
 
-            services.Configure<IdentityOptions>(options =>
+			
+			services.AddSession(s =>
+			{
+				s.IdleTimeout = TimeSpan.FromMinutes(60);
+				s.Cookie.SameSite = SameSiteMode.None;
+			});
+
+
+			services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
                 options.Password.RequireDigit = true;
@@ -100,35 +140,13 @@ namespace TrainSchdule.WEB
                 options.User.RequireUniqueEmail = true;
             });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.Cookie.Expiration = TimeSpan.FromDays(150);
-                options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/ApiLogin
-                options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
-                options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
-                options.SlidingExpiration = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-				
-            });
+  
             AddApplicationServices(services);
+            
+          
+			services.AddMvc();
 
-            services.AddSession(s => s.IdleTimeout = TimeSpan.FromMinutes(60));
-            services.AddCors(options =>
-            {
-	            options.AddPolicy(MyAllowSpecificOrigins,
-		            builder =>
-		            {
-			            builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) =>
-				            {
-					            return true;
-				            });
-		            });
-            });
-
-            services.AddMvc();
-        }
+		}
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services, ApplicationDbContextSeeder seeder) 
         {
@@ -142,19 +160,25 @@ namespace TrainSchdule.WEB
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHttpsRedirection();
             }
-
+           
 			app.UseWelcomePage(new WelcomePageOptions() {
 				Path="/welcome"
 			});
 			//中间件方法
             app.UseStaticFiles();
-
-            app.UseAuthentication();
-
             app.UseSession();
-            app.UseCors(MyAllowSpecificOrigins);
+
+
+			app.UseCors(MyAllowSpecificOrigins);
+			app.UseCookiePolicy(new CookiePolicyOptions
+			{
+				MinimumSameSitePolicy = SameSiteMode.None,
+			});
+			app.UseAuthentication();
+
+
 			//默认路由
-            app.UseMvc(routes =>
+			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
