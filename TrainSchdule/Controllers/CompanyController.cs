@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.BLL.Services;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Company;
 using TrainSchdule.Web.ViewModels.Company;
 
 namespace TrainSchdule.Web.Controllers
 {
+	[Authorize]
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
@@ -62,22 +65,12 @@ namespace TrainSchdule.Web.Controllers
 				data=cmp
 			});
 	    }
+
 		[HttpPost]
 	    public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
-		    if (!ModelState.IsValid)
-		    {
-			    var rst = new StringBuilder();
-			    foreach (var item in ModelState.Root.Children)
-			    {
-				    foreach (var err in item.Errors)
-				    {
-					    rst.AppendLine(err.ErrorMessage);
-				    }
-			    }
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidAuthFormat.Code,rst.ToString()));
-		    }
-			if(!CheckPermissionCompany(company.ParentPath))
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 		    var anyExist = _companieService.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)

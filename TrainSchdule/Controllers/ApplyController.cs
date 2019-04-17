@@ -10,10 +10,12 @@ using Castle.Core.Internal;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Web.Controllers
@@ -48,6 +50,7 @@ namespace TrainSchdule.Web.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
+			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			var rst = new StringBuilder();
 			if(! _verifyService.Verify(model.Verify))
 				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);
@@ -223,6 +226,7 @@ namespace TrainSchdule.Web.Controllers
 		[HttpPost]
 		public IActionResult Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			var errorlist=new List<Status>();
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
 			var currentUser = _currentUserService.CurrentUser;

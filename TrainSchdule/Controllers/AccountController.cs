@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.Interfaces;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.WEB.Extensions;
 using TrainSchdule.WEB.ViewModels.Account;
@@ -449,7 +451,6 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public async Task<IActionResult> Login(LoginViewModel model)
 		{
-			var rst = new StringBuilder();
 			if (ModelState.IsValid)
 			{
 				var codeResult = _verifyService.Verify(model.Verify);
@@ -480,12 +481,7 @@ namespace TrainSchdule.WEB.Controllers
 			}
 			else
 			{
-				ModelState.Root.Children.All(x => x.Errors.All(y =>
-				{
-					rst.AppendLine(y.ErrorMessage);
-					return true;
-				}));
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, rst.ToString()));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
 		}
 		[HttpPost]
@@ -493,18 +489,11 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
 		{
-			//TODO 谷歌授权方式，判断当前创建的用户的单位是否
-			var rst = new StringBuilder();
-			if (!ModelState.IsValid)
-			{
-				ModelState.Root.Children.All(x => x.Errors.All(y =>
-				{
-					rst.AppendLine(y.ErrorMessage);
-					return true;
-				}));
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, rst.ToString()));
-			}
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+
+
 			if (model.Auth.AuthCode != "201700816") return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+
 			if (!_verifyService.Verify(model.Verify))
 			{
 				return new JsonResult(ActionStatusMessage.AccountLogin_InvalidVerifyCode);

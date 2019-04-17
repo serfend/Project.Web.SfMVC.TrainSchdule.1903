@@ -4,10 +4,12 @@ using Castle.Core.Internal;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TrainSchdule.BLL.DTO;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.DAL.Interfaces;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.WEB.Extensions;
 
@@ -98,12 +100,8 @@ namespace TrainSchdule.WEB.Controllers
 			}
 	        else
 	        {
-		        var rst = new StringBuilder();
-		        var all = ModelState.Root.Children.All(child=>child.Errors.All(err => { rst.AppendLine(err.ErrorMessage);
-			        return true;
-		        }));
-		        return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, rst.ToString()));
-	        }
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			}
         }
 
         [HttpGet]
