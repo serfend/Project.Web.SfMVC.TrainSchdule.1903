@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.BLL.DTO
@@ -22,6 +23,7 @@ namespace TrainSchdule.BLL.DTO
 		/// <summary>
 		/// 授权码
 		/// </summary>
+		[JsonIgnore]
 		public string AuthKey { get; set; }
 
         /// <summary>

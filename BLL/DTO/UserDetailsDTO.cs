@@ -9,6 +9,7 @@ namespace TrainSchdule.BLL.DTO
     /// </summary>
     public class UserDetailsDTO : UserDTO
     {
+		public string InvitedBy { get; set; }
 	    /// <summary>
 		/// 用户修改单位的权限
 		/// </summary>

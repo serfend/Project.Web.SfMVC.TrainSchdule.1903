@@ -57,7 +57,8 @@ namespace TrainSchdule.WEB.Controllers
         }
 
         [HttpPost]
-        public IActionResult Info(UserProfileViewModel model,string username = null)
+        [AllowAnonymous]
+		public IActionResult Info(UserProfileViewModel model,string username = null)
         {
 	        if (ModelState.IsValid)
 	        {
@@ -73,29 +74,34 @@ namespace TrainSchdule.WEB.Controllers
 						if(model.Address!=null)u.Address=model.Address;
 						if (model.Company != null)
 						{
-							var cmp =_companiesService.GetCompanyByPath(model.Company);
-							u.Company = cmp;
+							if (item.Privilege <= _currentUserService.CurrentUser.Privilege)
+								rst.AppendLine($"更改用户的所在单位需要更高级别的权限");
+							else
+							{
+								var cmp = _companiesService.GetCompanyByPath(model.Company);
+								u.Company = cmp;
+							}
 						}
 
 						if (model.Duties != null)
 						{
 							var duties = _unitOfWork.Duties.Find(x => x.Name == model.Duties)?.FirstOrDefault();
-							u.Duties = duties;
 							if (duties == null)
 							{
 								rst.AppendLine($"当前不存在对应职务:{model.Duties}，同时已创建此职务并交管理员审核");
 								duties = new Duties() { Name = model.Duties };
 								await _unitOfWork.Duties.CreateAsync(duties);
 							}
+							u.Duties = duties;
 						}
 						
 						if(model.Phone!=null)u.Phone=model.Phone;
 						if(model.RealName!=null)u.RealName=model.RealName;
 						if (u.Company == null) rst.AppendLine($"当前不存在对应单位:{model.Company}");
 					});
-					return rst.Length==0 ? new JsonResult(ActionStatusMessage.Success) : 
-						new JsonResult(new Status(ActionStatusMessage.AccountAuth_InvalidByMutilError.status, rst.ToString()));
-		        }
+					_unitOfWork.Save();
+					return rst.Length == 0 ? new JsonResult(ActionStatusMessage.Success) : new JsonResult(new Status(ActionStatusMessage.AccountAuth_InvalidByMutilError.status, rst.ToString()));
+				}
 				else return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
 			}
 	        else
@@ -105,7 +111,8 @@ namespace TrainSchdule.WEB.Controllers
         }
 
         [HttpGet]
-        public IActionResult Info(string username=null)
+        [AllowAnonymous]
+		public IActionResult Info(string username=null)
         {
 	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
 			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;

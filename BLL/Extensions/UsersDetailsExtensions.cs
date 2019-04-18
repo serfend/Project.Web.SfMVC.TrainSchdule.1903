@@ -33,6 +33,7 @@ namespace TrainSchdule.BLL.Extensions
 				Privilege = item.Privilege,
                 RealName = item.RealName,
                 UserName = item.UserName,
+				InvitedBy = item.InvitedBy,
                 Avatar = item.Avatar,
                 About = item.About,
                 Date = item.Date,

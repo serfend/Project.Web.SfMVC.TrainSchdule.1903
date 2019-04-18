@@ -13,52 +13,53 @@
 }
 
 <form action="/account/login" method="post" class="adaptive-form" style="margin-bottom: 5px;">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="is-danger validation-summary"></div>
+	<script src="/static/verify"></script>
+	@Html.AntiForgeryToken()
+	<div asp-validation-summary="All" class="is-danger validation-summary"></div>
 
-    <div class="field">
-        <label asp-for="UserName" class="label"></label>
-        <div class="control">
-            <input asp-for="UserName" class="input" placeholder="用户名" required>
-        </div>
-        <span asp-validation-for="UserName" class="help is-danger"></span>
-    </div>
+	<div class="field">
+		<label asp-for="UserName" class="label"></label>
+		<div class="control">
+			<input asp-for="UserName" class="input" placeholder="用户名" required>
+		</div>
+		<span asp-validation-for="UserName" class="help is-danger"></span>
+	</div>
 
-    <div class="field">
-        <label asp-for="Password" class="label"></label>
-        <div class="control">
-            <input asp-for="Password" type="password" class="input" placeholder="密码" required>
-        </div>
-        <span asp-validation-for="Password" class="help is-danger"></span>
-    </div>
-	
-    <div class="field">
-	    <label asp-for="Verify" class="label"/>
-	    <div class="control">
-		    <input asp-for="Verify" class="input" placeholder="验证码" required>
-	    </div>
-	    <img src="/static/verify-bg.png"/>
-	    <img src="/static/verify-ft.png"/>
-	    <span asp-validation-for="Verify" class="help is-danger"></span>
-    </div>
+	<div class="field">
+		<label asp-for="Password" class="label"></label>
+		<div class="control">
+			<input asp-for="Password" type="password" class="input" placeholder="密码" required>
+		</div>
+		<span asp-validation-for="Password" class="help is-danger"></span>
+	</div>
 
-    <div class="field">
-        <div class="control">
-            <label asp-for="RememberMe" class="checkbox">
-                <input asp-for="RememberMe" />
-                @Html.DisplayNameFor(m => m.RememberMe)
-            </label>
-        </div>
-    </div>
-	
+	<div class="field">
+		<label asp-for="Verify" class="label"/>
+		<div class="control">
+			<input asp-for="Verify" class="input" placeholder="验证码" required>
+		</div>
+		<img src="/static/verify-bg.png"/>
+		<img src="/static/verify-ft.png"/>
+		<span asp-validation-for="Verify" class="help is-danger"></span>
+	</div>
 
-    <div class="field has-text-centered">
-        <button type="submit" class="button is-accent-button">@ViewBag.Title</button>
-    </div>
-    @*<div class="field has-text-centered">
+	<div class="field">
+		<div class="control">
+			<label asp-for="RememberMe" class="checkbox">
+				<input asp-for="RememberMe"/>
+				@Html.DisplayNameFor(m => m.RememberMe)
+			</label>
+		</div>
+	</div>
+
+
+	<div class="field has-text-centered">
+		<button type="submit" class="button is-accent-button">@ViewBag.Title</button>
+	</div>
+	@*<div class="field has-text-centered">
         <a asp-action="ForgotPassword" class="button is-white">Forgot your password?</a>
     </div>*@
-    @*<div class="field has-text-centered">
+	@*<div class="field has-text-centered">
         <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" class="button is-white">Register as a new user</a>
     </div>*@
 </form>

@@ -54,7 +54,7 @@ namespace TrainSchdule.Controllers
 				Message = _verifyService.Status
 			});
 			HttpContext.Response.Cookies.Append("posY",_verifyService.Pos.Y.ToString());
-			return new FileContentResult(img,"image/png");
+			return new FileContentResult(img,"image/jpg");
 		}
 
 		[HttpGet]
@@ -69,7 +69,7 @@ namespace TrainSchdule.Controllers
 				Message = _verifyService.Status
 			});
 			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
-			return new FileContentResult(img, "image/png");
+			return new FileContentResult(img, "image/jpg");
 		}
 	}
 }

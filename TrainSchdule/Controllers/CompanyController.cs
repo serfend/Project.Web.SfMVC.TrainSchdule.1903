@@ -55,7 +55,8 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    public IActionResult Detail(string path = null)
+	    [AllowAnonymous]
+		public IActionResult Detail(string path = null)
 	    {
 		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
 		    var cmp = _companiesService.Get(path);
@@ -67,7 +68,8 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 		[HttpPost]
-	    public async Task<IActionResult> Create(CompanyViewModel company)
+		[AllowAnonymous]
+		public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!CheckPermissionCompany(company.ParentPath))

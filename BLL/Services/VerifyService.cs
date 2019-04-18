@@ -263,7 +263,7 @@ namespace BLL.Services
 		private byte[] ImageToBytes(Image image)
 		{
 			MemoryStream ms = new MemoryStream();
-			image.Save(ms,ImageFormat.Png);
+			image.Save(ms,ImageFormat.Jpeg);
 			return ms.ToArray();
 		}
 	}

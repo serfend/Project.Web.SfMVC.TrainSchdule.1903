@@ -48,6 +48,7 @@ namespace TrainSchdule.Web.Controllers
 
 		#region Logic
 		[HttpPost]
+		[AllowAnonymous]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
 			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
@@ -131,6 +132,7 @@ namespace TrainSchdule.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AllowAnonymous]
 		public IActionResult StartAudit(Guid id)
 		{
 			var item=_unitOfWork.Applies.Get(id);
@@ -161,13 +163,17 @@ namespace TrainSchdule.Web.Controllers
 		#endregion
 
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult FromCompany(string path = null, int page = 0,int pageSize=10)
 		{
 			if (path == null) path = _currentUserService.CurrentUser.Company?.Path;
 			if (path == null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"检查当前用户{_currentUserService.CurrentUser.RealName}({_currentUserService.CurrentUser.UserName})的申请，但此人无归属单位"));
 
+			var targetCompany = _companiesService.Get(path);
+			if(targetCompany==null)return  new JsonResult(ActionStatusMessage.Company_NotExist);
 			//因权限关系，用户不一定具有查看自己本单位申请的权限
 			if (  !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			
 			var list = _applyService.GetAll((item)=>item.To.Any(cmp=>cmp.Path==path),page,pageSize);
 			var summaryList=new List<ApplyDTO>();
 			list.All(item =>
@@ -182,6 +188,7 @@ namespace TrainSchdule.Web.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult FromUser(string username = null, int page = 0, int pageSize = 10)
 		{
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
@@ -205,6 +212,7 @@ namespace TrainSchdule.Web.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult Detail(Guid id)
 		{
 			var item = _applyService.Get(id);
@@ -224,6 +232,7 @@ namespace TrainSchdule.Web.Controllers
 		}
 
 		[HttpPost]
+		[AllowAnonymous]
 		public IActionResult Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));

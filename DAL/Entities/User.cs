@@ -72,6 +72,10 @@ namespace TrainSchdule.DAL.Entities
 
 		public string Phone { get; set; }
 		/// <summary>
+		/// 用户注册时的授权人用户名
+		/// </summary>
+		public string InvitedBy { get; set; }
+		/// <summary>
 		/// 用户可操作的单位
 		/// </summary>
 		public virtual IEnumerable<PermissionCompany> PermissionCompanies { get; set; }
