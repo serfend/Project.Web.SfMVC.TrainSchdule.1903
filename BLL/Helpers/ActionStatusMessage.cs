@@ -21,6 +21,11 @@ namespace TrainSchdule.BLL.Helpers
 		public static readonly Status AccountAuth_VerifyInvalid = new Status(4030101,"验证码错误");
 		public static readonly Status AccountAuth_AuthInvalid = new Status(4030102,"授权码错误");
 
+		public static readonly Status Permission_Exist = new Status(1002, "用户已具有此权限");
+		public static readonly Status Permission_NotExist = new Status(101, "授权规则不存在");
+
+
+
 		public static readonly Status AccountRegister_UserExist = new Status(70001,"用户已存在");
 
 		public static readonly Status User_Unknown = new Status(80, "用户发生未知错误");

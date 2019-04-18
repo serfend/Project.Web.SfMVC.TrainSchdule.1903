@@ -12,7 +12,7 @@ namespace TrainSchdule.BLL.Extensions
         /// <summary>
         /// Maps user entity to user details DTO.
         /// </summary>
-        public static UserDetailsDTO ToDTO(this User item)
+        public static UserDetailsDTO ToDetailDTO(this User item)
         {
             if (item == null)
             {
@@ -27,6 +27,10 @@ namespace TrainSchdule.BLL.Extensions
 
 			return new UserDetailsDTO
             {
+				Id = item.Id,
+				AuthKey = item.AuthKey,
+				Duties = item.Duties,
+				Privilege = item.Privilege,
                 RealName = item.RealName,
                 UserName = item.UserName,
                 Avatar = item.Avatar,
@@ -46,14 +50,14 @@ namespace TrainSchdule.BLL.Extensions
         /// <summary>
         /// Maps user entity to user details DTO.
         /// </summary>
-        public static UserDetailsDTO ToDTO(this User item, bool confirmed, bool followed, bool blocked, bool iBlocked, ICollection<UserDTO> followings, ICollection<UserDTO> followers, ICollection<UserDTO> mutuals)
+        public static UserDetailsDTO ToDetailDTO(this User item, bool confirmed, bool followed, bool blocked, bool iBlocked, ICollection<UserDTO> followings, ICollection<UserDTO> followers, ICollection<UserDTO> mutuals)
         {
             if (item == null)
             {
                 return null;
             }
 
-            var result = ToDTO(item);
+            var result = ToDetailDTO(item);
             result.Confirmed = confirmed;
             result.Followed = followed;
             result.Blocked = blocked;

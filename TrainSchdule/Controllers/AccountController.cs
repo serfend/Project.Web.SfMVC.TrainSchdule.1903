@@ -597,12 +597,15 @@ namespace TrainSchdule.WEB.Controllers
 			var password = authUser.AuthKey ?? authUser.UserName;
 			if (!_authService.Verify(authCode.Code, authCode.UserName, password)) return new JsonResult(ActionStatusMessage.AccountAuth_AuthInvalid);
 			var targetPermission = _unitOfWork.PermissionCompanies.Get(id);
+			if(targetPermission==null)return new JsonResult(ActionStatusMessage.Permission_NotExist);
 			var targetUser = targetPermission.Owner;
 			if (targetPermission.AuthBy == authUser.Id || targetUser.Privilege < authUser.Privilege)
 			{
 				var list = targetUser.PermissionCompanies.ToList();
 				list.Remove(targetPermission);
 				targetUser.PermissionCompanies=list;
+				targetUser.PermissionCompanies = list;
+				_unitOfWork.Users.Update(targetUser);
 				_unitOfWork.Save();
 				return new JsonResult(ActionStatusMessage.Success);
 			}else return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);

@@ -455,7 +455,7 @@ namespace TrainSchdule.BLL.Services
                         .ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == follower.UserId).FirstOrDefault() != null, false, false, false));
                 }
 
-                return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null, 
+                return user.ToDetailDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null, 
                     false, false, false, followings, followers, null);
             }
             else
@@ -496,7 +496,7 @@ namespace TrainSchdule.BLL.Services
                     }
                 }
 
-                return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null,
+                return user.ToDetailDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null,
                                   _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id && f.UserId == currentUser.Id).FirstOrDefault() != null,
                                   _unitOfWork.Blockings.Find(b => b.BlockedUserId == user.Id && b.UserId == currentUser.Id).FirstOrDefault() != null,
                                   _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null,

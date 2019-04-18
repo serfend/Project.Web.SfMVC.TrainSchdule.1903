@@ -47,20 +47,12 @@ namespace TrainSchdule.BLL.Extensions
                 return null;
             }
 
-            return new UserDTO
-            {
-                RealName = item.RealName,
-                UserName = item.UserName,
-                Avatar = item.Avatar,
-                Date = item.Date,
-                Gender = (GenderEnum)item.Gender,
-
-                Confirmed = confirmed,
-                Followed = followed,
-                Blocked = blocked,
-                PrivateAccount = item.PrivateAccount,
-                IBlocked = iBlocked
-            };
+            var user = ToDTO(item);
+            user.Confirmed = confirmed;
+            user.Followed = followed;
+            user.Blocked = blocked;
+            user.IBlocked = iBlocked;
+            return user;
         }
     }
 }
