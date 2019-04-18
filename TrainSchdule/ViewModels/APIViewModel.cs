@@ -8,7 +8,7 @@ namespace TrainSchdule.Web.ViewModels
 {
 	public class APIViewModel
 	{
-		[JsonProperty("code")]
+		[JsonProperty("status")]
 		public int Code { get; set; }
 		[JsonProperty("message")]
 		public string Message { get; set; }
