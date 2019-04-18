@@ -34,7 +34,7 @@ namespace TrainSchdule.Controllers
 			{
 				var status = _verifyService.Status;
 				_verifyService.Generate();
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, status));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, status));
 			}
 			return new JsonResult(new VerifyGeneratedViewModel()
 			{
@@ -68,6 +68,7 @@ namespace TrainSchdule.Controllers
 				Code = -1,
 				Message = _verifyService.Status
 			});
+			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
 			return new FileContentResult(img, "image/png");
 		}
 	}

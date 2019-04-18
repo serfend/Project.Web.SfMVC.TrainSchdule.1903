@@ -69,7 +69,7 @@ namespace TrainSchdule.Web.Controllers
 		[HttpPost]
 	    public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
-			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 		    var anyExist = _companiesService.Get($"{company.ParentPath}/{company.Name}");
@@ -86,7 +86,7 @@ namespace TrainSchdule.Web.Controllers
 			    }
 			    catch (Exception ex)
 			    {
-					return new JsonResult(new Status(ActionStatusMessage.Company_NotExist.Code,ex.Message));
+					return new JsonResult(new Status(ActionStatusMessage.Company_NotExist.status,ex.Message));
 			    }
 			    return new JsonResult(ActionStatusMessage.Success);
 		    }

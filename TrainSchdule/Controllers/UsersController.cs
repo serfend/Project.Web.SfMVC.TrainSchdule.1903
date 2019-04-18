@@ -94,13 +94,13 @@ namespace TrainSchdule.WEB.Controllers
 						if (u.Company == null) rst.AppendLine($"当前不存在对应单位:{model.Company}");
 					});
 					return rst.Length==0 ? new JsonResult(ActionStatusMessage.Success) : 
-						new JsonResult(new Status(ActionStatusMessage.AccountAuth_InvalidByMutilError.Code, rst.ToString()));
+						new JsonResult(new Status(ActionStatusMessage.AccountAuth_InvalidByMutilError.status, rst.ToString()));
 		        }
 				else return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
 			}
 	        else
 	        {
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.Code, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
         }
 

@@ -128,7 +128,7 @@ namespace BLL.Services
 				result= false;
 			}else result=img.Verify(code);
 
-			if (!result) Generate();
+			Generate();
 			return result;
 		}
 

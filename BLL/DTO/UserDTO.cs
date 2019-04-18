@@ -7,7 +7,7 @@ namespace TrainSchdule.BLL.DTO
     /// 用户信息的实体
     /// 包含 username, user real name, user avatar 等.
     /// </summary>
-    public class UserDTO
+    public class UserDTO:BaseEntity
     {
         /// <summary>
         /// Gets and sets user real name.
@@ -18,6 +18,11 @@ namespace TrainSchdule.BLL.DTO
         /// Gets and sets username.
         /// </summary>
         public string UserName { get; set; }
+
+		/// <summary>
+		/// 授权码
+		/// </summary>
+		public string AuthKey { get; set; }
 
         /// <summary>
         /// Gets and sets user avatar.

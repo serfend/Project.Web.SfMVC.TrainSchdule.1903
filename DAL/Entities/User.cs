@@ -22,6 +22,11 @@ namespace TrainSchdule.DAL.Entities
         /// </summary>
         public string UserName { get; set; }
 
+		/// <summary>
+		/// 授权码
+		/// </summary>
+		public string AuthKey { get; set; }
+
         /// <summary>
         /// Gets and sets user real name.
         /// </summary>

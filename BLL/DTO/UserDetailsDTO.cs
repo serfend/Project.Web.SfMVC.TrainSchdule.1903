@@ -12,7 +12,7 @@ namespace TrainSchdule.BLL.DTO
 	    /// <summary>
 		/// 用户修改单位的权限
 		/// </summary>
-	    public IEnumerable<PermissionCompanyDTO> PermissionCompanies;
+	    public IEnumerable<PermissionCompanyDTO> PermissionCompanies { get; set; }
 		public string Address { get; set; }
 	    public string Phone { get; set; }
 	    /// <summary>

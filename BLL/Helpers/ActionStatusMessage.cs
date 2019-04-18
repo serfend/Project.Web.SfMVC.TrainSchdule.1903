@@ -14,11 +14,12 @@ namespace TrainSchdule.BLL.Helpers
 		public static readonly Status AccountLogin_InvalidAuthException=new Status(60002,"异常登录");
 		public static readonly Status AccountLogin_InvalidAuthBlock=new Status(60004,"账号存在危险,已阻止");
 		public static readonly Status AccountLogin_InvalidAuthAccountOrPsw=new Status(60008,"账号或密码错误");
-		public static readonly Status AccountLogin_InvalidVerifyCode = new Status(60009, "验证码错误");
 
 		public static readonly Status AccountAuth_Forbidden = new Status(403,"账号权限不足");
 		public static readonly Status AccountAuth_InvalidByMutilError=new Status(40302,"存在不存在的操作");
-		public static readonly Status AccountAuth_Invalid = new Status(40301,"登录凭证已失效");
+		public static readonly Status AccountAuth_Invalid = new Status(40301, "登录凭证已失效");
+		public static readonly Status AccountAuth_VerifyInvalid = new Status(4030101,"验证码错误");
+		public static readonly Status AccountAuth_AuthInvalid = new Status(4030102,"授权码错误");
 
 		public static readonly Status AccountRegister_UserExist = new Status(70001,"用户已存在");
 
@@ -46,13 +47,13 @@ namespace TrainSchdule.BLL.Helpers
 
 	public struct Status
 	{
-		public int Code;
-		public string Message;
+		public int status;
+		public string message;
 
-		public Status(int code, string message)
+		public Status(int status, string message)
 		{
-			this.Code = code;
-			this.Message = message;
+			this.status = status;
+			this.message = message;
 		}
 	}
 }
