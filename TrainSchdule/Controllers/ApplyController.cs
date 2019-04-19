@@ -202,6 +202,30 @@ namespace TrainSchdule.Web.Controllers
 			if(item.Response.Any(apply=>apply.Status==Auditing.Accept))return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBeenAcceptedByOneCompany);
 			item.Status = AuditStatus.Withdrew;
 			_unitOfWork.Applies.Update(item);
+			_unitOfWork.Save();
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		[HttpDelete]
+		public IActionResult Remove(Guid id)
+		{
+			var item = _unitOfWork.Applies.Get(id);
+			if (item == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (item.From.UserName != _currentUserService.CurrentUser.UserName) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			switch (item.Status)
+			{
+				case AuditStatus.Accept:
+					item.Hidden = true;
+					_unitOfWork.Applies.Update(item);
+					break;
+				case AuditStatus.NotPublish:
+					_unitOfWork.Applies.Delete(id);
+					break;
+				default:
+					return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);
+			}
+
+			_unitOfWork.Save();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

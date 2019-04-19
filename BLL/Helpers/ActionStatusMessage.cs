@@ -84,7 +84,8 @@ namespace TrainSchdule.BLL.Helpers
 				public static readonly Status AuditBegan = new Status(43100, "申请已处于审核状态中");
 				public static readonly Status AuditCrash = new Status(43200, "当前存在正在进行的申请（审核中、审核通过状态）");
 				public static readonly Status NoCompanyToSubmit = new Status(43300, "至少需要提交到一个单位进行审批");
-				public static readonly Status AuditBeenAcceptedByOneCompany = new Status(43200, "当前申请已被审核，无法撤回");
+				public static readonly Status AuditBeenAcceptedByOneCompany = new Status(43400, "当前申请已被审核，无法撤回");
+				public static readonly Status AuditIsPublic = new Status(43500, "当前申请处于发布状态，请先撤回申请");
 
 			}
 
