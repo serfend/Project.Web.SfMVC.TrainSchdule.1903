@@ -48,7 +48,6 @@ namespace TrainSchdule.Web.Controllers
 
 		#region Logic
 		[HttpPost]
-		[AllowAnonymous]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
 			//校验
@@ -153,7 +152,6 @@ namespace TrainSchdule.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[AllowAnonymous]
 		public IActionResult StartAudit(Guid id)
 		{
 			var item=_unitOfWork.Applies.Get(id);
@@ -195,8 +193,19 @@ namespace TrainSchdule.Web.Controllers
 		}
 		#endregion
 
+		[HttpPost]
+		public IActionResult Withdraw(Guid id)
+		{
+			var item = _unitOfWork.Applies.Get(id);
+			if (item == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (item.From.UserName != _currentUserService.CurrentUser.UserName) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(item.Response.Any(apply=>apply.Status==Auditing.Accept))return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBeenAcceptedByOneCompany);
+			item.Status = AuditStatus.Withdrew;
+			_unitOfWork.Applies.Update(item);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
 		[HttpGet]
-		[AllowAnonymous]
 		public IActionResult FromCompany(string path = null, int page = 0,int pageSize=10)
 		{
 			if (path == null) path = _currentUserService.CurrentUser.Company?.Path;
