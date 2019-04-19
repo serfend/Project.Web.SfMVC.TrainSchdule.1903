@@ -44,6 +44,8 @@ namespace BLL.Extensions
 					Stamp = item.stamp,
 					Xjlb = item.xjlb
 				},
+				Status = item.Status,
+				
 			};
 			var list = new List<ApplyResponseDTO>(item.Response.Count());
 			bool AllPass=item.Response.All(res =>
@@ -59,30 +61,8 @@ namespace BLL.Extensions
 					Remark = res.Remark,
 					Status = res.Status
 				};
+				if (resDTO.Status == Auditing.Received) apply.Current = resDTO.Company;
 				list.Add(resDTO);
-				switch (res.Status)
-				{
-					case Auditing.Accept:
-					{
-						break;
-					}
-
-					case Auditing.Received:
-					{
-						apply.Current = res.Company.Name;
-						break;
-					}
-					case Auditing.Denied:
-						apply.Current = res.Company.Name;
-						apply.Status = AuditStatus.Denied;
-						break;
-					case Auditing.UnReceive:
-					{
-						apply.Current = res.Company.Name;
-						apply.Status = AuditStatus.Auditing;
-						break;
-					}
-				}
 				return true;
 			});
 			apply.Progress = list;
