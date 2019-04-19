@@ -18,7 +18,7 @@ namespace TrainSchdule.DAL.Repositories
         #region Fields
 
         private readonly ApplicationDbContext _context;
-
+        public ApplicationDbContext Context => _context;
         private IRepository<ApplicationUser> _identityUsersRepository;
         private IRepository<User> _usersRepository;
         private IRepository<Photo> _photosRepository;

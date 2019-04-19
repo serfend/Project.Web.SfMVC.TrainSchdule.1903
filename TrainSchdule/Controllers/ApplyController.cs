@@ -51,13 +51,17 @@ namespace TrainSchdule.Web.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
+			//校验
 			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			var rst = new StringBuilder();
 			if(! _verifyService.Verify(model.Verify))
 				return new JsonResult(ActionStatusMessage.AccountAuth_VerifyInvalid);
 			if(!_verifyService.Status.IsNullOrEmpty()) return new JsonResult(new Status(ActionStatusMessage.AccountAuth_VerifyInvalid.status, _verifyService.Status));
 			var user = _currentUserService.CurrentUser;
-			if(user==null)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+			if (user == null) return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+			if (user.Company==null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
+
+			//初始化基础数据
 			var item=new Apply()
 			{
 				Address = user?.Address,
@@ -71,40 +75,12 @@ namespace TrainSchdule.Web.Controllers
 				Id=Guid.Empty,
 				Response = null,
 				stamp = null,
-				
 			};
+			//初始化用户请求
 			await _unitOfWork.ApplyRequests.CreateAsync(model.Param.Request);
-			var responses = new List<ApplyResponse>(model.Param.To.Count());
-			var rawCompanyPath = user.Company?.Path;
-			if(rawCompanyPath==null)return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
-			rawCompanyPath += '/';
-			int lastIndex = 0;
-			int nowSeachCount = -1;
-			var anyFail=!model.Param.To.All( (index) =>
-			{
-				int chrIndex = 0;
-				while (nowSeachCount < index)
-				{
-					chrIndex = rawCompanyPath.IndexOf('/', lastIndex);
-					if (chrIndex == -1)
-					{
-						rst.AppendLine($"无效的待接收申请的单位:{index}");
-						return false;
-					}
-					lastIndex = chrIndex+1;
-					nowSeachCount++;
-				}
-				var res = new ApplyResponse()
-				{
-					Status = Auditing.UnReceive,
-					Company = _companiesService.GetCompanyByPath(rawCompanyPath.Substring(0, chrIndex)),
-				};
-				_unitOfWork.ApplyResponses.Create(res);
-				responses.Add(res);
-				
-				return true;
 
-			});
+			//初始化审核列表
+			var responses=InitResponse(user,model.Param.To,rst);
 			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply_NoCompanyToSubmit);
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
@@ -118,14 +94,56 @@ namespace TrainSchdule.Web.Controllers
 			});
 			item.To = to;
 			var apply=await _applyService.CreateAsync(item);
-			
-			if (!model.NotAutoStart) StartAudit(apply.Id);
+
+			if (!model.NotAutoStart)
+			{
+				var startAudit= StartAudit(apply.Id);
+				var startAuditStatus = (Status) ((JsonResult) startAudit).Value;
+				if (startAuditStatus.status != 0) return new JsonResult(new Status(startAuditStatus.status,$"申请创建成功,但未成功发布:{startAuditStatus.message}"));
+			}
 			return  new JsonResult(new ApplyCreatedViewModel()
 			{
 				Id = apply.Id
 			});
 		}
 
+		/// <summary>
+		/// 初始化审核列表
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
+		private List<ApplyResponse> InitResponse(User user,IEnumerable<int>To,StringBuilder rst)
+		{
+			var list = new List<ApplyResponse>();
+			var rawCompanyPath = user.Company?.Path;
+			rawCompanyPath += '/';
+			int lastIndex = 0;
+			int nowSearchCount = -1;
+			var anyFail = !To.All((index) =>
+			{
+				int chrIndex = 0;
+				while (nowSearchCount < index)
+				{
+					chrIndex = rawCompanyPath.IndexOf('/', lastIndex);
+					if (chrIndex == -1)
+					{
+						rst.AppendLine($"无效的待接收申请的单位:{index}");
+						return false;
+					}
+					lastIndex = chrIndex + 1;
+					nowSearchCount++;
+				}
+				var res = new ApplyResponse()
+				{
+					Status = Auditing.UnReceive,
+					Company = _companiesService.GetCompanyByPath(rawCompanyPath.Substring(0, chrIndex)),
+				};
+				_unitOfWork.ApplyResponses.Create(res);
+				list.Add(res);
+				return true;
+			});
+			return list;
+		}
 		/// <summary>
 		/// 对指定的申请开始处理流程
 		/// </summary>
@@ -139,25 +157,37 @@ namespace TrainSchdule.Web.Controllers
 			if(item==null)return new JsonResult(ActionStatusMessage.Apply_NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
 			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply_OperationAuditBegan);
-			var anyCrashApply = _applyService.GetAll(prevItem =>
-			{
-				if (prevItem.Status == AuditStatus.Auditing || prevItem.Status == AuditStatus.Accept ||
-				    prevItem.Status == AuditStatus.AcceptAndWaitAdmin)
-				{
-					var prevStart = prevItem.stamp.ldsj.Ticks;
-					var prevEnd = prevItem.stamp.ldsj.AddDays(prevItem.Request.xjts).AddDays(prevItem.Request.ltts).Ticks;
-					var curStart = item.stamp.ldsj.Ticks;
-					var curEnd = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts).Ticks;
-					return (prevStart >= curStart && prevStart <= curEnd)||(prevEnd>=curStart&&prevEnd<=curEnd);
-				}
-				else return false;
-			},0,1).FirstOrDefault();
-			if (anyCrashApply != null)
+
+
+			var userActiveApplies = _applyService.GetAll(
+				prevItem => 
+					prevItem.From.UserName == item.From.UserName 
+					&& (prevItem.Status == AuditStatus.Auditing 
+					    || prevItem.Status == AuditStatus.Accept 
+					    || prevItem.Status == AuditStatus.AcceptAndWaitAdmin)
+				, 0,50);
+			if (
+				(from userActiveApply in userActiveApplies
+					let prevStart = userActiveApply.Detail.Stamp.ldsj.Ticks
+					let prevEnd = userActiveApply.Detail.Stamp.ldsj.AddDays(userActiveApply.Detail.Request.xjts).AddDays(userActiveApply.Detail.Request.ltts).Ticks
+					let curStart = item.stamp.ldsj.Ticks let curEnd = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts).Ticks
+					where (prevStart >= curStart && prevStart <= curEnd) || (prevEnd >= curStart && prevEnd <= curEnd)
+					select prevStart).Any()
+				)
 			{
 				return new JsonResult(ActionStatusMessage.Apply_OperationAuditCrash);
 			}
+
+
 			item.Status = AuditStatus.Auditing;
 			item.Response.First().Status = Auditing.Received;
+			item.Response.All(res =>
+			{
+				_unitOfWork.ApplyResponses.Update(res);
+				return true;
+			});
+			_unitOfWork.Applies.Update(item);
+			_unitOfWork.Save();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		#endregion
@@ -189,16 +219,16 @@ namespace TrainSchdule.Web.Controllers
 
 		[HttpGet]
 		[AllowAnonymous]
-		public IActionResult FromUser(string username = null, int page = 0, int pageSize = 10)
+		public IActionResult FromUser(string username,AuditStatus? status, int page = 0, int pageSize = 10)
 		{
-			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
-			if (username == null) username = _currentUserService.CurrentUser.UserName;
+			var currentUser = _currentUserService.CurrentUser;
+			if (username == null) username = currentUser.UserName;
 			var targetUser = _usersService.Get(username);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User_NotExist);
 			var path = targetUser.Company?.Path;
 			if(path==null)return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"来自{targetUser.RealName}({targetUser.UserName})的申请，但此人无归属单位"));
 			if (_currentUserService.CurrentUser.UserName!=username && !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp => path.StartsWith(cmp.Path))) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-			var list = _applyService.GetAll((item) => item.From.UserName==targetUser.UserName, page, pageSize);
+			var list = _applyService.GetAll((item) => item.From.UserName==targetUser.UserName && status==item.Status, page, pageSize);
 			var summaryList = new List<ApplyDTO>();
 			list.All(item =>
 			{

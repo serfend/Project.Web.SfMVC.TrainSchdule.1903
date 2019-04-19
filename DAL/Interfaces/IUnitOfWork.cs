@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DAL.Entities;
+using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
 
 namespace TrainSchdule.DAL.Interfaces
@@ -11,7 +12,7 @@ namespace TrainSchdule.DAL.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         #region Properties
-
+		ApplicationDbContext Context { get; }
         /// <summary>
         /// Gets photo repository.
         /// </summary>

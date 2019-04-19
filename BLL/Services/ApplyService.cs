@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.DTO;
@@ -72,15 +73,14 @@ namespace BLL.Services
 			return GetAll((item) => item.From.UserName == userName && status == item.Status,page,pageSize);
 		}
 
-		public IEnumerable<ApplyAllDataDTO> GetAll(Func<Apply,bool> predicate, int page, int pageSize)
+		public IEnumerable<ApplyAllDataDTO> GetAll(Expression<Func<Apply, bool> > predicate, int page, int pageSize)
 		{
 			var list = new List<ApplyAllDataDTO>();
 			var items = _unitOfWork.Applies.Find(predicate).Skip(page * pageSize).Take(pageSize);
-			items.All((item) =>
+			foreach (var apply in items)
 			{
-				list.Add(item.ToAllDataDTO());
-				return true;
-			});
+				list.Add(apply.ToAllDataDTO());
+			}
 			return list;
 		}
 		public Apply Create(Apply item)

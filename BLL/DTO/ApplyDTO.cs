@@ -59,5 +59,7 @@ namespace BLL.DTO
 		public IEnumerable<ApplyResponseDTO> Progress { get; set; }
 		[JsonProperty("detail")]
 		public ApplyDetailDTO Detail { get; set; }
+
+
 	}
 }

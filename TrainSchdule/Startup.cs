@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.DAL.Interfaces;
@@ -61,11 +62,10 @@ namespace TrainSchdule.WEB
 			services.AddScoped<IApplyService,ApplyService>();
 			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
 			//单例
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
             services.AddSingleton<IFileProvider>(
 	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-
 		}
 
 		public void ConfigureServices(IServiceCollection services)

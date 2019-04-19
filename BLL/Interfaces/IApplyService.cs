@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.DTO;
@@ -33,7 +34,8 @@ namespace BLL.Interfaces
 		/// <param name="page"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
-		IEnumerable<ApplyAllDataDTO> GetAll(Func<Apply, bool> predicate, int page, int pageSize);
+		IEnumerable<ApplyAllDataDTO> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize);
+
 
 		/// <summary>
 		/// 创建申请.

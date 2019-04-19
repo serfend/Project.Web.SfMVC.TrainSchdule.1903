@@ -29,7 +29,10 @@ namespace TrainSchdule.BLL.Services
         /// <returns>
         /// Returns current user entity.
         /// </returns>
-        public User CurrentUser => _unitOfWork.Users.Find(u => u.UserName == _httpContextAccessor.HttpContext.User.Identity.Name).FirstOrDefault();
+        public User CurrentUser => 
+	        _unitOfWork.Users
+		        .Find(u => u.UserName == _httpContextAccessor.HttpContext.User.Identity.Name)
+		        .FirstOrDefault();
 
         /// <returns>
         /// Returns current user data transfer object.
