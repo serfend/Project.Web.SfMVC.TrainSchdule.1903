@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.Web.ViewModels.Company
 {
-	public class CompanyViewModel:APIViewModel
+	public class CompanyViewModel
 	{
 		public string Name { get; set; }
 		public string ParentPath { get; set; }
 
 		public bool IsPrivate { get; set; }
 	}
+
 }

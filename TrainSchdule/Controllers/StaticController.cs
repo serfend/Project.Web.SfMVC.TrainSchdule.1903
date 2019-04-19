@@ -38,8 +38,11 @@ namespace TrainSchdule.Controllers
 			}
 			return new JsonResult(new VerifyGeneratedViewModel()
 			{
-				Id= imgId,
-				PosY = _verifyService.Pos.Y
+				Data = new VerifyGeneratedDataModel()
+				{
+					Id = imgId,
+					PosY = _verifyService.Pos.Y
+				}
 			});
 		}
 		[HttpGet]

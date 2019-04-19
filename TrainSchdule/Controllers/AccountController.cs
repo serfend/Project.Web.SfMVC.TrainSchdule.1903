@@ -554,7 +554,10 @@ namespace TrainSchdule.WEB.Controllers
 			{
 				return new JsonResult(new PermissionCompaniesQueryViewModel()
 				{
-					Data = targetUser.PermissionCompanies
+					Data = new PermissionCompaniesQueryDataModel()
+					{
+						List = targetUser.PermissionCompanies
+					}
 				});
 			}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 		}

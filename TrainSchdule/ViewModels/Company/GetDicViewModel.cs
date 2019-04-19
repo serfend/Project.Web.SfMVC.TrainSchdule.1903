@@ -6,7 +6,12 @@ using TrainSchdule.BLL.DTO;
 
 namespace TrainSchdule.Web.ViewModels.Company
 {
-	public class GetDicViewModel:APIViewModel
+	public class GetDicViewModel:APIDataModel
+	{
+		public GetDicDataModel Data { get; set; }
+	}
+
+	public class GetDicDataModel
 	{
 		public string Name { get; set; }
 		public string Path { get; set; }

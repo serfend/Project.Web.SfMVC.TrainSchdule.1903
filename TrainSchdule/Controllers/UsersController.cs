@@ -118,7 +118,7 @@ namespace TrainSchdule.WEB.Controllers
 			if (item.Privilege>_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return new JsonResult(new UserDetailViewModel()
 			{
-				data=item
+				Data= item
 			});
         }
 		

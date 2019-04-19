@@ -42,9 +42,11 @@ namespace TrainSchdule.Web.Controllers
 			    var list = _companiesService.FindAllChild(nowCompany.id).Where(item=> canShowPrivate || !item.IsPrivate);
 				return new JsonResult(new GetDicViewModel()
 				{
-					Child=list,
-					Name = nowCompany.Name,
-					Path = path
+					Data = new GetDicDataModel() {
+						Child = list,
+						Name = nowCompany.Name,
+						Path = path
+					}
 				});
 		    }
 		    else

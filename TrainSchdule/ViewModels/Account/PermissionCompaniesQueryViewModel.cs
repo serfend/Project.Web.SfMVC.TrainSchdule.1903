@@ -8,8 +8,13 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Account
 {
-	public class PermissionCompaniesQueryViewModel:APIViewModel
+	public class PermissionCompaniesQueryViewModel:APIDataModel
 	{
-		public IEnumerable<PermissionCompanyDTO> Data { get; set; }
+		public PermissionCompaniesQueryDataModel Data { get; set; }
+	}
+
+	public class PermissionCompaniesQueryDataModel
+	{
+		public IEnumerable<PermissionCompanyDTO> List { get; set; }
 	}
 }

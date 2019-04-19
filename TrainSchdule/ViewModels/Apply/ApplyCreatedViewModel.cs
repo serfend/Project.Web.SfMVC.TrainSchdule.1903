@@ -7,7 +7,12 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Apply
 {
-	public class ApplyCreatedViewModel:APIViewModel
+	public class ApplyCreatedViewModel:APIDataModel
+	{
+		public ApplyCreatedDataModel Data { get; set; }
+	}
+
+	public class ApplyCreatedDataModel
 	{
 		[JsonProperty("id")]
 		public Guid Id { get; set; }

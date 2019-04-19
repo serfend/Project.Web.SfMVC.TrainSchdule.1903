@@ -103,7 +103,10 @@ namespace TrainSchdule.Web.Controllers
 			}
 			return  new JsonResult(new ApplyCreatedViewModel()
 			{
-				Id = apply.Id
+				Data = new ApplyCreatedDataModel()
+				{
+					Id = apply.Id
+				}
 			});
 		}
 
@@ -213,7 +216,7 @@ namespace TrainSchdule.Web.Controllers
 			});
 			return new JsonResult(new ApplyProfileViewModel()
 			{
-				Applies = summaryList
+				Data = new ApplyProfileDataModel(){Applies = summaryList}
 			});
 		}
 
@@ -237,7 +240,7 @@ namespace TrainSchdule.Web.Controllers
 			});
 			return new JsonResult(new ApplyProfileViewModel()
 			{
-				Applies = summaryList
+				Data = new ApplyProfileDataModel() { Applies = summaryList }
 			});
 		}
 

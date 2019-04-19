@@ -8,7 +8,12 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Static
 {
-	public class VerifyGeneratedViewModel:APIViewModel
+	public class VerifyGeneratedViewModel:APIDataModel
+	{
+		public VerifyGeneratedDataModel Data { get; set; }
+	}
+
+	public class VerifyGeneratedDataModel
 	{
 		[JsonProperty("id")]
 		public string Id { get; set; }

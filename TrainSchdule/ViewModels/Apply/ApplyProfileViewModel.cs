@@ -8,13 +8,18 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Apply
 {
-	public class ApplyProfileViewModel:APIViewModel
+	public class ApplyProfileViewModel:APIDataModel
+	{
+		public ApplyProfileDataModel Data { get; set; }
+	}
+
+	public class ApplyProfileDataModel
 	{
 		[JsonProperty("applies")]
 		public IEnumerable<ApplyDTO> Applies { get; set; }
 	}
 
-	public class ApplyDetailViewModel : APIViewModel
+	public class ApplyDetailViewModel : APIDataModel
 	{
 		[JsonProperty("data")]
 		public ApplyAllDataDTO Data { get; set; }

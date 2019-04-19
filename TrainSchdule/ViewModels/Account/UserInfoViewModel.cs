@@ -7,7 +7,12 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Account
 {
-	public class UserInfoViewModel:APIViewModel
+	public class UserInfoViewModel:APIDataModel
+	{
+		public UserInfoDataModel Data { get; set; }
+	}
+
+	public class UserInfoDataModel
 	{
 		[JsonProperty("avatar")]
 		public string Avatar { get; set; }

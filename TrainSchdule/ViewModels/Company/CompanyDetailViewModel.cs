@@ -7,7 +7,7 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Company
 {
-	public class CompanyDetailViewModel:APIViewModel
+	public class CompanyDetailViewModel:APIDataModel
 	{
 		public CompanyDTO data { get; set; }
 	}

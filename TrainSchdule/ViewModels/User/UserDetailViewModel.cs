@@ -7,8 +7,8 @@ using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserDetailViewModel:APIViewModel
+	public class UserDetailViewModel:APIDataModel
 	{
-		public UserDetailsDTO data { get; set; }
+		public UserDetailsDTO Data { get; set; }
 	}
 }
