@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Interfaces;
@@ -54,7 +55,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="Tag"/>(s) by predicate.
         /// </summary>
-        public IEnumerable<Tag> Find(Func<Tag, bool> predicate)
+        public IQueryable<Tag> Find(Expression<Func<Tag, bool>> predicate)
         {
             return _context.Tags.OrderBy(i => i.Id).Where(predicate);
         }

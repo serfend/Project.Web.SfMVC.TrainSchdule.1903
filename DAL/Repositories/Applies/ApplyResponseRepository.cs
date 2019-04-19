@@ -2,6 +2,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Linq.Expressions;
 	using System.Text;
 	using System.Threading.Tasks;
 	using DAL.Entities;
@@ -73,7 +74,7 @@
 			/// <summary>
 			/// Method for fetching <see cref="ApplyResponse"/>.s) by predicate.
 			/// </summary>
-			public IEnumerable<ApplyResponse> Find(Func<ApplyResponse, bool> predicate)
+			public IQueryable<ApplyResponse> Find(Expression<Func<ApplyResponse, bool>> predicate)
 			{
 				return _context.ApplyResponses.Where(predicate);
 			}

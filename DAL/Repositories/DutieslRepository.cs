@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Entities;
@@ -69,7 +70,7 @@ namespace DAL.Repositories
 		/// <summary>
 		/// Method for fetching <see cref="Duties"/>(s) by predicate.
 		/// </summary>
-		public IEnumerable<Duties> Find(Func<Duties, bool> predicate)
+		public IQueryable<Duties> Find(Expression<Func<Duties, bool>> predicate)
 		{
 			return _context.Duties.Where(predicate);
 		}

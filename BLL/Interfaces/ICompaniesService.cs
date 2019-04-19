@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.DTO;
@@ -21,7 +22,7 @@ namespace TrainSchdule.BLL.Interfaces
 		/// </summary>
 		IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
 
-		IEnumerable<CompanyDTO> GetAll(Func<Company, bool> predicate, int page, int pageSize);
+		IEnumerable<CompanyDTO> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize);
 		/// <summary>
 		/// 通过单位路径
 		/// </summary>

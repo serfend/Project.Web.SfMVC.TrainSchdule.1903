@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +72,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="PermissionCompany"/>.s) by predicate.
         /// </summary>
-        public IEnumerable<PermissionCompany> Find(Func<PermissionCompany, bool> predicate)
+        public IQueryable<PermissionCompany> Find(Expression<Func<PermissionCompany, bool>> predicate)
         {
             return _context.PermissionCompanies.Where(predicate);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,7 @@ namespace TrainSchdule.DAL.Repositories
 			return _context.Students.FirstOrDefaultAsync(p => p.Id == id);
 		}
 
-		public IEnumerable<Student> Find(Func<Student, bool> predicate)
+		public IQueryable<Student> Find(Expression<Func<Student, bool>> predicate)
 		{
 			return _context.Students.Where(predicate);
 		}

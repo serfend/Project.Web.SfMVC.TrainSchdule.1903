@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Interfaces;
@@ -70,7 +71,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="Like"/>(s) by predicate.
         /// </summary>
-        public IEnumerable<Like> Find(Func<Like, bool> predicate)
+        public IQueryable<Like> Find(Expression<Func<Like, bool>> predicate)
         {
             return _context.Likes.Where(predicate);
         }

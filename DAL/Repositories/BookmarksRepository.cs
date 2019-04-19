@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Interfaces;
@@ -70,7 +71,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="Bookmark"/>(s) by predicate.
         /// </summary>
-        public IEnumerable<Bookmark> Find(Func<Bookmark, bool> predicate)
+        public IQueryable<Bookmark> Find(Expression<Func<Bookmark, bool>> predicate)
         {
             return _context.Bookmarks.Where(predicate);
         }

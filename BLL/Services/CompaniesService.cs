@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,15 +69,14 @@ namespace TrainSchdule.BLL.Services
 			return result;
 		}
 
-		public IEnumerable<CompanyDTO> GetAll(Func<Company, bool> predicate, int page, int pageSize)
+		public IEnumerable<CompanyDTO> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize)
 		{
 			var list= _unitOfWork.Companies.Find(predicate).Skip(page*pageSize).Take(pageSize);
 			var result=new List<CompanyDTO>(list.Count());
-			list.All(item =>
+			foreach (var company in list)
 			{
-				result.Add(MapCompany(item));
-				return true;
-			});
+				result.Add(MapCompany(company));
+			}
 			return result;
 		}
 

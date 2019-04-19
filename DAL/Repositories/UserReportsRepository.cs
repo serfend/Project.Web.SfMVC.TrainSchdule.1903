@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Interfaces;
@@ -56,7 +57,7 @@ namespace TrainSchdule.DAL.Repositories
         /// </summary>
         public UserReport Get(Guid id)
         {
-            return _context.UserReports.Where(b => b.Id == id).FirstOrDefault();
+            return _context.UserReports.Single(b => b.Id == id);
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="UserReport"/>(s) by predicate.
         /// </summary>
-        public IEnumerable<UserReport> Find(Func<UserReport, bool> predicate)
+        public IQueryable<UserReport> Find(Expression<Func<UserReport, bool>> predicate)
         {
             return _context.UserReports.Where(predicate);
         }

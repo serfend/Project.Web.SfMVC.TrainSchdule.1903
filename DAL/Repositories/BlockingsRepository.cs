@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Interfaces;
@@ -70,7 +71,7 @@ namespace TrainSchdule.DAL.Repositories
         /// <summary>
         /// Method for fetching <see cref="BlackList"/>(s) by predicate.
         /// </summary>
-        public IEnumerable<BlackList> Find(Func<BlackList, bool> predicate)
+        public IQueryable<BlackList> Find(Expression<Func<BlackList, bool>> predicate)
         {
             return _context.BlackLists.Where(predicate);
         }

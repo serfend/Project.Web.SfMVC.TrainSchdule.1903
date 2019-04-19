@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Entities;
@@ -73,7 +74,7 @@ namespace DAL.Repositories.Applies
 		/// <summary>
 		/// Method for fetching <see cref="ApplyStamp"/>.s) by predicate.
 		/// </summary>
-		public IEnumerable<ApplyStamp> Find(Func<ApplyStamp, bool> predicate)
+		public IQueryable<ApplyStamp> Find(Expression<Func<ApplyStamp, bool>> predicate)
 		{
 			return _context.ApplyStamps.Where(predicate);
 		}
