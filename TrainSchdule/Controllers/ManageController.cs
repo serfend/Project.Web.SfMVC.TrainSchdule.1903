@@ -197,14 +197,14 @@ namespace TrainSchdule.WEB.Controllers
         {
             if(avatar != null && avatar.Length > 1)
             {
-				if(User.Identity.Name.IsNullOrEmpty())return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+				if(User.Identity.Name.IsNullOrEmpty())return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 				//修改其他人的头像
 				var targetUserName = userName??User.Identity.Name;
 				var user = _usersService.Get(targetUserName);
 				if (targetUserName != User.Identity.Name)
 				{
 					var current = _usersService.Get(targetUserName);
-					if (current.Privilege<=user.Privilege) return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
+					if (current.Privilege<=user.Privilege) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 				}
 	            
 				var fileName = $"avatar{Path.GetExtension(ContentDispositionHeaderValue.Parse(avatar.ContentDisposition).FileName.Trim('"'))}";

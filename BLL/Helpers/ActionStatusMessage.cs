@@ -6,44 +6,88 @@ namespace TrainSchdule.BLL.Helpers
 {
 	public static class ActionStatusMessage
 	{
-		public static readonly Status Success=new Status(0,null);
+		public static readonly Status Success = new Status(0, null);
+		public static readonly Status Fail = new Status(-1, "失败");
+		public static class Account
+		{
+			public static class Login
+			{
+				public static readonly Status Default = new Status(11000, "登录验证失败");
+				public static readonly Status ByUnknown = new Status(11100, "存在异常导致登录失败");
+				public static readonly Status AuthFormat = new Status(11200, "输入格式错误");
+				public static readonly Status AuthException = new Status(11300, "异常登录");
+				public static readonly Status AuthBlock = new Status(11400, "账号存在危险,已阻止");
+				public static readonly Status AuthAccountOrPsw = new Status(11500, "账号或密码错误");
+			}
+			public static class Auth
+			{
+				public static class Invalid
+				{
+					public static readonly Status Default = new Status(12100, "账号权限不足");
+					public static readonly Status Unknown = new Status(12110, "存在不存在的操作");
+					public static readonly Status NotLogin = new Status(12120, "用户未登录");
+					public static readonly Status ByMutilError = new Status(12130, "存在不存在的操作");
+				}
 
-		public static readonly Status AccountLogin_InvalidAuth=new Status(600,"登录验证失败");
-		public static readonly Status AccountLogin_InvalidByUnknown=new Status(60000,"存在异常导致登录失败");
-		public static readonly Status AccountLogin_InvalidAuthFormat=new Status(60001,"输入格式错误");
-		public static readonly Status AccountLogin_InvalidAuthException=new Status(60002,"异常登录");
-		public static readonly Status AccountLogin_InvalidAuthBlock=new Status(60004,"账号存在危险,已阻止");
-		public static readonly Status AccountLogin_InvalidAuthAccountOrPsw=new Status(60008,"账号或密码错误");
+				public static class Verify
+				{
+					public static readonly Status Default = new Status(12200, "验证码异常");
+					public static readonly Status Invalid = new Status(12210, "验证码错误");
+				}
 
-		public static readonly Status AccountAuth_Forbidden = new Status(403,"账号权限不足");
-		public static readonly Status AccountAuth_InvalidByMutilError=new Status(40302,"存在不存在的操作");
-		public static readonly Status AccountAuth_Invalid = new Status(40301, "登录凭证已失效");
-		public static readonly Status AccountAuth_VerifyInvalid = new Status(4030101,"验证码错误");
-		public static readonly Status AccountAuth_AuthInvalid = new Status(4030102,"授权码错误");
+				public static class AuthCode
+				{
+					public static readonly Status Default = new Status(12300, "授权码异常");
+					public static readonly Status Invalid = new Status(12310, "授权码错误");
+				}
 
-		public static readonly Status Permission_Exist = new Status(1002, "用户已具有此权限");
-		public static readonly Status Permission_NotExist = new Status(101, "授权规则不存在");
+				public static class Permission
+				{
+					public static readonly Status Default = new Status(12400, "授权异常");
+					public static readonly Status Exist = new Status(12410, "用户已具有此权限");
+					public static readonly Status NotExist = new Status(12420, "授权规则不存在");
+				}
+				
+			}
+			public static class Register { 
+				public static readonly Status Default = new Status(13000, "用户已存在");
+				public static readonly Status UserExist = new Status(13100, "用户已存在");
+			}
+		}
+
+		public static class User
+		{
+			public static readonly Status Default = new Status(20000, "用户发生未知错误");
+			public static readonly Status NotExist = new Status(21000, "用户不存在");
+			public static readonly Status NoCompany = new Status(22000, "无归属单位");
+			
+		}
 
 
+		public static class Company
+		{
+			public static readonly Status Default = new Status(30000, "单位发生未知错误");
+			public static readonly Status NotExist = new Status(31000, "单位不存在");
+			public static readonly Status NoneCompanyBelong = new Status(32000, "用户不属于任何一个单位");
+			public static readonly Status CreateExisted = new Status(33000, "创建的单位已经存在");
+		}
 
-		public static readonly Status AccountRegister_UserExist = new Status(70001,"用户已存在");
+		public static class Apply
+		{
+			public static readonly Status Default = new Status(40000, "申请发生未知错误");
+			public static readonly Status NotExist = new Status(42000, "申请不存在");
 
-		public static readonly Status User_Unknown = new Status(80, "用户发生未知错误");
-		public static readonly Status User_NotExist = new Status(80404, "用户不存在");
+			public static class Operation
+			{
+				public static readonly Status Default = new Status(43000, "申请不存在");
+				public static readonly Status Invalid = new Status(43100, "申请不存在");
+				public static readonly Status AuditBegan = new Status(43100, "申请已处于审核状态中");
+				public static readonly Status AuditCrash = new Status(43200, "当前存在正在进行的申请（审核中、审核通过状态）");
+				public static readonly Status NoCompanyToSubmit = new Status(41000, "至少需要提交到一个单位进行审批");
+			}
+			
+		}
 
-
-		public static readonly Status Company_Unknown = new Status(140, "单位发生未知错误");
-		public static readonly Status Company_NotExist = new Status(140404,"单位不存在");
-		public static readonly Status Company_NoneCompanyBelong = new Status(140002,"用户不属于任何一个单位");
-		public static readonly Status Company_CreateExisted = new Status(140004,"创建的单位已经存在");
-
-
-		public static readonly Status Apply_Unknow = new Status(150, "申请发生未知错误");
-		public static readonly Status Apply_NoCompanyToSubmit = new Status(150001, "至少需要提交到一个单位进行审批");
-		public static readonly Status Apply_NotExist = new Status(150404, "申请不存在");
-		public static readonly Status Apply_OperationInvalid = new Status(150004, "申请不存在");
-		public static readonly Status Apply_OperationAuditBegan = new Status(150005, "申请已处于审核状态中");
-		public static readonly Status Apply_OperationAuditCrash = new Status(150006, "当前存在正在进行的申请（审核中、审核通过状态）");
 
 
 

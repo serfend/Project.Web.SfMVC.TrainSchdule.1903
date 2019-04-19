@@ -49,7 +49,7 @@ namespace TrainSchdule.Web.Controllers
 		    }
 		    else
 		    {
-			    return new JsonResult(ActionStatusMessage.Company_NotExist);
+			    return new JsonResult(ActionStatusMessage.Company.NotExist);
 		    }
 
 	    }
@@ -60,7 +60,7 @@ namespace TrainSchdule.Web.Controllers
 	    {
 		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
 		    var cmp = _companiesService.Get(path);
-			if(cmp==null)return new JsonResult(ActionStatusMessage.Company_NotExist);
+			if(cmp==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
 			return new JsonResult(new CompanyDetailViewModel()
 			{
 				data=cmp
@@ -71,9 +71,9 @@ namespace TrainSchdule.Web.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
-			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!CheckPermissionCompany(company.ParentPath))
-				return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+				return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 		    var anyExist = _companiesService.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)
 		    {
@@ -88,12 +88,12 @@ namespace TrainSchdule.Web.Controllers
 			    }
 			    catch (Exception ex)
 			    {
-					return new JsonResult(new Status(ActionStatusMessage.Company_NotExist.status,ex.Message));
+					return new JsonResult(new Status(ActionStatusMessage.Company.NotExist.status,ex.Message));
 			    }
 			    return new JsonResult(ActionStatusMessage.Success);
 		    }
 
-		    return new JsonResult(ActionStatusMessage.Company_CreateExisted);
+		    return new JsonResult(ActionStatusMessage.Company.CreateExisted);
 		    
 	    }
 		/// <summary>

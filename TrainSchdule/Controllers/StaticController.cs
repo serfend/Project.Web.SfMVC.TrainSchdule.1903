@@ -34,7 +34,7 @@ namespace TrainSchdule.Controllers
 			{
 				var status = _verifyService.Status;
 				_verifyService.Generate();
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, status));
+				return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, status));
 			}
 			return new JsonResult(new VerifyGeneratedViewModel()
 			{

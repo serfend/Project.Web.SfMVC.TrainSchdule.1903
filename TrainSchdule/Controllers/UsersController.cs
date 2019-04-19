@@ -62,11 +62,10 @@ namespace TrainSchdule.WEB.Controllers
         {
 	        if (ModelState.IsValid)
 	        {
-		        if (User.Identity.IsAuthenticated)
-		        {
+		        if (!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 					username = username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName : username;
 					var item = _usersService.Get(username);
-					if (item.Privilege > _currentUserService.CurrentUser.Privilege&&item.UserName!=User.Identity.Name) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+					if (item.Privilege > _currentUserService.CurrentUser.Privilege&&item.UserName!=User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 					var rst = new StringBuilder();
 					_usersService.Edit(username,async (u) =>
@@ -100,13 +99,12 @@ namespace TrainSchdule.WEB.Controllers
 						if (u.Company == null) rst.AppendLine($"当前不存在对应单位:{model.Company}");
 					});
 					_unitOfWork.Save();
-					return rst.Length == 0 ? new JsonResult(ActionStatusMessage.Success) : new JsonResult(new Status(ActionStatusMessage.AccountAuth_InvalidByMutilError.status, rst.ToString()));
-				}
-				else return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
+					return rst.Length == 0 ? new JsonResult(ActionStatusMessage.Success) : new JsonResult(new Status(ActionStatusMessage.Fail.status, rst.ToString()));
+
 			}
 	        else
 	        {
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+				return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
         }
 
@@ -114,10 +112,10 @@ namespace TrainSchdule.WEB.Controllers
         [AllowAnonymous]
 		public IActionResult Info(string username=null)
         {
-	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;
 			var item=_usersService.Get(username);
-			if (item.Privilege>_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			if (item.Privilege>_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return new JsonResult(new UserDetailViewModel()
 			{
 				data=item

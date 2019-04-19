@@ -52,14 +52,14 @@ namespace TrainSchdule.Web.Controllers
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
 			//校验
-			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			var rst = new StringBuilder();
 			if(! _verifyService.Verify(model.Verify))
-				return new JsonResult(ActionStatusMessage.AccountAuth_VerifyInvalid);
-			if(!_verifyService.Status.IsNullOrEmpty()) return new JsonResult(new Status(ActionStatusMessage.AccountAuth_VerifyInvalid.status, _verifyService.Status));
+				return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
+			if(!_verifyService.Status.IsNullOrEmpty()) return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Default.status, _verifyService.Status));
 			var user = _currentUserService.CurrentUser;
-			if (user == null) return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
-			if (user.Company==null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
+			if (user == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			if (user.Company==null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
 
 			//初始化基础数据
 			var item=new Apply()
@@ -81,7 +81,7 @@ namespace TrainSchdule.Web.Controllers
 
 			//初始化审核列表
 			var responses=InitResponse(user,model.Param.To,rst);
-			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply_NoCompanyToSubmit);
+			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply.Operation.NoCompanyToSubmit);
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
@@ -154,9 +154,9 @@ namespace TrainSchdule.Web.Controllers
 		public IActionResult StartAudit(Guid id)
 		{
 			var item=_unitOfWork.Applies.Get(id);
-			if(item==null)return new JsonResult(ActionStatusMessage.Apply_NotExist);
-			if (item.From.UserName != _currentUserService.CurrentUser.UserName)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
-			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply_OperationAuditBegan);
+			if(item==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (item.From.UserName != _currentUserService.CurrentUser.UserName)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBegan);
 
 
 			var userActiveApplies = _applyService.GetAll(
@@ -175,7 +175,7 @@ namespace TrainSchdule.Web.Controllers
 					select prevStart).Any()
 				)
 			{
-				return new JsonResult(ActionStatusMessage.Apply_OperationAuditCrash);
+				return new JsonResult(ActionStatusMessage.Apply.Operation.AuditCrash);
 			}
 
 
@@ -197,12 +197,12 @@ namespace TrainSchdule.Web.Controllers
 		public IActionResult FromCompany(string path = null, int page = 0,int pageSize=10)
 		{
 			if (path == null) path = _currentUserService.CurrentUser.Company?.Path;
-			if (path == null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"检查当前用户{_currentUserService.CurrentUser.RealName}({_currentUserService.CurrentUser.UserName})的申请，但此人无归属单位"));
+			if (path == null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"检查当前用户{_currentUserService.CurrentUser.RealName}({_currentUserService.CurrentUser.UserName})的申请，但此人无归属单位"));
 
 			var targetCompany = _companiesService.Get(path);
-			if(targetCompany==null)return  new JsonResult(ActionStatusMessage.Company_NotExist);
+			if(targetCompany==null)return  new JsonResult(ActionStatusMessage.Company.NotExist);
 			//因权限关系，用户不一定具有查看自己本单位申请的权限
-			if (  !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			if (  !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			
 			var list = _applyService.GetAll((item)=>item.To.Any(cmp=>cmp.Path==path),page,pageSize);
 			var summaryList=new List<ApplyDTO>();
@@ -224,10 +224,10 @@ namespace TrainSchdule.Web.Controllers
 			var currentUser = _currentUserService.CurrentUser;
 			if (username == null) username = currentUser.UserName;
 			var targetUser = _usersService.Get(username);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User_NotExist);
+			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var path = targetUser.Company?.Path;
-			if(path==null)return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status, $"来自{targetUser.RealName}({targetUser.UserName})的申请，但此人无归属单位"));
-			if (_currentUserService.CurrentUser.UserName!=username && !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp => path.StartsWith(cmp.Path))) return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			if(path==null)return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"来自{targetUser.RealName}({targetUser.UserName})的申请，但此人无归属单位"));
+			if (_currentUserService.CurrentUser.UserName!=username && !_currentUserService.CurrentUser.PermissionCompanies.Any(cmp => path.StartsWith(cmp.Path))) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var list = _applyService.GetAll((item) => item.From.UserName==targetUser.UserName && status==item.Status, page, pageSize);
 			var summaryList = new List<ApplyDTO>();
 			list.All(item =>
@@ -246,11 +246,11 @@ namespace TrainSchdule.Web.Controllers
 		public IActionResult Detail(Guid id)
 		{
 			var item = _applyService.Get(id);
-			if(item==null)return new JsonResult(ActionStatusMessage.Apply_NotExist);
+			if(item==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var targetItemUser = _usersService.Get(item.FromUserName);
-			if (targetItemUser == null) return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status,$"申请来自:{item.From}({item.FromUserName})，但数据库中查无此人"));
+			if (targetItemUser == null) return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"申请来自:{item.From}({item.FromUserName})，但数据库中查无此人"));
 			var targetItemCmp = targetItemUser.Company?.Path;
-			if(targetItemCmp==null)return new JsonResult(new Status(ActionStatusMessage.Apply_Unknow.status,$"来自{item.From}({item.FromUserName})的申请，但此人无归属单位"));
+			if(targetItemCmp==null)return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"来自{item.From}({item.FromUserName})的申请，但此人无归属单位"));
 			if (_currentUserService.CurrentUser.UserName==targetItemUser.UserName||_currentUserService.CurrentUser.PermissionCompanies.Any((cmp) => targetItemCmp.StartsWith(cmp.Path)))
 			{
 				return new JsonResult(new ApplyDetailViewModel()
@@ -258,37 +258,37 @@ namespace TrainSchdule.Web.Controllers
 					Data = item
 				});
 			}else
-				return  new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuth);
+				return  new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
 
 		[HttpPost]
 		[AllowAnonymous]
 		public IActionResult Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			var errorlist=new List<Status>();
-			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.AccountAuth_Invalid);
+			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var currentUser = _currentUserService.CurrentUser;
 			foreach (var applyAuth in Param)
 			{
 				var item = _applyService.Get(applyAuth.Id);
-				if (item == null) errorlist.Add(new Status(ActionStatusMessage.Apply_NotExist.status,applyAuth.Id.ToString()));
+				if (item == null) errorlist.Add(new Status(ActionStatusMessage.Apply.NotExist.status,applyAuth.Id.ToString()));
 				else
 				{
 					var auditCompany = _companiesService.GetCompanyByPath(applyAuth.AuditAs);
-					if(auditCompany==null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.status,applyAuth.AuditAs));
+					if(auditCompany==null)errorlist.Add(new Status(ActionStatusMessage.Company.NotExist.status,applyAuth.AuditAs));
 					else
 					{
 						bool havePermission =
 							currentUser.PermissionCompanies.Any(cmp => auditCompany.Path.StartsWith(cmp.Path));
-						if(!havePermission)errorlist.Add(new Status(ActionStatusMessage.AccountAuth_Forbidden.status,applyAuth.AuditAs));
+						if(!havePermission)errorlist.Add(new Status(ActionStatusMessage.Account.Auth.Invalid.Default.status,applyAuth.AuditAs));
 						else
 						{
 							var proDTO = item.Progress.TakeWhile(progress => progress.CompanyPath == applyAuth.AuditAs).FirstOrDefault();
 							
-							if (proDTO == null)errorlist.Add(new Status(ActionStatusMessage.Company_NotExist.status,applyAuth.AuditAs));
+							if (proDTO == null)errorlist.Add(new Status(ActionStatusMessage.Company.NotExist.status,applyAuth.AuditAs));
 							var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
-							if(pro.Status!=Auditing.Received)return new JsonResult(ActionStatusMessage.Apply_OperationInvalid);
+							if(pro.Status!=Auditing.Received)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 							switch (applyAuth.Apply)
 							{
 								case ApplyReponseHandleStatus.Accept:

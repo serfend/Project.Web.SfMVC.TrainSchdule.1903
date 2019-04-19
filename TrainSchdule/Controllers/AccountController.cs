@@ -95,8 +95,8 @@ namespace TrainSchdule.WEB.Controllers
             var result =(JsonResult) await Login(model);
             int code = ((Status) result.Value).status;
             if (code==ActionStatusMessage.Success.status)return RedirectToLocal(returnUrl);
-			else if(code==ActionStatusMessage.AccountLogin_InvalidAuthException.status)return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
-            else if(code==ActionStatusMessage.AccountLogin_InvalidAuthBlock.status)  return RedirectToAction(nameof(Lockout));
+			else if(code==ActionStatusMessage.Account.Login.AuthException.status)return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
+            else if(code==ActionStatusMessage.Account.Login.AuthBlock.status)  return RedirectToAction(nameof(Lockout));
 
 	        ModelState.AddModelError(string.Empty, $"登录失败:{((Status)result.Value).message}");
 	        // If we got this far, something failed, redisplay form
@@ -249,7 +249,7 @@ namespace TrainSchdule.WEB.Controllers
             if (status.status == ActionStatusMessage.Success.status)
             {
 	            return RedirectToLocal(returnUrl);
-            }else if (status.status == ActionStatusMessage.AccountRegister_UserExist.status)
+            }else if (status.status == ActionStatusMessage.Account.Register.UserExist.status)
             {
 	            ModelState.AddModelError(string.Empty, "此账号已被使用");
 	            return View(model);
@@ -456,12 +456,12 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public IActionResult AuthKey(ModifyAuthKeyViewModel model)
 		{
-			if(!_authService.Verify(model.Code,model.UserName))return new JsonResult(ActionStatusMessage.AccountAuth_AuthInvalid);
+			if(!_authService.Verify(model.Code,model.UserName))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var success = _usersService.Edit(model.UserName, (x) =>
 			{
 				x.AuthKey = model.NewKey;
 			});
-			if(!success)return new JsonResult(ActionStatusMessage.User_NotExist);
+			if(!success)return new JsonResult(ActionStatusMessage.User.NotExist);
 			_unitOfWork.Save();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -485,7 +485,7 @@ namespace TrainSchdule.WEB.Controllers
 				var codeResult = _verifyService.Verify(model.Verify);
 				if (!codeResult)
 				{
-					return new JsonResult(ActionStatusMessage.AccountAuth_VerifyInvalid);
+					return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 				}
 
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -496,21 +496,21 @@ namespace TrainSchdule.WEB.Controllers
 				}
 				else if (result.RequiresTwoFactor)
 				{
-					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthException);
+					return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
 				}
 				else if (result.IsLockedOut)
 				{
 					_logger.LogWarning("账号异常");
-					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthBlock);
+					return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
 				}
 				else
 				{
-					return new JsonResult(ActionStatusMessage.AccountLogin_InvalidAuthAccountOrPsw);
+					return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 				}
 			}
 			else
 			{
-				return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+				return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
 		}
 		[HttpPost]
@@ -518,17 +518,17 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.AccountLogin_InvalidByUnknown.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!_verifyService.Verify(model.Verify))
 			{
-				return new JsonResult(ActionStatusMessage.AccountAuth_VerifyInvalid);
+				return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			}
-			if (!_authService.Verify(model.Auth.Code, model.Auth.UserName)) return new JsonResult(ActionStatusMessage.AccountAuth_AuthInvalid);
+			if (!_authService.Verify(model.Auth.Code, model.Auth.UserName)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 
 			var user = await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
 			if (user == null)
 			{
-				return new JsonResult(ActionStatusMessage.AccountRegister_UserExist);
+				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			}
 			_logger.LogInformation($"新的用户创建:{model.UserName}");
 
@@ -549,14 +549,14 @@ namespace TrainSchdule.WEB.Controllers
 			var currentUser = _authService.CurrentUserService.CurrentUser;
 			username = username ?? currentUser.UserName;
 			var targetUser = _usersService.Get(username);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User_NotExist);
+			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (currentUser.UserName == username || targetUser.Privilege < currentUser.Privilege)
 			{
 				return new JsonResult(new PermissionCompaniesQueryViewModel()
 				{
 					Data = targetUser.PermissionCompanies
 				});
-			}else return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 		}
 
 		[HttpPost]
@@ -565,11 +565,11 @@ namespace TrainSchdule.WEB.Controllers
 		{
 			var authUser = _usersService.Get(authCode.UserName);
 			username = _authService.CurrentUserService.CurrentUser.UserName;
-			if (authUser==null)return new JsonResult(ActionStatusMessage.User_NotExist);
+			if (authUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var password = authUser.AuthKey??authUser.UserName;
-			if(!_authService.Verify(authCode.Code, authCode.UserName, password))return new JsonResult(ActionStatusMessage.AccountAuth_AuthInvalid);
+			if(!_authService.Verify(authCode.Code, authCode.UserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			bool authUserHavePermission = authUser.PermissionCompanies.Any(per=>path.StartsWith(per.Path));
-			if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			
 			bool success=_usersService.Edit(username, user =>
 			{
@@ -583,7 +583,7 @@ namespace TrainSchdule.WEB.Controllers
 				_unitOfWork.PermissionCompanies.Create(permissionCompany);
 				user.PermissionCompanies.Append(permissionCompany);
 			});
-			if (!success) return new JsonResult(ActionStatusMessage.User_NotExist);
+			if (!success) return new JsonResult(ActionStatusMessage.User.NotExist);
 			_unitOfWork.Save();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -593,11 +593,11 @@ namespace TrainSchdule.WEB.Controllers
 		public ActionResult Permission(Guid id, GoogleAuthViewModel authCode)
 		{
 			var authUser = _usersService.Get(authCode.UserName);
-			if (authUser == null) return new JsonResult(ActionStatusMessage.User_NotExist);
+			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var password = authUser.AuthKey ?? authUser.UserName;
-			if (!_authService.Verify(authCode.Code, authCode.UserName, password)) return new JsonResult(ActionStatusMessage.AccountAuth_AuthInvalid);
+			if (!_authService.Verify(authCode.Code, authCode.UserName, password)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetPermission = _unitOfWork.PermissionCompanies.Get(id);
-			if(targetPermission==null)return new JsonResult(ActionStatusMessage.Permission_NotExist);
+			if(targetPermission==null)return new JsonResult(ActionStatusMessage.Account.Auth.Permission.NotExist);
 			var targetUser = targetPermission.Owner;
 			if (targetPermission.AuthBy == authUser.Id || targetUser.Privilege < authUser.Privilege)
 			{
@@ -608,7 +608,7 @@ namespace TrainSchdule.WEB.Controllers
 				_unitOfWork.Users.Update(targetUser);
 				_unitOfWork.Save();
 				return new JsonResult(ActionStatusMessage.Success);
-			}else return new JsonResult(ActionStatusMessage.AccountAuth_Forbidden);
+			}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 		}
 		#endregion
 		#endregion
