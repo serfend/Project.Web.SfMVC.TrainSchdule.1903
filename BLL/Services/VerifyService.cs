@@ -228,7 +228,7 @@ namespace BLL.Services
 		}
 		public VerifyImg(Image raw)
 		{
-			var imgBack = Compress(raw,360);
+			var imgBack = Compress(raw,260);
 			var size = imgBack.Size;
 			int width = (int)(size.Height * 0.3);
 			InitCodeValue(size.Width, width);
