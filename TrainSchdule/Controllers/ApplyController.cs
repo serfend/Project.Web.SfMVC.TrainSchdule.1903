@@ -82,7 +82,7 @@ namespace TrainSchdule.Web.Controllers
 
 			//初始化审核列表
 			var responses=InitResponse(user,model.Param.To,rst);
-			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply.Operation.NoCompanyToSubmit);
+			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply.Operation.ToCompany.NoneToSubmit);
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
@@ -334,7 +334,7 @@ namespace TrainSchdule.Web.Controllers
 
 				if (proDTO == null)
 				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Company.NotExist);
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.ToCompany.NotExist);
 					continue;
 				}
 				var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
