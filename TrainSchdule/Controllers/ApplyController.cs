@@ -261,6 +261,7 @@ namespace TrainSchdule.Web.Controllers
 			if (pageSize > 10)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 			var currentUser = _currentUserService.CurrentUser;
 			if (username == null) username = currentUser.UserName;
+			if(username==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetUser = _usersService.Get(username);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var path = targetUser.Company?.Path;
