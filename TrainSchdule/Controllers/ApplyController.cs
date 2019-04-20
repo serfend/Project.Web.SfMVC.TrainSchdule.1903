@@ -10,6 +10,7 @@ using BLL.Extensions;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -232,6 +233,8 @@ namespace TrainSchdule.Web.Controllers
 		[HttpGet]
 		public IActionResult FromCompany(string path,AuditStatus? status, int page = 0,int pageSize=10)
 		{
+			if (pageSize > 10) return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
+
 			var currentUser = _currentUserService.CurrentUser;
 			if (path == null) path = currentUser.Company?.Path;
 			if (path == null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"检查当前用户{currentUser.RealName}({currentUser.UserName})的申请，但此人无归属单位"));
@@ -255,6 +258,7 @@ namespace TrainSchdule.Web.Controllers
 		[AllowAnonymous]
 		public IActionResult FromUser(string username,AuditStatus? status, int page = 0, int pageSize = 10)
 		{
+			if (pageSize > 10)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 			var currentUser = _currentUserService.CurrentUser;
 			if (username == null) username = currentUser.UserName;
 			var targetUser = _usersService.Get(username);
