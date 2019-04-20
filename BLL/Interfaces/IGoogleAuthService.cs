@@ -13,6 +13,7 @@ namespace BLL.Interfaces
 	public interface IGoogleAuthService : IDisposable
 	{
 		bool Verify(int code,[Optional]string userName, [Optional]string password);
+		int Code([Optional] string userName, [Optional] string password);
 		void InitCode([Optional] string username, [Optional] string password);
 		string GetAuthKey([Optional] string password);
 		string Issuer { get; set; }

@@ -29,6 +29,13 @@ namespace BLL.Services
 			return auth.Verify(code,5);
 		}
 
+		public int Code(string userName = null, string password = null)
+		{
+			InitCode(userName, password);
+			return auth.OneTimePassword;
+		}
+
+
 		public void InitCode(string username = null, string password = null)
 		{
 			username = username ?? currentUser.UserName;
