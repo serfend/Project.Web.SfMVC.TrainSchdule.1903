@@ -108,7 +108,7 @@ namespace TrainSchdule.WEB.Controllers
 	            u.RealName=model.RealName;
 				u.About=model.About;
 				u.WebSite=model.WebSite;
-				u.Gender=(int)model.Gender;
+				u.Gender=model.Gender;
 
 			});
 

@@ -23,9 +23,9 @@ namespace TrainSchdule.WEB.Extensions
             {
                 RealName = item.RealName,
                 UserName = item.UserName,
-                Avatar =UsersExtensions.GetAvatar(item),
+                Avatar = item.Avatar,
                 About = item.About ?? string.Empty,
-                Date = item.Date.ToString(UsersExtensions.Info_DateFormat),
+                Date = item.Date.ToString(BLL.Extensions. UsersExtensions.Info_DateFormat),
                 Confirmed = item.Confirmed,
                 Followed = item.Followed,
                 Gender = item.Gender,
@@ -57,9 +57,9 @@ namespace TrainSchdule.WEB.Extensions
                 {
                     RealName = item.RealName,
                     UserName = item.UserName,
-                    Avatar =UsersExtensions.GetAvatar(item),
+                    Avatar = item.Avatar,
                     About = item.About ?? string.Empty,
-                    Date = item.Date.ToString(UsersExtensions.Info_DateFormat),
+                    Date = item.Date.ToString(BLL.Extensions.UsersExtensions.Info_DateFormat),
                     Confirmed = item.Confirmed,
                     Followed = item.Followed,
                     Gender = item.Gender,

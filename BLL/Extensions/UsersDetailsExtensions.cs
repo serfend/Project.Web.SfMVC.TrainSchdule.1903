@@ -34,7 +34,7 @@ namespace TrainSchdule.BLL.Extensions
                 RealName = item.RealName,
                 UserName = item.UserName,
 				InvitedBy = item.InvitedBy,
-                Avatar = item.Avatar,
+                Avatar =UsersExtensions.GetAvatar(item) ,
                 About = item.About,
                 Date = item.Date,
                 Gender = (GenderEnum)item.Gender,

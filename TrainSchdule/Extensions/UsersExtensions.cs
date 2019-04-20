@@ -25,26 +25,14 @@ namespace TrainSchdule.WEB.Extensions
             {
                 RealName = item.RealName,
                 UserName = item.UserName,
-                Avatar = GetAvatar(item),
-                Date = item.Date.ToString(Info_DateFormat),
+                Avatar = item.Avatar,
+                Date = item.Date.ToString(BLL.Extensions.UsersExtensions.Info_DateFormat),
                 Confirmed = item.Confirmed,
                 Followed = item.Followed,
                 Blocked = item.Blocked,
                 PrivateAccount = item.PrivateAccount,
                 IBlocked = item.IBlocked
             };
-        }
-
-        public const string ImgAvatarMale = "/images/defaults/def-male-logo.png";
-        public const string ImgAvatarFemale = "/images/defaults/def-female-logo.png";
-        public const string Info_DateFormat = "yyyy年MM月dd日";
-
-
-        public static string GetAvatar(UserDTO item)
-        {
-	        if (!item.Avatar.IsNullOrEmpty()) return $"data/avatars/{item.UserName}/item.Avatar";
-	        if ( item.Gender==GenderEnum.Male || item.Gender==GenderEnum.Unknown) return ImgAvatarMale;
-	        return ImgAvatarFemale;
         }
 
         /// <summary>
@@ -65,8 +53,8 @@ namespace TrainSchdule.WEB.Extensions
                 {
                     RealName = item.RealName,
                     UserName = item.UserName,
-                    Avatar = GetAvatar(item),
-                    Date = item.Date.ToString(Info_DateFormat),
+                    Avatar = item.Avatar,
+                    Date = item.Date.ToString(BLL.Extensions.UsersExtensions.Info_DateFormat),
                     Confirmed = item.Confirmed,
                     Followed = item.Followed,
                     Blocked = item.Blocked,

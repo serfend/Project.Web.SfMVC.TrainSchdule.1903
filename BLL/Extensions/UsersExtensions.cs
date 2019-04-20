@@ -1,4 +1,5 @@
-﻿using TrainSchdule.DAL.Entities;
+﻿using Castle.Core.Internal;
+using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.DTO;
 
 namespace TrainSchdule.BLL.Extensions
@@ -25,7 +26,7 @@ namespace TrainSchdule.BLL.Extensions
                 RealName = item.RealName,
                 UserName = item.UserName,
 				AuthKey = item.AuthKey,
-                Avatar = item.Avatar,
+                Avatar = GetAvatar(item),
                 Date = item.Date,
                 Gender = (GenderEnum)item.Gender,
 
@@ -37,10 +38,22 @@ namespace TrainSchdule.BLL.Extensions
             };
         }
 
-        /// <summary>
-        /// Maps user entity to user DTO.
-        /// </summary>
-        public static UserDTO ToDTO(this User item, bool confirmed, bool followed, bool blocked, bool iBlocked)
+        public const string ImgAvatarMale = "/images/defaults/def-male-logo.png";
+        public const string ImgAvatarFemale = "/images/defaults/def-female-logo.png";
+        public const string Info_DateFormat = "yyyy年MM月dd日";
+
+
+        public static string GetAvatar(User item)
+        {
+	        if (!item.Avatar.IsNullOrEmpty()) return $"data/avatars/{item.UserName}/item.Avatar";
+	        if (item.Gender == GenderEnum.Male || item.Gender == GenderEnum.Unknown) return ImgAvatarMale;
+	        return ImgAvatarFemale;
+        }
+
+		/// <summary>
+		/// Maps user entity to user DTO.
+		/// </summary>
+		public static UserDTO ToDTO(this User item, bool confirmed, bool followed, bool blocked, bool iBlocked)
         {
             if (item == null)
             {

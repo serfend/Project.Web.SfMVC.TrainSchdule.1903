@@ -55,7 +55,7 @@ namespace TrainSchdule.DAL.Entities
         /// <summary>
         /// Gets and sets user gender.
         /// </summary>
-        public int Gender { get; set; }
+        public GenderEnum Gender { get; set; }
 
         /// <summary>
         /// Gets and sets user private account config.
