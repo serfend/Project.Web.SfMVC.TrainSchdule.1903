@@ -87,7 +87,10 @@
 	    <script defer src="~/js/vue/vue.js"></script>
 	    <script defer src="~/js/vue/vue-resource.js"></script>
     </environment>
-    
+	<environment include="Production">
+		<script defer src="~/js/vue/vue-resource.min.js"></script>
+		<script defer src="~/js/vue/vue.min.js"></script>
+	</environment>
     <script defer src="~/js/app.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

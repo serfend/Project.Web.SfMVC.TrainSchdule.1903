@@ -9,7 +9,7 @@
     <script defer src="~/js/manage/avatar.js"></script>
 }
 
-<h2 class="is-uppercase has-text-centered has-text-weight-bold">Profile avatar</h2>
+<h2 class="is-uppercase has-text-centered has-text-weight-bold">@Model.RealName</h2>
 <form method="post" asp-controller="Manage" asp-action="ChangeAvatar" class="adaptive-form has-text-centered" id="uploadAvatar" enctype="multipart/form-data">
 
     <img alt="@Model.Username" v-bind:src="path?path:'@Model.Avatar'" class="is-circle has-tiny-shadow image is-172x172" style="margin: 10px;" />
@@ -33,13 +33,13 @@
     </div>
 
     <div class="field has-text-centered">
-        <button type="submit" class="button is-accent-button" title="Save avatar">Save avatar</button>
+        <button type="submit" class="button is-accent-button" title="Save avatar">保存头像</button>
     </div>
 </form>
 
 <hr />
 
-<h2 class="is-uppercase has-text-centered has-text-weight-bold">Account info</h2>
+<h2 class="is-uppercase has-text-centered has-text-weight-bold">用户信息</h2>
 <form method="post" class="adaptive-form">
     <div class="field">
         <div asp-validation-summary="All" class="has-text-danger"></div>

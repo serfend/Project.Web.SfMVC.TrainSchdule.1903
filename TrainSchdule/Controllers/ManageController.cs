@@ -195,50 +195,52 @@ namespace TrainSchdule.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeAvatar(IFormFile avatar, string userName)
         {
-            if(avatar != null && avatar.Length > 1)
-            {
-				if(User.Identity.Name.IsNullOrEmpty())return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-				//修改其他人的头像
-				var targetUserName = userName??User.Identity.Name;
-				var user = _usersService.Get(targetUserName);
-				if (targetUserName != User.Identity.Name)
-				{
-					var current = _usersService.Get(targetUserName);
-					if (current.Privilege<=user.Privilege) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-				}
-	            
-				var fileName = $"avatar{Path.GetExtension(ContentDispositionHeaderValue.Parse(avatar.ContentDisposition).FileName.Trim('"'))}";
+			await ModifyAvatar(avatar, userName);
 
-                user.Avatar = fileName;
-
-                fileName = Path.Combine(_environment.WebRootPath, "data/avatars") + $@"/{User.Identity.Name}/{fileName}";
-
-                var dir = Path.Combine(_environment.WebRootPath, "data/avatars") + $@"/{User.Identity.Name}";
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                using (var fs = System.IO.File.Create(fileName))
-                {
-                    await avatar.CopyToAsync(fs);
-                    await fs.FlushAsync();
-                }
-
-                await _usersService.EditAsync(userName,(u) =>
-                {
-	                u.UserName = user.UserName;
-	                u.RealName = user.RealName;
-	                u.About = user.About;
-	                u.WebSite = user.WebSite;
-	                u.Gender = (int)user.Gender;
-	                u.Avatar = user.Avatar;
-
-                });
-            }
-
-            return RedirectToAction(nameof(Index));
+			return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ModifyAvatar(IFormFile avatar, string userName)
+        {
+	        if (avatar == null && avatar.Length <= 1)return new JsonResult(ActionStatusMessage.User.Default);
+	        if (User.Identity.Name.IsNullOrEmpty()) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+	        //修改其他人的头像
+	        var targetUserName = userName ?? User.Identity.Name;
+	        var user = _usersService.Get(targetUserName);
+	        if (targetUserName != User.Identity.Name)
+	        {
+		        var current = _usersService.Get(targetUserName);
+		        if (current.Privilege <= user.Privilege) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+	        }
+
+	        var fileName = $"avatar{Path.GetExtension(ContentDispositionHeaderValue.Parse(avatar.ContentDisposition).FileName.Trim('"'))}";
+
+	        user.Avatar = fileName;
+
+	        
+	        var dir = $"{Path.Combine(_environment.WebRootPath, "data/avatars")}/{User.Identity.Name}";
+	        fileName = $"{dir}/{fileName}";
+
+			if (!Directory.Exists(dir))
+	        {
+		        Directory.CreateDirectory(dir);
+	        }
+
+	        using (var fs = System.IO.File.Create(fileName))
+	        {
+		        await avatar.CopyToAsync(fs);
+		        await fs.FlushAsync();
+	        }
+
+	        await _usersService.EditAsync(userName, (u) =>
+	        {
+		        u.Avatar = user.Avatar;
+
+	        });
+			return new JsonResult(ActionStatusMessage.Success);
+
+		}
 
         [HttpGet]
         public IActionResult ChangeTheme()
