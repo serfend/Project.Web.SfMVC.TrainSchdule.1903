@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -87,11 +88,10 @@ namespace TrainSchdule.Web.Controllers
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
 
 			var to=new List<Company>(item.Response.Count());
-			responses.All((res) =>
+			foreach (var applyResponse in responses)
 			{
-				to.Add(res.Company);
-				return true;
-			});
+				to.Add(applyResponse.Company);
+			}
 			item.To = to;
 			var apply=await _applyService.CreateAsync(item);
 
@@ -113,10 +113,13 @@ namespace TrainSchdule.Web.Controllers
 		/// <summary>
 		/// 初始化审核列表
 		/// </summary>
-		/// <param name="user"></param>
+		/// <param name="user">申请来源</param>
+		/// <param name="To">申请发送至</param>
+		/// <param name="rst">错误信息汇总</param>
 		/// <returns></returns>
 		private List<ApplyResponse> InitResponse(User user,IEnumerable<int>To,StringBuilder rst)
 		{
+			To = To.OrderBy(to => to);
 			var list = new List<ApplyResponse>();
 			var rawCompanyPath = user.Company?.Path;
 			rawCompanyPath += '/';
@@ -172,8 +175,7 @@ namespace TrainSchdule.Web.Controllers
 				(from userActiveApply in userActiveApplies
 					let prevStart = userActiveApply.Detail.Stamp.ldsj.Ticks
 					let prevEnd = userActiveApply.Detail.Stamp.ldsj.AddDays(userActiveApply.Detail.Request.xjts).AddDays(userActiveApply.Detail.Request.ltts).Ticks
-					let curStart = item.stamp.ldsj.Ticks
-					let curEnd = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts).Ticks
+					let curStart = item.stamp.ldsj.Ticks let curEnd = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts).Ticks
 					where (prevStart >= curStart && prevStart <= curEnd) || (prevEnd >= curStart && prevEnd <= curEnd)
 					select prevStart).Any()
 				)
@@ -183,7 +185,7 @@ namespace TrainSchdule.Web.Controllers
 
 
 			item.Status = AuditStatus.Auditing;
-			item.Response.First().Status = Auditing.Received;
+			item.Response.Last().Status = Auditing.Received;
 			_unitOfWork.Applies.Update(item);
 			await _unitOfWork.SaveAsync();
 			return new JsonResult(ActionStatusMessage.Success);
@@ -228,7 +230,7 @@ namespace TrainSchdule.Web.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult FromCompany(string path = null, int page = 0,int pageSize=10)
+		public IActionResult FromCompany(string path,AuditStatus? status, int page = 0,int pageSize=10)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			if (path == null) path = currentUser.Company?.Path;
@@ -238,8 +240,10 @@ namespace TrainSchdule.Web.Controllers
 			if(targetCompany==null)return  new JsonResult(ActionStatusMessage.Company.NotExist);
 			//因权限关系，用户不一定具有查看自己本单位申请的权限
 			if (  !currentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			
-			var list = _applyService.GetAll((item)=>item.Response.Any(cmp=>cmp.Company.Path==path ),page,pageSize);
+			Expression<Func<Apply, bool>> predict;
+			if (status == null) predict = (item) => item.Response.Any(cmp => cmp.Company.Path == path);
+			else predict=item=> item.Response.Any(cmp => cmp.Company.Path == path) && item.Status==status;
+			var list = _applyService.GetAll(predict,page,pageSize);
 			var summaryList= list.Select(applyAllDataDto => applyAllDataDto.ToSummaryDTO()).ToList();
 			return new JsonResult(new ApplyProfileViewModel()
 			{
@@ -298,67 +302,83 @@ namespace TrainSchdule.Web.Controllers
 		public async  Task<IActionResult>Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
-			var errorList=new List<Status>();
+			var errorList=new ConcurrentDictionary<string,List<Status>>();
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var currentUser = _currentUserService.CurrentUser;
 			foreach (var applyAuth in Param)
 			{
-				var item = _applyService.Get(applyAuth.Id);
+				errorList.AddOrUpdate(applyAuth.AuditAs, new List<Status>(),
+					(key, statuses) => errorList[key] = statuses);
+				//获取每个apply
+				var item = _applyService.GetEntity(applyAuth.Id);
 				if (item == null)
 				{
-					errorList.Add(new Status(ActionStatusMessage.Apply.NotExist.status, applyAuth.Id.ToString()));
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.NotExist);
 					continue;
 				}
 				
 				var auditCompany = _companiesService.GetCompanyByPath(applyAuth.AuditAs);
 				if (auditCompany == null)
 				{
-					errorList.Add(new Status(ActionStatusMessage.Company.NotExist.status, applyAuth.AuditAs));
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Company.NotExist);
 					continue;
 				}
 				bool havePermission =
 					currentUser.PermissionCompanies.Any(cmp => auditCompany.Path.StartsWith(cmp.Path));
 				if (!havePermission)
 				{
-					errorList.Add(
-						new Status(ActionStatusMessage.Account.Auth.Invalid.Default.status, applyAuth.AuditAs));
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Account.Auth.Invalid.Default);
 					continue;
 				};
-				var proDTO = item.Progress.TakeWhile(progress => progress.CompanyPath == applyAuth.AuditAs).FirstOrDefault();
+				var proDTO = item.Response.Single(progress => progress.Company.Path == applyAuth.AuditAs);
 
 				if (proDTO == null)
 				{
-					errorList.Add(new Status(ActionStatusMessage.Company.NotExist.status, applyAuth.AuditAs));
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Company.NotExist);
 					continue;
 				}
 				var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
-				if(pro.Status!=Auditing.Received)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
+				if (pro.Status != Auditing.Received)
+				{
+					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.Invalid);
+					continue;
+				}
 				switch (applyAuth.Apply)
 				{
 					case ApplyReponseHandleStatus.Accept:
 						pro.Status = Auditing.Accept;
-						var nextProDTO = item.Progress.TakeWhile(nextProgress => nextProgress.Status == Auditing.UnReceive)
-							.FirstOrDefault();
-						if (nextProDTO != null)
+						var nextProDTO = item.Response.TakeWhile(nextProgress => nextProgress.Status == Auditing.UnReceive)
+							.LastOrDefault();
+						if (nextProDTO == null)
 						{
+							item.Status = AuditStatus.AcceptAndWaitAdmin;
+						}else						{
 							var nextPro = _unitOfWork.ApplyResponses.Get(nextProDTO.Id);
 							nextPro.Status = Auditing.Received;
 						}
 						break;
 					case ApplyReponseHandleStatus.Deny:
 						pro.Status = Auditing.Denied;
+						item.Status = AuditStatus.Denied;
+						
 						break;
+					default:
+					{
+						errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.Invalid);
+						continue;
+					}
 				}
-
+				
 				pro.AuditingBy = currentUser;
 				pro.Remark = applyAuth.Remark;
 				pro.HandleStamp=DateTime.Now;
+				_unitOfWork.Applies.Update(item);
 				_unitOfWork.ApplyResponses.Update(pro);
+				if (errorList[applyAuth.AuditAs].Count == 0) errorList.Remove(applyAuth.AuditAs,out var wasted);
 			}
 
 			await _unitOfWork.SaveAsync();
-			if(errorList.Count==0)return new JsonResult(ActionStatusMessage.Success);
-			return new JsonResult(new {code=-1,errors= errorList });
+			return errorList.Count==0 ? new JsonResult(ActionStatusMessage.Success) : new JsonResult(new {code=-1,errors= errorList });
 		}
 		#region Disposing
 

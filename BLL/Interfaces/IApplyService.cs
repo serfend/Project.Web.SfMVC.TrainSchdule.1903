@@ -13,6 +13,8 @@ namespace BLL.Interfaces
 	public interface IApplyService : IDisposable
 	{
 		ApplyAllDataDTO Get(Guid id);
+
+		Apply GetEntity(Guid id);
 		/// <summary>
 		/// 加载所有申请
 		/// </summary>

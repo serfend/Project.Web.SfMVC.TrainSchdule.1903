@@ -45,28 +45,20 @@ namespace BLL.Extensions
 					Xjlb = item.xjlb
 				},
 				Status = item.Status,
-				
 			};
-			var list = new List<ApplyResponseDTO>(item.Response.Count());
-			bool AllPass=item.Response.All(res =>
+			var list=item.Response.Select(res => new ApplyResponseDTO()
 			{
-				var resDTO = new ApplyResponseDTO()
-				{
-					Id = res.Id,
-					AuditBy = res.AuditingBy?.RealName,
-					AuditUserName = res.AuditingBy?.UserName,
-					Company = res.Company.Name,
-					CompanyPath = res.Company.Path,
-					HdlStamp = res.HandleStamp,
-					Remark = res.Remark,
-					Status = res.Status
-				};
-				if (resDTO.Status == Auditing.Received) apply.Current = resDTO.Company;
-				list.Add(resDTO);
-				return true;
+				Id = res.Id,
+				AuditBy = res.AuditingBy?.RealName,
+				AuditUserName = res.AuditingBy?.UserName,
+				Company = res.Company.Name,
+				CompanyPath = res.Company.Path,
+				HdlStamp = res.HandleStamp,
+				Remark = res.Remark,
+				Status = res.Status
 			});
 			apply.Progress = list;
-
+			apply.Current=list.FirstOrDefault(p => p.Status == Auditing.Received)?.Company;
 			return apply;
 		}
 	}

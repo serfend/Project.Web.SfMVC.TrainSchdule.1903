@@ -54,10 +54,9 @@ namespace BLL.Services
 		}
 		#endregion
 
-		public ApplyAllDataDTO Get(Guid id)
-		{
-			return _unitOfWork.Applies.Get(id).ToAllDataDTO();
-		}
+		public ApplyAllDataDTO Get(Guid id)=> GetEntity(id).ToAllDataDTO();
+
+		public Apply GetEntity(Guid id) => _unitOfWork.Applies.Get(id);
 		public IEnumerable<ApplyAllDataDTO> GetAll(int page, int pageSize)
 		{
 			return GetAll((item) => true,page,pageSize);
