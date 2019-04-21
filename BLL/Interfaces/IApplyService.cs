@@ -58,5 +58,8 @@ namespace BLL.Interfaces
 		/// Async edits user.
 		/// </summary>
 		Task<bool> EditAsync(string userName, Action<Apply> editCallBack);
+
+		void Delete(Apply item);
+		Task DeleteAsync(Apply item);
 	}
 }

@@ -115,5 +115,25 @@ namespace BLL.Services
 			await _unitOfWork.SaveAsync();
 			return true;
 		}
+
+		public void Delete(Apply item)
+		{
+			var ress = _unitOfWork.ApplyResponses.Find(r => item.Response.Any(i => i.Id == r.Id));
+			foreach (var applyResponse in ress)
+			{
+				_unitOfWork.ApplyResponses.Delete(applyResponse.Id);
+			}
+			 _unitOfWork.Applies.Delete(item.Id);
+		}
+
+		public async Task DeleteAsync(Apply item)
+		{
+			var ress = _unitOfWork.ApplyResponses.Find(r => item.Response.Any(i => i.Id == r.Id));
+			foreach (var applyResponse in ress)
+			{
+				await _unitOfWork.ApplyResponses.DeleteAsync(applyResponse.Id);
+			}
+			await _unitOfWork.Applies.DeleteAsync(item.Id);
+		}
 	}
 }

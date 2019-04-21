@@ -92,12 +92,14 @@ namespace TrainSchdule.BLL.Helpers
 				}
 				public static readonly Status AuditBeenAcceptedByOneCompany = new Status(43400, "当前申请已被审核，无法撤回");
 				public static readonly Status AuditIsPublic = new Status(43500, "当前申请处于发布状态，请先撤回申请");
+				public static readonly Status AllReadyWithdrew = new Status(43600, "当前申请处于已撤回状态，无需撤回");
+				
 
 			}
 
 			public static class Request
 			{
-				public static readonly Status OutOfDate = new Status(44100, "申请的离队时间不可晚于当前时间");
+				public static readonly Status OutOfDate = new Status(44100, "申请的离队时间不可早于当前时间");
 
 			}
 		}

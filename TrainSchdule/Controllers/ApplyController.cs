@@ -222,6 +222,7 @@ namespace TrainSchdule.Web.Controllers
 			if (item == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if(item.Response.Any(apply=>apply.Status==Auditing.Accept))return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBeenAcceptedByOneCompany);
+			if(item.Status==AuditStatus.Withdrew)return new JsonResult(ActionStatusMessage.Apply.Operation.AllReadyWithdrew);
 			item.Status = AuditStatus.Withdrew;
 			_unitOfWork.Applies.Update(item);
 			await _unitOfWork.SaveAsync();
@@ -231,7 +232,7 @@ namespace TrainSchdule.Web.Controllers
 		[HttpDelete]
 		public async Task<IActionResult> Remove(Guid id)
 		{
-			var item = _unitOfWork.Applies.Get(id);
+			var item = _applyService.GetEntity(id);
 			if (item == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			switch (item.Status)
@@ -241,9 +242,9 @@ namespace TrainSchdule.Web.Controllers
 					_unitOfWork.Applies.Update(item);
 					break;
 				case AuditStatus.NotPublish:
-					return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-					//_unitOfWork.Applies.Delete(id);
-					//break;
+				case AuditStatus.Withdrew:
+					await _applyService.DeleteAsync(item);
+					break;
 				default:
 					return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);
 			}
