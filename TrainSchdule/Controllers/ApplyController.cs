@@ -101,6 +101,7 @@ namespace TrainSchdule.Web.Controllers
 			item.stamp = model.Param.Stamp;
 			if(item.stamp==null) item.stamp=new ApplyStamp();
 			item.stamp.gdsj = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts);
+			item.Reason = model.Param.Reason;
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
 
 			var to=new List<Company>(item.Response.Count());
@@ -109,7 +110,7 @@ namespace TrainSchdule.Web.Controllers
 				to.Add(applyResponse.Company);
 			}
 			item.To = to;
-			item.Reason = model.Param.Reason;
+			
 			var apply=await _applyService.CreateAsync(item);
 
 			if (!model.NotAutoStart)
@@ -304,11 +305,13 @@ namespace TrainSchdule.Web.Controllers
 		{
 			var item = _applyService.Get(id);
 			if(item==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			var currentUser = _currentUserService.CurrentUser;
+			if(currentUser?.UserName==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetItemUser = _usersService.Get(item.FromUserName);
 			if (targetItemUser == null) return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"申请来自:{item.From}({item.FromUserName})，但数据库中查无此人"));
 			var targetItemCmp = targetItemUser.Company?.Path;
 			if(targetItemCmp==null)return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"来自{item.From}({item.FromUserName})的申请，但此人无归属单位"));
-			if (_currentUserService.CurrentUser.UserName==targetItemUser.UserName||_currentUserService.CurrentUser.PermissionCompanies.Any((cmp) => targetItemCmp.StartsWith(cmp.Path)))
+			if (currentUser.UserName==targetItemUser.UserName|| currentUser.PermissionCompanies.Any((cmp) => targetItemCmp.StartsWith(cmp.Path)))
 			{
 				return new JsonResult(new ApplyDetailViewModel()
 				{
