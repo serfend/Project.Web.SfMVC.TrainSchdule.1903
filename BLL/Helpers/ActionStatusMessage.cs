@@ -95,6 +95,11 @@ namespace TrainSchdule.BLL.Helpers
 
 			}
 
+			public static class Request
+			{
+				public static readonly Status OutOfDate = new Status(44100, "申请的离队时间不可晚于当前时间");
+
+			}
 		}
 
 

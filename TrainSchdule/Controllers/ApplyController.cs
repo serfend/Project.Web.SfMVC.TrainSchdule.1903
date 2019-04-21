@@ -100,6 +100,7 @@ namespace TrainSchdule.Web.Controllers
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
 			if(item.stamp==null) item.stamp=new ApplyStamp();
+			if(item.stamp.ldsj<DateTime.Now)return new JsonResult(ActionStatusMessage.Apply.Request.OutOfDate);
 			item.stamp.gdsj = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts);
 			item.Reason = model.Param.Reason;
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
@@ -117,7 +118,11 @@ namespace TrainSchdule.Web.Controllers
 			{
 				var startAudit=await StartAudit(apply.Id);
 				var startAuditStatus = (Status) ((JsonResult) startAudit).Value;
-				if (startAuditStatus.status != 0) return new JsonResult(new Status(startAuditStatus.status,$"申请创建成功,但未成功发布:{startAuditStatus.message}"));
+				if (startAuditStatus.status != 0)
+				{
+					await _unitOfWork.SaveAsync();
+					return new JsonResult(new Status(startAuditStatus.status, $"申请创建成功,但未成功发布:{startAuditStatus.message}"));
+				}
 			}
 			return  new JsonResult(new ApplyCreatedViewModel()
 			{
