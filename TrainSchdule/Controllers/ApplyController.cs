@@ -99,7 +99,8 @@ namespace TrainSchdule.Web.Controllers
 			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply.Operation.ToCompany.NoneToSubmit);
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
-			
+			if(item.stamp==null) item.stamp=new ApplyStamp();
+			item.stamp.gdsj = item.stamp.ldsj.AddDays(item.Request.xjts).AddDays(item.Request.ltts);
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
 
 			var to=new List<Company>(item.Response.Count());
@@ -275,8 +276,8 @@ namespace TrainSchdule.Web.Controllers
 		{
 			if (pageSize > 10)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 			var currentUser = _currentUserService.CurrentUser;
-			if (username == null) username = currentUser.UserName;
-			if(username==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (username == null) username = currentUser?.UserName;
+			if(username==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(username);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var path = targetUser.Company?.Path;
