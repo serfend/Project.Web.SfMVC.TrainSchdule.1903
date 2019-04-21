@@ -13,6 +13,8 @@ namespace BLL.DTO
 		/// </summary>
 		[JsonProperty("fromId")]
 		public Guid FromId { get; set; }
+
+		public string Reason { get; set; }
 		/// <summary>
 		/// 申请的具体内容
 		/// </summary>

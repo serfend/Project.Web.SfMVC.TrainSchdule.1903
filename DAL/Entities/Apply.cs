@@ -20,6 +20,8 @@ namespace DAL.Entities
 		/// </summary>
 		public string Address { get; set; }
 
+		public string Reason { get; set; }
+
 		/// <summary>
 		/// 休假申请
 		/// </summary>

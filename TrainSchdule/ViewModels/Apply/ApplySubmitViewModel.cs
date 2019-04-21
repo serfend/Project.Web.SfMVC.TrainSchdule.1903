@@ -21,6 +21,7 @@ namespace TrainSchdule.ViewModels.Apply
 		[DisplayName("request")]
 		public ApplyRequest Request { get; set; }
 
+		public  string Reason { get; set; }
 		public string xjlb { get; set; }
 		[DisplayName("stamp")]
 		public ApplyStamp Stamp { get; set; }

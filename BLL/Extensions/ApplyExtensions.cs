@@ -53,12 +53,14 @@ namespace BLL.Extensions
 				From = item.From.RealName,
 				FromUserName = item.From.UserName,
 				Id = item.Id,
+				
 				Detail = new ApplyDetailDTO()
 				{
 					FromId = item.From.Id,
 					Request = item.Request,
 					Stamp = item.stamp,
-					Xjlb = item.xjlb
+					Xjlb = item.xjlb,
+					Reason = item.Reason
 				},
 				Status = item.Status,
 			};

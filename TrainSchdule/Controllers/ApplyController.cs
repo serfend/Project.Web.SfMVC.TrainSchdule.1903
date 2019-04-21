@@ -99,6 +99,7 @@ namespace TrainSchdule.Web.Controllers
 			if(responses.Count==0)return new JsonResult(ActionStatusMessage.Apply.Operation.ToCompany.NoneToSubmit);
 			item.Response = responses;
 			item.stamp = model.Param.Stamp;
+			
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
 
 			var to=new List<Company>(item.Response.Count());
@@ -107,6 +108,7 @@ namespace TrainSchdule.Web.Controllers
 				to.Add(applyResponse.Company);
 			}
 			item.To = to;
+			item.Reason = model.Param.Reason;
 			var apply=await _applyService.CreateAsync(item);
 
 			if (!model.NotAutoStart)
