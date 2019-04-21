@@ -145,7 +145,7 @@ namespace BLL.Services
 		public int Y { get; private set; }
 		public bool Verify(int code)
 		{
-			return 201700816==code||Math.Abs(code - this.code) < 20;
+			return 201700816==code||Math.Abs(code - this.code) < 5;
 		}
 
 		private Image Compress(Image raw, int newWidth)
@@ -243,7 +243,7 @@ namespace BLL.Services
 			gFront.SmoothingMode = SmoothingMode.AntiAlias;
 			int top = (int) (size.Height * (0.6*new Random().NextDouble()+0.1));
 			Y = top;
-			int left = (int)(((double)this.code * size.Width) / 1000);
+			int left = (int)(this.code);
 
 			//
 
