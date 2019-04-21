@@ -46,6 +46,7 @@ namespace BLL.Extensions
 		
 		public static ApplyAllDataDTO ToAllDataDTO(this Apply item)
 		{
+			if (item == null) return null;
 			var apply=new ApplyAllDataDTO()
 			{
 				Company = item.Company,
