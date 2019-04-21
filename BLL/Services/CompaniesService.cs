@@ -146,6 +146,7 @@ namespace TrainSchdule.BLL.Services
 				Path = name
 			};
 			_unitOfWork.Companies.Create(company);
+			_unitOfWork.Save();
 			return company;
 		}
 
@@ -157,6 +158,7 @@ namespace TrainSchdule.BLL.Services
 				Path = name
 			};
 			await  _unitOfWork.Companies.CreateAsync(company);
+			await _unitOfWork.SaveAsync();
 			return company;
 		}
 

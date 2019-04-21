@@ -611,7 +611,6 @@ namespace TrainSchdule.WEB.Controllers
 				var list = targetUser.PermissionCompanies.ToList();
 				list.Remove(targetPermission);
 				targetUser.PermissionCompanies=list;
-				targetUser.PermissionCompanies = list;
 				_unitOfWork.Users.Update(targetUser);
 				_unitOfWork.Save();
 				return new JsonResult(ActionStatusMessage.Success);

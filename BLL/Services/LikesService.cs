@@ -47,16 +47,16 @@ namespace TrainSchdule.BLL.Services
         {
             var photo = _unitOfWork.Photos.Get(photoId);
             var user = _currentUserService.CurrentUser;
-            var like = _unitOfWork.Likes.Find(l => l.OwnerId == user.Id && l.PhotoId == photo.Id).FirstOrDefault();
+            var like = _unitOfWork.Likes.Find(l => l.Owner.Id == user.Id && l.Photo.Id == photo.Id).FirstOrDefault();
 
             if (photo != null && user != null && like == null)
             {
                 _unitOfWork.Likes.Create(
                     new Like
                     {
-                        PhotoId = photo.Id,
+                        Photo=new Photo(){Id = photo.Id},
                         Date = DateTime.Now,
-                        OwnerId = user.Id
+                        Owner=new User(){Id = user.Id},
                     }
                 );
 
@@ -71,16 +71,16 @@ namespace TrainSchdule.BLL.Services
         {
             var photo = await _unitOfWork.Photos.GetAsync(photoId);
             var user = _currentUserService.CurrentUser;
-            var like = _unitOfWork.Likes.Find(l => l.OwnerId == user.Id && l.PhotoId == photo.Id).FirstOrDefault();
+            var like = _unitOfWork.Likes.Find(l => l.Owner.Id == user.Id && l.Photo.Id == photo.Id).FirstOrDefault();
 
             if (photo != null && user != null && like == null)
             {
                 await _unitOfWork.Likes.CreateAsync(
                     new Like
                     {
-                        PhotoId = photo.Id,
+                        Photo=new Photo(){Id = photo.Id},
                         Date = DateTime.Now,
-                        OwnerId = user.Id
+                        Owner=new User(){Id = user.Id},
                     }
                 );
 
@@ -95,7 +95,7 @@ namespace TrainSchdule.BLL.Services
         {
             var photo = _unitOfWork.Photos.Get(photoId);
             var user = _currentUserService.CurrentUser;
-            var like = _unitOfWork.Likes.Find(l => l.OwnerId == user.Id && l.PhotoId == photo.Id).FirstOrDefault();
+            var like = _unitOfWork.Likes.Find(l => l.Owner.Id == user.Id && l.Photo.Id == photo.Id).FirstOrDefault();
 
             if (photo != null && user != null && like != null)
             {
@@ -111,7 +111,7 @@ namespace TrainSchdule.BLL.Services
         {
             var photo = await _unitOfWork.Photos.GetAsync(photoId);
             var user = _currentUserService.CurrentUser;
-            var like = _unitOfWork.Likes.Find(l => l.OwnerId == user.Id && l.PhotoId == photo.Id).FirstOrDefault();
+            var like = _unitOfWork.Likes.Find(l => l.Owner.Id == user.Id && l.Photo.Id == photo.Id).FirstOrDefault();
 
             if (photo != null && user != null && like != null)
             {

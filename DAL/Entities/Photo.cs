@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -62,19 +63,9 @@ namespace TrainSchdule.DAL.Entities
         public double? FocalLength { get; set; }
 
         /// <summary>
-        /// Gets and sets foreign key to owner by id.
-        /// </summary>
-        public Guid OwnerId { get; set; }
-
-        /// <summary>
         /// Gets and sets user entity by foreign key.
         /// </summary>
         public virtual User Owner { get; set; }
-
-        /// <summary>
-        /// Gets and sets foreign key to filter by id.
-        /// </summary>
-        public Guid FilterId { get; set; }
 
         /// <summary>
         /// Gets and sets filter entity by foreign key.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -8,9 +9,9 @@ namespace TrainSchdule.DAL.Entities
     /// </summary>
     public class BaseEntity
     {
-        /// <summary>
-        /// Gets and sets id.
-        /// </summary>
-        public Guid Id { get; set; }
+		/// <summary>
+		/// Gets and sets id.
+		/// </summary>
+		public Guid Id { get; set; }
     }
 }

@@ -43,10 +43,7 @@ namespace TrainSchdule.BLL.Services
             {
                 var user = CurrentUser;
 
-                return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id && f.UserId == user.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Blockings.Find(b => b.BlockedUserId == user.Id && b.UserId == user.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Blockings.Find(b => b.BlockedUserId == user.Id && b.UserId == user.Id).FirstOrDefault() != null);
+                return user.ToDTO();
             }
         }
 

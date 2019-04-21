@@ -57,6 +57,7 @@ namespace DAL.Entities
 		public bool Hidden { get; set; }
 	}
 
+
 	public enum AuditStatus
 	{
 		NotPublish=0,

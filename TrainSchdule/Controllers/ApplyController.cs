@@ -50,6 +50,19 @@ namespace TrainSchdule.Web.Controllers
 		#endregion
 
 		#region Logic
+
+		//[HttpGet]
+		//public IActionResult AllStatus()
+		//{
+		//	return new JsonResult(new ApplyAuditStatusViewModel()
+		//	{
+		//		Data = new ApplyAuditStatusData()
+		//		{
+		//			List = ApplyExtensions.StatusDic
+		//		}
+		//	});
+		//}
+
 		[HttpPost]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
 		{
@@ -66,8 +79,8 @@ namespace TrainSchdule.Web.Controllers
 			//初始化基础数据
 			var item=new Apply()
 			{
-				Address = user?.Address,
-				Company = user?.Company?.Path,
+				Address = user.Address,
+				Company = user.Company?.Path,
 				Create = DateTime.Now,
 				From = user,
 				Status = AuditStatus.NotPublish,

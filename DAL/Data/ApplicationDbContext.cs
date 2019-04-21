@@ -84,6 +84,7 @@ namespace TrainSchdule.DAL.Data
 		public DbSet<PermissionCompany>PermissionCompanies { get; set; }
 		public DbSet<Duties> Duties { get; set; }
 		public DbSet<Apply> Applies { get; set; }
+		
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyStamp> ApplyStamps { get; set; }

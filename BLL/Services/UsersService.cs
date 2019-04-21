@@ -73,7 +73,7 @@ namespace TrainSchdule.BLL.Services
         /// </summary>
         public IEnumerable<UserDTO> GetBlocked(int page, int pageSize)
         {
-            var blacklists = _unitOfWork.Blockings.Find(b => b.UserId == _currentUserService.CurrentUser.Id);
+            var blacklists = _unitOfWork.Blockings.Find(b => b.User.Id == _currentUserService.CurrentUser.Id);
             var users = new List<User>();
 
             foreach(var blocking in blacklists)
@@ -131,13 +131,19 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
 
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.UserId == currentUser.Id && f.FollowedUserId == followedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id && f.FollowedUser.Id == followedUser.Id).FirstOrDefault() == null)
             {
                 _unitOfWork.Followings.Create(new Following
                 {
-                    UserId = currentUser.Id,
-                    FollowedUserId = followedUser.Id
-                });
+					User = new User()
+					{
+						Id = currentUser.Id
+					},
+					FollowedUser = new User()
+					{
+						Id = followedUser.Id
+					}
+				});
 
                 _unitOfWork.Save();
             }
@@ -151,12 +157,18 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
 
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.UserId == currentUser.Id && f.FollowedUserId == followedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id && f.FollowedUser.Id == followedUser.Id).FirstOrDefault() == null)
             {
                 await _unitOfWork.Followings.CreateAsync(new Following
                 {
-                    UserId = currentUser.Id,
-                    FollowedUserId = followedUser.Id
+                    User=new User()
+                    {
+						Id = currentUser.Id
+					},
+                    FollowedUser = new User()
+                    {
+						Id= followedUser.Id
+					}
                 });
 
                 await _unitOfWork.SaveAsync();
@@ -170,7 +182,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-            var following = _unitOfWork.Followings.Find(f => f.UserId == currentUser.Id && f.FollowedUserId == followedUser.Id).FirstOrDefault();
+            var following = _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id && f.FollowedUser.Id == followedUser.Id).FirstOrDefault();
 
             if (currentUser != null && followedUser != null && currentUser.UserName != follow && following != null)
             {
@@ -187,7 +199,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-            var following = _unitOfWork.Followings.Find(f => f.UserId == currentUser.Id && f.FollowedUserId == followedUser.Id).FirstOrDefault();
+            var following = _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id && f.FollowedUser.Id == followedUser.Id).FirstOrDefault();
 
             if (currentUser != null && followedUser != null && currentUser.UserName != follow && following != null)
             {
@@ -205,13 +217,19 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
 
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.UserId == currentUser.Id && b.BlockedUserId == blockedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.User.Id == currentUser.Id && b.BlockedUser.Id == blockedUser.Id).FirstOrDefault() == null)
             {
                 _unitOfWork.Blockings.Create(new BlackList
                 {
-                    UserId = currentUser.Id,
-                    BlockedUserId = blockedUser.Id
-                });
+					User = new User()
+					{
+						Id = currentUser.Id
+					},
+					BlockedUser = new User()
+					{
+						Id = blockedUser.Id
+					}
+				});
 
                 _unitOfWork.Save();
             }
@@ -225,12 +243,18 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
 
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.UserId == currentUser.Id && b.BlockedUserId == blockedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.User.Id == currentUser.Id && b.BlockedUser.Id == blockedUser.Id).FirstOrDefault() == null)
             {
                 await _unitOfWork.Blockings.CreateAsync(new BlackList
                 {
-                    UserId = currentUser.Id,
-                    BlockedUserId = blockedUser.Id
+                    User =new User()
+                    {
+						Id = currentUser.Id
+					},
+                    BlockedUser = new User()
+                    {
+						Id = blockedUser.Id
+					}
                 });
 
                 await _unitOfWork.SaveAsync();
@@ -244,7 +268,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-            var blocking = _unitOfWork.Blockings.Find(b => b.UserId == currentUser.Id && b.BlockedUserId == blockedUser.Id).FirstOrDefault();
+            var blocking = _unitOfWork.Blockings.Find(b => b.User.Id == currentUser.Id && b.BlockedUser.Id == blockedUser.Id).FirstOrDefault();
 
             if (currentUser != null && blockedUser != null && currentUser.UserName != block && blocking != null)
             {
@@ -260,7 +284,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-            var blocking = _unitOfWork.Blockings.Find(b => b.UserId == currentUser.Id && b.BlockedUserId == blockedUser.Id).FirstOrDefault();
+            var blocking = _unitOfWork.Blockings.Find(b => b.User.Id == currentUser.Id && b.BlockedUser.Id == blockedUser.Id).FirstOrDefault();
 
             if (currentUser != null && blockedUser != null && currentUser.UserName != block && blocking != null)
             {
@@ -277,12 +301,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedUser = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
-            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.UserId == currentUser.Id && b.ReportedUserId == reportedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.User.Id == currentUser.Id && b.ReportedUser.Id == reportedUser.Id).FirstOrDefault() == null)
             {
                 _unitOfWork.UserReports.Create(new UserReport
                 {
-                    UserId = currentUser.Id,
-                    ReportedUserId = reportedUser.Id,
+                    User =new User(){Id= currentUser.Id},
+                    ReportedUser=new User(){Id= reportedUser.Id},
                     Text = text
                 });
 
@@ -298,12 +322,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedUser = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
-            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.UserId == currentUser.Id && b.ReportedUserId == reportedUser.Id).FirstOrDefault() == null)
+            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.User.Id == currentUser.Id && b.ReportedUser.Id == reportedUser.Id).FirstOrDefault() == null)
             {
                 _unitOfWork.UserReports.Create(new UserReport
                 {
-                    UserId = currentUser.Id,
-                    ReportedUserId = reportedUser.Id,
+                    User =new User(){Id= currentUser.Id},
+                    ReportedUser=new User(){Id= reportedUser.Id},
                     Text = text
                 });
 
@@ -425,10 +449,10 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
 
-            return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null,
-                              _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                              _unitOfWork.Blockings.Find(b => b.BlockedUserId == user.Id && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                              _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null);
+            return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.User.Id == user.Id).FirstOrDefault() != null,
+                              _unitOfWork.Followings.Find(f => f.FollowedUser.Id == user.Id && f.User.Id == currentUser.Id).FirstOrDefault() != null,
+                              _unitOfWork.Blockings.Find(b => b.BlockedUser.Id == user.Id && b.User.Id == currentUser.Id).FirstOrDefault() != null,
+                              _unitOfWork.Blockings.Find(b => b.BlockedUser.Id == currentUser.Id && b.User.Id == user.Id).FirstOrDefault() != null);
         }
 
         /// <summary>
@@ -438,70 +462,8 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
 
-            var followings = new List<UserDTO>();
-            var followers = new List<UserDTO>();
-
-            if (currentUser == null)
-            {
-                foreach (var following in _unitOfWork.Followings.Find(f => f.UserId == user.Id))
-                {
-                    followings.Add(following.FollowedUser
-                        .ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == following.FollowedUserId).FirstOrDefault() != null, false, false, false));
-                }
-
-                foreach (var follower in _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id))
-                {
-                    followers.Add(follower.User
-                        .ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == follower.UserId).FirstOrDefault() != null, false, false, false));
-                }
-
-                return user.ToDetailDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null, 
-                    false, false, false, followings, followers, null);
-            }
-            else
-            {
-                foreach (var following in _unitOfWork.Followings.Find(f => f.UserId == user.Id))
-                {
-                    followings.Add(following.FollowedUser
-                        .ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == following.FollowedUserId).FirstOrDefault() != null,
-                               _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null,
-                               _unitOfWork.Followings.Find(f => f.FollowedUserId == following.FollowedUserId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                               _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null));
-                }
-
-                foreach (var follower in _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id))
-                {
-                    followers.Add(follower.User
-                        .ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == follower.UserId).FirstOrDefault() != null,
-                               _unitOfWork.Followings.Find(f => f.FollowedUserId == follower.UserId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                               _unitOfWork.Blockings.Find(b => b.BlockedUserId == follower.UserId && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                               _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null));
-                }
-
-                var mutuals = new List<UserDTO>();
-
-                if (followers.Count > 0)
-                {
-                    foreach (var follower in _unitOfWork.Followings.Find(f => f.FollowedUserId == currentUser.Id))
-                    {
-                        if (follower.UserId != user.Id && _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id && f.UserId == follower.UserId).FirstOrDefault() != null)
-                        {
-                            mutuals.Add(follower.User
-                                .ToDTO(
-                                _unitOfWork.Confirmations.Find(c => c.UserId == follower.UserId).FirstOrDefault() != null,
-                                _unitOfWork.Followings.Find(f => f.FollowedUserId == follower.UserId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                                _unitOfWork.Blockings.Find(b => b.BlockedUserId == follower.UserId && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                                _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null));
-                        }
-                    }
-                }
-
-                return user.ToDetailDTO(_unitOfWork.Confirmations.Find(c => c.UserId == user.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Followings.Find(f => f.FollowedUserId == user.Id && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Blockings.Find(b => b.BlockedUserId == user.Id && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                                  _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == user.Id).FirstOrDefault() != null,
-                                  followings, followers, mutuals);
-            }
+            return user.ToDetailDTO();
+            
         }
 
         #endregion

@@ -111,12 +111,12 @@ namespace TrainSchdule.BLL.Services
         public IEnumerable<PhotoDTO> GetPhotosHome(int page, int pageSize)
         {
             var currentUser = _currentUserService.CurrentUser;
-            var followings = _unitOfWork.Followings.Find(f => f.UserId == currentUser.Id);
+            var followings = _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id);
             var photos = new List<Photo>();
 
             foreach (var follow in followings)
             {
-                photos.AddRange(_unitOfWork.Photos.Find(p => p.OwnerId == follow.FollowedUserId));
+                photos.AddRange(_unitOfWork.Photos.Find(p => p.Owner.Id == follow.FollowedUser.Id));
             }
 
             photos.Sort((p, p2) => p2.Date.CompareTo(p.Date));
@@ -140,7 +140,7 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
-            var photos = _unitOfWork.Photos.Find(p => p.OwnerId == user.Id).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
+            var photos = _unitOfWork.Photos.Find(p => p.Owner.Id == user.Id).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
 
             var photoDTOs = new List<PhotoDTO>(pageSize);
 
@@ -170,7 +170,7 @@ namespace TrainSchdule.BLL.Services
                 return null;
             }
 
-            var tagings = _unitOfWork.Tagings.Find(t => t.TagId == tag.Id).OrderByDescending(t => t.Photo.Date);
+            var tagings = _unitOfWork.Tagings.Find(t => t.Tag.Id == tag.Id).OrderByDescending(t => t.Photo.Date);
 
             var photos = tagings.Select(t => t.Photo).Skip(0).Take(pageSize);
 
@@ -190,7 +190,7 @@ namespace TrainSchdule.BLL.Services
         public IEnumerable<PhotoDTO> GetBookmarks(int page, int pageSize)
         {
             var currentUser = _currentUserService.CurrentUser;
-            var photos = _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id).OrderByDescending(b => b.Date).Select(b => b.Photo).Skip(page * pageSize).Take(pageSize);
+            var photos = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id).OrderByDescending(b => b.Date).Select(b => b.Photo).Skip(page * pageSize).Take(pageSize);
 
             var photoDTOs = new List<PhotoDTO>(pageSize);
 
@@ -214,7 +214,7 @@ namespace TrainSchdule.BLL.Services
                 return null;
             }
 
-            var photos = _unitOfWork.Tagings.Find(t => t.TagId == tagId).Select(t => t.Photo).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
+            var photos = _unitOfWork.Tagings.Find(t => t.Tag.Id == tagId).Select(t => t.Photo).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
 
             var photoDTOs = new List<PhotoDTO>(pageSize);
 
@@ -285,12 +285,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id && b.PhotoId == id).FirstOrDefault() == null)
+            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.Bookmarks.Create(new Bookmark
                 {
-                    UserId = currentUser.Id,
-                    PhotoId = bookmarkedPhoto.Id
+                    User =new User(){Id= currentUser.Id},
+                     Photo=new Photo(){Id =  bookmarkedPhoto.Id},
                 });
 
                 _unitOfWork.Save();
@@ -305,12 +305,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id && b.PhotoId == id).FirstOrDefault() == null)
+            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.Bookmarks.Create(new Bookmark
                 {
-                    UserId = currentUser.Id,
-                    PhotoId = bookmarkedPhoto.Id
+                    User =new User(){Id= currentUser.Id},
+                     Photo=new Photo(){Id =  bookmarkedPhoto.Id},
                 });
 
                 await _unitOfWork.SaveAsync();
@@ -324,7 +324,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
-            var bookmark = _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id && b.PhotoId == id).FirstOrDefault();
+            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault();
 
             if (currentUser != null && bookmarkedPhoto != null && bookmark != null)
             {
@@ -340,7 +340,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
-            var bookmark = _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id && b.PhotoId == id).FirstOrDefault();
+            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault();
 
             if (currentUser != null && bookmarkedPhoto != null && bookmark != null)
             {
@@ -357,12 +357,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.UserId == currentUser.Id && pr.PhotoId == id).FirstOrDefault() == null)
+            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.Id == currentUser.Id && pr.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.PhotoReports.Create(new PhotoReport
                 {
-                    UserId = currentUser.Id,
-                    PhotoId = reportedPhoto.Id,
+                    User =new User(){Id= currentUser.Id},
+                    Photo=new Photo(){Id = reportedPhoto.Id},
                     Text = text
                 });
 
@@ -378,12 +378,12 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.UserId == currentUser.Id && pr.PhotoId == id).FirstOrDefault() == null)
+            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.Id == currentUser.Id && pr.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.PhotoReports.Create(new PhotoReport
                 {
-                    UserId = currentUser.Id,
-                    PhotoId = reportedPhoto.Id,
+                    User =new User(){Id= currentUser.Id},
+                    Photo=new Photo(){Id = reportedPhoto.Id},
                     Text = text
                 });
 
@@ -398,10 +398,10 @@ namespace TrainSchdule.BLL.Services
         {
             var photo = new Photo
             {
-                FilterId = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault()?.Id??Guid.Empty,
+                Filter = new Filter(){Id = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault()?.Id??Guid.Empty},
                 Description = description,
                 Path = path,
-                OwnerId = _currentUserService.CurrentUser.Id,
+                Owner=new User(){Id = _currentUserService.CurrentUser.Id},
                 CountViews = 0,
 
                 Manufacturer = manufacturer,
@@ -429,8 +429,8 @@ namespace TrainSchdule.BLL.Services
                     {
                         _unitOfWork.Tagings.Create(new Taging
                         {
-                            TagId = tg.Id,
-                            PhotoId = photo.Id
+                            Tag=new Tag(){Id = tg.Id},
+                            Photo=new Photo{Id = photo.Id},
                         });
                     }
                 }
@@ -450,7 +450,7 @@ namespace TrainSchdule.BLL.Services
             {
                 Description = description,
                 Path = path,
-                OwnerId = _currentUserService.CurrentUser.Id,
+                Owner=new User(){Id = _currentUserService.CurrentUser.Id},
                 CountViews = 0,
 
                 Manufacturer = manufacturer,
@@ -471,7 +471,7 @@ namespace TrainSchdule.BLL.Services
             }
             else
             {
-	            photo.FilterId = tmp.Id;
+	            photo.Filter.Id = tmp.Id;
             }
             if (focalLength >= 3)
             {
@@ -490,8 +490,8 @@ namespace TrainSchdule.BLL.Services
                     {
                         await _unitOfWork.Tagings.CreateAsync(new Taging
                         {
-                            TagId = tg.Id,
-                            PhotoId = photo.Id
+                            Tag=new Tag(){Id = tg.Id},
+                            Photo=new Photo{Id = photo.Id},
                         });
                     }
                 }
@@ -515,11 +515,11 @@ namespace TrainSchdule.BLL.Services
 
                 if (flt != null)
                 {
-                    photo.FilterId = flt.Id;
+                    photo.Filter.Id = flt.Id;
                 }
 
 				//清空原Tag
-                foreach (var taging in _unitOfWork.Tagings.Find(t => t.PhotoId == photo.Id))
+                foreach (var taging in _unitOfWork.Tagings.Find(t => t.Photo.Id == photo.Id))
                 {
                     _unitOfWork.Tagings.Delete(taging.Id);
                 }
@@ -530,8 +530,8 @@ namespace TrainSchdule.BLL.Services
                     {
 	                    _unitOfWork.Tagings.Create(new Taging
 	                    {
-	                        TagId = tag.Id,
-	                        PhotoId = photo.Id
+	                        Tag=new Tag(){Id = tag.Id},
+	                        Photo=new Photo{Id = photo.Id},
 	                    });
                     }
                 }
@@ -589,10 +589,10 @@ namespace TrainSchdule.BLL.Services
 
                 if (flt != null)
                 {
-                    photo.FilterId = flt.Id;
+                    photo.Filter.Id = flt.Id;
                 }
 
-                foreach (var taging in _unitOfWork.Tagings.Find(t => t.PhotoId == photo.Id))
+                foreach (var taging in _unitOfWork.Tagings.Find(t => t.Photo.Id == photo.Id))
                 {
                     await _unitOfWork.Tagings.DeleteAsync(taging.Id);
                 }
@@ -607,8 +607,8 @@ namespace TrainSchdule.BLL.Services
                         {
                             await _unitOfWork.Tagings.CreateAsync(new Taging
                             {
-                                TagId = tg.Id,
-                                PhotoId = photo.Id
+                                Tag=new Tag(){Id = tg.Id},
+                                Photo=new Photo{Id = photo.Id},
                             });
                         }
                     }
@@ -691,79 +691,7 @@ namespace TrainSchdule.BLL.Services
         /// </summary>
         protected PhotoDTO MapPhoto(Photo photo)
         {
-            var currentUser = _currentUserService.CurrentUser;
-
-            if (currentUser == null)
-            {
-                var likes = new List<LikeDTO>(photo.Likes.Count);
-
-                foreach (var like in photo.Likes)
-                {
-                    likes.Add(like.ToDTO(
-                        like.Owner.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == like.OwnerId).FirstOrDefault() != null, false, false, false)
-                    ));
-                }
-
-                var comments = new List<CommentDTO>(photo.Comments.Count);
-
-                foreach (var comment in photo.Comments)
-                {
-                    comments.Add(comment.ToDTO(
-                        comment.Owner.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == comment.OwnerId).FirstOrDefault() != null, false, false, false)
-                    ));
-                }
-
-                return photo.ToDTO(
-                    false, false,
-                    photo.Owner.ToDTO(_unitOfWork.Confirmations.Find(c => c.UserId == photo.OwnerId).FirstOrDefault() != null, false, false, false),
-                    likes,
-                    comments,
-                    _unitOfWork.Tagings.Find(t => t.PhotoId == photo.Id).Select(t => t.Tag).ToDTOs()
-                );
-            }
-
-            if (_unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == photo.OwnerId).FirstOrDefault() == null)
-            {
-                var likes = new List<LikeDTO>(photo.Likes.Count);
-
-                foreach (var like in photo.Likes)
-                {
-                    likes.Add(like.ToDTO(
-                        like.Owner.ToDTO(
-                            _unitOfWork.Confirmations.Find(c => c.UserId == like.OwnerId).FirstOrDefault() != null,
-                            _unitOfWork.Followings.Find(f => f.FollowedUserId == like.OwnerId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                            _unitOfWork.Blockings.Find(b => b.BlockedUserId == like.OwnerId && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                            _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == currentUser.Id).FirstOrDefault() != null)
-                    ));
-                }
-
-                var comments = new List<CommentDTO>(photo.Comments.Count);
-
-                foreach (var comment in photo.Comments)
-                {
-                    comments.Add(comment.ToDTO(
-                        comment.Owner.ToDTO(
-                            _unitOfWork.Confirmations.Find(c => c.UserId == comment.OwnerId).FirstOrDefault() != null,
-                            _unitOfWork.Followings.Find(f => f.FollowedUserId == comment.OwnerId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                            _unitOfWork.Blockings.Find(b => b.BlockedUserId == comment.OwnerId && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                            _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == currentUser.Id).FirstOrDefault() != null)
-                    ));
-                }
-
-                return photo.ToDTO(
-                    _unitOfWork.Likes.Find(l => l.OwnerId == currentUser.Id && l.PhotoId == photo.Id).FirstOrDefault() != null,
-                    _unitOfWork.Bookmarks.Find(b => b.UserId == currentUser.Id && b.PhotoId == photo.Id).FirstOrDefault() != null,
-                    photo.Owner.ToDTO(
-                        _unitOfWork.Confirmations.Find(c => c.UserId == photo.OwnerId).FirstOrDefault() != null,
-                        _unitOfWork.Followings.Find(f => f.FollowedUserId == photo.OwnerId && f.UserId == currentUser.Id).FirstOrDefault() != null,
-                        _unitOfWork.Blockings.Find(b => b.BlockedUserId == photo.OwnerId && b.UserId == currentUser.Id).FirstOrDefault() != null,
-                        _unitOfWork.Blockings.Find(b => b.BlockedUserId == currentUser.Id && b.UserId == photo.OwnerId).FirstOrDefault() != null),
-                    likes,
-                    comments,
-                    _unitOfWork.Tagings.Find(t => t.PhotoId == photo.Id).Select(t => t.Tag).ToDTOs());
-            }
-
-            return null;
+	        return photo.ToDTO();
         }
 
         #endregion

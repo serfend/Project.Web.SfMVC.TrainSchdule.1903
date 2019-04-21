@@ -13,19 +13,11 @@ namespace TrainSchdule.DAL.Entities
         /// </summary>
         public virtual Photo Photo { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to photo by id.
-        /// </summary>
-        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets tag entity by foreign key.
         /// </summary>
         public virtual Tag Tag { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to tag by id.
-        /// </summary>
-        public Guid TagId { get; set; }
     }
 }

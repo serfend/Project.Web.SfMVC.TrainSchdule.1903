@@ -7,19 +7,121 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrainSchdule.DAL.Data;
 
-namespace TrainSchdule.DAL.Migrations
+namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190406082921_addCompaniesupport")]
-    partial class addCompaniesupport
+    [Migration("20190421153347_Fix")]
+    partial class Fix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DAL.Entities.Apply", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("Company");
+
+                    b.Property<DateTime>("Create");
+
+                    b.Property<Guid?>("FromId");
+
+                    b.Property<bool>("Hidden");
+
+                    b.Property<Guid?>("RequestId");
+
+                    b.Property<int>("Status");
+
+                    b.Property<Guid?>("stampId");
+
+                    b.Property<string>("xjlb");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromId");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("stampId");
+
+                    b.ToTable("Applies");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ltts");
+
+                    b.Property<int>("xjts");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplyRequests");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ApplyId");
+
+                    b.Property<Guid?>("AuditingById");
+
+                    b.Property<Guid?>("CompanyId");
+
+                    b.Property<DateTime>("HandleStamp");
+
+                    b.Property<string>("Remark");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyId");
+
+                    b.HasIndex("AuditingById");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("ApplyResponses");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyStamp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("gdsj");
+
+                    b.Property<DateTime>("ldsj");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplyStamps");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Duties", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Duties");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -187,9 +289,9 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("BlockedUserId");
+                    b.Property<Guid?>("BlockedUserId");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -207,9 +309,9 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid>("PhotoId");
+                    b.Property<Guid?>("PhotoId");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -227,9 +329,9 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid>("OwnerId");
+                    b.Property<Guid?>("OwnerId");
 
-                    b.Property<Guid>("PhotoId");
+                    b.Property<Guid?>("PhotoId");
 
                     b.Property<string>("Text");
 
@@ -247,7 +349,21 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid?>("ApplyId");
+
+                    b.Property<bool>("IsPrivate");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("ParentId");
+
+                    b.Property<string>("Path");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplyId");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Companies");
                 });
@@ -257,9 +373,9 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("AdminId");
+                    b.Property<Guid?>("AdminId");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -287,9 +403,9 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("FollowedUserId");
+                    b.Property<Guid?>("FollowedUserId");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -307,9 +423,9 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid>("OwnerId");
+                    b.Property<Guid?>("OwnerId");
 
-                    b.Property<Guid>("PhotoId");
+                    b.Property<Guid?>("PhotoId");
 
                     b.HasKey("Id");
 
@@ -318,6 +434,24 @@ namespace TrainSchdule.DAL.Migrations
                     b.HasIndex("PhotoId");
 
                     b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PermissionCompany", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AuthBy");
+
+                    b.Property<Guid?>("OwnerId");
+
+                    b.Property<string>("Path");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("PermissionCompanies");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
@@ -335,7 +469,7 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<double?>("Exposure");
 
-                    b.Property<Guid>("FilterId");
+                    b.Property<Guid?>("FilterId");
 
                     b.Property<double?>("FocalLength");
 
@@ -345,7 +479,7 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<string>("Model");
 
-                    b.Property<Guid>("OwnerId");
+                    b.Property<Guid?>("OwnerId");
 
                     b.Property<string>("Path");
 
@@ -365,11 +499,11 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid>("PhotoId");
+                    b.Property<Guid?>("PhotoId");
 
                     b.Property<string>("Text");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -413,9 +547,9 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("PhotoId");
+                    b.Property<Guid?>("PhotoId");
 
-                    b.Property<Guid>("TagId");
+                    b.Property<Guid?>("TagId");
 
                     b.HasKey("Id");
 
@@ -433,13 +567,27 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<string>("About");
 
+                    b.Property<string>("Address");
+
+                    b.Property<string>("AuthKey");
+
                     b.Property<string>("Avatar");
+
+                    b.Property<Guid?>("CompanyId");
 
                     b.Property<DateTime>("Date");
 
+                    b.Property<Guid?>("DutiesId");
+
                     b.Property<int>("Gender");
 
+                    b.Property<string>("InvitedBy");
+
+                    b.Property<string>("Phone");
+
                     b.Property<bool>("PrivateAccount");
+
+                    b.Property<int>("Privilege");
 
                     b.Property<string>("RealName");
 
@@ -448,6 +596,10 @@ namespace TrainSchdule.DAL.Migrations
                     b.Property<string>("WebSite");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("DutiesId");
 
                     b.ToTable("AppUsers");
                 });
@@ -459,11 +611,11 @@ namespace TrainSchdule.DAL.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<Guid>("ReportedUserId");
+                    b.Property<Guid?>("ReportedUserId");
 
                     b.Property<string>("Text");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("Id");
 
@@ -472,6 +624,36 @@ namespace TrainSchdule.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserReports");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Apply", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "From")
+                        .WithMany()
+                        .HasForeignKey("FromId");
+
+                    b.HasOne("DAL.Entities.ApplyRequest", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId");
+
+                    b.HasOne("DAL.Entities.ApplyStamp", "stamp")
+                        .WithMany()
+                        .HasForeignKey("stampId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyResponse", b =>
+                {
+                    b.HasOne("DAL.Entities.Apply")
+                        .WithMany("Response")
+                        .HasForeignKey("ApplyId");
+
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "AuditingBy")
+                        .WithMany()
+                        .HasForeignKey("AuditingById");
+
+                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -523,130 +705,139 @@ namespace TrainSchdule.DAL.Migrations
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "BlockedUser")
                         .WithMany()
-                        .HasForeignKey("BlockedUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("BlockedUserId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Bookmark", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PhotoId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Comment", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OwnerId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany("Comments")
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PhotoId");
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.Company", b =>
+                {
+                    b.HasOne("DAL.Entities.Apply")
+                        .WithMany("To")
+                        .HasForeignKey("ApplyId");
+
+                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Confirmed", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Following", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "FollowedUser")
                         .WithMany()
-                        .HasForeignKey("FollowedUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FollowedUserId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Like", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OwnerId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany("Likes")
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PhotoId");
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.PermissionCompany", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
+                        .WithMany("PermissionCompanies")
+                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Photo", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.Filter", "Filter")
                         .WithMany("Photos")
-                        .HasForeignKey("FilterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FilterId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.PhotoReport", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PhotoId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Taging", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.Photo", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PhotoId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.Tag", "Tag")
                         .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TagId");
+                });
+
+            modelBuilder.Entity("TrainSchdule.DAL.Entities.User", b =>
+                {
+                    b.HasOne("TrainSchdule.DAL.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
+
+                    b.HasOne("DAL.Entities.Duties", "Duties")
+                        .WithMany()
+                        .HasForeignKey("DutiesId");
                 });
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.UserReport", b =>
                 {
                     b.HasOne("TrainSchdule.DAL.Entities.User", "ReportedUser")
                         .WithMany()
-                        .HasForeignKey("ReportedUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ReportedUserId");
 
                     b.HasOne("TrainSchdule.DAL.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

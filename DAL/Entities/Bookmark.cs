@@ -11,19 +11,10 @@ namespace TrainSchdule.DAL.Entities
         #region Properties
 
         /// <summary>
-        /// Gets and sets foreign key to user by id.
-        /// </summary>
-        public Guid UserId { get; set; }
-
-        /// <summary>
         /// Gets and sets user by <see cref="UserId"/> foreign key.
         /// </summary>
         public virtual User User { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to photo by id.
-        /// </summary>
-        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets photo by <see cref="PhotoId"/> foreign key.

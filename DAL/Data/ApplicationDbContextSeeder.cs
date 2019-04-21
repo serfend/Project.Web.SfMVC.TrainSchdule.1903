@@ -169,7 +169,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example1.jpg",
-                FilterId = Guid.NewGuid(),
+                Filter=new Filter(){Id = Guid.NewGuid()},
                 Description = "First example",
                 Iso = 2000,
                 Aperture = 16,
@@ -179,7 +179,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example2.jpg",
-                FilterId =  Guid.NewGuid(),
+                Filter=new Filter(){Id =  Guid.NewGuid()},
                 Description = "Second example",
                 Iso = 4000, Aperture = 4.8,
                 Exposure = 0.00625,
@@ -188,7 +188,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example3.jpg",
-                FilterId =  Guid.NewGuid(),
+                Filter=new Filter(){Id =  Guid.NewGuid()},
                 Description = "Third example",
                 Iso = 4000, Aperture = 8,
                 Exposure = 0.00625,
@@ -197,7 +197,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example4.jpg",
-                FilterId =  Guid.NewGuid(),
+                Filter=new Filter(){Id =  Guid.NewGuid()},
                 Description = "Fourth example",
                 Iso = 50000, Aperture = 12,
                 Exposure = 0.00625,
@@ -206,7 +206,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example5.jpg",
-                FilterId =  Guid.NewGuid(),
+                Filter=new Filter(){Id =  Guid.NewGuid()},
                 Description = "Fifth example",
                 Iso = 6000, Aperture = 16,
                 Exposure = 0.00625,
@@ -215,7 +215,7 @@ namespace TrainSchdule.DAL.Data
             new Photo
             {
                 Path = "example1.jpg",
-                FilterId =  Guid.NewGuid(),
+                Filter=new Filter(){Id =  Guid.NewGuid()},
                 Description = "Sixth example",
                 Iso = 70000, Aperture = 12,
                 Exposure = 0.00625,
@@ -378,7 +378,7 @@ namespace TrainSchdule.DAL.Data
 
             for (var i = 0; i < 6; i++)
             {
-                _photos[i].OwnerId = _users[i].Id;
+                _photos[i].Owner.Id = _users[i].Id;
             }
 
             _context.AddRange(_photos);

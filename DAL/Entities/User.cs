@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -26,6 +27,8 @@ namespace TrainSchdule.DAL.Entities
 		/// 授权码
 		/// </summary>
 		public string AuthKey { get; set; }
+
+		//public UserType UserType { get; set; }
 
         /// <summary>
         /// Gets and sets user real name.
@@ -93,5 +96,11 @@ namespace TrainSchdule.DAL.Entities
         }
 
         #endregion
+    }
+
+    public enum UserType
+    {
+		战士,
+		干部
     }
 }

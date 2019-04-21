@@ -9,6 +9,22 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
+		//public static Dictionary<int, string> StatusDic { get; set; }
+		//private static bool Init=false;
+		//static ApplyExtensions()
+		//{
+			
+		//}
+
+		//private static void Initilize()
+		//{
+		//	StatusDic = new Dictionary<int, string>();
+		//	var type = typeof(AuditStatus).GetFields();
+		//	foreach (var fieldInfo in type)
+		//	{
+		//		StatusDic.Add((int)fieldInfo.GetRawConstantValue(), fieldInfo.Name);
+		//	}
+		//}
 		public static ApplyDTO ToSummaryDTO(this ApplyAllDataDTO all)
 		{
 			return new ApplyDTO()

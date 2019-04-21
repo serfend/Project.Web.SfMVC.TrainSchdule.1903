@@ -46,29 +46,29 @@
     computed: {
         filteredFollowings() {
             if (this.findFollowing) {
-                return this.user.followings.filter(t => {
+                return this.User.followings.filter(t => {
                     return t.userName.toLowerCase().includes(this.findFollowing.toLowerCase())
                 });
             }
 
-            return this.user.followings;
+            return this.User.followings;
         },
         filteredFollowers() {
             if (this.findFollower) {
-                return this.user.followers.filter(t => {
+                return this.User.followers.filter(t => {
                     return t.userName.toLowerCase().includes(this.findFollower.toLowerCase())
                 });
             }
 
-            return this.user.followers;
+            return this.User.followers;
         }
     },
     methods: {
         fetchUser() {
             this.$http.get(`/api/users/details/${this.detailsUserName}`).then(response => response.json()).then(json => {
                 this.user = json;
-                if (this.user.mutuals != null && this.user.mutuals.length)
-                    this.mutuals = this.user.mutuals.slice(0, 3);
+                if (this.User.mutuals != null && this.User.mutuals.length)
+                    this.mutuals = this.User.mutuals.slice(0, 3);
             },
                 error => {
                     this.message.text.innerHTML = '加载用户信息时发生异常';
@@ -284,10 +284,10 @@
             if (!this.currentAppUserName)
                 return -1;
 
-            if (!this.user.followed) {
-                this.user.followed = true;
+            if (!this.User.followed) {
+                this.User.followed = true;
 
-                this.$http.post(`/api/users/follow/${this.user.userName}`).then(response => {
+                this.$http.post(`/api/users/follow/${this.User.userName}`).then(response => {
 
                 }, response => {
                     this.message.text.innerHTML = 'Error while following';
@@ -295,7 +295,7 @@
                     this.message.element.setAttribute('data-hidden', 'false');
                     setTimeout(() => { this.message.element.setAttribute('data-hidden', 'true'); }, 5000);
 
-                    this.user.followed = false;
+                    this.User.followed = false;
                 });
             }
         },
@@ -303,10 +303,10 @@
             if (!this.currentAppUserName)
                 return -1;
 
-            if (this.user.followed) {
-                this.user.followed = false;
+            if (this.User.followed) {
+                this.User.followed = false;
 
-                this.$http.post(`/api/users/dismiss/follow/${this.user.userName}`).then(response => {
+                this.$http.post(`/api/users/dismiss/follow/${this.User.userName}`).then(response => {
 
                 }, response => {
                     this.message.text.innerHTML = 'Error while unfollowing';
@@ -314,7 +314,7 @@
                     this.message.element.setAttribute('data-hidden', 'false');
                     setTimeout(() => { this.message.element.setAttribute('data-hidden', 'true'); }, 5000);
 
-                    this.user.followed = true;
+                    this.User.followed = true;
                 });
             }
         },
@@ -322,10 +322,10 @@
             if (!this.currentAppUserName)
                 return -1;
 
-            if (!this.user.blocked) {
-                this.user.blocked = true;
+            if (!this.User.blocked) {
+                this.User.blocked = true;
 
-                this.$http.post(`/api/users/block/${this.user.userName}`).then(response => {
+                this.$http.post(`/api/users/block/${this.User.userName}`).then(response => {
 
                 }, response => {
                     this.message.text.innerHTML = 'Error while blocking';
@@ -333,7 +333,7 @@
                     this.message.element.setAttribute('data-hidden', 'false');
                     setTimeout(() => { this.message.element.setAttribute('data-hidden', 'true'); }, 5000);
 
-                    this.user.blocked = false;
+                    this.User.blocked = false;
                 });
             }
         },
@@ -341,10 +341,10 @@
             if (!this.currentAppUserName)
                 return -1;
 
-            if (this.user.blocked) {
-                this.user.blocked = false;
+            if (this.User.blocked) {
+                this.User.blocked = false;
 
-                this.$http.post(`/api/users/dismiss/block/${this.user.userName}`).then(response => {
+                this.$http.post(`/api/users/dismiss/block/${this.User.userName}`).then(response => {
 
                 }, response => {
                     this.message.text.innerHTML = 'Error while unblocking';
@@ -352,7 +352,7 @@
                     this.message.element.setAttribute('data-hidden', 'false');
                     setTimeout(() => { this.message.element.setAttribute('data-hidden', 'true'); }, 5000);
 
-                    this.user.blocked = true;
+                    this.User.blocked = true;
                 });
             }
         },
@@ -409,7 +409,7 @@
         },
 
         showMutuals() {
-            this.mutuals = this.user.mutuals;
+            this.mutuals = this.User.mutuals;
             this.mutualsActive = true;
             document.documentElement.classList.add('is-clipped');
             document.body.classList.add('is-clipped');
@@ -435,7 +435,7 @@
             document.body.classList.remove('is-clipped');
         },
         closeMutuals() {
-            this.mutuals = this.user.mutuals.slice(0, 3);
+            this.mutuals = this.User.mutuals.slice(0, 3);
             this.mutualsActive = false;
             document.documentElement.classList.remove('is-clipped');
             document.body.classList.remove('is-clipped');

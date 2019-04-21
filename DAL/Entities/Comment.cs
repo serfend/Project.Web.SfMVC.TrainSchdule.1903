@@ -20,20 +20,12 @@ namespace TrainSchdule.DAL.Entities
         /// </summary>
         public DateTime Date { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to photo by id.
-        /// </summary>
-        public Guid PhotoId { get; set; }
 
         /// <summary>
         /// Gets and sets photo by <see cref="PhotoId"/> foreign key.
         /// </summary>
         public virtual Photo Photo { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to owner by id.
-        /// </summary>
-        public Guid OwnerId { get; set; }
 
         /// <summary>
         /// Gets and sets owner by <see cref="OwnerId"/> foreign key.

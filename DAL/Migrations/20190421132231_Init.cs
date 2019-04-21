@@ -2,29 +2,36 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace TrainSchdule.DAL.Migrations
+namespace DAL.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AppUsers",
+                name: "ApplyRequests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    UserName = table.Column<string>(nullable: true),
-                    RealName = table.Column<string>(nullable: true),
-                    Avatar = table.Column<string>(nullable: true),
-                    About = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    WebSite = table.Column<string>(nullable: true),
-                    Gender = table.Column<int>(nullable: false),
-                    PrivateAccount = table.Column<bool>(nullable: false)
+                    xjts = table.Column<int>(nullable: false),
+                    ltts = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUsers", x => x.Id);
+                    table.PrimaryKey("PK_ApplyRequests", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplyStamps",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    ldsj = table.Column<DateTime>(nullable: false),
+                    gdsj = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplyStamps", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +74,18 @@ namespace TrainSchdule.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Duties",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Duties", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Filters",
                 columns: table => new
                 {
@@ -102,108 +121,6 @@ namespace TrainSchdule.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BlackLists",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    BlockedUserId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BlackLists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BlackLists_AppUsers_BlockedUserId",
-                        column: x => x.BlockedUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BlackLists_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Confirmed",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    AdminId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Confirmed", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Confirmed_AppUsers_AdminId",
-                        column: x => x.AdminId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Confirmed_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Followings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    FollowedUserId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Followings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Followings_AppUsers_FollowedUserId",
-                        column: x => x.FollowedUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Followings_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserReports",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    ReportedUserId = table.Column<Guid>(nullable: false),
-                    Text = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserReports", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserReports_AppUsers_ReportedUserId",
-                        column: x => x.ReportedUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserReports_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -289,7 +206,7 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,6 +230,216 @@ namespace TrainSchdule.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApplyResponses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AuditingById = table.Column<Guid>(nullable: true),
+                    CompanyId = table.Column<Guid>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
+                    HandleStamp = table.Column<DateTime>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    ApplyId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplyResponses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    ParentId = table.Column<Guid>(nullable: true),
+                    IsPrivate = table.Column<bool>(nullable: false),
+                    Path = table.Column<string>(nullable: true),
+                    ApplyId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Companies_Companies_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUsers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Privilege = table.Column<int>(nullable: false),
+                    UserName = table.Column<string>(nullable: true),
+                    AuthKey = table.Column<string>(nullable: true),
+                    RealName = table.Column<string>(nullable: true),
+                    Avatar = table.Column<string>(nullable: true),
+                    About = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    WebSite = table.Column<string>(nullable: true),
+                    Gender = table.Column<int>(nullable: false),
+                    PrivateAccount = table.Column<bool>(nullable: false),
+                    CompanyId = table.Column<Guid>(nullable: true),
+                    Address = table.Column<string>(nullable: true),
+                    DutiesId = table.Column<Guid>(nullable: true),
+                    Phone = table.Column<string>(nullable: true),
+                    InvitedBy = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppUsers_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_AppUsers_Duties_DutiesId",
+                        column: x => x.DutiesId,
+                        principalTable: "Duties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Applies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    FromId = table.Column<Guid>(nullable: true),
+                    Company = table.Column<string>(nullable: true),
+                    Address = table.Column<string>(nullable: true),
+                    RequestId = table.Column<Guid>(nullable: true),
+                    xjlb = table.Column<string>(nullable: true),
+                    stampId = table.Column<Guid>(nullable: true),
+                    Create = table.Column<DateTime>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
+                    Hidden = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Applies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Applies_AppUsers_FromId",
+                        column: x => x.FromId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Applies_ApplyRequests_RequestId",
+                        column: x => x.RequestId,
+                        principalTable: "ApplyRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Applies_ApplyStamps_stampId",
+                        column: x => x.stampId,
+                        principalTable: "ApplyStamps",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlackLists",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    BlockedUserId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlackLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlackLists_AppUsers_BlockedUserId",
+                        column: x => x.BlockedUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_BlackLists_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Confirmed",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    AdminId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Confirmed", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Confirmed_AppUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Confirmed_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Followings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    FollowedUserId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Followings_AppUsers_FollowedUserId",
+                        column: x => x.FollowedUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Followings_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PermissionCompanies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Path = table.Column<string>(nullable: true),
+                    OwnerId = table.Column<Guid>(nullable: true),
+                    AuthBy = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionCompanies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PermissionCompanies_AppUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
                 {
@@ -327,8 +454,8 @@ namespace TrainSchdule.DAL.Migrations
                     Exposure = table.Column<double>(nullable: true),
                     Aperture = table.Column<double>(nullable: true),
                     FocalLength = table.Column<double>(nullable: true),
-                    OwnerId = table.Column<Guid>(nullable: false),
-                    FilterId = table.Column<Guid>(nullable: false)
+                    OwnerId = table.Column<Guid>(nullable: true),
+                    FilterId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -338,13 +465,40 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.FilterId,
                         principalTable: "Filters",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Photos_AppUsers_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserReports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    ReportedUserId = table.Column<Guid>(nullable: true),
+                    Text = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserReports_AppUsers_ReportedUserId",
+                        column: x => x.ReportedUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_UserReports_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -352,8 +506,8 @@ namespace TrainSchdule.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    PhotoId = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    PhotoId = table.Column<Guid>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -364,13 +518,13 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.PhotoId,
                         principalTable: "Photos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Bookmarks_AppUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -380,8 +534,8 @@ namespace TrainSchdule.DAL.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Text = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
-                    PhotoId = table.Column<Guid>(nullable: false),
-                    OwnerId = table.Column<Guid>(nullable: false)
+                    PhotoId = table.Column<Guid>(nullable: true),
+                    OwnerId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -391,7 +545,7 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.OwnerId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Comments_Photos_PhotoId",
                         column: x => x.PhotoId,
@@ -406,8 +560,8 @@ namespace TrainSchdule.DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    PhotoId = table.Column<Guid>(nullable: false),
-                    OwnerId = table.Column<Guid>(nullable: false)
+                    PhotoId = table.Column<Guid>(nullable: true),
+                    OwnerId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -417,7 +571,7 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.OwnerId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Likes_Photos_PhotoId",
                         column: x => x.PhotoId,
@@ -431,8 +585,8 @@ namespace TrainSchdule.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    PhotoId = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    PhotoId = table.Column<Guid>(nullable: true),
                     Text = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false)
                 },
@@ -444,7 +598,7 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.PhotoId,
                         principalTable: "Photos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PhotoReports_AppUsers_UserId",
                         column: x => x.UserId,
@@ -458,8 +612,8 @@ namespace TrainSchdule.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    PhotoId = table.Column<Guid>(nullable: false),
-                    TagId = table.Column<Guid>(nullable: false)
+                    PhotoId = table.Column<Guid>(nullable: true),
+                    TagId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -469,7 +623,7 @@ namespace TrainSchdule.DAL.Migrations
                         column: x => x.PhotoId,
                         principalTable: "Photos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Tagings_Tags_TagId",
                         column: x => x.TagId,
@@ -477,6 +631,46 @@ namespace TrainSchdule.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Applies_FromId",
+                table: "Applies",
+                column: "FromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Applies_RequestId",
+                table: "Applies",
+                column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Applies_stampId",
+                table: "Applies",
+                column: "stampId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplyResponses_ApplyId",
+                table: "ApplyResponses",
+                column: "ApplyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplyResponses_AuditingById",
+                table: "ApplyResponses",
+                column: "AuditingById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplyResponses_CompanyId",
+                table: "ApplyResponses",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUsers_CompanyId",
+                table: "AppUsers",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUsers_DutiesId",
+                table: "AppUsers",
+                column: "DutiesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -548,6 +742,16 @@ namespace TrainSchdule.DAL.Migrations
                 column: "PhotoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Companies_ApplyId",
+                table: "Companies",
+                column: "ApplyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_ParentId",
+                table: "Companies",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Confirmed_AdminId",
                 table: "Confirmed",
                 column: "AdminId");
@@ -576,6 +780,11 @@ namespace TrainSchdule.DAL.Migrations
                 name: "IX_Likes_PhotoId",
                 table: "Likes",
                 column: "PhotoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionCompanies_OwnerId",
+                table: "PermissionCompanies",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PhotoReports_PhotoId",
@@ -616,10 +825,49 @@ namespace TrainSchdule.DAL.Migrations
                 name: "IX_UserReports_UserId",
                 table: "UserReports",
                 column: "UserId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ApplyResponses_AppUsers_AuditingById",
+                table: "ApplyResponses",
+                column: "AuditingById",
+                principalTable: "AppUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ApplyResponses_Applies_ApplyId",
+                table: "ApplyResponses",
+                column: "ApplyId",
+                principalTable: "Applies",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ApplyResponses_Companies_CompanyId",
+                table: "ApplyResponses",
+                column: "CompanyId",
+                principalTable: "Companies",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Companies_Applies_ApplyId",
+                table: "Companies",
+                column: "ApplyId",
+                principalTable: "Applies",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Applies_AppUsers_FromId",
+                table: "Applies");
+
+            migrationBuilder.DropTable(
+                name: "ApplyResponses");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -654,6 +902,9 @@ namespace TrainSchdule.DAL.Migrations
                 name: "Likes");
 
             migrationBuilder.DropTable(
+                name: "PermissionCompanies");
+
+            migrationBuilder.DropTable(
                 name: "PhotoReports");
 
             migrationBuilder.DropTable(
@@ -682,6 +933,21 @@ namespace TrainSchdule.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUsers");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
+
+            migrationBuilder.DropTable(
+                name: "Duties");
+
+            migrationBuilder.DropTable(
+                name: "Applies");
+
+            migrationBuilder.DropTable(
+                name: "ApplyRequests");
+
+            migrationBuilder.DropTable(
+                name: "ApplyStamps");
         }
     }
 }

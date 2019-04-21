@@ -10,20 +10,12 @@ namespace TrainSchdule.DAL.Entities
     {
         #region Properties
 
-        /// <summary>
-        /// Gets and sets foreign key to user by id.
-        /// </summary>
-        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.
         /// </summary>
         public virtual User User { get; set; }
 
-        /// <summary>
-        /// Gets and sets foreign key to user by id.
-        /// </summary>
-        public Guid ReportedUserId { get; set; }
 
         /// <summary>
         /// Gets and sets user entity by foreign key.

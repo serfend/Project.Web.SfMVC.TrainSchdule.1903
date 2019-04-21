@@ -65,7 +65,8 @@ namespace TrainSchdule.WEB.Controllers
 		        if (!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 					username = username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName : username;
 					var item = _usersService.Get(username);
-					if (item.Privilege > _currentUserService.CurrentUser.Privilege&&item.UserName!=User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+					if(item==null)return  new JsonResult(ActionStatusMessage.User.NotExist);
+					if (item.Privilege >= _currentUserService.CurrentUser.Privilege&&item.UserName!=User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 					var rst = new StringBuilder();
 					_usersService.Edit(username,async (u) =>
@@ -73,7 +74,7 @@ namespace TrainSchdule.WEB.Controllers
 						if(model.Address!=null)u.Address=model.Address;
 						if (model.Company != null)
 						{
-							if (item.Privilege <= _currentUserService.CurrentUser.Privilege)
+							if (item.Privilege >= _currentUserService.CurrentUser.Privilege)
 								rst.AppendLine($"更改用户的所在单位需要更高级别的权限");
 							else
 							{
@@ -115,7 +116,7 @@ namespace TrainSchdule.WEB.Controllers
 	        if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			username =username.IsNullOrEmpty() ? _currentUserService.CurrentUserDTO.UserName:username;
 			var item=_usersService.Get(username);
-			if (item.Privilege>_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (item.Privilege>=_currentUserService.CurrentUser.Privilege && item.UserName != User.Identity.Name) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return new JsonResult(new UserDetailViewModel()
 			{
 				Data= item

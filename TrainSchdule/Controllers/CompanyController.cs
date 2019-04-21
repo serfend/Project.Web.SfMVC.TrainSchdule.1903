@@ -74,7 +74,7 @@ namespace TrainSchdule.Web.Controllers
 		public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
-			if (!CheckPermissionCompany(company.ParentPath))
+			if (company.ParentPath == null||!CheckPermissionCompany(company.ParentPath))
 				return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 		    var anyExist = _companiesService.Get($"{company.ParentPath}/{company.Name}");
 		    if (anyExist == null)
