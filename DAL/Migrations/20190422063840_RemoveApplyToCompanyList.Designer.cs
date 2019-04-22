@@ -10,8 +10,8 @@ using TrainSchdule.DAL.Data;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190421153347_Fix")]
-    partial class Fix
+    [Migration("20190422063840_RemoveApplyToCompanyList")]
+    partial class RemoveApplyToCompanyList
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,8 @@ namespace DAL.Migrations
                     b.Property<Guid?>("FromId");
 
                     b.Property<bool>("Hidden");
+
+                    b.Property<string>("Reason");
 
                     b.Property<Guid?>("RequestId");
 
@@ -349,8 +351,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("ApplyId");
-
                     b.Property<bool>("IsPrivate");
 
                     b.Property<string>("Name");
@@ -360,8 +360,6 @@ namespace DAL.Migrations
                     b.Property<string>("Path");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplyId");
 
                     b.HasIndex("ParentId");
 
@@ -736,10 +734,6 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("TrainSchdule.DAL.Entities.Company", b =>
                 {
-                    b.HasOne("DAL.Entities.Apply")
-                        .WithMany("To")
-                        .HasForeignKey("ApplyId");
-
                     b.HasOne("TrainSchdule.DAL.Entities.Company", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");

@@ -25,7 +25,7 @@ namespace TrainSchdule.BLL.Extensions
 	            permissionCompanies.Add(itemPermissionCompany.ToDTO());
             }
 
-			return new UserDetailsDTO
+			var tmp= new UserDetailsDTO
             {
 				Id = item.Id,
 				AuthKey = item.AuthKey,
@@ -43,9 +43,13 @@ namespace TrainSchdule.BLL.Extensions
 				PermissionCompanies = permissionCompanies,
 				Address = item.Address,
 				Phone = item.Phone,
-				Company = item.Company.ToDTO()
 
-            };
+
+			};
+			var tmpCmp = item.Company;
+			tmp.Company = tmpCmp.ToDTO();
+			return tmp;
+
         }
 
         /// <summary>

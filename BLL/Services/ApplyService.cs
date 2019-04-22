@@ -123,16 +123,21 @@ namespace BLL.Services
 			{
 				_unitOfWork.ApplyResponses.Delete(applyResponse.Id);
 			}
+			_unitOfWork.Save();
 			 _unitOfWork.Applies.Delete(item.Id);
 		}
 
 		public async Task DeleteAsync(Apply item)
 		{
 			var ress = _unitOfWork.ApplyResponses.Find(r => item.Response.Any(i => i.Id == r.Id));
+
+
 			foreach (var applyResponse in ress)
 			{
-				await _unitOfWork.ApplyResponses.DeleteAsync(applyResponse.Id);
+				_unitOfWork.ApplyResponses.Delete(applyResponse.Id);
 			}
+
+			await _unitOfWork.SaveAsync();
 			await _unitOfWork.Applies.DeleteAsync(item.Id);
 		}
 	}

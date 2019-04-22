@@ -105,12 +105,6 @@ namespace TrainSchdule.Web.Controllers
 			item.Reason = model.Param.Reason;
 			await _unitOfWork.ApplyStamps.CreateAsync(item.stamp);
 
-			var to=new List<Company>(item.Response.Count());
-			foreach (var applyResponse in responses)
-			{
-				to.Add(applyResponse.Company);
-			}
-			item.To = to;
 			
 			var apply=await _applyService.CreateAsync(item);
 
@@ -243,7 +237,7 @@ namespace TrainSchdule.Web.Controllers
 					break;
 				case AuditStatus.NotPublish:
 				case AuditStatus.Withdrew:
-					await _applyService.DeleteAsync(item);
+					_applyService.Delete(item);
 					break;
 				default:
 					return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);

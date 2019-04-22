@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TrainSchdule.DAL.Entities;
 
 namespace DAL.Entities
@@ -9,7 +11,7 @@ namespace DAL.Entities
 	{
 		/// <summary>
 		/// 申请人，考虑到申请人的信息可能会发生变化，此处应独立备份
-		/// </summary>
+		/// </summary>]
 		public virtual User From { get; set; }
 		/// <summary>
 		/// 申请发出人所在的单位
@@ -40,10 +42,7 @@ namespace DAL.Entities
 		/// </summary>
 		public DateTime Create { get; set; }
 
-		/// <summary>
-		/// 提交到对应部门进行审核
-		/// </summary>
-		public virtual IEnumerable<Company> To { get; set; }
+		
 
 		/// <summary>
 		/// 申请的审核情况
