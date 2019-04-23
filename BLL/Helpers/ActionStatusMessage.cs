@@ -81,19 +81,39 @@ namespace TrainSchdule.BLL.Helpers
 			{
 				public static readonly Status Default = new Status(43000, "申请操作异常");
 				public static readonly Status Invalid = new Status(43100, "申请中发现无效的操作");
-				public static readonly Status AuditBegan = new Status(43100, "申请已处于审核状态中");
-				public static readonly Status AuditCrash = new Status(43200, "当前存在正在进行的申请（审核中、审核通过状态）");
+				
+				public static class  Withdrew
+				{
+					
+					public static readonly Status AllReadyWithdrew = new Status(43220, "当前申请处于已撤回状态，无需撤回");
+					public static readonly Status AuditBeenAcceptedByOneCompany = new Status(43230, "当前申请已被审核，无法撤回");
+				}
 
+				public static class Submit
+				{
+					public static readonly Status Crash = new Status(43310, "当前存在正在进行的申请（审核中、审核通过状态）");
+					public static readonly Status Began = new Status(43320, "申请已处于审核状态中");
+				}
 				public static class ToCompany
 				{
-					public static readonly Status Default = new Status(43300, "申请操作中出现单位异常");
-					public static readonly Status NoneToSubmit = new Status(43310, "至少需要提交到一个单位进行审批");
-					public static readonly Status NotExist = new Status(43320, "在申请中未发现此单位");
+					public static readonly Status Default = new Status(43400, "申请操作中出现单位异常");
+					public static readonly Status NoneToSubmit = new Status(43410, "至少需要提交到一个单位进行审批");
+					public static readonly Status NotExist = new Status(43420, "在申请中未发现此单位");
 				}
-				public static readonly Status AuditBeenAcceptedByOneCompany = new Status(43400, "当前申请已被审核，无法撤回");
-				public static readonly Status AuditIsPublic = new Status(43500, "当前申请处于发布状态，请先撤回申请");
-				public static readonly Status AllReadyWithdrew = new Status(43600, "当前申请处于已撤回状态，无需撤回");
+
+				public static class Remove
+				{
+					public static readonly Status AuditIsPublic = new Status(43510, "当前申请处于发布状态，请先撤回申请");
+				}
 				
+
+				public static class Audit
+				{
+					public static readonly Status BeenAudit = new Status(43610, "审核已提交过，请勿重复审核");
+					public static readonly Status NotExist = new Status(43620, "不存在的审核流程");
+					
+				}
+
 
 			}
 

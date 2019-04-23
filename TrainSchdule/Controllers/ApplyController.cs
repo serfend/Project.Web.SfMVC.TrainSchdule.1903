@@ -178,7 +178,7 @@ namespace TrainSchdule.Web.Controllers
 			var item=_unitOfWork.Applies.Get(id);
 			if(item==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBegan);
+			if(item.Status!=AuditStatus.NotPublish)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Began);
 
 
 			var userActiveApplies = _applyService.GetAll(
@@ -197,7 +197,7 @@ namespace TrainSchdule.Web.Controllers
 					select prevStart).Any()
 				)
 			{
-				return new JsonResult(ActionStatusMessage.Apply.Operation.AuditCrash);
+				return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
 			}
 
 
@@ -215,27 +215,15 @@ namespace TrainSchdule.Web.Controllers
 			var item = _unitOfWork.Applies.Get(id);
 			if (item == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			if (item.From.UserName != _currentUserService.CurrentUser.UserName) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if(item.Response.Any(apply=>apply.Status==Auditing.Accept))return new JsonResult(ActionStatusMessage.Apply.Operation.AuditBeenAcceptedByOneCompany);
-			if(item.Status==AuditStatus.Withdrew)return new JsonResult(ActionStatusMessage.Apply.Operation.AllReadyWithdrew);
+			if(item.Response.Any(apply=>apply.Status==Auditing.Accept))return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
+			if(item.Status==AuditStatus.Withdrew)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
 			item.Status = AuditStatus.Withdrew;
 			_unitOfWork.Applies.Update(item);
 			await _unitOfWork.SaveAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		//[HttpDelete]
-		//public async Task<IActionResult> RemoveAll(AuditStatus status)
-		//{
-		//	switch (status)
-		//	{
-		//		case AuditStatus.NotPublish:
-		//		case AuditStatus.Withdrew:
-
-		//			break;
-		//		default:
-		//			return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);
-		//	}
-		//}
+		
 		[HttpDelete]
 		public async Task<IActionResult> Remove(Guid id)
 		{
@@ -253,7 +241,7 @@ namespace TrainSchdule.Web.Controllers
 					_applyService.Delete(item);
 					break;
 				default:
-					return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);
+					return new JsonResult(ActionStatusMessage.Apply.Operation.Remove.AuditIsPublic);
 			}
 
 			await _unitOfWork.SaveAsync();
@@ -339,83 +327,75 @@ namespace TrainSchdule.Web.Controllers
 		public async  Task<IActionResult>Auth([FromBody] IEnumerable<ApplyResponseHandleViewModel> Param)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
-			var errorList=new ConcurrentDictionary<string,List<Status>>();
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var currentUser = _currentUserService.CurrentUser;
+			var results=new Dictionary<string,ApplyResponseHandledDataModel>();
+			bool anyError = false;
 			foreach (var applyAuth in Param)
 			{
-				errorList.AddOrUpdate(applyAuth.AuditAs, new List<Status>(),
-					(key, statuses) => errorList[key] = statuses);
-				//获取每个apply
-				var item = _applyService.GetEntity(applyAuth.Id);
-				if (item == null)
-				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.NotExist);
-					continue;
-				}
-				
-				var auditCompany = _companiesService.GetCompanyByPath(applyAuth.AuditAs);
-				if (auditCompany == null)
-				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Company.NotExist);
-					continue;
-				}
-				bool havePermission =
-					currentUser.PermissionCompanies.Any(cmp => auditCompany.Path.StartsWith(cmp.Path));
-				if (!havePermission)
-				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Account.Auth.Invalid.Default);
-					continue;
-				};
-				var proDTO = item.Response.Single(progress => progress.Company.Path == applyAuth.AuditAs);
-
-				if (proDTO == null)
-				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.ToCompany.NotExist);
-					continue;
-				}
-				var pro = _unitOfWork.ApplyResponses.Get(proDTO.Id);
-				if (pro.Status != Auditing.Received)
-				{
-					errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.Invalid);
-					continue;
-				}
-				switch (applyAuth.Apply)
-				{
-					case ApplyReponseHandleStatus.Accept:
-						pro.Status = Auditing.Accept;
-						var nextProDTO = item.Response.TakeWhile(nextProgress => nextProgress.Status == Auditing.UnReceive)
-							.LastOrDefault();
-						if (nextProDTO == null)
-						{
-							item.Status = AuditStatus.AcceptAndWaitAdmin;
-						}else						{
-							var nextPro = _unitOfWork.ApplyResponses.Get(nextProDTO.Id);
-							nextPro.Status = Auditing.Received;
-						}
-						break;
-					case ApplyReponseHandleStatus.Deny:
-						pro.Status = Auditing.Denied;
-						item.Status = AuditStatus.Denied;
-						
-						break;
-					default:
-					{
-						errorList[applyAuth.AuditAs].Add(ActionStatusMessage.Apply.Operation.Invalid);
-						continue;
-					}
-				}
-				
-				pro.AuditingBy = currentUser;
-				pro.Remark = applyAuth.Remark;
-				pro.HandleStamp=DateTime.Now;
-				_unitOfWork.Applies.Update(item);
-				_unitOfWork.ApplyResponses.Update(pro);
-				if (errorList[applyAuth.AuditAs].Count == 0) errorList.Remove(applyAuth.AuditAs,out var wasted);
+				var result = AuthSingle(applyAuth, currentUser);
+				if (result.Code != 0) anyError = true;
+				results.Add(applyAuth.Id.ToString(),result );
 			}
 
 			await _unitOfWork.SaveAsync();
-			return errorList.Count==0 ? new JsonResult(ActionStatusMessage.Success) : new JsonResult(new {code=-1,errors= errorList });
+			return new JsonResult(new ApplyResponseHandledViewModel()
+			{
+				Data = results,
+				Code = anyError?-1:0
+			});
+		}
+
+		private ApplyResponseHandledDataModel AuthSingle(ApplyResponseHandleViewModel applyAuth,User currentUser)
+		{
+
+			//获取当前apply
+			var item = _applyService.GetEntity(applyAuth.Id);
+			if (item == null)return new ApplyResponseHandledDataModel(ActionStatusMessage.Apply.NotExist);
+
+			//判断当前申请的状态
+			if (item.Status != AuditStatus.Auditing)return new ApplyResponseHandledDataModel(ActionStatusMessage.Apply.Operation.Audit.BeenAudit);
+
+			//获取当前流程
+			var pro = item.Response.Single(progress => progress.Status == Auditing.Received);
+			if (pro == null)return new ApplyResponseHandledDataModel(ActionStatusMessage.Apply.Operation.Audit.NotExist);
+
+			//检查当前用户权限
+			var permissionList = currentUser.PermissionCompanies.ToList();
+			if (permissionList.All(p => p.Path != pro.Company.Path))return new ApplyResponseHandledDataModel(ActionStatusMessage.Account.Auth.Invalid.Default);
+			//业务操作
+			switch (applyAuth.Apply)
+			{
+				case ApplyReponseHandleStatus.Accept:
+					pro.Status = Auditing.Accept;
+					var nextPro = item.Response.TakeWhile(nextProgress => nextProgress.Status == Auditing.UnReceive)
+						.LastOrDefault();
+					if (nextPro == null)
+					{
+						item.Status = AuditStatus.AcceptAndWaitAdmin;
+					}
+					else
+					{
+						nextPro.Status = Auditing.Received;
+					}
+					break;
+				case ApplyReponseHandleStatus.Deny:
+					pro.Status = Auditing.Denied;
+					item.Status = AuditStatus.Denied;
+
+					break;
+				default:
+					{
+						return new ApplyResponseHandledDataModel(ActionStatusMessage.Apply.Operation.Invalid);
+					}
+			}
+
+			pro.AuditingBy = currentUser;
+			pro.Remark = applyAuth.Remark;
+			pro.HandleStamp = DateTime.Now;
+			_unitOfWork.Applies.Update(item);
+			_unitOfWork.ApplyResponses.Update(pro);
+			return new ApplyResponseHandledDataModel(ActionStatusMessage.Success);
 		}
 		#region Disposing
 

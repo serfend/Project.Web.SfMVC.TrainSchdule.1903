@@ -74,6 +74,7 @@ namespace DAL.Entities
 	{
 		public int Code { get; set; }
 		public string Message { get; set; }
+		public string Desc { get; set; }
 		public string Color { get; set; }
 	}
 }
