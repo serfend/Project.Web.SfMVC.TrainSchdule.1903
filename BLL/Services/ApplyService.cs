@@ -75,7 +75,7 @@ namespace BLL.Services
 		public IEnumerable<ApplyAllDataDTO> GetAll(Expression<Func<Apply, bool> > predicate, int page, int pageSize)
 		{
 			var list = new List<ApplyAllDataDTO>();
-			var items = _unitOfWork.Applies.Find(predicate).OrderByDescending(a=>a.Create).Skip(page * pageSize).Take(pageSize);
+			var items = _unitOfWork.Applies.Find(predicate).OrderByDescending(a=>a.Status).ThenByDescending(a=>a.Create).Skip(page * pageSize).Take(pageSize);
 			foreach (var apply in items)
 			{
 				list.Add(apply.ToAllDataDTO());
