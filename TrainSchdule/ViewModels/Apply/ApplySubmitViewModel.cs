@@ -18,6 +18,10 @@ namespace TrainSchdule.ViewModels.Apply
 
 	public class ApplySubmitData
 	{
+		/// <summary>
+		/// 需要提交申请的用户名，默认为当前登录的用户
+		/// </summary>
+		public string UserName { get; set; }
 		[DisplayName("request")]
 		public ApplyRequest Request { get; set; }
 

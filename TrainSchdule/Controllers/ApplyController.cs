@@ -72,7 +72,16 @@ namespace TrainSchdule.Web.Controllers
 			if(! _verifyService.Verify(model.Verify))
 				return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			if(!_verifyService.Status.IsNullOrEmpty()) return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Default.status, _verifyService.Status));
-			var user = _currentUserService.CurrentUser;
+			User user ;
+			if (model.Param.UserName == null)
+				user = _currentUserService.CurrentUser;
+			else
+			{
+				var currentUser = _currentUserService.CurrentUser;
+				user = _unitOfWork.Users.Find(u => u.UserName == model.Param.UserName).FirstOrDefault();
+				if (user == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+				if (currentUser.PermissionCompanies.All(p=>p.Path!=user.Company.Path))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			}
 			if (user == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (user.Company==null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
 
