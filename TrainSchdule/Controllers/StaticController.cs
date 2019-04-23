@@ -51,7 +51,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult VerifyCodeFront()
 		{
 			var img = _verifyService.Front();
-			if (img == null) return new JsonResult(new APIViewModel()
+			if (img == null) return new JsonResult(new APIDataModel()
 			{
 				Code = -1,
 				Message = _verifyService.Status
@@ -66,7 +66,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult VerifyCodeBackground()
 		{
 			var img = _verifyService.Background();
-			if (img == null) return new JsonResult(new APIViewModel()
+			if (img == null) return new JsonResult(new APIDataModel()
 			{
 				Code = -1,
 				Message = _verifyService.Status
