@@ -51,17 +51,17 @@ namespace TrainSchdule.Web.Controllers
 
 		#region Logic
 
-		//[HttpGet]
-		//public IActionResult AllStatus()
-		//{
-		//	return new JsonResult(new ApplyAuditStatusViewModel()
-		//	{
-		//		Data = new ApplyAuditStatusData()
-		//		{
-		//			List = ApplyExtensions.StatusDic
-		//		}
-		//	});
-		//}
+		[HttpGet]
+		public IActionResult AllStatus()
+		{
+			return new JsonResult(new ApplyAuditStatusViewModel()
+			{
+				Data = new ApplyAuditStatusData()
+				{
+					List = ApplyExtensions.StatusDic
+				}
+			});
+		}
 
 		[HttpPost]
 		public async Task<IActionResult> Submit([FromBody]ApplySubmitViewModel model)
@@ -223,6 +223,19 @@ namespace TrainSchdule.Web.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
+		//[HttpDelete]
+		//public async Task<IActionResult> RemoveAll(AuditStatus status)
+		//{
+		//	switch (status)
+		//	{
+		//		case AuditStatus.NotPublish:
+		//		case AuditStatus.Withdrew:
+
+		//			break;
+		//		default:
+		//			return new JsonResult(ActionStatusMessage.Apply.Operation.AuditIsPublic);
+		//	}
+		//}
 		[HttpDelete]
 		public async Task<IActionResult> Remove(Guid id)
 		{

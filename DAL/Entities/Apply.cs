@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TrainSchdule.DAL.Entities;
@@ -69,4 +70,10 @@ namespace DAL.Entities
 		Denied=16,
 	}
 
+	public class AuditStatusMessage
+	{
+		public int Code { get; set; }
+		public string Message { get; set; }
+		public string Color { get; set; }
+	}
 }

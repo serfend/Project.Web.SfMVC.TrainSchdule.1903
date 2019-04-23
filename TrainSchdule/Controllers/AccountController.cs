@@ -568,17 +568,17 @@ namespace TrainSchdule.WEB.Controllers
 
 		[HttpPost]
 		[Route("rest")]
-		public IActionResult Permission(string username,string path,GoogleAuthViewModel authCode)
+		public IActionResult Permission(string targetUser,string path,GoogleAuthViewModel authCode)
 		{
 			var authUser = _usersService.Get(authCode.UserName);
-			username = _authService.CurrentUserService.CurrentUser.UserName;
+			targetUser = _authService.CurrentUserService.CurrentUser.UserName;
 			if (authUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var password = authUser.AuthKey??authUser.UserName;
 			if(!_authService.Verify(authCode.Code, authCode.UserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			bool authUserHavePermission = authUser.PermissionCompanies.Any(per=>path.StartsWith(per.Path));
 			if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			
-			bool success=_usersService.Edit(username, user =>
+			bool success=_usersService.Edit(targetUser, user =>
 			{
 				if (user.PermissionCompanies.Any(per => path == per.Path)) return;
 				var permissionCompany = new PermissionCompany()

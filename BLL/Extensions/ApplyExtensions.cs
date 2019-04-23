@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using BLL.DTO;
@@ -9,22 +10,38 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
-		//public static Dictionary<int, string> StatusDic { get; set; }
-		//private static bool Init=false;
-		//static ApplyExtensions()
-		//{
-			
-		//}
+		private static  Dictionary<int,AuditStatusMessage> statusDic { get; set; }
+		public static Dictionary<int, AuditStatusMessage> StatusDic => statusDic ?? (statusDic = InitStatusDic());
+		public static Dictionary<int,Color> StatusColors { get; set; }
 
-		//private static void Initilize()
-		//{
-		//	StatusDic = new Dictionary<int, string>();
-		//	var type = typeof(AuditStatus).GetFields();
-		//	foreach (var fieldInfo in type)
-		//	{
-		//		StatusDic.Add((int)fieldInfo.GetRawConstantValue(), fieldInfo.Name);
-		//	}
-		//}
+
+		private static Dictionary<int, AuditStatusMessage> InitStatusDic()
+		{
+			StatusColors = new Dictionary<int, Color>
+			{
+				{(int)AuditStatus.NotPublish, Color.DarkGray},
+				{(int)AuditStatus.Auditing, Color.Coral},
+				{(int)AuditStatus.Withdrew, Color.Gray},
+				{(int)AuditStatus.AcceptAndWaitAdmin, Color.DeepSkyBlue},
+				{(int)AuditStatus.Accept, Color.LawnGreen},
+				{(int)AuditStatus.Denied, Color.Red}
+			};
+			var statusMessages = new Dictionary<int, AuditStatusMessage>();
+			var type = typeof(AuditStatus).GetFields();
+			for (int i=1;i<type.Length ;i++)
+			{
+				var fieldInfo = type[i];
+				var key =(int)fieldInfo.GetRawConstantValue();
+				statusMessages.Add(key, new AuditStatusMessage()
+				{
+					Code = key,
+					Color = ColorTranslator.ToHtml(Color.FromArgb(StatusColors[key].ToArgb())),
+					Message = fieldInfo.Name
+				});
+			}
+
+			return statusMessages;
+		}
 		public static ApplyDTO ToSummaryDTO(this ApplyAllDataDTO all)
 		{
 			return new ApplyDTO()

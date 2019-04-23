@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DAL.Entities;
 using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Apply
@@ -13,6 +14,6 @@ namespace TrainSchdule.ViewModels.Apply
 
 	public class ApplyAuditStatusData
 	{
-		public Dictionary<int, string> List { get; set; }
+		public Dictionary<int, AuditStatusMessage> List { get; set; }
 	}
 }
