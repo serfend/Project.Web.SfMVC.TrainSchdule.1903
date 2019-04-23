@@ -456,8 +456,8 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public IActionResult AuthKey(ModifyAuthKeyViewModel model)
 		{
-			if(!_authService.Verify(model.Code,model.UserName))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var success = _usersService.Edit(model.UserName, (x) =>
+			if(!_authService.Verify(model.Code,model.AuthByUserName))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var success = _usersService.Edit(model.AuthByUserName, (x) =>
 			{
 				x.AuthKey = model.NewKey;
 			});
@@ -527,7 +527,7 @@ namespace TrainSchdule.WEB.Controllers
 			{
 				return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			}
-			if (!_authService.Verify(model.Auth.Code, model.Auth.UserName)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserName)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 
 			var user = await _usersService.CreateAsync(model.UserName, model.Email, model.Password, model.Company);
 			if (user == null)
@@ -570,11 +570,11 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public IActionResult Permission(string targetUser,string path,GoogleAuthViewModel authCode)
 		{
-			var authUser = _usersService.Get(authCode.UserName);
+			var authUser = _usersService.Get(authCode.AuthByUserName);
 			targetUser = _authService.CurrentUserService.CurrentUser.UserName;
 			if (authUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var password = authUser.AuthKey??authUser.UserName;
-			if(!_authService.Verify(authCode.Code, authCode.UserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if(!_authService.Verify(authCode.Code, authCode.AuthByUserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			bool authUserHavePermission = authUser.PermissionCompanies.Any(per=>path.StartsWith(per.Path));
 			if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			
@@ -599,10 +599,10 @@ namespace TrainSchdule.WEB.Controllers
 		[Route("rest")]
 		public ActionResult Permission(Guid id, GoogleAuthViewModel authCode)
 		{
-			var authUser = _usersService.Get(authCode.UserName);
+			var authUser = _usersService.Get(authCode.AuthByUserName);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var password = authUser.AuthKey ?? authUser.UserName;
-			if (!_authService.Verify(authCode.Code, authCode.UserName, password)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!_authService.Verify(authCode.Code, authCode.AuthByUserName, password)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetPermission = _unitOfWork.PermissionCompanies.Get(id);
 			if(targetPermission==null)return new JsonResult(ActionStatusMessage.Account.Auth.Permission.NotExist);
 			var targetUser = targetPermission.Owner;
