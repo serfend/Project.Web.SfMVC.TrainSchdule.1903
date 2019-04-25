@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -66,6 +67,11 @@ namespace TrainSchdule.BLL.Services
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
             return MapUserDetails(user);
+        }
+
+        public IQueryable<User> Find(Expression<Func<User, bool>> predict)
+        {
+	        return _unitOfWork.Users.Find(predict).OrderBy(u=>u.Privilege).ThenBy(u=>u.RealName);
         }
 
         /// <summary>

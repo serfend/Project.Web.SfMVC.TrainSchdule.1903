@@ -14,6 +14,7 @@ using TrainSchdule.BLL.Services;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Company;
 using TrainSchdule.Web.ViewModels.Company;
+using TrainSchdule.WEB.Extensions;
 
 namespace TrainSchdule.Web.Controllers
 {
@@ -23,11 +24,37 @@ namespace TrainSchdule.Web.Controllers
     {
 	    private readonly ICompaniesService _companiesService;
 	    private readonly ICurrentUserService _currentUserService;
+	    private readonly IUsersService _usersService;
 
-	    public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService)
+	    public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService)
 	    {
 		    _companiesService = companiesService;
 		    _currentUserService = currentUserService;
+		    _usersService = usersService;
+	    }
+
+	    [HttpGet]
+	    [AllowAnonymous]
+	    public IActionResult AllMembers(string path,int page,int pageSize=20)
+	    {
+		    if (path == null)
+		    {
+			    var currentUser = _currentUserService.CurrentUser;
+				if(currentUser==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			    path = currentUser.Company.Path;
+			}
+			if (pageSize>20)return  new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		    var cmp = _companiesService.Get(path);
+			if(cmp==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
+			var users = _usersService.Find(u => u.Company.Id == cmp.id).Skip(page*pageSize).Take(pageSize).ToList();
+			return new JsonResult(new CompanyMembersViewModel()
+			{
+				Data = new CompanyMembersDataModel()
+				{
+					List = users.Select(u=>u.ToCompanyMembersDataModel())
+				}
+			});
+
 	    }
 
 	    [HttpGet]

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.DTO;
@@ -24,6 +26,8 @@ namespace TrainSchdule.BLL.Interfaces
         /// 通过userName加载用户
         /// </summary>
         UserDetailsDTO Get(string userName);
+
+        IQueryable<User> Find(Expression<Func<User, bool>>predict);
 
         /// <summary>
         /// Loads blocked users by this user.

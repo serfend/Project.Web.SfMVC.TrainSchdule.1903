@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.BLL.DTO;
 using TrainSchdule.DAL.Entities;
+using TrainSchdule.ViewModels.Company;
 using TrainSchdule.WEB.ViewModels;
 
 namespace TrainSchdule.WEB.Extensions
@@ -64,6 +66,19 @@ namespace TrainSchdule.WEB.Extensions
             }
 
             return users;
+        }
+
+        public static CompanySingleMemberDataModel ToCompanyMembersDataModel(this User user)
+        {
+			var c=new CompanySingleMemberDataModel()
+			{
+				Company = user.Company.Name,
+				Duties = user.Duties?.Name,
+				RealName = user.RealName??user.UserName,
+				UserName = user.UserName,
+				Gender = user.Gender
+			};
+			return c;
         }
     }
 }

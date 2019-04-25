@@ -17,49 +17,39 @@ namespace TrainSchdule.DAL.Entities
         /// 用户权限，0为默认无权限
         /// </summary>
         public int Privilege { get; set; }
-
         /// <summary>
         /// Gets and sets user name.
         /// </summary>
         public string UserName { get; set; }
-
 		/// <summary>
 		/// 授权码
 		/// </summary>
 		public string AuthKey { get; set; }
-
 		//public UserType UserType { get; set; }
-
         /// <summary>
         /// Gets and sets user real name.
         /// </summary>
         public string RealName { get; set; }
-
         /// <summary>
         /// Gets and sets user avatar.
         /// </summary>
         public string Avatar { get; set; }
-
         /// <summary>
         /// Gets and sets user about section.
         /// </summary>
         public string About { get; set; }
-
         /// <summary>
         /// Gets and sets user date.
         /// </summary>
         public DateTime Date { get; set; }
-
         /// <summary>
         /// Gets and sets user website link.
         /// </summary>
         public string WebSite { get; set; }
-
         /// <summary>
         /// Gets and sets user gender.
         /// </summary>
         public GenderEnum Gender { get; set; }
-
         /// <summary>
         /// Gets and sets user private account config.
         /// </summary>
@@ -68,11 +58,8 @@ namespace TrainSchdule.DAL.Entities
 		/// 用户所处的单位
 		/// </summary>
         public virtual Company Company { get; set; }
-
 		public string Address { get; set; }
-
 		public virtual Duties Duties { get; set; }
-
 		public string Phone { get; set; }
 		/// <summary>
 		/// 用户注册时的授权人用户名
