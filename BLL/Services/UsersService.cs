@@ -369,7 +369,7 @@ namespace TrainSchdule.BLL.Services
             
             _unitOfWork.IdentityUsers.Create(identity);
 
-            var userCompany = _unitOfWork.Companies.Find(x => x.Path == company).FirstOrDefault();
+            var userCompany = _unitOfWork.Companies.Find(x => x.Code == company).FirstOrDefault();
             _unitOfWork.Users.Create(new User
             {
 	            UserName = userName,
@@ -408,7 +408,7 @@ namespace TrainSchdule.BLL.Services
 
             await _unitOfWork.IdentityUsers.CreateAsync(identity);
 
-            var userCompany = _unitOfWork.Companies.Find(x => x.Path == company).FirstOrDefault();
+            var userCompany = _unitOfWork.Companies.Find(x => x.Code == company).FirstOrDefault();
             await _unitOfWork.Users.CreateAsync(new User
             {
 	            UserName = userName,

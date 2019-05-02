@@ -6,6 +6,10 @@ using DAL.Repositories.Applies;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.Permission;
+using Apply = DAL.Entities.Apply;
+using Company = TrainSchdule.DAL.Entities.Company;
+using User = TrainSchdule.DAL.Entities.User;
 
 namespace TrainSchdule.DAL.Repositories
 {
@@ -37,7 +41,7 @@ namespace TrainSchdule.DAL.Repositories
         private bool _isDisposed;
         private IRepository<Student> _studentsRepository;
         private IRepository<Company> _CompaniesRepository;
-        private IRepository<PermissionCompany> _permissionCompanyRepository;
+        private IRepository<Permissions> _permissionCompanyRepository;
         private IRepository<Duties> _duties;
         private IRepository<Apply> _applies;
         private IRepository<ApplyResponse> _applyResponses;
@@ -122,8 +126,8 @@ namespace TrainSchdule.DAL.Repositories
 	        _studentsRepository ?? (_studentsRepository = new StudentRepository(_context));
         public IRepository<Company> Companies =>
 	        _CompaniesRepository ?? (_CompaniesRepository = new CompanyRepository(_context));
-        public IRepository<PermissionCompany> PermissionCompanies =>
-	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionCompanyRepository(_context));
+        public IRepository<Permissions> Permissions =>
+	        _permissionCompanyRepository ?? (_permissionCompanyRepository = new PermissionsRepository(_context));
 
         public IRepository<Duties> Duties => _duties ?? (_duties = new DutiesRepository(_context));
 

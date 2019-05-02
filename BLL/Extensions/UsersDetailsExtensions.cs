@@ -19,11 +19,7 @@ namespace TrainSchdule.BLL.Extensions
                 return null;
             }
 
-            var permissionCompanies = new List<PermissionCompanyDTO>();
-            foreach (var itemPermissionCompany in item.PermissionCompanies)
-            {
-	            permissionCompanies.Add(itemPermissionCompany.ToDTO());
-            }
+
 
 			var tmp= new UserDetailsDTO
             {
@@ -40,7 +36,7 @@ namespace TrainSchdule.BLL.Extensions
                 Gender = (GenderEnum)item.Gender,
                 WebSite = item.WebSite,
                 PrivateAccount = item.PrivateAccount,
-				PermissionCompanies = permissionCompanies,
+				Permissions = item.Permission,
 				Address = item.Address,
 				Phone = item.Phone,
 

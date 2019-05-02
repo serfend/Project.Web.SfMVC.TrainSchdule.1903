@@ -544,79 +544,74 @@ namespace TrainSchdule.WEB.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		#region Permission
+		//#region Permission
 		
-		[HttpGet]
-		[Route("rest")]
-		public IActionResult Permission(string username)
-		{
-			var currentUser = _authService.CurrentUserService.CurrentUser;
-			username = username ?? currentUser.UserName;
-			var targetUser = _usersService.Get(username);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (currentUser.UserName == username || targetUser.Privilege < currentUser.Privilege)
-			{
-				return new JsonResult(new PermissionCompaniesQueryViewModel()
-				{
-					Data = new PermissionCompaniesQueryDataModel()
-					{
-						List = targetUser.PermissionCompanies
-					}
-				});
-			}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-		}
+		//[HttpGet]
+		//[Route("rest")]
+		//public IActionResult Permission(string username)
+		//{
+		//	var currentUser = _authService.CurrentUserService.CurrentUser;
+		//	username = username ?? currentUser.UserName;
+		//	var targetUser = _usersService.Get(username);
+		//	if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+		//	if (currentUser.UserName == username || targetUser.Privilege < currentUser.Privilege)
+		//	{
+		//		return new JsonResult(new PermissionCompaniesQueryViewModel()
+		//		{
+		//			Data = new PermissionCompaniesQueryDataModel()
+		//			{
+		//				List = targetUser.PermissionCompanies
+		//			}
+		//		});
+		//	}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		//}
 
-		[HttpPost]
-		[Route("rest")]
-		public IActionResult Permission(string targetUser,string path,GoogleAuthViewModel authCode)
-		{
-			var authUser = _usersService.Get(authCode.AuthByUserName);
-			targetUser = _authService.CurrentUserService.CurrentUser.UserName;
-			if (authUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			var password = authUser.AuthKey??authUser.UserName;
-			if(!_authService.Verify(authCode.Code, authCode.AuthByUserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			bool authUserHavePermission = authUser.PermissionCompanies.Any(per=>path.StartsWith(per.Path));
-			if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		//[HttpPost]
+		//[Route("rest")]
+		//public IActionResult Permission(string targetUser,string path,GoogleAuthViewModel authCode)
+		//{
+		//	var authUser = _usersService.Get(authCode.AuthByUserName);
+		//	targetUser = _authService.CurrentUserService.CurrentUser.UserName;
+		//	if (authUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+		//	var password = authUser.AuthKey??authUser.UserName;
+		//	if(!_authService.Verify(authCode.Code, authCode.AuthByUserName, password))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+
 			
-			bool success=_usersService.Edit(targetUser, user =>
-			{
-				if (user.PermissionCompanies.Any(per => path == per.Path)) return;
-				var permissionCompany = new PermissionCompany()
-				{
-					AuthBy = authUser.Id,
-					Path=path,
-					Owner = _authService.CurrentUserService.CurrentUser
-				};
-				_unitOfWork.PermissionCompanies.Create(permissionCompany);
-				user.PermissionCompanies.Append(permissionCompany);
-			});
-			if (!success) return new JsonResult(ActionStatusMessage.User.NotExist);
-			_unitOfWork.Save();
-			return new JsonResult(ActionStatusMessage.Success);
-		}
+		//	/////
+		//	bool authUserHavePermission = authUser.PermissionCompanies.Any(per=>path.StartsWith(per.Code));
+		//	if(!authUserHavePermission)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		//	bool success=_usersService.Edit(targetUser, user =>
+		//	{
+		//		//TODO 待实现
+		//	});
+		//	/////
+		//	if (!success) return new JsonResult(ActionStatusMessage.User.NotExist);
+		//	_unitOfWork.Save();
+		//	return new JsonResult(ActionStatusMessage.Success);
+		//}
 
-		[HttpDelete]
-		[Route("rest")]
-		public ActionResult Permission(Guid id, GoogleAuthViewModel authCode)
-		{
-			var authUser = _usersService.Get(authCode.AuthByUserName);
-			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var password = authUser.AuthKey ?? authUser.UserName;
-			if (!_authService.Verify(authCode.Code, authCode.AuthByUserName, password)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var targetPermission = _unitOfWork.PermissionCompanies.Get(id);
-			if(targetPermission==null)return new JsonResult(ActionStatusMessage.Account.Auth.Permission.NotExist);
-			var targetUser = targetPermission.Owner;
-			if (targetPermission.AuthBy == authUser.Id || targetUser.Privilege < authUser.Privilege)
-			{
-				var list = targetUser.PermissionCompanies.ToList();
-				list.Remove(targetPermission);
-				targetUser.PermissionCompanies=list;
-				_unitOfWork.Users.Update(targetUser);
-				_unitOfWork.Save();
-				return new JsonResult(ActionStatusMessage.Success);
-			}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-		}
-		#endregion
+		//[HttpDelete]
+		//[Route("rest")]
+		//public ActionResult Permission(Guid id, GoogleAuthViewModel authCode)
+		//{
+		//	var authUser = _usersService.Get(authCode.AuthByUserName);
+		//	if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+		//	var password = authUser.AuthKey ?? authUser.UserName;
+		//	if (!_authService.Verify(authCode.Code, authCode.AuthByUserName, password)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+		//	var targetPermission = _unitOfWork.Permissions.Get(id);
+		//	if(targetPermission==null)return new JsonResult(ActionStatusMessage.Account.Auth.Permission.NotExist);
+		//	var targetUser = targetPermission.Owner;
+		//	if (targetPermission.AuthBy == authUser.Id || targetUser.Privilege < authUser.Privilege)
+		//	{
+		//		var list = targetUser.PermissionCompanies.ToList();
+		//		list.Remove(targetPermission);
+		//		targetUser.PermissionCompanies=list;
+		//		_unitOfWork.Users.Update(targetUser);
+		//		_unitOfWork.Save();
+		//		return new JsonResult(ActionStatusMessage.Success);
+		//	}else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		//}
+		//#endregion
 		#endregion
 		#region Helpers
 

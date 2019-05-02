@@ -34,19 +34,18 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    [AllowAnonymous]
-	    public IActionResult AllMembers(string path,int page,int pageSize=20)
+	    public IActionResult AllMembers(string code,int page,int pageSize=20)
 	    {
-		    if (path == null)
+		    if (code == null)
 		    {
 			    var currentUser = _currentUserService.CurrentUser;
 				if(currentUser==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			    path = currentUser.Company.Path;
+				code = currentUser.Company.Code;
 			}
 			if (pageSize>20)return  new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-		    var cmp = _companiesService.Get(path);
+		    var cmp = _companiesService.Get(code);
 			if(cmp==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
-			var users = _usersService.Find(u => u.Company.Id == cmp.id).Skip(page*pageSize).Take(pageSize).ToList();
+			var users = _usersService.Find(u => u.Company.Code == code).Skip(page*pageSize).Take(pageSize).ToList();
 			return new JsonResult(new CompanyMembersViewModel()
 			{
 				Data = new CompanyMembersDataModel()
@@ -58,7 +57,6 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    [AllowAnonymous]
 	    public IActionResult Child(string path,string showPrivate=null)
 	    {
 		    if (path == null)path = "Root";
@@ -66,7 +64,7 @@ namespace TrainSchdule.Web.Controllers
 		    var nowCompany = _companiesService.Get(path);
 		    if (nowCompany != null)
 		    {
-			    var list = _companiesService.FindAllChild(nowCompany.id).Where(item=> canShowPrivate || !item.IsPrivate);
+			    var list = _companiesService.FindAllChild(nowCompany.Code).Where(item=> canShowPrivate || !item.IsPrivate);
 				return new JsonResult(new GetDicViewModel()
 				{
 					Data = new GetDicDataModel() {
@@ -84,10 +82,9 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    [AllowAnonymous]
-		public IActionResult Detail(string path = null)
+		public IActionResult Detail(string path)
 	    {
-		    if (path == null) path = _currentUserService.CurrentUser.Company.Path;
+		    if (path == null) path = _currentUserService.CurrentUser.Company.Code;
 		    var cmp = _companiesService.Get(path);
 			if(cmp==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
 			return new JsonResult(new CompanyDetailViewModel()
@@ -97,20 +94,19 @@ namespace TrainSchdule.Web.Controllers
 	    }
 
 		[HttpPost]
-		[AllowAnonymous]
 		public async Task<IActionResult> Create(CompanyViewModel company)
 	    {
 			if (!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
-			if (company.ParentPath == null||!CheckPermissionCompany(company.ParentPath))
+			var currentUser = _currentUserService.CurrentUser;
+			if (company.Code == null||!currentUser.Permission.Company.单位信息.Create.Check(company.Code))
 				return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-		    var anyExist = _companiesService.Get($"{company.ParentPath}/{company.Name}");
+		    var anyExist = _companiesService.Get(company.Code);
 		    if (anyExist == null)
 		    {
-			    var newCompanyDTO= await _companiesService.CreateAsync(company.Name);
+			    var newCompanyDTO= await _companiesService.CreateAsync(company.Name,company.Code);
 			    try
 			    {
-				    await _companiesService.SetParentAsync(newCompanyDTO.Id,company.ParentPath);
-				    await _companiesService.EditAsync(newCompanyDTO.Path, item =>
+				    await _companiesService.EditAsync(newCompanyDTO.Code, item =>
 					    {
 						    item.IsPrivate = company.IsPrivate;
 					    });
@@ -125,13 +121,6 @@ namespace TrainSchdule.Web.Controllers
 		    return new JsonResult(ActionStatusMessage.Company.CreateExisted);
 		    
 	    }
-		/// <summary>
-		/// 检查当前用户是否具有操作对应路径单位的权限
-		/// </summary>
-		/// <param name="target"></param>
-		/// <returns></returns>
-	    public bool CheckPermissionCompany(string target)
-		     => _currentUserService.CurrentUser.PermissionCompanies.Any((company)=>target.StartsWith(company.Path));
 		 
     }
 }

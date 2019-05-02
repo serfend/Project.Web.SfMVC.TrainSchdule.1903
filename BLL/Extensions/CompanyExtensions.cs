@@ -11,6 +11,8 @@ namespace TrainSchdule.BLL.Extensions
 	/// </summary>
 	public static class CompanyExtension
 	{
+		public static bool IsParent(this Company item, Company compareCompany) =>
+			compareCompany.Code.StartsWith(item.Code);
 		public static CompanyDTO ToDTO(this Company item)
 		{
 			if (item == null)
@@ -21,8 +23,8 @@ namespace TrainSchdule.BLL.Extensions
 			return new CompanyDTO
 			{
 				Name = item.Name,
-				Path = item.Path,
-				id=item.Id,
+				Path = item.Code,
+				Code= item.Code,
 				IsPrivate = item.IsPrivate
 			};
 		}

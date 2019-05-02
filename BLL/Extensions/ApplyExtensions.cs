@@ -99,7 +99,7 @@ namespace BLL.Extensions
 				AuditBy = res.AuditingBy?.RealName,
 				AuditUserName = res.AuditingBy?.UserName,
 				Company = res.Company.Name,
-				CompanyPath = res.Company.Path,
+				CompanyPath = res.Company.Code,
 				HdlStamp = res.HandleStamp,
 				Remark = res.Remark,
 				Status = res.Status

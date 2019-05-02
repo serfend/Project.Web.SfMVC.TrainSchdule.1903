@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace TrainSchdule.DAL.Entities
 {
-	public class Company:BaseEntity
+	
+	public class Company
 	{
 		public string Name { get; set; }
 
 		/// <summary>
-		/// 由<see cref="Path"/>决定的父单位
+		/// 由<see cref="Code"/>决定的父单位
 		/// </summary>
 		public virtual Company Parent { get; set; }
 		public bool IsPrivate { get; set; }
 		/// <summary>
-		/// 单位所在路径
+		/// 单位代码
 		/// </summary>
-		public string Path{get; set;}
+		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
+		public string Code{get; set;}
 	}
 		
 }

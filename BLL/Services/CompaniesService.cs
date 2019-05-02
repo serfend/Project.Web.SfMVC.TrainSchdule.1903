@@ -52,20 +52,19 @@ namespace TrainSchdule.BLL.Services
 		}
 
 		#endregion
-		public Company GetCompanyByPath(string path)
+		public Company GetCompanyByPath(string code)
 		{
-			var company =  _unitOfWork.Companies.Find(x => x.Path == path).FirstOrDefault();
+			var company =  _unitOfWork.Companies.Find(x => x.Code == code).FirstOrDefault();
 			return company;
 		}
 		public IEnumerable<CompanyDTO> GetAll(int page, int pageSize)
 		{
-			var list = _unitOfWork.Companies.GetAll(page, pageSize);
+			var list = _unitOfWork.Companies.GetAll(page, pageSize).ToList();
 			var result = new List<CompanyDTO>(list.Count());
-			list.All(item =>
+			foreach (var company in list)
 			{
-				result.Add(MapCompany(item));
-				return true;
-			});
+				result.Add(MapCompany(company));
+			}
 			return result;
 		}
 
@@ -80,82 +79,42 @@ namespace TrainSchdule.BLL.Services
 			return result;
 		}
 
-		public CompanyDTO Get(string path)
+		public CompanyDTO Get(string code)
 		{
-			var company = GetCompanyByPath(path);
+			var company = GetCompanyByPath(code);
 			return MapCompany(company);
 		}
 
-		public IEnumerable<CompanyDTO> FindAllChild(Guid id)
+		public IEnumerable<CompanyDTO> FindAllChild(string code)
 		{
-			var list = _unitOfWork.Companies.Find(x => x.Parent != null && x.Parent.Id==id);
-			var result=new List<CompanyDTO>(list.Count());
-			foreach (var company in list)
-			{
-				result.Add(MapCompany(company));
-			}
-
-			return result;
+			return _unitOfWork.Companies.Find(x => x.Parent != null && x.Parent.Code==code).ToList().Select(MapCompany);
 		}
 
-		public void SetParent(Guid id, string parentPath)
-		{
-			var company = _unitOfWork.Companies.Get(id);
-			var parentCompany = GetCompanyByPath(parentPath);
-			parentCompany = CheckParentCompany(parentCompany, parentPath);
-			if (company != null)
-			{
-				company.Parent = parentCompany;
-				company.Path = $"{parentCompany.Path}/{company.Name}";
-				_unitOfWork.Save();
-			}
-		}
 
-		private Company CheckParentCompany( Company parentCompany,string parentName)
-		{
-			if (parentCompany == null)
-			{
-				if (parentName == "Root")
-				{
-					return Create(parentName);
-				}else 
-				throw  new CompanyNotExistException("父单位尚未被创建");
-			}
 
-			return parentCompany;
-		}
-		public async Task SetParentAsync(Guid id, string parentPath)
-		{
-			var company = _unitOfWork.Companies.Get(id);
-			var parentCompany = GetCompanyByPath(parentPath);
-			parentCompany=CheckParentCompany( parentCompany, parentPath);
-			if (company != null)
-			{
-				company.Parent = parentCompany;
-				company.Path = $"{parentCompany.Path}/{company.Name}";
-				await _unitOfWork.SaveAsync();
-			}
-		}
-		
 
-		public Company Create(string name)
+		public Company Create(string name,string code)
 		{
+			var parent =code.Length>1? GetCompanyByPath(code.Substring(0, code.Length - 1)):null;
 			var company=new Company()
 			{
 				Name = name,
-				Path = name
+				Code = code,
+				Parent = parent
 			};
 			_unitOfWork.Companies.Create(company);
 			_unitOfWork.Save();
 			return company;
 		}
 
-		public async Task<Company> CreateAsync(string name)
+		public async Task<Company> CreateAsync(string name,string code)
 		{
+			var parent = code.Length > 1 ? GetCompanyByPath(code.Substring(0, code.Length - 1)) : null;
 			var company=new Company()
 			{
 				Name = name,
-				Path = name
+				Code = code,
+				Parent = parent
 			};
 			await  _unitOfWork.Companies.CreateAsync(company);
 			await _unitOfWork.SaveAsync();
@@ -164,7 +123,7 @@ namespace TrainSchdule.BLL.Services
 
 		public bool Edit(string path, Action<Company> editCallBack)
 		{
-			var target = _unitOfWork.Companies.Find((item) => item.Path == path).FirstOrDefault();
+			var target = _unitOfWork.Companies.Find((item) => item.Code == path).FirstOrDefault();
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_unitOfWork.Companies.Update(target);
@@ -174,7 +133,7 @@ namespace TrainSchdule.BLL.Services
 
 		public async Task<bool> EditAsync(string path, Action<Company> editCallBack)
 		{
-			var target = _unitOfWork.Companies.Find((item) => item.Path == path).FirstOrDefault();
+			var target = _unitOfWork.Companies.Find((item) => item.Code == path).FirstOrDefault();
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_unitOfWork.Companies.Update(target);

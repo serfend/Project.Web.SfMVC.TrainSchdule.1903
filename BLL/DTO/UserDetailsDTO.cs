@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DAL.Entities;
+using TrainSchdule.DAL.Entities.Permission;
 
 namespace TrainSchdule.BLL.DTO
 {
@@ -13,7 +14,7 @@ namespace TrainSchdule.BLL.DTO
 	    /// <summary>
 		/// 用户修改单位的权限
 		/// </summary>
-	    public IEnumerable<PermissionCompanyDTO> PermissionCompanies { get; set; }
+	    public Permissions Permissions { get; set; }
 		public string Address { get; set; }
 	    public string Phone { get; set; }
 	    /// <summary>

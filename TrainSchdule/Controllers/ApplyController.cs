@@ -80,7 +80,7 @@ namespace TrainSchdule.Web.Controllers
 				var currentUser = _currentUserService.CurrentUser;
 				user = _unitOfWork.Users.Find(u => u.UserName == model.Param.UserName).FirstOrDefault();
 				if (user == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-				if (currentUser.PermissionCompanies.All(p=>p.Path!=user.Company.Path))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (currentUser.Permission.Apply.申请信息.Create.Check(user))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			if (user == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (user.Company==null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"准备创建{user.RealName}({user.UserName})的申请，但此人无归属单位"));
@@ -89,7 +89,7 @@ namespace TrainSchdule.Web.Controllers
 			var item=new Apply()
 			{
 				Address = user.Address,
-				Company = user.Company?.Path,
+				Company = user.Company?.Code,
 				Create = DateTime.Now,
 				From = user,
 				Status = AuditStatus.NotPublish,
@@ -147,7 +147,7 @@ namespace TrainSchdule.Web.Controllers
 		{
 			To = To.OrderBy(to => to);
 			var list = new List<ApplyResponse>();
-			var rawCompanyPath = user.Company?.Path;
+			var rawCompanyPath = user.Company?.Code;
 			rawCompanyPath += '/';
 			int lastIndex = 0;
 			int nowSearchCount = -1;
@@ -263,16 +263,16 @@ namespace TrainSchdule.Web.Controllers
 			if (pageSize > 10) return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 
 			var currentUser = _currentUserService.CurrentUser;
-			if (path == null) path = currentUser.Company?.Path;
+			if (path == null) path = currentUser.Company?.Code;
 			if (path == null) return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"检查当前用户{currentUser.RealName}({currentUser.UserName})的申请，但此人无归属单位"));
 
 			var targetCompany = _companiesService.Get(path);
 			if(targetCompany==null)return  new JsonResult(ActionStatusMessage.Company.NotExist);
 			//因权限关系，用户不一定具有查看自己本单位申请的权限
-			if (  !currentUser.PermissionCompanies.Any(cmp=>path.StartsWith(cmp.Path)))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (  !currentUser.Permission.Apply.申请信息.Query.Check(targetCompany.Path))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			Expression<Func<Apply, bool>> predict;
-			if (status == null) predict = (item) => item.Response.Any(cmp => cmp.Company.Path == path);
-			else predict=item=> item.Response.Any(cmp => cmp.Company.Path == path) && item.Status==status;
+			if (status == null) predict = (item) => item.Response.Any(cmp => cmp.Company.Code == path);
+			else predict=item=> item.Response.Any(cmp => cmp.Company.Code == path) && item.Status==status;
 			var list = _applyService.GetAll(predict,page,pageSize);
 			var summaryList= list.Select(applyAllDataDto => applyAllDataDto.ToSummaryDTO()).ToList();
 			return new JsonResult(new ApplyProfileViewModel()
@@ -294,7 +294,7 @@ namespace TrainSchdule.Web.Controllers
 			var path = targetUser.Company?.Path;
 			if(path==null)return new JsonResult(new Status(ActionStatusMessage.User.NoCompany.status, $"来自{targetUser.RealName}({targetUser.UserName})的申请，但此人无归属单位"));
 			if (currentUser.UserName!=username 
-			    && !currentUser.PermissionCompanies.Any(cmp => path.StartsWith(cmp.Path)))
+			    && !currentUser.Permission.Apply.申请信息.Query.Check(targetUser.Company.Path))
 				return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			Expression<Func<Apply, bool>> predict;
 			if (status==null)
@@ -321,7 +321,7 @@ namespace TrainSchdule.Web.Controllers
 			if (targetItemUser == null) return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"申请来自:{item.From}({item.FromUserName})，但数据库中查无此人"));
 			var targetItemCmp = targetItemUser.Company?.Path;
 			if(targetItemCmp==null)return new JsonResult(new Status(ActionStatusMessage.Apply.Default.status,$"来自{item.From}({item.FromUserName})的申请，但此人无归属单位"));
-			if (currentUser.UserName==targetItemUser.UserName|| currentUser.PermissionCompanies.Any((cmp) => targetItemCmp.StartsWith(cmp.Path)))
+			if (currentUser.UserName==targetItemUser.UserName||currentUser.Permission.Company.单位信息.Query.Check(targetItemCmp))
 			{
 				return new JsonResult(new ApplyDetailViewModel()
 				{
@@ -370,8 +370,7 @@ namespace TrainSchdule.Web.Controllers
 			if (pro == null)return new ApplyResponseHandledDataModel(ActionStatusMessage.Apply.Operation.Audit.NotExist);
 
 			//检查当前用户权限
-			var permissionList = currentUser.PermissionCompanies.ToList();
-			if (permissionList.All(p => p.Path != pro.Company.Path))return new ApplyResponseHandledDataModel(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(!currentUser.Permission.Apply.审批流.Modify.Check(pro.Company))return new ApplyResponseHandledDataModel(ActionStatusMessage.Account.Auth.Invalid.Default);
 			//业务操作
 			switch (applyAuth.Apply)
 			{

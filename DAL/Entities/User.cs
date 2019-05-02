@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using TrainSchdule.DAL.Entities.Permission;
 
 namespace TrainSchdule.DAL.Entities
 {
@@ -65,14 +66,10 @@ namespace TrainSchdule.DAL.Entities
 		/// 用户注册时的授权人用户名
 		/// </summary>
 		public string InvitedBy { get; set; }
-		/// <summary>
-		/// 用户可操作的单位
-		/// </summary>
-		public virtual IEnumerable<PermissionCompany> PermissionCompanies { get; set; }
+		
+		public virtual Permissions Permission{ get; set; }
         #endregion
-
         #region .ctors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="User"/>, sets property to default values.
         /// </summary>

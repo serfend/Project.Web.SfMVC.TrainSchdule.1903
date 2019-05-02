@@ -1,6 +1,9 @@
 ﻿using Castle.Core.Internal;
 using TrainSchdule.DAL.Entities;
 using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.Helpers;
+using TrainSchdule.DAL.Entities.Permission;
+using User = TrainSchdule.DAL.Entities.User;
 
 namespace TrainSchdule.BLL.Extensions
 {

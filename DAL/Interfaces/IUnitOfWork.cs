@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 using DAL.Entities;
 using TrainSchdule.DAL.Data;
 using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.Permission;
+using Apply = DAL.Entities.Apply;
+using Company = TrainSchdule.DAL.Entities.Company;
+using User = TrainSchdule.DAL.Entities.User;
 
 namespace TrainSchdule.DAL.Interfaces
 {
@@ -85,7 +89,7 @@ namespace TrainSchdule.DAL.Interfaces
 
 		IRepository<Student> Students { get; }
 		IRepository<Company> Companies { get; }
-		IRepository<PermissionCompany>PermissionCompanies { get; }
+		IRepository<Permissions>Permissions{ get; }
 		IRepository<Duties> Duties { get; }
 		IRepository<Apply> Applies { get; }
 
