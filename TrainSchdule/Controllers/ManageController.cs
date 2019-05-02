@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.WEB.Extensions;
 using TrainSchdule.WEB.ViewModels.Manage;

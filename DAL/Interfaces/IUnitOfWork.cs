@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using DAL.Entities;
 using TrainSchdule.DAL.Data;
-using TrainSchdule.DAL.Entities;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using Apply = DAL.Entities.Apply;
-using Company = TrainSchdule.DAL.Entities.Company;
-using User = TrainSchdule.DAL.Entities.User;
+using Company = TrainSchdule.DAL.Entities.UserInfo.Company;
+using User = TrainSchdule.DAL.Entities.UserInfo.User;
 
 namespace TrainSchdule.DAL.Interfaces
 {

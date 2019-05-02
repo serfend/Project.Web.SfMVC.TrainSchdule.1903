@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 
-namespace TrainSchdule.DAL.Entities
+namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// User entity (not identity).

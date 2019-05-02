@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using TrainSchdule.BLL.Helpers;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.Extensions;

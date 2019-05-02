@@ -5,11 +5,11 @@ using DAL.Repositories;
 using DAL.Repositories.Applies;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Data;
-using TrainSchdule.DAL.Entities;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using Apply = DAL.Entities.Apply;
-using Company = TrainSchdule.DAL.Entities.Company;
-using User = TrainSchdule.DAL.Entities.User;
+using Company = TrainSchdule.DAL.Entities.UserInfo.Company;
+using User = TrainSchdule.DAL.Entities.UserInfo.User;
 
 namespace TrainSchdule.DAL.Repositories
 {

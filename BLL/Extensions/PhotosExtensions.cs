@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.BLL.DTO;
 
 namespace TrainSchdule.BLL.Extensions

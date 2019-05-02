@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TrainSchdule.DAL.Entities
+namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// Filter entity.

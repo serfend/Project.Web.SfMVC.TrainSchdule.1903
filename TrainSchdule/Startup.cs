@@ -14,7 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using TrainSchdule.DAL.Data;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Repositories;
 using TrainSchdule.BLL.Interfaces;

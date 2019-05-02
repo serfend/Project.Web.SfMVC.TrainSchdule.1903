@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DAL.Entities;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 
 namespace TrainSchdule.BLL.DTO
 {

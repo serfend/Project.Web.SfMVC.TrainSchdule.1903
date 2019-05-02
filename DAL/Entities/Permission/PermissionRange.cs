@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TrainSchdule.DAL.Entities.Permission
+namespace TrainSchdule.DAL.Entities.UserInfo.Permission
 {
 	public class PermissionRange
 	{
@@ -17,8 +17,8 @@ namespace TrainSchdule.DAL.Entities.Permission
 	{
 		IEnumerable<PermittingAuth> PermittingAuths { get; set; }
 		bool Check(string targetPath);
-		bool Check(Entities.Company targetCompany);
-		bool Check(Entities.User targetUser);
+		bool Check(UserInfo.Company targetCompany);
+		bool Check(UserInfo.User targetUser);
 		bool Check();
 	}
 
@@ -26,8 +26,8 @@ namespace TrainSchdule.DAL.Entities.Permission
 	{
 		public IEnumerable<PermittingAuth> PermittingAuths { get; set; }
 		public bool Check(string targetPath) => PermittingAuths.Any(p => targetPath.StartsWith(p.Path));
-		public bool Check(Entities.Company targetCompany) => Check(targetCompany.Code);
-		public bool Check(Entities.User targetUser) => Check(targetUser.Company.Code);
+		public bool Check(UserInfo.Company targetCompany) => Check(targetCompany.Code);
+		public bool Check(UserInfo.User targetUser) => Check(targetUser.Company.Code);
 		public bool Check() => PermittingAuths.Any();
 	}
 

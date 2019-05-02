@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BLL.DTO;
 using DAL.Entities;
 using TrainSchdule.BLL.DTO;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace BLL.Interfaces
 {

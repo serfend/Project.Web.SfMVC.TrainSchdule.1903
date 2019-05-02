@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TrainSchdule.DAL.Entities
+namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// Black list entity.

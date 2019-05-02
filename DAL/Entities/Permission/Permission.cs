@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TrainSchdule.DAL.Entities.Permission
+namespace TrainSchdule.DAL.Entities.UserInfo.Permission
 {
 	public class Permissions:BaseEntity
 	{
 		public User User { get; set; }
 		public Apply Apply { get; set; }
 		public Company Company { get; set; }
-		public virtual TrainSchdule.DAL.Entities.User Owner { get; set; }
+		public virtual UserInfo.User Owner { get; set; }
 	}
 
 

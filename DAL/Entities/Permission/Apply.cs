@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TrainSchdule.DAL.Entities.Permission
+namespace TrainSchdule.DAL.Entities.UserInfo.Permission
 {
 	public class Apply
 	{

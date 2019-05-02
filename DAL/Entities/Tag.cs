@@ -1,4 +1,4 @@
-﻿namespace TrainSchdule.DAL.Entities
+﻿namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// Tag entity.

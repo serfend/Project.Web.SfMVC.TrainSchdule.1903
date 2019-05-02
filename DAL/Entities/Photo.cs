@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
-namespace TrainSchdule.DAL.Entities
+namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// Photo entity.

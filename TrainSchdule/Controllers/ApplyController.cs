@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Apply;

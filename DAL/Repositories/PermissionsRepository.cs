@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.DAL.Data;
-using TrainSchdule.DAL.Entities;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using TrainSchdule.DAL.Interfaces;
 
 namespace TrainSchdule.DAL.Repositories

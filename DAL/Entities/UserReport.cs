@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TrainSchdule.DAL.Entities
+namespace TrainSchdule.DAL.Entities.UserInfo
 {
     /// <summary>
     /// User report entity.

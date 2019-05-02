@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DAL.Entities;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace BLL.DTO
 {

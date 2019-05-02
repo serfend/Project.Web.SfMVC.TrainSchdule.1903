@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace DAL.Entities
 {

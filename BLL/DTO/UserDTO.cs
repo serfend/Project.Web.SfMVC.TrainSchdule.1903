@@ -1,6 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace TrainSchdule.BLL.DTO
 {

@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using TrainSchdule.DAL.Entities;
-using TrainSchdule.DAL.Entities.Permission;
+using TrainSchdule.DAL.Entities.UserInfo;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using Apply = DAL.Entities.Apply;
-using Company = TrainSchdule.DAL.Entities.Company;
-using User = TrainSchdule.DAL.Entities.User;
+using Company = TrainSchdule.DAL.Entities.UserInfo.Company;
+using User = TrainSchdule.DAL.Entities.UserInfo.User;
 
 namespace TrainSchdule.DAL.Data
 {
@@ -18,7 +18,7 @@ namespace TrainSchdule.DAL.Data
         #region Properties
 
         /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Entities.User"/>(not identity) entities.
+        /// Gets and sets <see cref="DbSet"/> of <see cref="TrainSchdule.DAL.Entities.UserInfo.User"/>(not identity) entities.
         /// </summary>
         public DbSet<User> AppUsers { get; set; }
 

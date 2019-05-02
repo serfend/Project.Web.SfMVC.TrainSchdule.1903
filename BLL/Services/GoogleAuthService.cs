@@ -7,7 +7,7 @@ using GoogleAuth;
 using GoogleAuther;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.BLL.Services;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace BLL.Services
 {

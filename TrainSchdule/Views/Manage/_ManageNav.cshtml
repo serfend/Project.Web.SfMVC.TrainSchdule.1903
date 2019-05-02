@@ -1,4 +1,4 @@
-﻿@using TrainSchdule.DAL.Entities
+﻿@using TrainSchdule.DAL.Entities.UserInfo
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

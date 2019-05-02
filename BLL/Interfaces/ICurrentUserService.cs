@@ -1,6 +1,6 @@
 ﻿using System;
 using TrainSchdule.BLL.DTO;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace TrainSchdule.BLL.Interfaces
 {

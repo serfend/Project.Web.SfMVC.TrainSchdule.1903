@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using TrainSchdule.BLL.DTO;
 using TrainSchdule.BLL.Extensions;
 using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.DAL.Entities;
+using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.DAL.Interfaces;
 
 namespace TrainSchdule.BLL.Services
