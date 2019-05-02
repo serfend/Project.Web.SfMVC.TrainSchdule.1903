@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 
 namespace TrainSchdule.Web.ViewModels.Company
 {

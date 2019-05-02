@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 
 namespace TrainSchdule.BLL.Interfaces
 {

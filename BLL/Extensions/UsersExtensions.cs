@@ -1,6 +1,6 @@
 ﻿using Castle.Core.Internal;
 using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using User = TrainSchdule.DAL.Entities.UserInfo.User;

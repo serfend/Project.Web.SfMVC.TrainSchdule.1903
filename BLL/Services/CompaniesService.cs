@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.BLL.Extensions;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.DAL.Entities.UserInfo;

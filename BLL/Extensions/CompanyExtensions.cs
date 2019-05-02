@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace TrainSchdule.BLL.Extensions

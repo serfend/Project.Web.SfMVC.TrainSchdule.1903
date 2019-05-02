@@ -1,5 +1,5 @@
 ﻿using System;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace TrainSchdule.BLL.Interfaces

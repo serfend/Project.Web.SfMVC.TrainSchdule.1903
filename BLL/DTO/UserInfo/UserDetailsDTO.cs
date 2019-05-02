@@ -2,7 +2,7 @@
 using DAL.Entities;
 using TrainSchdule.DAL.Entities.UserInfo.Permission;
 
-namespace TrainSchdule.BLL.DTO
+namespace TrainSchdule.BLL.DTO.UserInfo
 {
     /// <summary>
     /// User details data transfer object.

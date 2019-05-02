@@ -5,7 +5,7 @@ using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.BLL.Helpers;
 using TrainSchdule.BLL.Interfaces;
 using TrainSchdule.DAL.Interfaces;

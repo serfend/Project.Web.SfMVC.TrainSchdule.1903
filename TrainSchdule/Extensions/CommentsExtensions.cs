@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.WEB.ViewModels;
 
 namespace TrainSchdule.WEB.Extensions

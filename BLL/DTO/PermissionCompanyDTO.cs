@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TrainSchdule.DAL.Entities.UserInfo;
 
-namespace TrainSchdule.BLL.DTO
+namespace TrainSchdule.BLL.DTO.UserInfo
 {
 	public class PermissionCompanyDTO:BaseEntity
 	{

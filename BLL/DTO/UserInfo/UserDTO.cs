@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using TrainSchdule.DAL.Entities.UserInfo;
 
-namespace TrainSchdule.BLL.DTO
+namespace TrainSchdule.BLL.DTO.UserInfo
 {
     /// <summary>
     /// 用户信息的实体

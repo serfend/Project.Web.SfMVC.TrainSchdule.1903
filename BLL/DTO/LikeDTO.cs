@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TrainSchdule.BLL.DTO
+namespace TrainSchdule.BLL.DTO.UserInfo
 {
     /// <summary>
     /// Like data transfer object.

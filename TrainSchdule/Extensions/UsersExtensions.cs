@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.Company;
 using TrainSchdule.WEB.ViewModels;

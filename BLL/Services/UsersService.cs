@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using TrainSchdule.DAL.Interfaces;
 using TrainSchdule.DAL.Entities.UserInfo;
 using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.BLL.DTO;
+using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.BLL.Extensions;
 
 namespace TrainSchdule.BLL.Services
