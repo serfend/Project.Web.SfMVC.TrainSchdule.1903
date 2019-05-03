@@ -4,8 +4,8 @@ using System.Text;
 
 namespace TrainSchdule.DAL.Entities.UserInfo.Permission
 {
-	public class Company
+	public class Company : BaseEntity
 	{
-		public PermissionRange 单位信息 { get; set; }
+		public virtual PermissionRange 单位信息 { get; set; }
 	}
 }

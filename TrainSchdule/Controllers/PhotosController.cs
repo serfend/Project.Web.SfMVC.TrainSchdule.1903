@@ -122,7 +122,7 @@ namespace TrainSchdule.WEB.Controllers
         }
         
         [Authorize, HttpPost, ValidateAntiForgeryToken, Route("photos/edit/{id}")]
-        public async Task<ActionResult> Edit([Bind("Id, Filter, Description")] PhotoViewModel item, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
+        public async Task<ActionResult> Edit([Bind("ID, Filter, Description")] PhotoViewModel item, string tags, string model, string brand, int? iso, double? aperture, double? exposure, double? focalLength)
         {
             if (ModelState.IsValid)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -19,6 +20,7 @@ namespace TrainSchdule.DAL.Entities.UserInfo
 		/// 单位代码
 		/// </summary>
 		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
+		[Key]
 		public string Code{get; set;}
 	}
 		

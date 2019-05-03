@@ -378,7 +378,7 @@ namespace TrainSchdule.DAL.Data
 
             for (var i = 0; i < 6; i++)
             {
-                _photos[i].Owner.Id = _users[i].Id;
+                _photos[i].Owner.ID = _users[i].ID;
             }
 
             _context.AddRange(_photos);

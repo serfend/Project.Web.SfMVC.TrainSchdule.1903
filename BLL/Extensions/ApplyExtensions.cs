@@ -85,7 +85,7 @@ namespace BLL.Extensions
 				
 				Detail = new ApplyDetailDTO()
 				{
-					FromId = item.From.Id,
+					FromId = item.From.ID,
 					Request = item.Request,
 					Stamp = item.stamp,
 					Xjlb = item.xjlb,

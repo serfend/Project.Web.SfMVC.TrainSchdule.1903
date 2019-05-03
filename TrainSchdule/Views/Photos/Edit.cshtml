@@ -14,7 +14,7 @@
 <form action="/photos/edit/@Model.id" class="is-flex is-flex-row is-flex-centered is-flex-wrap" method="POST" id="photosEdit" data-current-photo-id="@Model.id">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" id="Id" name="Id" value="@Model.id" />
+    <input type="hidden" id="Id" name="ID" value="@Model.id" />
     <input type="hidden" id="Path" name="Path" value="@Model.Path" />
 
     <article class="card is-responsive">

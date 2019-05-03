@@ -4,10 +4,10 @@ using System.Text;
 
 namespace TrainSchdule.DAL.Entities.UserInfo.Permission
 {
-	public class User
+	public class User : BaseEntity
 	{
-		public PermissionRange 基本信息 { get; set; }
-		public PermissionRange 社会关系 { get; set; }
-		public PermissionRange 职务信息 { get; set; }
+		public virtual PermissionRange 基本信息 { get; set; }
+		public virtual PermissionRange 社会关系 { get; set; }
+		public virtual PermissionRange 职务信息 { get; set; }
 	}
 }

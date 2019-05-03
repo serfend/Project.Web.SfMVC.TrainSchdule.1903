@@ -23,7 +23,7 @@ namespace TrainSchdule.BLL.Extensions
 
 			var tmp= new UserDetailsDTO
             {
-				Id = item.Id,
+				ID = item.ID,
 				AuthKey = item.AuthKey,
 				Duties = item.Duties,
 				Privilege = item.Privilege,

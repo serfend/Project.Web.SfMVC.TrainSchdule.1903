@@ -12,7 +12,7 @@ namespace BLL.DTO
 		/// 申请人ID
 		/// </summary>
 		[JsonProperty("fromId")]
-		public Guid FromId { get; set; }
+		public virtual string FromId { get; set; }
 
 		public string Reason { get; set; }
 		/// <summary>

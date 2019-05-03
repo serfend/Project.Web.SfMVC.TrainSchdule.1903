@@ -601,7 +601,7 @@ namespace TrainSchdule.WEB.Controllers
 		//	var targetPermission = _unitOfWork.Permissions.Get(id);
 		//	if(targetPermission==null)return new JsonResult(ActionStatusMessage.Account.Auth.Permission.NotExist);
 		//	var targetUser = targetPermission.Owner;
-		//	if (targetPermission.AuthBy == authUser.Id || targetUser.Privilege < authUser.Privilege)
+		//	if (targetPermission.AuthBy == authUser.ID || targetUser.Privilege < authUser.Privilege)
 		//	{
 		//		var list = targetUser.PermissionCompanies.ToList();
 		//		list.Remove(targetPermission);

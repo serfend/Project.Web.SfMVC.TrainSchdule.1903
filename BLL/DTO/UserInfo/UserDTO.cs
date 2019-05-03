@@ -1,4 +1,5 @@
 ﻿using System;
+using DAL.Entities.UserInfo;
 using Newtonsoft.Json;
 using TrainSchdule.DAL.Entities.UserInfo;
 
@@ -8,7 +9,7 @@ namespace TrainSchdule.BLL.DTO.UserInfo
     /// 用户信息的实体
     /// 包含 username, user real name, user avatar 等.
     /// </summary>
-    public class UserDTO:BaseEntity
+    public class UserDTO:UserID
     {
         /// <summary>
         /// Gets and sets user real name.

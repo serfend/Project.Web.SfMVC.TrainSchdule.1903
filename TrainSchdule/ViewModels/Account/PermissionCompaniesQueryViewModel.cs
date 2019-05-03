@@ -4,17 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.BLL.DTO.UserInfo;
 using TrainSchdule.DAL.Entities.UserInfo;
+using TrainSchdule.DAL.Entities.UserInfo.Permission;
 using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Account
 {
-	public class PermissionCompaniesQueryViewModel:APIDataModel
+	public class PermissionsQueryViewModel:APIDataModel
 	{
-		public PermissionCompaniesQueryDataModel Data { get; set; }
+		public PermissionsQueryDataModel Data { get; set; }
 	}
 
-	public class PermissionCompaniesQueryDataModel
+	public class PermissionsQueryDataModel
 	{
-		public IEnumerable<PermissionCompanyDTO> List { get; set; }
+		public IEnumerable<Permissions> List { get; set; }
 	}
 }

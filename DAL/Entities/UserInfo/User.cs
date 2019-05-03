@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TrainSchdule.DAL.Entities.UserInfo.Permission;
 
@@ -11,7 +12,7 @@ namespace TrainSchdule.DAL.Entities.UserInfo
     /// Contains user properties.
     /// <see cref="UserName"/> is key value equal to <see cref="UserName"/> in <see cref="ApplicationUser"/>.
     /// </summary>
-    public class User : BaseEntity
+    public class User : UserID
     {
         #region Properties
         /// <summary>

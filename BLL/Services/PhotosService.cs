@@ -111,12 +111,12 @@ namespace TrainSchdule.BLL.Services
         public IEnumerable<PhotoDTO> GetPhotosHome(int page, int pageSize)
         {
             var currentUser = _currentUserService.CurrentUser;
-            var followings = _unitOfWork.Followings.Find(f => f.User.Id == currentUser.Id);
+            var followings = _unitOfWork.Followings.Find(f => f.User.ID == currentUser.ID);
             var photos = new List<Photo>();
 
             foreach (var follow in followings)
             {
-                photos.AddRange(_unitOfWork.Photos.Find(p => p.Owner.Id == follow.FollowedUser.Id));
+                photos.AddRange(_unitOfWork.Photos.Find(p => p.Owner.ID == follow.FollowedUser.ID));
             }
 
             photos.Sort((p, p2) => p2.Date.CompareTo(p.Date));
@@ -140,7 +140,7 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
 
-            var photos = _unitOfWork.Photos.Find(p => p.Owner.Id == user.Id).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
+            var photos = _unitOfWork.Photos.Find(p => p.Owner.ID == user.ID).OrderByDescending(p => p.Date).Skip(page * pageSize).Take(pageSize);
 
             var photoDTOs = new List<PhotoDTO>(pageSize);
 
@@ -190,7 +190,7 @@ namespace TrainSchdule.BLL.Services
         public IEnumerable<PhotoDTO> GetBookmarks(int page, int pageSize)
         {
             var currentUser = _currentUserService.CurrentUser;
-            var photos = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id).OrderByDescending(b => b.Date).Select(b => b.Photo).Skip(page * pageSize).Take(pageSize);
+            var photos = _unitOfWork.Bookmarks.Find(b => b.User.ID == currentUser.ID).OrderByDescending(b => b.Date).Select(b => b.Photo).Skip(page * pageSize).Take(pageSize);
 
             var photoDTOs = new List<PhotoDTO>(pageSize);
 
@@ -285,11 +285,11 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault() == null)
+            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.ID == currentUser.ID && b.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.Bookmarks.Create(new Bookmark
                 {
-                    User =new User(){Id= currentUser.Id},
+                    User =new User(){ID= currentUser.ID},
                      Photo=new Photo(){Id =  bookmarkedPhoto.Id},
                 });
 
@@ -305,11 +305,11 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault() == null)
+            if (currentUser != null && bookmarkedPhoto != null && _unitOfWork.Bookmarks.Find(b => b.User.ID == currentUser.ID && b.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.Bookmarks.Create(new Bookmark
                 {
-                    User =new User(){Id= currentUser.Id},
+                    User =new User(){ID= currentUser.ID},
                      Photo=new Photo(){Id =  bookmarkedPhoto.Id},
                 });
 
@@ -324,7 +324,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
-            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault();
+            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.ID == currentUser.ID && b.Photo.Id == id).FirstOrDefault();
 
             if (currentUser != null && bookmarkedPhoto != null && bookmark != null)
             {
@@ -340,7 +340,7 @@ namespace TrainSchdule.BLL.Services
         {
             var currentUser = _currentUserService.CurrentUser;
             var bookmarkedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
-            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.Id == currentUser.Id && b.Photo.Id == id).FirstOrDefault();
+            var bookmark = _unitOfWork.Bookmarks.Find(b => b.User.ID == currentUser.ID && b.Photo.Id == id).FirstOrDefault();
 
             if (currentUser != null && bookmarkedPhoto != null && bookmark != null)
             {
@@ -357,11 +357,11 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.Id == currentUser.Id && pr.Photo.Id == id).FirstOrDefault() == null)
+            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.ID == currentUser.ID && pr.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.PhotoReports.Create(new PhotoReport
                 {
-                    User =new User(){Id= currentUser.Id},
+                    User =new User(){ID= currentUser.ID},
                     Photo=new Photo(){Id = reportedPhoto.Id},
                     Text = text
                 });
@@ -378,11 +378,11 @@ namespace TrainSchdule.BLL.Services
             var currentUser = _currentUserService.CurrentUser;
             var reportedPhoto = _unitOfWork.Photos.Find(p => p.Id == id).FirstOrDefault();
 
-            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.Id == currentUser.Id && pr.Photo.Id == id).FirstOrDefault() == null)
+            if (currentUser != null && reportedPhoto != null && _unitOfWork.PhotoReports.Find(pr => pr.User.ID == currentUser.ID && pr.Photo.Id == id).FirstOrDefault() == null)
             {
                 _unitOfWork.PhotoReports.Create(new PhotoReport
                 {
-                    User =new User(){Id= currentUser.Id},
+                    User =new User(){ID= currentUser.ID},
                     Photo=new Photo(){Id = reportedPhoto.Id},
                     Text = text
                 });
@@ -401,7 +401,7 @@ namespace TrainSchdule.BLL.Services
                 Filter = new Filter(){Id = _unitOfWork.Filters.Find(f => f.Name == filter).FirstOrDefault()?.Id??Guid.Empty},
                 Description = description,
                 Path = path,
-                Owner=new User(){Id = _currentUserService.CurrentUser.Id},
+                Owner=new User(){ID = _currentUserService.CurrentUser.ID},
                 CountViews = 0,
 
                 Manufacturer = manufacturer,
@@ -450,7 +450,7 @@ namespace TrainSchdule.BLL.Services
             {
                 Description = description,
                 Path = path,
-                Owner=new User(){Id = _currentUserService.CurrentUser.Id},
+                Owner=new User(){ID = _currentUserService.CurrentUser.ID},
                 CountViews = 0,
 
                 Manufacturer = manufacturer,

@@ -52,7 +52,7 @@ namespace TrainSchdule.BLL.Services
                 var comment = new Comment
                 {
                     Text = text,
-                    Owner=new User(){Id = user.Id},
+                    Owner=new User(){ID = user.ID},
                     Photo=new Photo(){Id = photoId},
                     Date = DateTime.Now
                 };
@@ -79,7 +79,7 @@ namespace TrainSchdule.BLL.Services
                 var comment = new Comment
                 {
                     Text = text,
-                    Owner=new User(){Id = user.Id},
+                    Owner=new User(){ID = user.ID},
                     Photo=new Photo(){Id = photoId},
                     Date = DateTime.Now
                 };
@@ -103,7 +103,7 @@ namespace TrainSchdule.BLL.Services
             var comment = _unitOfWork.Comments.Get(id);
             var photo = _unitOfWork.Photos.Get(comment.Photo.Id);
 
-            if (user != null && (photo.Owner.Id == user.Id || comment.Owner.Id == user.Id || _httpContextAccessor.HttpContext.User.IsInRole("Admin")))
+            if (user != null && (photo.Owner.ID == user.ID || comment.Owner.ID == user.ID || _httpContextAccessor.HttpContext.User.IsInRole("Admin")))
             {
                 _unitOfWork.Comments.Delete(id);
                 _unitOfWork.Save();
@@ -119,7 +119,7 @@ namespace TrainSchdule.BLL.Services
             var comment = _unitOfWork.Comments.Get(id);
             var photo = _unitOfWork.Photos.Get(comment.Photo.Id);
 
-            if (user != null && (photo.Owner.Id == user.Id || comment.Owner.Id == user.Id || _httpContextAccessor.HttpContext.User.IsInRole("Admin")))
+            if (user != null && (photo.Owner.ID == user.ID || comment.Owner.ID == user.ID || _httpContextAccessor.HttpContext.User.IsInRole("Admin")))
             {
                 await _unitOfWork.Comments.DeleteAsync(id);
                 await _unitOfWork.SaveAsync();
