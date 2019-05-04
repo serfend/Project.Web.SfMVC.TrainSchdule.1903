@@ -1,184 +1,99 @@
-﻿using System;
+﻿using BLL.Interfaces;
+using DAL.Entities.UserInfo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using TrainSchdule.BLL.DTO.UserInfo;
-using TrainSchdule.BLL.Extensions;
-using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.DAL.Interfaces;
+using DAL.Data;
 
-namespace TrainSchdule.BLL.Services
+namespace BLL.Services
 {
 	public class CompaniesService:ICompaniesService
 	{
-		
-		private readonly IUnitOfWork _unitOfWork;
-		
-		#region Disposing
-		private bool _isDisposed;
+		private readonly ApplicationDbContext _context;
 
-		public CompaniesService(IUnitOfWork unitOfWork)
+		public CompaniesService(ApplicationDbContext context)
 		{
-			_unitOfWork = unitOfWork;
+			_context = context;
 		}
 
-		public void Dispose()
+		public IEnumerable<Company> GetAll(int page, int pageSize)
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			var list = _context.Companies.Skip(page*pageSize).Take(pageSize).ToList();
+			return list;
 		}
 
-		public virtual void Dispose(bool disposing)
+		public IEnumerable<Company> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize)
 		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					_unitOfWork.Dispose();
-				}
+			var list= _context.Companies.Where(predicate).Skip(page*pageSize).Take(pageSize);
 
-				_isDisposed = true;
-			}
+			return list;
 		}
 
-		~CompaniesService()
+		public Company Get(string code)
 		{
-			Dispose(false);
-		}
-
-		#endregion
-		public Company GetCompanyByPath(string code)
-		{
-			var company =  _unitOfWork.Companies.Find(x => x.Code == code).FirstOrDefault();
+			var company = _context.Companies.Find(code);
 			return company;
 		}
-		public IEnumerable<CompanyDTO> GetAll(int page, int pageSize)
+
+		public IEnumerable<Company> FindAllChild(string code)
 		{
-			var list = _unitOfWork.Companies.GetAll(page, pageSize).ToList();
-			var result = new List<CompanyDTO>(list.Count());
-			foreach (var company in list)
-			{
-				result.Add(MapCompany(company));
-			}
-			return result;
+			return _context.Companies.Where(x => x.Parent != null && x.Parent.Code == code).ToList();
 		}
 
-		public IEnumerable<CompanyDTO> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize)
+		public Company FindParent(string code)
 		{
-			var list= _unitOfWork.Companies.Find(predicate).Skip(page*pageSize).Take(pageSize);
-			var result=new List<CompanyDTO>(list.Count());
-			foreach (var company in list)
-			{
-				result.Add(MapCompany(company));
-			}
-			return result;
+			var parent = code.Length > 1 ? _context.Companies.Find(code.Substring(0, code.Length - 1)) : null;
+			return parent;
 		}
-
-		public CompanyDTO Get(string code)
-		{
-			var company = GetCompanyByPath(code);
-			return MapCompany(company);
-		}
-
-		public IEnumerable<CompanyDTO> FindAllChild(string code)
-		{
-			return _unitOfWork.Companies.Find(x => x.Parent != null && x.Parent.Code==code).ToList().Select(MapCompany);
-		}
-
 
 
 
 		public Company Create(string name,string code)
 		{
-			var parent =code.Length>1? GetCompanyByPath(code.Substring(0, code.Length - 1)):null;
-			var company=new Company()
+			var company = CreateCompany(name,code);
+			_context.Companies.Add(company);
+			return company;
+		}
+
+		private Company CreateCompany(string name, string code)
+		{
+			var parent = FindParent(code);
+			var company = new Company()
 			{
 				Name = name,
 				Code = code,
 				Parent = parent
 			};
-			_unitOfWork.Companies.Create(company);
-			_unitOfWork.Save();
 			return company;
 		}
-
 		public async Task<Company> CreateAsync(string name,string code)
 		{
-			var parent = code.Length > 1 ? GetCompanyByPath(code.Substring(0, code.Length - 1)) : null;
-			var company=new Company()
-			{
-				Name = name,
-				Code = code,
-				Parent = parent
-			};
-			await  _unitOfWork.Companies.CreateAsync(company);
-			await _unitOfWork.SaveAsync();
+			var company = CreateCompany(name,code);
+			await  _context.Companies.AddAsync(company);
 			return company;
 		}
 
-		public bool Edit(string path, Action<Company> editCallBack)
+		public bool Edit(string code, Action<Company> editCallBack)
 		{
-			var target = _unitOfWork.Companies.Find((item) => item.Code == path).FirstOrDefault();
+			var target = _context.Companies.Find(code);
 			if (target == null) return false;
 			editCallBack.Invoke(target);
-			_unitOfWork.Companies.Update(target);
-			_unitOfWork.Save();
+			_context.Companies.Update(target);
 			return true;
 		}
 
-		public async Task<bool> EditAsync(string path, Action<Company> editCallBack)
+		public async Task<bool> EditAsync(string code, Action<Company> editCallBack)
 		{
-			var target = _unitOfWork.Companies.Find((item) => item.Code == path).FirstOrDefault();
+			var target =await _context.Companies.FindAsync(code);
 			if (target == null) return false;
-			editCallBack.Invoke(target);
-			_unitOfWork.Companies.Update(target);
-			await _unitOfWork.SaveAsync();
+			await Task.Run(() => editCallBack.Invoke(target));
+			_context.Companies.Update(target);
 			return true;
 		}
 
 
-		#region Helpers
-
-		/// <summary>
-		/// 
-		/// </summary>
-		protected CompanyDTO MapCompany(Company company)
-		{
-			return company.ToDTO();
-		}
-		[Serializable]
-		public class CompanyNotExistException : Exception
-		{
-			//
-			// For guidelines regarding the creation of new exception types, see
-			//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
-			// and
-			//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
-			//
-
-			public CompanyNotExistException()
-			{
-			}
-
-			public CompanyNotExistException(string message) : base(message)
-			{
-			}
-
-			public CompanyNotExistException(string message, Exception inner) : base(message, inner)
-			{
-			}
-
-			protected CompanyNotExistException(
-				SerializationInfo info,
-				StreamingContext context) : base(info, context)
-			{
-			}
-		}
-		#endregion
 	}
 }

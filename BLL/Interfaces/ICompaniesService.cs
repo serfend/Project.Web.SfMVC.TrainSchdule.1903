@@ -1,38 +1,38 @@
-﻿using System;
+﻿using DAL.Entities.UserInfo;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.BLL.DTO.UserInfo;
 
-namespace TrainSchdule.BLL.Interfaces
+namespace BLL.Interfaces
 {
-    /// <summary>
-    /// 用户服务接口.
-    /// 包含用户信息的相关处理.
-    /// </summary>
-    /// <remarks>
-    /// 此接口需要反射调用.
-    /// </remarks>
-    public interface ICompaniesService : IDisposable
+	/// <summary>
+	/// 用户服务接口.
+	/// 包含用户信息的相关处理.
+	/// </summary>
+	/// <remarks>
+	/// 此接口需要反射调用.
+	/// </remarks>
+	public interface ICompaniesService 
     {
-	    Company GetCompanyByPath(string path);
 		/// <summary>
 		/// 加载所有单位的信息
 		/// </summary>
-		IEnumerable<CompanyDTO> GetAll(int page, int pageSize);
+		IEnumerable<Company> GetAll(int page, int pageSize);
 
-		IEnumerable<CompanyDTO> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize);
+		IEnumerable<Company> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize);
 		/// <summary>
 		/// 通过单位路径
 		/// </summary>
-		CompanyDTO Get(string Code);
+		Company Get(string Code);
+
+		Company FindParent(string Code);
 		/// <summary>
 		/// 找到所有子单位
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		IEnumerable<CompanyDTO> FindAllChild(string code);
+		IEnumerable<Company> FindAllChild(string code);
 
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace TrainSchdule.BLL.Interfaces
         /// </summary>
         Task<Company> CreateAsync(string name, string code);
 
-        bool Edit(string path, Action<Company> editCallBack);
+        bool Edit(string code, Action<Company> editCallBack);
 
-        Task<bool> EditAsync(string path, Action<Company> editCallBack);
+        Task<bool> EditAsync(string code, Action<Company> editCallBack);
     }
 }

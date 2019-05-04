@@ -1,28 +1,21 @@
-﻿using System;
-using System.IO;
-using BLL.Interfaces;
+﻿using BLL.Interfaces;
 using BLL.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using DAL.Data;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using TrainSchdule.DAL.Data;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.DAL.Interfaces;
-using TrainSchdule.DAL.Repositories;
-using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.BLL.Services;
+using System;
+using System.IO;
 
 namespace TrainSchdule.WEB
 {
-    public class Startup
+	public class Startup
     {
         #region Properties
         public IConfiguration Configuration { get; }
@@ -46,18 +39,10 @@ namespace TrainSchdule.WEB
         {
 			//每次调用均对应一个实例
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<ApplicationDbContextSeeder>();
 
 			//每个http请求对应一个实例
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            services.AddScoped<ICommentsService, CommentsService>();
-            services.AddScoped<ILikesService, LikesService>();
-            services.AddScoped<IPhotosService, PhotosService>();
             services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<ITagsService, TagsService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
-			services.AddScoped<IStudentService, StudentService>();
 			services.AddScoped<ICompaniesService, CompaniesService > ();
 			services.AddScoped<IApplyService,ApplyService>();
 			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
@@ -81,10 +66,7 @@ namespace TrainSchdule.WEB
 				options.AddPolicy(MyAllowSpecificOrigins,
 					builder =>
 					{
-						builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) =>
-						{
-							return true;
-						});
+						builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) => true);
 					});
 			});
 
@@ -148,7 +130,7 @@ namespace TrainSchdule.WEB
 
 		}
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services, ApplicationDbContextSeeder seeder) 
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
         {
             if (env.IsDevelopment())
             {
@@ -157,7 +139,6 @@ namespace TrainSchdule.WEB
             }
             else if(env.IsProduction())
             {
-                app.UseExceptionHandler("/Home/Error");
                 app.UseHttpsRedirection();
             }
            

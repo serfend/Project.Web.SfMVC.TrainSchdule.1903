@@ -1,26 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿using BLL.Interfaces;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Http;
-using TrainSchdule.DAL.Interfaces;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.BLL.DTO.UserInfo;
-using TrainSchdule.BLL.Extensions;
+using System;
+using System.Linq;
+using DAL.Data;
 
-namespace TrainSchdule.BLL.Services
+namespace BLL.Services
 {
-    /// <summary>
-    /// Contains properties that returns current user.
-    /// Realization of <see cref="ICurrentUserService"/>.
-    /// </summary>
-    public class CurrentUserService : ICurrentUserService
+	/// <summary>
+	/// Contains properties that returns current user.
+	/// Realization of <see cref="ICurrentUserService"/>.
+	/// </summary>
+	public class CurrentUserService : ICurrentUserService
     {
         #region Fields
-
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        private bool _isDisposed;
+        private readonly ApplicationDbContext _context;
+		private bool _isDisposed;
 
         #endregion
 
@@ -29,23 +25,9 @@ namespace TrainSchdule.BLL.Services
         /// <returns>
         /// Returns current user entity.
         /// </returns>
-        public User CurrentUser => 
-	        _unitOfWork.Users
-		        .Find(u => u.UserName == _httpContextAccessor.HttpContext.User.Identity.Name)
-		        .FirstOrDefault();
-
-        /// <returns>
-        /// Returns current user data transfer object.
-        /// </returns>
-        public UserDTO CurrentUserDTO
-        {
-            get
-            {
-                var user = CurrentUser;
-
-                return user.ToDTO();
-            }
-        }
+        public User CurrentUser =>
+	        _context.AppUsers
+		        .Find(_httpContextAccessor.HttpContext.User.Identity.Name);
 
         #endregion
 
@@ -54,10 +36,10 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentUserService"/>.
         /// </summary>
-        public CurrentUserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        public CurrentUserService( IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
         {
-            _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
+            _context = context;
         }
 
         #endregion
@@ -76,7 +58,6 @@ namespace TrainSchdule.BLL.Services
             {
                 if (disposing)
                 {
-                    _unitOfWork.Dispose();
                 }
 
                 _isDisposed = true;

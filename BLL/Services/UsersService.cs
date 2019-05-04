@@ -1,28 +1,28 @@
-﻿using System;
-using System.Linq;
+﻿using BLL.Interfaces;
+using DAL.Data;
+using DAL.DTO.User;
+using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Permission;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using TrainSchdule.DAL.Interfaces;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.BLL.Interfaces;
-using TrainSchdule.BLL.DTO.UserInfo;
-using TrainSchdule.BLL.Extensions;
+using User = DAL.Entities.UserInfo.User;
 
-namespace TrainSchdule.BLL.Services
+namespace BLL.Services
 {
-    /// <summary>
-    /// Contains methods with users processing logic.
-    /// Realization of <see cref="IUsersService"/>.
-    /// </summary>
-    public class UsersService : IUsersService
+	/// <summary>
+	/// Contains methods with users processing logic.
+	/// Realization of <see cref="IUsersService"/>.
+	/// </summary>
+	public class UsersService : IUsersService
     {
         #region Fields
 
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ApplicationDbContext _context;
 
         private bool _isDisposed;
 
@@ -33,10 +33,10 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="UsersService"/>.
         /// </summary>
-        public UsersService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        public UsersService(ICurrentUserService currentUserService, ApplicationDbContext context)
         {
-            _unitOfWork = unitOfWork;
-            _currentUserService = new CurrentUserService(unitOfWork, httpContextAccessor);
+	        _currentUserService = currentUserService;
+	        _context = context;
         }
 
         #endregion
@@ -46,433 +46,123 @@ namespace TrainSchdule.BLL.Services
         /// <summary>
         /// Loads all users with paggination, returns collection of user DTOs.
         /// </summary>
-        public IEnumerable<UserDTO> GetAll(int page, int pageSize)
+        public IEnumerable<User> GetAll(int page, int pageSize)
         {
-            var users = _unitOfWork.Users.GetAll(page, pageSize);
-            var userDTOs = new List<UserDTO>(users.Count());
-
-            foreach (var user in users)
-            {
-                userDTOs.Add(MapUser(user));
-            }
-
-            return userDTOs;
+            var users = _context.AppUsers.Skip(page*pageSize).Take(pageSize);
+            return users.ToList();
         }
 
         /// <summary>
         /// Loads user by username, returns user DTO.
         /// </summary>
-        public UserDetailsDTO Get(string userName)
+        public User Get(string id)
         {
-            var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
+            var user = _context.AppUsers.Find(id);
 
-            return MapUserDetails(user);
+            return user;
         }
 
         public IQueryable<User> Find(Expression<Func<User, bool>> predict)
         {
-	        return _unitOfWork.Users.Find(predict).OrderBy(u=>u.Privilege).ThenBy(u=>u.RealName);
+			return _context.AppUsers.Where(predict).OrderBy(u=>u.BaseInfo.RealName);
         }
 
-        /// <summary>
-        /// Loads blocked users by this user.
-        /// </summary>
-        public IEnumerable<UserDTO> GetBlocked(int page, int pageSize)
-        {
-            var blacklists = _unitOfWork.Blockings.Find(b => b.User.ID == _currentUserService.CurrentUser.ID);
-            var users = new List<User>();
-
-            foreach(var blocking in blacklists)
-            {
-                users.Add(blocking.BlockedUser);
-            }
-
-            var userDTOs = new List<UserDTO>(pageSize);
-
-            foreach (var user in users)
-            {
-                userDTOs.Add(MapUser(user));
-            }
-
-            return userDTOs;
-        }
-
-        /// <summary>
-        /// Method for searching users.
-        /// </summary>
-        public IEnumerable<UserDTO> Search(int page, string search, int pageSize)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            IEnumerable<User> users;
-
-            if (string.IsNullOrEmpty(search))
-            {
-                users = _unitOfWork.Users.Find(u => u.UserName != currentUser.UserName).OrderByDescending(u => u.Date).Skip(page * pageSize).Take(pageSize);
-            }
-            else
-            {
-                users = _unitOfWork.Users.Find(u =>
-                    u.UserName != currentUser.UserName &&
-                    (
-                        u.UserName.ToLower().Contains(search.ToLower()) || (!string.IsNullOrEmpty(u.RealName) ? u.RealName.ToLower().Contains(search.ToLower()) : false)
-                    )
-                ).OrderBy(u => u.Date).Skip(page * pageSize).Take(pageSize);
-            }
-
-            var userDTOs = new List<UserDTO>();
-
-            foreach(var user in users)
-            {
-                userDTOs.Add(MapUser(user));
-            }
-
-            return userDTOs;
-        }
-
-        /// <summary>
-        /// Follows user by current user.
-        /// </summary>
-        public void Follow(string follow)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.User.ID == currentUser.ID && f.FollowedUser.ID == followedUser.ID).FirstOrDefault() == null)
-            {
-                _unitOfWork.Followings.Create(new Following
-                {
-					User = new User()
-					{
-						ID = currentUser.ID
-					},
-					FollowedUser = new User()
-					{
-						ID = followedUser.ID
-					}
-				});
-
-                _unitOfWork.Save();
-            }
-        }
-
-        /// <summary>
-        /// Async follows user by current user.
-        /// </summary>
-        public async Task FollowAsync(string follow)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && _unitOfWork.Followings.Find(f => f.User.ID == currentUser.ID && f.FollowedUser.ID == followedUser.ID).FirstOrDefault() == null)
-            {
-                await _unitOfWork.Followings.CreateAsync(new Following
-                {
-                    User=new User()
-                    {
-						ID = currentUser.ID
-					},
-                    FollowedUser = new User()
-                    {
-						ID= followedUser.ID
-					}
-                });
-
-                await _unitOfWork.SaveAsync();
-            }
-        }
-
-        /// <summary>
-        /// Dismiss following on user by current user.
-        /// </summary>
-        public void DismissFollow(string follow)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-            var following = _unitOfWork.Followings.Find(f => f.User.ID == currentUser.ID && f.FollowedUser.ID == followedUser.ID).FirstOrDefault();
-
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && following != null)
-            {
-                _unitOfWork.Followings.Delete(following.Id);
-
-                _unitOfWork.Save();
-            }
-        }
-
-        /// <summary>
-        /// Async dismiss following on user by current user.
-        /// </summary>
-        public async Task DismissFollowAsync(string follow)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var followedUser = _unitOfWork.Users.Find(u => u.UserName == follow).FirstOrDefault();
-            var following = _unitOfWork.Followings.Find(f => f.User.ID == currentUser.ID && f.FollowedUser.ID == followedUser.ID).FirstOrDefault();
-
-            if (currentUser != null && followedUser != null && currentUser.UserName != follow && following != null)
-            {
-                await _unitOfWork.Followings.DeleteAsync(following.Id);
-
-                await _unitOfWork.SaveAsync();
-            }
-        }
-
-        /// <summary>
-        /// Blocks user by current user.
-        /// </summary>
-        public void Block(string block)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.User.ID == currentUser.ID && b.BlockedUser.ID == blockedUser.ID).FirstOrDefault() == null)
-            {
-                _unitOfWork.Blockings.Create(new BlackList
-                {
-					User = new User()
-					{
-						ID = currentUser.ID
-					},
-					BlockedUser = new User()
-					{
-						ID = blockedUser.ID
-					}
-				});
-
-                _unitOfWork.Save();
-            }
-        }
-
-        /// <summary>
-        /// Async blocks user by current user.
-        /// </summary>
-        public async Task BlockAsync(string block)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && _unitOfWork.Blockings.Find(b => b.User.ID == currentUser.ID && b.BlockedUser.ID == blockedUser.ID).FirstOrDefault() == null)
-            {
-                await _unitOfWork.Blockings.CreateAsync(new BlackList
-                {
-                    User =new User()
-                    {
-						ID = currentUser.ID
-					},
-                    BlockedUser = new User()
-                    {
-						ID = blockedUser.ID
-					}
-                });
-
-                await _unitOfWork.SaveAsync();
-            }
-        }
-
-        /// <summary>
-        /// Dismiss blocking user by current user.
-        /// </summary>
-        public void DismissBlock(string block)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-            var blocking = _unitOfWork.Blockings.Find(b => b.User.ID == currentUser.ID && b.BlockedUser.ID == blockedUser.ID).FirstOrDefault();
-
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && blocking != null)
-            {
-                _unitOfWork.Blockings.Delete(blocking.Id);
-                _unitOfWork.Save();
-            }
-        }
-
-        /// <summary>
-        /// Async dismiss blocking user by current user.
-        /// </summary>
-        public async Task DismissBlockAsync(string block)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var blockedUser = _unitOfWork.Users.Find(u => u.UserName == block).FirstOrDefault();
-            var blocking = _unitOfWork.Blockings.Find(b => b.User.ID == currentUser.ID && b.BlockedUser.ID == blockedUser.ID).FirstOrDefault();
-
-            if (currentUser != null && blockedUser != null && currentUser.UserName != block && blocking != null)
-            {
-                await _unitOfWork.Blockings.DeleteAsync(blocking.Id);
-                await _unitOfWork.SaveAsync();
-            }
-        }
-
-        /// <summary>
-        /// Reports user by current user.
-        /// </summary>
-        public void Report(string userName, string text)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var reportedUser = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
-
-            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.User.ID == currentUser.ID && b.ReportedUser.ID == reportedUser.ID).FirstOrDefault() == null)
-            {
-                _unitOfWork.UserReports.Create(new UserReport
-                {
-                    User =new User(){ID= currentUser.ID},
-                    ReportedUser=new User(){ID= reportedUser.ID},
-                    Text = text
-                });
-
-                _unitOfWork.Save();
-            }
-        }
-
-        /// <summary>
-        /// Async reports user by current user.
-        /// </summary>
-        public async Task ReportAsync(string userName, string text)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-            var reportedUser = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
-
-            if (currentUser != null && reportedUser != null && currentUser.UserName != userName && _unitOfWork.UserReports.Find(b => b.User.ID == currentUser.ID && b.ReportedUser.ID == reportedUser.ID).FirstOrDefault() == null)
-            {
-                _unitOfWork.UserReports.Create(new UserReport
-                {
-                    User =new User(){ID= currentUser.ID},
-                    ReportedUser=new User(){ID= reportedUser.ID},
-                    Text = text
-                });
-
-                await _unitOfWork.SaveAsync();
-            }
-        }
 
         /// <summary>
         /// Creates user.
         /// </summary>
-        public ApplicationUser Create(string userName, string email, string password,string company)
-        {
-            if (_unitOfWork.IdentityUsers.Find(u => u.UserName == userName || u.Email == email).FirstOrDefault() != null)
-            {
-                return null;
-            }
+        public ApplicationUser Create(UserCreateDTO user) =>
+	        CreateAsync(user).Result;
 
-            var identity = new ApplicationUser
-            {
-                UserName = userName,
-                Email = email,
-                PhoneNumberConfirmed = false,
-                EmailConfirmed = false,
-                NormalizedEmail = email.ToUpper(),
-                NormalizedUserName = userName.ToUpper(),
-                LockoutEnabled = true,
-                TwoFactorEnabled = false,
-                SecurityStamp = userName.GetHashCode().ToString()
-            };
-
-            var passwordHasher = new PasswordHasher<ApplicationUser>();
-            identity.PasswordHash = passwordHasher.HashPassword(identity, password);
-            
-            _unitOfWork.IdentityUsers.Create(identity);
-
-            var userCompany = _unitOfWork.Companies.Find(x => x.Code == company).FirstOrDefault();
-            _unitOfWork.Users.Create(new User
-            {
-	            UserName = userName,
-				Company = userCompany
-            });
-            _unitOfWork.Save();
+		/// <summary>
+		/// Async creates user.
+		/// </summary>
+		public async Task<ApplicationUser> CreateAsync(UserCreateDTO user)
+		{
+			var identity = CreateUser(user);
+			var appUser = CreateAppUser(user);
+			await _context.Users.AddAsync(identity);
+			await _context.AppUsers.AddAsync(appUser);
+            await _context.SaveChangesAsync();
 
             return identity;
         }
 
-        /// <summary>
-        /// Async creates user.
-        /// </summary>
-        public async Task<ApplicationUser> CreateAsync(string userName, string email, string password,string company)
-        {
-            if (_unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault() != null)
-            {
-                return null;
-            }
+		private User CreateAppUser(UserCreateDTO user)
+		{
+			var u = new User()
+			{
+				Id = user.Id,
+				Application = new UserApplicationInfo()
+				{
+					Email = user.Email,
+					Permission = new Permissions(),
+					InvitedBy = user.InvitedBy
+				},
+				BaseInfo = new UserBaseInfo()
+				{
+					AuthKey = user.Id.GetHashCode().ToString(),
+					Gender = user.Gender,
+					RealName = user.RealName
+				},
+				CompanyInfo = new UserCompanyInfo()
+				{
+					
+				}
+			};
+			return u;
+		}
+		private ApplicationUser CreateUser(UserCreateDTO user)
+		{
+			if (_context.AppUsers.Find(user.Id) != null) return null;
 
-            var identity = new ApplicationUser
-            {
-                UserName = userName,
-                Email = email,
-                PhoneNumberConfirmed = false,
-                EmailConfirmed = false,
-                NormalizedEmail = email.ToUpper(),
-                NormalizedUserName = userName.ToUpper(),
-                LockoutEnabled = true,
-                TwoFactorEnabled = false,
-                SecurityStamp = userName.GetHashCode().ToString()
-            };
+			var identity = new ApplicationUser
+			{
+				UserName = user.Id,
+				Email = user.Email,
+				PhoneNumberConfirmed = false,
+				EmailConfirmed = false,
+				NormalizedEmail = user.Email.ToUpper(),
+				NormalizedUserName = user.Id.ToUpper(),
+				LockoutEnabled = true,
+				TwoFactorEnabled = false,
+				SecurityStamp = user.Id.GetHashCode().ToString()
+			};
 
-            var passwordHasher = new PasswordHasher<ApplicationUser>();
-            identity.PasswordHash = passwordHasher.HashPassword(identity, password);
+			var passwordHasher = new PasswordHasher<ApplicationUser>();
+			identity.PasswordHash = passwordHasher.HashPassword(identity, user.Password);
 
-            await _unitOfWork.IdentityUsers.CreateAsync(identity);
 
-            var userCompany = _unitOfWork.Companies.Find(x => x.Code == company).FirstOrDefault();
-            await _unitOfWork.Users.CreateAsync(new User
-            {
-	            UserName = userName,
-				Company = userCompany
-            });
-            await _unitOfWork.SaveAsync();
-
-            return identity;
-        }
-
+			return identity;
+		}
         /// <summary>
         /// Edits user.
         /// </summary>
-        public bool Edit(string userName, Action<User> editCallBack)
+        public bool Edit(string id, Action<User> editCallBack)
         {
-            var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
+	        var user = _context.AppUsers.Find(id);
             if (user == null) return false;
             editCallBack.Invoke(user);
-			_unitOfWork.Users.Update(user);
+			_context.AppUsers.Update(user);
+			_context.SaveChanges();
             return true;
 		}
 
         /// <summary>
         /// Async edits user.
         /// </summary>
-        public async Task<bool> EditAsync(string userName, Action<User> editCallBack)
+        public async Task<bool> EditAsync(string id, Action<User> editCallBack)
         {
-            var user = _unitOfWork.Users.Find(u => u.UserName == userName).FirstOrDefault();
-
-			if(user==null)return false;
-			await Task.Run(()=> editCallBack.Invoke(user));
-			_unitOfWork.Users.Update(user);
+			var user = _context.AppUsers.Find(id);
+			if (user == null) return false;
+			await Task.Run(() => editCallBack.Invoke(user));
+			_context.AppUsers.Update(user);
+			await _context.SaveChangesAsync();
 			return true;
-        }
+		}
 
         #endregion
 
-        #region Helpers
-
-        /// <summary>
-        /// Helps map user entity to user data transfer object.
-        /// </summary>
-        protected UserDTO MapUser(User user)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-
-            return user.ToDTO(_unitOfWork.Confirmations.Find(c => c.User.ID == user.ID).FirstOrDefault() != null,
-                              _unitOfWork.Followings.Find(f => f.FollowedUser.ID == user.ID && f.User.ID == currentUser.ID).FirstOrDefault() != null,
-                              _unitOfWork.Blockings.Find(b => b.BlockedUser.ID == user.ID && b.User.ID == currentUser.ID).FirstOrDefault() != null,
-                              _unitOfWork.Blockings.Find(b => b.BlockedUser.ID == currentUser.ID && b.User.ID == user.ID).FirstOrDefault() != null);
-        }
-
-        /// <summary>
-        /// Helps map user details entity to user details data transfer object.
-        /// </summary>
-        protected UserDetailsDTO MapUserDetails(User user)
-        {
-            var currentUser = _currentUserService.CurrentUser;
-
-            return user.ToDetailDTO();
-            
-        }
-
-        #endregion
 
         #region Disposing
 
@@ -488,7 +178,6 @@ namespace TrainSchdule.BLL.Services
             {
                 if (disposing)
                 {
-                    _unitOfWork.Dispose();
                     _currentUserService.Dispose();
                 }
 

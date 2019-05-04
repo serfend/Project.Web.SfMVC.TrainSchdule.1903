@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
 {
-	public class ModifyAuthKeyViewModel:GoogleAuthViewModel
+	public class ModifyAuthKeyViewModel
 	{
-		/// <summary>
-		/// 新的授权码
-		/// </summary>
+		public GoogleAuthViewModel Auth { get; set; }
 		public string NewKey { get; set; }
 	}
 }

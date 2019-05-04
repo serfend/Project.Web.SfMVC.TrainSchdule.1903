@@ -9,11 +9,11 @@ namespace TrainSchdule.ViewModels.Apply
 {
 	public class ApplyAuditStatusViewModel:APIDataModel
 	{
-		public ApplyAuditStatusData Data { get; set; }
+		public ApplyAuditStatusDataModel Data { get; set; }
 	}
 
-	public class ApplyAuditStatusData
+	public class ApplyAuditStatusDataModel
 	{
-		public Dictionary<int, AuditStatusMessage> List { get; set; }
+		public  Dictionary<int, AuditStatusMessage> List { get; set; }
 	}
 }

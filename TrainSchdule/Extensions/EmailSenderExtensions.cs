@@ -1,6 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using TrainSchdule.BLL.Interfaces;
+using BLL.Interfaces;
 
 namespace TrainSchdule.WEB.Extensions
 {

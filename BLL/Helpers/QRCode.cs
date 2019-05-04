@@ -7,7 +7,7 @@ using System.Text;
 using BLL.Interfaces;
 using QRCoder;
 
-namespace TrainSchdule.BLL.Helpers
+namespace BLL.Helpers
 {
 	public class QRCoder
 	{

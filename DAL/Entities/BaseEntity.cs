@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TrainSchdule.DAL.Entities.UserInfo
+namespace DAL.Entities.UserInfo
 {
     /// <summary>
     /// Base class for entities.

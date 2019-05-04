@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TrainSchdule.DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo;
 
 namespace DAL.Entities
 {

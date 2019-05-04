@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TrainSchdule.BLL.Helpers
+namespace BLL.Helpers
 {
 	public static class ActionStatusMessage
 	{

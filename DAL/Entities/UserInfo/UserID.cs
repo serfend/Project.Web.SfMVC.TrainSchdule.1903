@@ -9,6 +9,6 @@ namespace DAL.Entities.UserInfo
 	{
 		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
 		[Key]
-		public string ID { get; set; }
+		public string Id { get; set; }
 	}
 }

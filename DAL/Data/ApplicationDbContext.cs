@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using TrainSchdule.DAL.Entities.UserInfo;
-using TrainSchdule.DAL.Entities.UserInfo.Permission;
+using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Permission;
 using Apply = DAL.Entities.Apply;
-using Company = TrainSchdule.DAL.Entities.UserInfo.Company;
-using User = TrainSchdule.DAL.Entities.UserInfo.User;
+using Company = DAL.Entities.UserInfo.Company;
+using User = DAL.Entities.UserInfo.User;
 
-namespace TrainSchdule.DAL.Data
+namespace DAL.Data
 {
     /// <summary>
     /// Main DB context in the application.
@@ -17,73 +17,8 @@ namespace TrainSchdule.DAL.Data
     {
         #region Properties
 
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="TrainSchdule.DAL.Entities.UserInfo.User"/>(not identity) entities.
-        /// </summary>
         public DbSet<User> AppUsers { get; set; }
 
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Comment"/> entities.
-        /// </summary>
-        public DbSet<Comment> Comments { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Like"/> entities.
-        /// </summary>
-        public DbSet<Like> Likes { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="BlackList"/> entities.
-        /// </summary>
-        public DbSet<BlackList> BlackLists { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Following"/> entities.
-        /// </summary>
-        public DbSet<Following> Followings { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Bookmark"/> entities.
-        /// </summary>
-        public DbSet<Bookmark> Bookmarks { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Photo"/> entities.
-        /// </summary>
-        public DbSet<Photo> Photos { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Filter"/> entities.
-        /// </summary>
-        public DbSet<Filter> Filters { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Confirmed"/> entities.
-        /// </summary>
-        public DbSet<Confirmed> Confirmed { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Tag"/> entities.
-        /// </summary>
-        public DbSet<Tag> Tags { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="Taging"/> entities.
-        /// </summary>
-        public DbSet<Taging> Tagings { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="PhotoReport"/> entities.
-        /// </summary>
-        public DbSet<PhotoReport> PhotoReports { get; set; }
-
-        /// <summary>
-        /// Gets and sets <see cref="DbSet"/> of <see cref="UserReport"/> entities.
-        /// </summary>
-        public DbSet<UserReport> UserReports { get; set; }
-
-
-		public DbSet<Student> Students { get; set; }
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<Permissions>Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }

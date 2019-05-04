@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using TrainSchdule.BLL.Helpers;
-using TrainSchdule.ViewModels.Static;
+using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.Controllers
@@ -36,9 +32,10 @@ namespace TrainSchdule.Controllers
 				_verifyService.Generate();
 				return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, status));
 			}
-			return new JsonResult(new VerifyGeneratedViewModel()
+
+			return new JsonResult(new ScrollerVerifyGeneratedViewModel()
 			{
-				Data = new VerifyGeneratedDataModel()
+				Data = new ScrollerVerifyGeneratedDataModel()
 				{
 					Id = imgId,
 					PosY = _verifyService.Pos.Y

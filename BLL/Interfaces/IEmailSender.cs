@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace TrainSchdule.BLL.Interfaces
+namespace BLL.Interfaces
 {
     /// <summary>
     /// Interface for email sernder services.

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using TrainSchdule.BLL.Interfaces;
+using BLL.Interfaces;
 
-namespace TrainSchdule.BLL.Services
+namespace BLL.Services
 {
     /// <summary>
     /// This class is used by the application to send email for account confirmation and password reset.

@@ -1,34 +1,29 @@
-﻿using System;
+﻿using DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using BLL.DTO;
-using DAL.Entities;
-using TrainSchdule.BLL.DTO.UserInfo;
-using TrainSchdule.DAL.Entities.UserInfo;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyService : IDisposable
+	public interface IApplyService 
 	{
-		ApplyAllDataDTO Get(Guid id);
+		Apply Get(Guid id);
 
-		Apply GetEntity(Guid id);
 		/// <summary>
 		/// 加载所有申请
 		/// </summary>
-		IEnumerable<ApplyAllDataDTO> GetAll(int page, int pageSize);
+		IEnumerable<Apply> GetAll(int page, int pageSize);
 
 		/// <summary>
 		/// 通过userName加载申请
 		/// </summary>
-		IEnumerable<ApplyAllDataDTO> GetAll(string userName, int page, int pageSize);
+		IEnumerable<Apply> GetAll(string userid, int page, int pageSize);
 
 		/// <summary>
 		/// 通过userName和status加载申请
 		/// </summary>
-		IEnumerable<ApplyAllDataDTO> GetAll(string userName,AuditStatus status, int page, int pageSize);
+		IEnumerable<Apply> GetAll(string userid, AuditStatus status, int page, int pageSize);
 		/// <summary>
 		/// 任意条件获取申请
 		/// </summary>
@@ -36,7 +31,7 @@ namespace BLL.Interfaces
 		/// <param name="page"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
-		IEnumerable<ApplyAllDataDTO> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize);
+		IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize);
 
 
 		/// <summary>
@@ -60,6 +55,5 @@ namespace BLL.Interfaces
 		Task<bool> EditAsync(string userName, Action<Apply> editCallBack);
 
 		void Delete(Apply item);
-		Task DeleteAsync(Apply item);
 	}
 }

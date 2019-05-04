@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace TrainSchdule.DAL.Entities.UserInfo
+namespace DAL.Entities.UserInfo
 {
 	
 	public class Company
