@@ -14,7 +14,7 @@ namespace TrainSchdule.ViewModels.System
 
 		public ModelStateExceptionViewModel(ModelStateDictionary state)
 		{
-			Data.List = state.AllModelStateErrors();
+			Data = new ModelStateExceptionDataModel {List = state.AllModelStateErrors()};
 			this.Code = -1;
 			this.Message = "数据格式错误";
 		}

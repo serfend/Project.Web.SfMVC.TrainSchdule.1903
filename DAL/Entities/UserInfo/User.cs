@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using DAL.Entities;
-using DAL.Entities.UserInfo;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using DAL.Entities.UserInfo.Permission;
-
-namespace DAL.Entities.UserInfo
+﻿namespace DAL.Entities.UserInfo
 {
 
-    public class User : UserID
+	public class User : UserID
     {
         #region Properties
 

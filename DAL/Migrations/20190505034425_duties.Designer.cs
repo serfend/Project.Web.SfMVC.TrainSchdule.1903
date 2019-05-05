@@ -4,32 +4,22 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190505034425_duties")]
+    partial class duties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("DAL.Entities.AdminDivision", b =>
-                {
-                    b.Property<string>("Code")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Code");
-
-                    b.ToTable("AdminDivisions");
-                });
 
             modelBuilder.Entity("DAL.Entities.Apply", b =>
                 {
@@ -430,15 +420,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddressCode");
+                    b.Property<string>("Address");
 
                     b.Property<string>("AddressDetail");
 
                     b.Property<string>("Phone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressCode");
 
                     b.ToTable("UserSocialInfo");
                 });
@@ -703,13 +691,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Duties", "Duties")
                         .WithMany()
                         .HasForeignKey("DutiesCode");
-                });
-
-            modelBuilder.Entity("DAL.Entities.UserInfo.UserSocialInfo", b =>
-                {
-                    b.HasOne("DAL.Entities.AdminDivision", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressCode");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

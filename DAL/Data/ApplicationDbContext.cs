@@ -1,25 +1,23 @@
 ﻿using DAL.Entities;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using DAL.Entities.UserInfo;
-using DAL.Entities.UserInfo.Permission;
 using Apply = DAL.Entities.Apply;
-using Company = DAL.Entities.UserInfo.Company;
 using User = DAL.Entities.UserInfo.User;
 
 namespace DAL.Data
 {
-    /// <summary>
-    /// Main DB context in the application.
-    /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+	/// <summary>
+	/// Main DB context in the application.
+	/// </summary>
+	public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         #region Properties
 
         public DbSet<User> AppUsers { get; set; }
 
 		public DbSet<Company> Companies { get; set; }
+		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions>Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
 		public DbSet<Apply> Applies { get; set; }

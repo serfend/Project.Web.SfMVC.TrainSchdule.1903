@@ -26,13 +26,16 @@ namespace BLL.Interfaces
 
         IQueryable<User> Find(Expression<Func<User, bool>>predict);
 
-
+        ApplicationUser ApplicaitonUser(string id);
         ApplicationUser Create(UserCreateDTO user);
 
         Task<ApplicationUser> CreateAsync(UserCreateDTO user);
 
-        bool Edit(string id, Action<User> editCallBack);
+        bool Edit(User newUser);
 
-        Task<bool> EditAsync(string id, Action<User> editCallBack);
+        Task<bool> EditAsync(User newUser);
+        bool Remove(string id);
+        Task<bool> RemoveAsync(string id);
+
     }
 }

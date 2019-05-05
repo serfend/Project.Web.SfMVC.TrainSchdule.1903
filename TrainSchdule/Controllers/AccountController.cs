@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -89,13 +90,16 @@ namespace TrainSchdule.WEB.Controllers
 
 		[HttpPost]
 		[AllowAnonymous]
-		public IActionResult AuthKey(ModifyAuthKeyViewModel model)
+		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
 		{
-			if(!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var success = _usersService.Edit(model.Auth.AuthByUserID, (x) =>
-			{
-				x.Application.AuthKey = model.NewKey;
-			});
+			var targetUser = _usersService.Get(model.ModifyUserId);
+			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (!authByUser.Application.Permission.Check(PermissionList.User.Application,Operation.Update,targetUser))return new JsonResult(ActionStatusMessage.Account.Auth.Permission.Default);
+			targetUser.Application.AuthKey = model.NewKey;
+			var success = _usersService.Edit(targetUser);
 			if(!success)return new JsonResult(ActionStatusMessage.User.NotExist);
 			
 			return new JsonResult(ActionStatusMessage.Success);
@@ -115,11 +119,11 @@ namespace TrainSchdule.WEB.Controllers
 		
 		[HttpPost]
 		[AllowAnonymous]
-		public async Task<IActionResult> Login(LoginViewModel model)
+		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
-				if (!model.Verify.Verify)
+				if (!model.Verify.Verify(_verifyService))
 				{
 					return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 				}
@@ -149,16 +153,30 @@ namespace TrainSchdule.WEB.Controllers
 				return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
 		}
+
+		[HttpDelete]
+		[AllowAnonymous]
+		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
+		{
+			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = _usersService.Get(model.Id);
+			if(targetUser==null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (!authByUser.Application.Permission.Check(PermissionList.User.Application, Operation.Update,targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.Default);
+			if (!await _usersService.RemoveAsync(model.Id))return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (!model.Verify.Verify)return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
+			if (!model.Verify.Verify(_verifyService)) return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 
-			var user = await _usersService.CreateAsync(model.Data);
+			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID));
 			if (user == null)
 			{
 				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);

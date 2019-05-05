@@ -7,16 +7,8 @@ using BLL.Interfaces;
 namespace TrainSchdule.ViewModels.Verify
 {
 	public class ScrollerVerifyViewModel
-
 	{
-		private readonly IVerifyService _verifyService;
-
-		public ScrollerVerifyViewModel(IVerifyService verifyService)
-		{
-			_verifyService = verifyService;
-		}
-
-		public bool Verify => _verifyService.Verify(Code);
+		public bool Verify(IVerifyService _verifyService) => _verifyService.Verify(Code);
 		public int Code { get; set; }
 	}
 }

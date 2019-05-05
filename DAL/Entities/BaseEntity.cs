@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Entities.UserInfo
+namespace DAL.Entities
 {
     /// <summary>
     /// Base class for entities.

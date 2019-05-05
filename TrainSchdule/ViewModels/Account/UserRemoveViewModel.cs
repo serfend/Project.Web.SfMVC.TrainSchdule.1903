@@ -6,10 +6,9 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
 {
-	public class ModifyAuthKeyViewModel
+	public class UserRemoveViewModel
 	{
+		public string Id { get; set; }
 		public GoogleAuthViewModel Auth { get; set; }
-		public string NewKey { get; set; }
-		public string ModifyUserId { get; set; }
 	}
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.UserInfo.Permission;
 
 namespace DAL.Entities.UserInfo
 {

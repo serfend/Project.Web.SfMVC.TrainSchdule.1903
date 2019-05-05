@@ -1,9 +1,10 @@
 ﻿using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.User;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
-using DAL.Entities.UserInfo.Permission;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ namespace BLL.Services
 			return _context.AppUsers.Where(predict).OrderBy(u=>u.BaseInfo.RealName);
         }
 
+        public ApplicationUser ApplicaitonUser(string id)
+        {
+			return _context.Users.FirstOrDefault(u => u.UserName == id);
+		}
+
 
         /// <summary>
         /// Creates user.
@@ -80,12 +86,13 @@ namespace BLL.Services
 		public async Task<ApplicationUser> CreateAsync(UserCreateDTO user)
 		{
 			var identity = CreateUser(user);
+			if (identity == null) return null;
 			var appUser = CreateAppUser(user);
+			
 			await _context.Users.AddAsync(identity);
 			await _context.AppUsers.AddAsync(appUser);
-            await _context.SaveChangesAsync();
-
-            return identity;
+			await _context.SaveChangesAsync();
+			return identity;
         }
 
 		private User CreateAppUser(UserCreateDTO user)
@@ -107,7 +114,14 @@ namespace BLL.Services
 				},
 				CompanyInfo = new UserCompanyInfo()
 				{
-					
+					Company = _context.Companies.Find(user.Company),
+					Duties = _context.Duties.Find(user.Duties)
+				},
+				SocialInfo = new UserSocialInfo()
+				{
+					Address = _context.AdminDivisions.Find(user.HomeAddress),
+					AddressDetail = user.HomeDetailAddress,
+					Phone = user.Phone
 				}
 			};
 			return u;
@@ -138,35 +152,51 @@ namespace BLL.Services
         /// <summary>
         /// Edits user.
         /// </summary>
-        public bool Edit(string id, Action<User> editCallBack)
+        public bool Edit(User newUser)
         {
-	        var user = _context.AppUsers.Find(id);
-            if (user == null) return false;
-            editCallBack.Invoke(user);
-			_context.AppUsers.Update(user);
+			_context.AppUsers.Update(newUser);
 			_context.SaveChanges();
-            return true;
+			return true;
 		}
 
         /// <summary>
         /// Async edits user.
         /// </summary>
-        public async Task<bool> EditAsync(string id, Action<User> editCallBack)
+        public async Task<bool> EditAsync(User newUser)
         {
-			var user = _context.AppUsers.Find(id);
-			if (user == null) return false;
-			await Task.Run(() => editCallBack.Invoke(user));
-			_context.AppUsers.Update(user);
+	        _context.AppUsers.Update(newUser);
 			await _context.SaveChangesAsync();
 			return true;
 		}
 
-        #endregion
 
 
-        #region Disposing
+        public bool Remove(string id)
+        {
+			var user =  _context.AppUsers.Find(id);
+			if (user == null) return false;
+			_context.AppUsers.Remove(user);
+			var appUser =  _context.Users.SingleOrDefault(u=>u.UserName==id);
+			_context.Users.Remove(appUser);
+			_context.SaveChanges();
+			return true;
+		}
+        public async Task<bool> RemoveAsync(string id)
+        {
+	        var user = await _context.AppUsers.FindAsync(id);
+	        if (user == null) return false;
+	        _context.AppUsers.Remove(user);
+	        var appUser = await _context.Users.SingleOrDefaultAsync(u => u.UserName==id);
+	        _context.Users.Remove(appUser);
+await	        _context.SaveChangesAsync();
+	        return true;
+        }
+		#endregion
 
-        public void Dispose()
+
+		#region Disposing
+
+		public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
