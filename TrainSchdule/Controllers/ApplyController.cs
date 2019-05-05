@@ -46,12 +46,11 @@ namespace TrainSchdule.Web.Controllers
 				}
 			});
 		}
-		[HttpPost]
-		public async Task<IActionResult> User([FromBody]SubmitBaseInfoViewModel model)
-		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			
-		}
+		//[HttpPost]
+		//public async Task<IActionResult> User([FromBody]SubmitBaseInfoViewModel model)
+		//{
+		//	if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+		//}
 		#endregion
 
 		#region Disposing

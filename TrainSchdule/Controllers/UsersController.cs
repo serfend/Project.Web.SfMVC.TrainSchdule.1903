@@ -33,10 +33,61 @@ namespace TrainSchdule.WEB.Controllers
 		#endregion
 
 		#region Logic
+
 		
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Application(string id)
+		{
+			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserApplicationInfoViewModel()
+			{
+				Data = targetUser.Application.ToModel()
+			});
+		}
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Social(string id)
+		{
+			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserSocialViewModel()
+			{
+				Data = targetUser.SocialInfo.ToModel()
+			});
+		}
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Duties(string id)
+		{
+			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserDutiesViewModel()
+			{
+				Data = targetUser.CompanyInfo.ToDutiesModel()
+			});
+		}
 
 		[HttpGet]
 		[AllowAnonymous]
+		public IActionResult Company(string id)
+		{
+			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserCompanyInfoViewModel()
+			{
+				Data = targetUser.CompanyInfo.ToCompanyModel()
+			});
+		}
 		public IActionResult Base(string id)
 		{
 			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -45,7 +96,7 @@ namespace TrainSchdule.WEB.Controllers
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			return  new JsonResult(new UserBaseInfoViewModel()
 			{
-				Data = targetUser.BaseInfo.ToModel()
+				Data = targetUser.BaseInfo.ToModel(id)
 			});
 		}
 		#endregion
