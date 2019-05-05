@@ -58,6 +58,37 @@ namespace BLL.Services
         /// </summary>
         public User Get(string id)
         {
+			if(id=="Root")return new User()
+			{
+				Id = "Root",
+				Application = new UserApplicationInfo()
+				{
+					Permission = new Permissions()
+					{
+						Role= "Admin"
+					}
+				},
+				BaseInfo = new UserBaseInfo()
+				{
+					RealName = "系统管理员"
+				},
+				CompanyInfo = new UserCompanyInfo()
+				{
+					Company = new Company()
+					{
+						Name = "Root"
+					},
+					Duties = new Duties()
+					{
+						Name = "Root"
+					}
+				},
+				SocialInfo = new UserSocialInfo()
+				{
+					Address = new AdminDivision(),
+
+				}
+			};
             var user = _context.AppUsers.Find(id);
 
             return user;
@@ -104,11 +135,12 @@ namespace BLL.Services
 				{
 					Email = user.Email,
 					Permission = new Permissions(),
-					InvitedBy = user.InvitedBy
+					InvitedBy = user.InvitedBy,
+					Create = DateTime.Now,
+					AuthKey = user.Id.GetHashCode().ToString(),
 				},
 				BaseInfo = new UserBaseInfo()
 				{
-					AuthKey = user.Id.GetHashCode().ToString(),
 					Gender = user.Gender,
 					RealName = user.RealName
 				},

@@ -8,10 +8,6 @@ namespace DAL.Entities.UserInfo
 	public class UserBaseInfo : BaseEntity
 	{
 
-		/// <summary>
-		/// 授权码
-		/// </summary>
-		public string AuthKey { get; set; }
 		public string RealName { get; set; }
 		public string Avatar { get; set; }
 		public GenderEnum Gender { get; set; }

@@ -23,7 +23,6 @@ namespace TrainSchdule.ViewModels.User
 		{
 			return  new UserBaseInfoDataModel()
 			{
-				AuthKey = model.AuthKey,
 				Avatar = model.Avatar ?? (model.Gender == GenderEnum.Female ? @"\images\defaults\def-female-logo.png" : @"\images\defaults\def-male-logo.png"),
 				Gender = model.Gender,
 				PrivateAccount = model.PrivateAccount,

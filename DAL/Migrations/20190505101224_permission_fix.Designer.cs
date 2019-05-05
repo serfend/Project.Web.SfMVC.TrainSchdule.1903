@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190505101224_permission_fix")]
+    partial class permission_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,11 +158,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("OwnerId");
+
                     b.Property<string>("Regions");
 
-                    b.Property<string>("Role");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Permissions");
                 });
@@ -269,6 +273,8 @@ namespace DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AuthKey");
 
                     b.Property<string>("Avatar");
 
@@ -464,6 +470,13 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Company", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentCode");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Permissions", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.User", b =>
