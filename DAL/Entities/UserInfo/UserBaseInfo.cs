@@ -7,7 +7,6 @@ namespace DAL.Entities.UserInfo
 {
 	public class UserBaseInfo : BaseEntity
 	{
-
 		public string RealName { get; set; }
 		public string Avatar { get; set; }
 		public GenderEnum Gender { get; set; }

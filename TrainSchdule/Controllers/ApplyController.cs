@@ -1,8 +1,11 @@
-﻿using BLL.Extensions;
+﻿using System.Threading.Tasks;
+using BLL.Extensions;
 using BLL.Interfaces;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.Apply;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Web.Controllers
 {
@@ -43,7 +46,12 @@ namespace TrainSchdule.Web.Controllers
 				}
 			});
 		}
-
+		[HttpPost]
+		public async Task<IActionResult> User([FromBody]SubmitBaseInfoViewModel model)
+		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			
+		}
 		#endregion
 
 		#region Disposing

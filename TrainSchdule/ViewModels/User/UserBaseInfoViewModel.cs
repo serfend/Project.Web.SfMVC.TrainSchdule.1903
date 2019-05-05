@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities.UserInfo;
+using Newtonsoft.Json;
 using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.User
@@ -11,10 +12,12 @@ namespace TrainSchdule.ViewModels.User
 	{
 		public UserBaseInfoDataModel Data { get; set; }
 	}
-
-	public class UserBaseInfoDataModel:UserBaseInfo
+	public class UserBaseInfoDataModel
 	{
-		
+		public string RealName { get; set; }
+		public string Avatar { get; set; }
+		public GenderEnum Gender { get; set; }
+		public bool PrivateAccount { get; set; }
 	}
 
 	public static class UserBaseInfoExtensions

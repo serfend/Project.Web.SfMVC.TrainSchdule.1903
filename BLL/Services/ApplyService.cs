@@ -53,6 +53,7 @@ namespace BLL.Services
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
+			item.Create=DateTime.Now;
 			await _context.Applies.AddAsync(item);
 			return item;
 		}
