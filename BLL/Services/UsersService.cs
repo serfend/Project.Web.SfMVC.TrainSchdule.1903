@@ -147,7 +147,7 @@ namespace BLL.Services
 				CompanyInfo = new UserCompanyInfo()
 				{
 					Company = _context.Companies.Find(user.Company),
-					Duties = _context.Duties.Find(user.Duties)
+					Duties = _context.Duties.SingleOrDefault(d=>d.Name==user.Duties)
 				},
 				SocialInfo = new UserSocialInfo()
 				{
