@@ -153,6 +153,8 @@ namespace TrainSchdule.WEB.Controllers
 					return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 				}
 
+				var targetUser = _usersService.Get(model.UserName);
+				if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded)
 				{
