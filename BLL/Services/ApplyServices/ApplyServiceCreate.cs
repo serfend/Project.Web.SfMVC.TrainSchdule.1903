@@ -40,7 +40,8 @@ namespace BLL.Services.ApplyServices
 					AddressDetail = model.HomeDetailAddress,
 					Phone = model.Phone,
 					Settle = model.Settle
-				}
+				},
+				RealName = model.RealName
 			};
 			await _context.ApplyBaseInfos.AddAsync(m);
 			await _context.SaveChangesAsync();
