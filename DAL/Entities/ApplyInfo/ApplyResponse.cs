@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using DAL.Entities.UserInfo;
 
-namespace DAL.Entities
+namespace DAL.Entities.ApplyInfo
 {
 	public class ApplyResponse:BaseEntity
 	{

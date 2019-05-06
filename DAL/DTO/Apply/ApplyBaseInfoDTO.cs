@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL.Entities.ApplyInfo;
+using System.Text;
 using DAL.Entities.UserInfo;
 
-namespace TrainSchdule.ViewModels.Apply
+namespace DAL.DTO.Apply
 {
-	public class SubmitBaseInfoViewModel
+	public class ApplyBaseInfoDTO
 	{
-		[Required]
-		public string Id { get; set; }
-		[Required]
+		public Entities.UserInfo.User From { get; set; }
 		public string RealName { get; set; }
-		[Required]
 		public string Company { get; set; }
-		[Required]
 		public int Duties { get; set; }
-		[Required]
 		public string HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }
-
 		public string Phone { get; set; }
 		public SettleDownEnum Settle { get; set; }
 	}
-
-
 }

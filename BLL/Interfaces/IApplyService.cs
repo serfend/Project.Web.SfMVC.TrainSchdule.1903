@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DAL.Entities.ApplyInfo;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyService 
+	public interface IApplyService :IApplyServiceCreate
 	{
 		Apply Get(Guid id);
 

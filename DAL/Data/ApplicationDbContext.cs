@@ -1,8 +1,8 @@
 ﻿using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Apply = DAL.Entities.Apply;
 using User = DAL.Entities.UserInfo.User;
 
 namespace DAL.Data
@@ -15,7 +15,7 @@ namespace DAL.Data
         #region Properties
 
         public DbSet<User> AppUsers { get; set; }
-
+		public DbSet<UserBaseInfo> AppUserBaseInfos { get; set; }
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions>Permissions { get; set; }
@@ -24,7 +24,7 @@ namespace DAL.Data
 		
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
-		public DbSet<ApplyStamp> ApplyStamps { get; set; }
+		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 
         #endregion
 

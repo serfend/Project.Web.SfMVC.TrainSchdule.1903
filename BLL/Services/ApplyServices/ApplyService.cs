@@ -1,15 +1,15 @@
-﻿using BLL.Interfaces;
-using DAL.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BLL.Interfaces;
 using DAL.Data;
+using DAL.Entities.ApplyInfo;
 
-namespace BLL.Services
+namespace BLL.Services.ApplyServices
 {
-	public class ApplyService:IApplyService
+	public partial class ApplyService:IApplyService
 	{
 		#region Fileds
 
@@ -32,12 +32,12 @@ namespace BLL.Services
 
 		public IEnumerable<Apply> GetAll(string userid,int page,int pageSize)
 		{
-			return GetAll((item) => item.From.Id == userid, page,pageSize);
+			return GetAll((item) => item.BaseInfo.From.Id == userid, page,pageSize);
 		}
 
 		public IEnumerable<Apply> GetAll(string userid, AuditStatus status,int page,int pageSize)
 		{
-			return GetAll((item) => item.From.Id == userid && status == item.Status,page,pageSize);
+			return GetAll((item) => item.BaseInfo.From.Id == userid && status == item.Status,page,pageSize);
 		}
 
 		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool> > predicate, int page, int pageSize)
@@ -53,7 +53,7 @@ namespace BLL.Services
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
-			item.Create=DateTime.Now;
+			item.Create=DateTime.Now; 
 			await _context.Applies.AddAsync(item);
 			return item;
 		}
