@@ -28,7 +28,7 @@ namespace TrainSchdule.ViewModels.Account
 		[Required]
 		public string Phone { get; set; }
 		public string Email { get; set; }
-		public string HomeAddress { get; set; }
+		public int HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }
 		public string Duties { get; set; }
 		public string Company { get; set; }

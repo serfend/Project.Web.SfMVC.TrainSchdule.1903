@@ -14,7 +14,7 @@ namespace DAL.DTO.User
 		public GenderEnum Gender { get; set; }
 		public string Password { get; set; }
 		public string Email { get; set; }
-		public string HomeAddress { get; set; }
+		public int HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }
 		public string Duties { get; set; }
 		public string Company { get; set; }

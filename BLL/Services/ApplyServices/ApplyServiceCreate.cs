@@ -60,6 +60,7 @@ namespace BLL.Services.ApplyServices
 				VocationType = model.VocationType
 			};
 			_context.ApplyRequests.Add(r);
+			_context.SaveChanges();
 			return r;
 		}
 		public async  Task<ApplyRequest> SubmitRequestAsync(ApplyRequestDTO model)
