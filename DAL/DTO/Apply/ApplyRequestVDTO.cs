@@ -5,7 +5,7 @@ using DAL.Entities;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplyRequestDTO
+	public class ApplyRequestVDTO
 	{
 		public DateTime StampLeave { get; set; }
 		public DateTime StampReturn { get; set; }

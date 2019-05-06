@@ -5,7 +5,7 @@ using DAL.Entities.UserInfo;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplyBaseInfoDTO
+	public class ApplyBaseInfoVDTO
 	{
 		public Entities.UserInfo.User From { get; set; }
 		public string RealName { get; set; }

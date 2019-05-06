@@ -31,7 +31,8 @@ namespace DAL.Entities.ApplyInfo
 
 	public enum AuditStatus
 	{
-		NotPublish=0,
+		NotSave=0,
+		NotPublish=-1,
 		Withdrew=1,
 		Auditing=2,
 		AcceptAndWaitAdmin=4,

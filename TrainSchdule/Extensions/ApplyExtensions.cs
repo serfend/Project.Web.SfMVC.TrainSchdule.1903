@@ -11,9 +11,9 @@ namespace TrainSchdule.Extensions
 {
 	public static class ApplyExtensions
 	{
-		public static ApplyBaseInfoDTO ToDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
+		public static ApplyBaseInfoVDTO ToVDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
 		{
-			var b=new ApplyBaseInfoDTO()
+			var b=new ApplyBaseInfoVDTO()
 			{
 				Company = model.Company,
 				Duties = model.Duties,
@@ -27,9 +27,9 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
-		public static ApplyRequestDTO ToDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
+		public static ApplyRequestVDTO ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
 		{
-			var b=new ApplyRequestDTO()
+			var b=new ApplyRequestVDTO()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
@@ -38,6 +38,16 @@ namespace TrainSchdule.Extensions
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
 				VocationType = model.VocationType
+			};
+			return b;
+		}
+
+		public static ApplyVDTO ToVDTO(this SubmitApplyViewModel model)
+		{
+			var b=new ApplyVDTO()
+			{
+				BaseInfoId = model.BaseId??Guid.Empty,
+				RequestInfoId = model.RequestId ?? Guid.Empty
 			};
 			return b;
 		}

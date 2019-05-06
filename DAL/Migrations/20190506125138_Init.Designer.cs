@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190506091149_Init")]
+    [Migration("20190506125138_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,9 +23,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.AdminDivision", b =>
                 {
-                    b.Property<int>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("Code");
 
                     b.Property<string>("Name");
 

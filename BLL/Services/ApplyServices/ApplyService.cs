@@ -48,13 +48,14 @@ namespace BLL.Services.ApplyServices
 		public Apply Create(Apply item)
 		{
 			_context.Applies.Add(item);
+			_context.SaveChanges();
 			return item;
 		}
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
-			item.Create=DateTime.Now; 
 			await _context.Applies.AddAsync(item);
+			await _context.SaveChangesAsync();
 			return item;
 		}
 
@@ -64,6 +65,7 @@ namespace BLL.Services.ApplyServices
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_context.Applies.Update(target);
+			_context.SaveChanges();
 			return true;
 		}
 
@@ -73,6 +75,7 @@ namespace BLL.Services.ApplyServices
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target));
 			_context.Applies.Update(target);
+			await _context.SaveChangesAsync();
 			return true;
 		}
 
@@ -83,6 +86,7 @@ namespace BLL.Services.ApplyServices
 				_context.ApplyResponses.Remove(applyResponse);
 			}
 			_context.Applies.Remove(item);
+			_context.SaveChanges();
 		}
 
 	}

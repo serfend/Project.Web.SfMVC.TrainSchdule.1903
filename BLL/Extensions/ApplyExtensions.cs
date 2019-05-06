@@ -25,7 +25,8 @@ namespace BLL.Extensions
 				{(int)AuditStatus.Withdrew, Color.Gray},
 				{(int)AuditStatus.AcceptAndWaitAdmin, Color.DeepSkyBlue},
 				{(int)AuditStatus.Accept, Color.LawnGreen},
-				{(int)AuditStatus.Denied, Color.Red}
+				{(int)AuditStatus.Denied, Color.Red},
+				{(int)AuditStatus.NotSave,Color.Black }
 			};
 			StatusDesc=new Dictionary<int, string>()
 			{
@@ -34,7 +35,8 @@ namespace BLL.Extensions
 				{(int)AuditStatus.Withdrew, "已撤回"},
 				{(int)AuditStatus.AcceptAndWaitAdmin, "通过,待管理员审核"},
 				{(int)AuditStatus.Accept, "已通过"},
-				{(int)AuditStatus.Denied, "已驳回"}
+				{(int)AuditStatus.Denied, "已驳回"},
+				{(int)AuditStatus.NotSave,"未保存" }
 			};
 			var statusMessages = new Dictionary<int, AuditStatusMessage>();
 			var type = typeof(AuditStatus).GetFields();

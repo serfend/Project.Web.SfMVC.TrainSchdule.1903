@@ -11,10 +11,10 @@ namespace BLL.Interfaces
 {
 	public interface IApplyServiceCreate
 	{
-		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoDTO model);
-		ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoDTO model);
-		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestDTO model);
-		ApplyRequest SubmitRequest(ApplyRequestDTO model);
-
+		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVDTO model);
+		ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVDTO model);
+		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVDTO model);
+		ApplyRequest SubmitRequest(ApplyRequestVDTO model);
+		Apply Submit(ApplyVDTO model);
 	}
 }

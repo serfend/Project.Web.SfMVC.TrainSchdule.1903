@@ -12,8 +12,7 @@ namespace DAL.Migrations
                 name: "AdminDivisions",
                 columns: table => new
                 {
-                    Code = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

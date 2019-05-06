@@ -21,9 +21,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.AdminDivision", b =>
                 {
-                    b.Property<int>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("Code");
 
                     b.Property<string>("Name");
 
