@@ -23,6 +23,7 @@ namespace BLL.Services.ApplyServices
 					Settle = model.Settle
 				}
 			};
+			_context.Add(m);
 			_context.SaveChanges();
 			return m;
 		}
@@ -41,6 +42,7 @@ namespace BLL.Services.ApplyServices
 					Settle = model.Settle
 				}
 			};
+			await _context.ApplyBaseInfos.AddAsync(m);
 			await _context.SaveChangesAsync();
 			return m;
 		}
