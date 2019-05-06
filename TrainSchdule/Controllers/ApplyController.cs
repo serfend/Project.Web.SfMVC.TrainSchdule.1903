@@ -56,7 +56,7 @@ namespace TrainSchdule.Web.Controllers
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var info=await _applyService.SubmitBaseInfoAsync(Extensions.ApplyExtensions.ToDTO(model,_usersService));
 			if(info.Company==null)ModelState.AddModelError("company",$"不存在编号为{model.Company}的单位");
-			if(info.Duties==null)ModelState.AddModelError("duties",$"不存在职务名称:{model.Duties}");
+			if(info.Duties==null)ModelState.AddModelError("duties",$"不存在职务代码:{model.Duties}");
 			if(info.Social.Address==null)ModelState.AddModelError("home",$"不存在的行政区划{model.HomeAddress}");
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			return new JsonResult(ActionStatusMessage.Success);
