@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190505101224_permission_fix")]
-    partial class permission_fix
+    [Migration("20190506022335_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -144,7 +144,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.Duties", b =>
                 {
-                    b.Property<string>("Code");
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name");
 
@@ -158,13 +160,11 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("OwnerId");
-
                     b.Property<string>("Regions");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Role");
 
-                    b.HasIndex("OwnerId");
+                    b.HasKey("Id");
 
                     b.ToTable("Permissions");
                 });
@@ -274,8 +274,6 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthKey");
-
                     b.Property<string>("Avatar");
 
                     b.Property<int>("Gender");
@@ -296,7 +294,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("CompanyCode");
 
-                    b.Property<string>("DutiesCode");
+                    b.Property<int?>("DutiesCode");
 
                     b.HasKey("Id");
 
@@ -317,6 +315,8 @@ namespace DAL.Migrations
                     b.Property<string>("AddressDetail");
 
                     b.Property<string>("Phone");
+
+                    b.Property<int>("Settle");
 
                     b.HasKey("Id");
 
@@ -470,13 +470,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Company", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentCode");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Permissions", b =>
-                {
-                    b.HasOne("DAL.Entities.UserInfo.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.User", b =>

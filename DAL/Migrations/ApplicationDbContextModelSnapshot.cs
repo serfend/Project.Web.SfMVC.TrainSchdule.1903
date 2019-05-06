@@ -142,7 +142,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.Duties", b =>
                 {
-                    b.Property<string>("Code");
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name");
 
@@ -290,7 +292,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("CompanyCode");
 
-                    b.Property<string>("DutiesCode");
+                    b.Property<int?>("DutiesCode");
 
                     b.HasKey("Id");
 

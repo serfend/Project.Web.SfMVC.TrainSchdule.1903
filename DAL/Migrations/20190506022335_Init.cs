@@ -4,10 +4,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AdminDivisions",
+                columns: table => new
+                {
+                    Code = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdminDivisions", x => x.Code);
+                });
+
             migrationBuilder.CreateTable(
                 name: "ApplyRequests",
                 columns: table => new
@@ -97,23 +109,26 @@ namespace DAL.Migrations
                 name: "Duties",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Code = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Duties", x => x.Id);
+                    table.PrimaryKey("PK_Duties", x => x.Code);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PermittingAction",
+                name: "Permissions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    Regions = table.Column<string>(nullable: true),
+                    Role = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PermittingAction", x => x.Id);
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +136,6 @@ namespace DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    AuthKey = table.Column<string>(nullable: true),
                     RealName = table.Column<string>(nullable: true),
                     Avatar = table.Column<string>(nullable: true),
                     Gender = table.Column<int>(nullable: false),
@@ -138,12 +152,19 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Phone = table.Column<string>(nullable: true),
-                    Address = table.Column<string>(nullable: true),
+                    Settle = table.Column<int>(nullable: false),
+                    AddressCode = table.Column<string>(nullable: true),
                     AddressDetail = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserSocialInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserSocialInfo_AdminDivisions_AddressCode",
+                        column: x => x.AddressCode,
+                        principalTable: "AdminDivisions",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -258,7 +279,7 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     CompanyCode = table.Column<string>(nullable: true),
-                    DutiesId = table.Column<Guid>(nullable: true)
+                    DutiesCode = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -270,201 +291,10 @@ namespace DAL.Migrations
                         principalColumn: "Code",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserCompanyInfo_Duties_DutiesId",
-                        column: x => x.DutiesId,
+                        name: "FK_UserCompanyInfo_Duties_DutiesCode",
+                        column: x => x.DutiesCode,
                         principalTable: "Duties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PermissionRange",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CreateId = table.Column<Guid>(nullable: true),
-                    QueryId = table.Column<Guid>(nullable: true),
-                    RemoveId = table.Column<Guid>(nullable: true),
-                    ModifyId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PermissionRange", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PermissionRange_PermittingAction_CreateId",
-                        column: x => x.CreateId,
-                        principalTable: "PermittingAction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PermissionRange_PermittingAction_ModifyId",
-                        column: x => x.ModifyId,
-                        principalTable: "PermittingAction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PermissionRange_PermittingAction_QueryId",
-                        column: x => x.QueryId,
-                        principalTable: "PermittingAction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PermissionRange_PermittingAction_RemoveId",
-                        column: x => x.RemoveId,
-                        principalTable: "PermittingAction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PermittingAuth",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Path = table.Column<string>(nullable: true),
-                    AuthBy = table.Column<Guid>(nullable: false),
-                    Create = table.Column<DateTime>(nullable: false),
-                    PermittingActionId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PermittingAuth", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PermittingAuth_PermittingAction_PermittingActionId",
-                        column: x => x.PermittingActionId,
-                        principalTable: "PermittingAction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Apply",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    申请信息Id = table.Column<Guid>(nullable: true),
-                    审批流Id = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Apply", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Apply_PermissionRange_审批流Id",
-                        column: x => x.审批流Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Apply_PermissionRange_申请信息Id",
-                        column: x => x.申请信息Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Company",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    单位信息Id = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Company", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Company_PermissionRange_单位信息Id",
-                        column: x => x.单位信息Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    基本信息Id = table.Column<Guid>(nullable: true),
-                    社会关系Id = table.Column<Guid>(nullable: true),
-                    职务信息Id = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_User_PermissionRange_基本信息Id",
-                        column: x => x.基本信息Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_User_PermissionRange_社会关系Id",
-                        column: x => x.社会关系Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_User_PermissionRange_职务信息Id",
-                        column: x => x.职务信息Id,
-                        principalTable: "PermissionRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ApplyResponses",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AuditingById = table.Column<string>(nullable: true),
-                    CompanyCode = table.Column<string>(nullable: true),
-                    Status = table.Column<int>(nullable: false),
-                    HandleStamp = table.Column<DateTime>(nullable: false),
-                    Remark = table.Column<string>(nullable: true),
-                    ApplyId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplyResponses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ApplyResponses_Companies_CompanyCode",
-                        column: x => x.CompanyCode,
-                        principalTable: "Companies",
                         principalColumn: "Code",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: true),
-                    ApplyId = table.Column<Guid>(nullable: true),
-                    CompanyId = table.Column<Guid>(nullable: true),
-                    OwnerId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Permissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Permissions_Apply_ApplyId",
-                        column: x => x.ApplyId,
-                        principalTable: "Apply",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Permissions_Company_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Permissions_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -569,6 +399,41 @@ namespace DAL.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ApplyResponses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    AuditingById = table.Column<string>(nullable: true),
+                    CompanyCode = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
+                    HandleStamp = table.Column<DateTime>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    ApplyId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplyResponses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApplyResponses_Applies_ApplyId",
+                        column: x => x.ApplyId,
+                        principalTable: "Applies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ApplyResponses_AppUsers_AuditingById",
+                        column: x => x.AuditingById,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ApplyResponses_Companies_CompanyCode",
+                        column: x => x.CompanyCode,
+                        principalTable: "Companies",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Applies_FromId",
                 table: "Applies",
@@ -583,16 +448,6 @@ namespace DAL.Migrations
                 name: "IX_Applies_stampId",
                 table: "Applies",
                 column: "stampId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Apply_审批流Id",
-                table: "Apply",
-                column: "审批流Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Apply_申请信息Id",
-                table: "Apply",
-                column: "申请信息Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApplyResponses_ApplyId",
@@ -674,71 +529,6 @@ namespace DAL.Migrations
                 column: "ParentCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Company_单位信息Id",
-                table: "Company",
-                column: "单位信息Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermissionRange_CreateId",
-                table: "PermissionRange",
-                column: "CreateId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermissionRange_ModifyId",
-                table: "PermissionRange",
-                column: "ModifyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermissionRange_QueryId",
-                table: "PermissionRange",
-                column: "QueryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermissionRange_RemoveId",
-                table: "PermissionRange",
-                column: "RemoveId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Permissions_ApplyId",
-                table: "Permissions",
-                column: "ApplyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Permissions_CompanyId",
-                table: "Permissions",
-                column: "CompanyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Permissions_OwnerId",
-                table: "Permissions",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Permissions_UserId",
-                table: "Permissions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PermittingAuth_PermittingActionId",
-                table: "PermittingAuth",
-                column: "PermittingActionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_基本信息Id",
-                table: "User",
-                column: "基本信息Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_社会关系Id",
-                table: "User",
-                column: "社会关系Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_职务信息Id",
-                table: "User",
-                column: "职务信息Id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserApplicationInfo_PermissionId",
                 table: "UserApplicationInfo",
                 column: "PermissionId");
@@ -749,41 +539,18 @@ namespace DAL.Migrations
                 column: "CompanyCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCompanyInfo_DutiesId",
+                name: "IX_UserCompanyInfo_DutiesCode",
                 table: "UserCompanyInfo",
-                column: "DutiesId");
+                column: "DutiesCode");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplyResponses_AppUsers_AuditingById",
-                table: "ApplyResponses",
-                column: "AuditingById",
-                principalTable: "AppUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplyResponses_Applies_ApplyId",
-                table: "ApplyResponses",
-                column: "ApplyId",
-                principalTable: "Applies",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Permissions_AppUsers_OwnerId",
-                table: "Permissions",
-                column: "OwnerId",
-                principalTable: "AppUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSocialInfo_AddressCode",
+                table: "UserSocialInfo",
+                column: "AddressCode");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Permissions_AppUsers_OwnerId",
-                table: "Permissions");
-
             migrationBuilder.DropTable(
                 name: "ApplyResponses");
 
@@ -803,9 +570,6 @@ namespace DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "PermittingAuth");
-
-            migrationBuilder.DropTable(
                 name: "Applies");
 
             migrationBuilder.DropTable(
@@ -815,13 +579,13 @@ namespace DAL.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "AppUsers");
+
+            migrationBuilder.DropTable(
                 name: "ApplyRequests");
 
             migrationBuilder.DropTable(
                 name: "ApplyStamps");
-
-            migrationBuilder.DropTable(
-                name: "AppUsers");
 
             migrationBuilder.DropTable(
                 name: "UserApplicationInfo");
@@ -845,19 +609,7 @@ namespace DAL.Migrations
                 name: "Duties");
 
             migrationBuilder.DropTable(
-                name: "Apply");
-
-            migrationBuilder.DropTable(
-                name: "Company");
-
-            migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
-                name: "PermissionRange");
-
-            migrationBuilder.DropTable(
-                name: "PermittingAction");
+                name: "AdminDivisions");
         }
     }
 }

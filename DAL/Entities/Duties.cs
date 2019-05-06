@@ -9,9 +9,9 @@ namespace DAL.Entities
 {
 	public class Duties 
 	{
-		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
+		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
 		[Key]
-		public string Code { get; set; }
+		public int Code { get; set; }
 		/// <summary>
 		/// 职务的名称
 		/// </summary>

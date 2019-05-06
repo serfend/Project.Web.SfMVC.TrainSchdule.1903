@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using DAL.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels.System;
@@ -24,6 +26,7 @@ namespace TrainSchdule.WEB.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly IUsersService _usersService;
@@ -41,7 +44,7 @@ namespace TrainSchdule.WEB.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService) 
+            IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -50,6 +53,7 @@ namespace TrainSchdule.WEB.Controllers
             _usersService = usersService;
             _verifyService = verifyService;
             _authService = authService;
+            _context = context;
         }
 
         #endregion
@@ -202,12 +206,23 @@ namespace TrainSchdule.WEB.Controllers
 			{
 				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			}
+
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
 			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
-
+			var currentUser = _usersService.Get(user.UserName);
+			if (currentUser.CompanyInfo.Company == null) ModelState.AddModelError("company","单位不存在");
+			if (currentUser.CompanyInfo.Duties == null)
+			{
+				await _context.Duties.AddAsync(new Duties()
+				{
+					Name = model.Data.Duties
+				});
+				ModelState.AddModelError("duties", "职务不存在");
+			}
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			//await _signInManager.SignInAsync(user, isPersistent: false);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
