@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.Apply;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.Web.Controllers
 {
@@ -61,8 +62,8 @@ namespace TrainSchdule.Web.Controllers
 			if(info.Company==null)ModelState.AddModelError("company",$"不存在编号为{model.Company}的单位");
 			if(info.Duties==null)ModelState.AddModelError("duties",$"不存在职务代码:{model.Duties}");
 			if(info.Social.Address==null)ModelState.AddModelError("home",$"不存在的行政区划{model.HomeAddress}");
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			return new JsonResult(ActionStatusMessage.Success);
+			if (!ModelState.IsValid)return new JsonResult(new APIResponseModelStateErrorViewModel(info.Id, ModelState));
+			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
 
 		[HttpPost]
@@ -74,8 +75,15 @@ namespace TrainSchdule.Web.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToDTO(model,_context));
 			if(info.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			return new JsonResult(ActionStatusMessage.Success);
+			if (!ModelState.IsValid) return new JsonResult(new APIResponseModelStateErrorViewModel(info.Id,ModelState));
+			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
+		}
+
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
+		{
+
 		}
 		#endregion
 

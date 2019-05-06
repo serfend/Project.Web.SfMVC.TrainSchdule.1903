@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Apply
 {
@@ -25,6 +26,7 @@ namespace TrainSchdule.ViewModels.Apply
 		public string Phone { get; set; }
 		public SettleDownEnum Settle { get; set; }
 	}
+
 
 
 }
