@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Interfaces;
 using DAL.Entities.UserInfo;
 using TrainSchdule.Web.ViewModels;
 
@@ -36,7 +37,7 @@ namespace TrainSchdule.ViewModels.User
 	}
 	public static class UserCompanyInfoExtensions
 	{
-		public static UserCompanyInfoDataModel ToCompanyModel(this UserCompanyInfo model)
+		public static UserCompanyInfoDataModel ToCompanyModel(this UserCompanyInfo model,ICompaniesService companiesService)
 		{
 			return new UserCompanyInfoDataModel()
 			{
@@ -44,7 +45,7 @@ namespace TrainSchdule.ViewModels.User
 				{
 					Code = model.Company?.Code,
 					Name = model.Company?.Name,
-					Parent = model.Company?.Parent?.Name
+					Parent = companiesService.FindParent(model.Company?.Code)?.Name
 				},
 				Duties = model.Duties?.Name
 			};

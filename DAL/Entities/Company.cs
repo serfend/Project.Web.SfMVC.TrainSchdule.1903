@@ -11,10 +11,6 @@ namespace DAL.Entities
 	{
 		public string Name { get; set; }
 
-		/// <summary>
-		/// 由<see cref="Code"/>决定的父单位
-		/// </summary>
-		public virtual Company Parent { get; set; }
 		public bool IsPrivate { get; set; }
 		/// <summary>
 		/// 单位代码

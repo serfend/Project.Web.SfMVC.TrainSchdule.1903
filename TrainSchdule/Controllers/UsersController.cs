@@ -82,7 +82,7 @@ namespace TrainSchdule.WEB.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserCompanyInfoViewModel()
 			{
-				Data = targetUser.CompanyInfo.ToCompanyModel()
+				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
 			});
 		}
 		public IActionResult Base(string id)

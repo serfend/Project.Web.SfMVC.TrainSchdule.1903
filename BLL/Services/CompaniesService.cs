@@ -41,16 +41,16 @@ namespace BLL.Services
 
 		public IEnumerable<Company> FindAllChild(string code)
 		{
-			return _context.Companies.Where(x => x.Parent != null && x.Parent.Code == code).ToList();
+			return _context.Companies.Where(x => ParentCode(x.Code) == code).ToList();
 		}
 
 		public Company FindParent(string code)
 		{
-			var parent = code.Length > 1 ? _context.Companies.Find(code.Substring(0, code.Length - 1)) : null;
-			return parent;
+			var parent = ParentCode(code);
+			return _context.Companies.Find(parent);
 		}
 
-
+		private string ParentCode(string code)=> code.Length > 1 ? code.Substring(0, code.Length - 1) : null;
 
 		public Company Create(string name,string code)
 		{
@@ -61,12 +61,10 @@ namespace BLL.Services
 
 		private Company CreateCompany(string name, string code)
 		{
-			var parent = FindParent(code);
 			var company = new Company()
 			{
 				Name = name,
-				Code = code,
-				Parent = parent
+				Code = code
 			};
 			return company;
 		}

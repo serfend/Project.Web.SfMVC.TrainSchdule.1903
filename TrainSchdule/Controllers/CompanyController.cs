@@ -1,10 +1,13 @@
-﻿using BLL.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.Extensions;
+using TrainSchdule.ViewModels.Company;
 
 namespace TrainSchdule.Web.Controllers
 {
-	[Authorize]
     [Route("[controller]/[action]")]
     public class CompanyController : ControllerBase
     {
@@ -18,7 +21,19 @@ namespace TrainSchdule.Web.Controllers
 		    _currentUserService = currentUserService;
 		    _usersService = usersService;
 	    }
-
+		[HttpGet]
+	    public IActionResult Child(string id)
+	    {
+		  var  companys=_companiesService.FindAllChild(id);
+		 
+		  return new JsonResult(new AllChildViewModel()
+		  {
+			  Data = new AllChildDataModel()
+			  {
+				  List = companys.Select(c=>c.ToCompanyModel())
+			  }
+		  });
+	    }
 	   
 		 
     }
