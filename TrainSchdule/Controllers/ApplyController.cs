@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -87,11 +88,9 @@ namespace TrainSchdule.Web.Controllers
 			if(!model.Verify.Verify(_verifyService)) return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			var apply = _applyService.Submit(Extensions.ApplyExtensions.ToVDTO(model));
 			if(apply.BaseInfo?.Company==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
-			if(apply.Response==null)return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
+			if(apply.Response==null||!apply.Response.Any())return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));
 		}
 		#endregion
-
-
 	}
 }

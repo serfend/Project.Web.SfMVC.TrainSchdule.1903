@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 
@@ -84,7 +85,15 @@ namespace BLL.Services.ApplyServices
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
 
-			var responses=new List<ApplyResponse>();
+			
+			apply.Response = GetAuditStream(company);
+			
+			return Create(apply);
+		}
+
+		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
+		{
+			var responses = new List<ApplyResponse>();
 			string nowId = company.Code;
 			bool anyToSubmit = false;
 			while (nowId.Length >= 7)
@@ -99,14 +108,11 @@ namespace BLL.Services.ApplyServices
 					responses.Add(t);
 					if (!anyToSubmit) anyToSubmit = true;
 				}
-				
+
 				nowId = nowId.Substring(0, nowId.Length - 1);
 			}
 
-			if (!anyToSubmit) return apply;
-			apply.Response = responses;
-			
-			return Create(apply);
+			return responses;
 		}
 	}
 }

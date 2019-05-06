@@ -122,7 +122,7 @@ namespace TrainSchdule.WEB.Controllers
 			if (!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!authByUser.Application.Permission.Check(PermissionList.User.Application,Operation.Update,targetUser))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application,Operation.Update,targetUser))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.AuthKey = model.NewKey;
 			var success = _usersService.Edit(targetUser);
 			if(!success)return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -190,7 +190,7 @@ namespace TrainSchdule.WEB.Controllers
 			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!authByUser.Application.Permission.Check(PermissionList.User.Application, Operation.Update,targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update,targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(model.Id))return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}

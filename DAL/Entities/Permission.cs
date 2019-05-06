@@ -25,11 +25,13 @@ namespace DAL.Entities
 		Query
 	}
 
-	public static class PermissionList
+
+	public static class DictionaryAllPermission
 	{
 		public static class User
 		{
 			public static PermissionDescription Application=new PermissionDescription("User.Application","密码、安全码等敏感信息");
+			public static PermissionDescription BaseInfo=new PermissionDescription("User.BaseInfo","基本信息");
 		}
 	}
 
