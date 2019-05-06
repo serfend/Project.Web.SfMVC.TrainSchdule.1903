@@ -31,7 +31,7 @@ namespace TrainSchdule.ViewModels.User
 
 	public class UserDutiesDataModel
 	{
-		public int Code { get; set; }
+		public int? Code { get; set; }
 		public string Name { get; set; }
 	}
 	public static class UserCompanyInfoExtensions
@@ -54,7 +54,7 @@ namespace TrainSchdule.ViewModels.User
 		{
 			return new UserDutiesDataModel()
 			{
-				Code = model.Duties.Code,
+				Code = model.Duties?.Code,
 				Name = model.Duties?.Name
 			};
 		}
