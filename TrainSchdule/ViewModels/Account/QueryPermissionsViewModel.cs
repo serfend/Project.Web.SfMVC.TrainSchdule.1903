@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DAL.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TrainSchdule.ViewModels.Verify;
@@ -17,6 +18,6 @@ namespace TrainSchdule.ViewModels.Account
 
 	public class QueryPermissionsOutViewModel:APIDataModel
 	{
-		public object Data { get; set; }
+		public IDictionary<string, PermissionRegion> Data { get; set; }
 	}
 }

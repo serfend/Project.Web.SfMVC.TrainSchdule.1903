@@ -134,7 +134,11 @@ namespace BLL.Services
 				Application = new UserApplicationInfo()
 				{
 					Email = user.Email,
-					Permission = new Permissions(),
+					Permission = new Permissions()
+					{
+						Regions = "",
+						Role = "User"
+					},
 					InvitedBy = user.InvitedBy,
 					Create = DateTime.Now,
 					AuthKey = user.Id.GetHashCode().ToString(),
@@ -210,6 +214,7 @@ namespace BLL.Services
 			if (user == null) return false;
 			_context.AppUsers.Remove(user);
 			var appUser =  _context.Users.SingleOrDefault(u=>u.UserName==id);
+			if (appUser == null) return false;
 			_context.Users.Remove(appUser);
 			_context.SaveChanges();
 			return true;
@@ -218,10 +223,11 @@ namespace BLL.Services
         {
 	        var user = await _context.AppUsers.FindAsync(id);
 	        if (user == null) return false;
+			//TODO 级联删除相关
 	        _context.AppUsers.Remove(user);
 	        var appUser = await _context.Users.SingleOrDefaultAsync(u => u.UserName==id);
 	        _context.Users.Remove(appUser);
-await	        _context.SaveChangesAsync();
+			await _context.SaveChangesAsync();
 	        return true;
         }
 		#endregion

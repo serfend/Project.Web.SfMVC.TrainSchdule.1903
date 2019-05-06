@@ -87,7 +87,7 @@ namespace BLL.Services.ApplyServices
 			var responses=new List<ApplyResponse>();
 			string nowId = company.Code;
 			bool anyToSubmit = false;
-			while (nowId.Length >= 6)
+			while (nowId.Length >= 7)
 			{
 				var t = new ApplyResponse()
 				{

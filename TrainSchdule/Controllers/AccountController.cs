@@ -99,7 +99,7 @@ namespace TrainSchdule.WEB.Controllers
 			var targetUser = _usersService.Get(model.id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var permission = targetUser.Application.Permission;
-			return new JsonResult(new QueryPermissionsOutViewModel(){Data =JsonConvert.DeserializeObject(permission.Regions) });
+			return new JsonResult(new QueryPermissionsOutViewModel(){Data =permission.GetRegionList() });
 		}
 		[HttpPost]
 		public IActionResult Permission([FromBody]ModifyPermissionsViewModel model)

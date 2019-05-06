@@ -57,8 +57,8 @@ namespace DAL.Entities
 		{
 			if (grantBy.Role != "Admin")
 			{
-				var dicList = GetRegionList(permissions);
-				var grantList = GetRegionList(grantBy);
+				var dicList = permissions.GetRegionList();
+				var grantList = grantBy.GetRegionList();
 
 				var askForList = ToRegionList(newSerializeRaw);
 				if (askForList.Any(region =>
@@ -91,7 +91,7 @@ namespace DAL.Entities
 		/// </summary>
 		/// <param name="permissions"></param>
 		/// <returns></returns>
-		private static IDictionary<string, PermissionRegion> GetRegionList(Permissions permissions)
+		public static IDictionary<string, PermissionRegion> GetRegionList(this Permissions permissions)
 		{
 			var raw = permissions.Regions;
 			if (raw==null)return new Dictionary<string, PermissionRegion>();
@@ -110,7 +110,7 @@ namespace DAL.Entities
 		/// <returns></returns>
 		private static PermissionRegion GetRegion(Permissions permissions, PermissionDescription key)
 		{
-			var dicList = GetRegionList(permissions);
+			var dicList = permissions.GetRegionList();
 			return GetRegion(dicList, key);
 		}
 
@@ -132,7 +132,7 @@ namespace DAL.Entities
 			string targetUserCompanyCode)
 		{
 			if (Check(permissions, key, operation, targetUserCompanyCode)) return;
-			var dicList = GetRegionList(permissions);
+			var dicList = permissions.GetRegionList();
 			if(!dicList.ContainsKey(key.Name)) dicList[key.Name]=new PermissionRegion()
 			{
 				Create = new List<string>(),
@@ -155,7 +155,7 @@ namespace DAL.Entities
 			string targetUserCompanyCode)
 		{
 			if (!Check(permissions, key, operation, targetUserCompanyCode)) return;
-			var dicList = GetRegionList(permissions);
+			var dicList = permissions.GetRegionList();
 			if (!dicList.ContainsKey(key.Name)) dicList[key.Name] = new PermissionRegion()
 			{
 				Create = new List<string>(),
