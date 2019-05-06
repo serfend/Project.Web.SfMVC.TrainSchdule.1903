@@ -52,7 +52,6 @@ namespace TrainSchdule.WEB.Controllers
 		[AllowAnonymous]
 		public IActionResult Social(string id)
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -65,7 +64,6 @@ namespace TrainSchdule.WEB.Controllers
 		[AllowAnonymous]
 		public IActionResult Duties(string id)
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -79,7 +77,6 @@ namespace TrainSchdule.WEB.Controllers
 		[AllowAnonymous]
 		public IActionResult Company(string id)
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -90,7 +87,6 @@ namespace TrainSchdule.WEB.Controllers
 		}
 		public IActionResult Base(string id)
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
 			var targetUser = _usersService.Get(id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
