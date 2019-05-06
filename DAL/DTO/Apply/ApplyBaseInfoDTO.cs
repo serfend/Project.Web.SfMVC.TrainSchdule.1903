@@ -11,7 +11,7 @@ namespace DAL.DTO.Apply
 		public string RealName { get; set; }
 		public string Company { get; set; }
 		public int Duties { get; set; }
-		public string HomeAddress { get; set; }
+		public int HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }
 		public string Phone { get; set; }
 		public SettleDownEnum Settle { get; set; }

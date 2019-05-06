@@ -2,6 +2,7 @@
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using DAL.Data;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
@@ -19,18 +20,19 @@ namespace TrainSchdule.Web.Controllers
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyService _applyService;
+		private readonly ApplicationDbContext _context;
 		private readonly ICompaniesService _companiesService;
 		private readonly IVerifyService _verifyService;
 
-		private bool _isDisposed;
 
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			_applyService = applyService;
 			_companiesService = companiesService;
 			_verifyService = verifyService;
+			_context = context;
 		}
 
 		#endregion
@@ -49,6 +51,7 @@ namespace TrainSchdule.Web.Controllers
 			});
 		}
 		[HttpPost]
+		[AllowAnonymous]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -61,26 +64,21 @@ namespace TrainSchdule.Web.Controllers
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-		#endregion
 
-		#region Disposing
-
-		protected override void Dispose(bool disposing)
+		[HttpPost]
+		[AllowAnonymous]
+		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					_usersService.Dispose();
-					_currentUserService.Dispose();
-				}
-
-				_isDisposed = true;
-
-				base.Dispose(disposing);
-			}
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var targetUser = _usersService.Get(model.Id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToDTO(model,_context));
+			if(info.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			return new JsonResult(ActionStatusMessage.Success);
 		}
-
 		#endregion
+
+
 	}
 }

@@ -9,7 +9,7 @@ namespace DAL.Entities
 	{
 
 		[Key]
-		public string Code { get; set; }
+		public int Code { get; set; }
 		public string Name { get; set; }
 	}
 }

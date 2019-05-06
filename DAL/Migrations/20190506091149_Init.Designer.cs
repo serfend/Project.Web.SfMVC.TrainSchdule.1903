@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190506071327_Apply_SubmitBase")]
-    partial class Apply_SubmitBase
+    [Migration("20190506091149_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,8 +23,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.AdminDivision", b =>
                 {
-                    b.Property<string>("Code")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name");
 
@@ -68,6 +69,8 @@ namespace DAL.Migrations
 
                     b.Property<string>("FromId");
 
+                    b.Property<string>("RealName");
+
                     b.Property<Guid?>("SocialId");
 
                     b.HasKey("Id");
@@ -98,7 +101,7 @@ namespace DAL.Migrations
 
                     b.Property<int>("VocationLength");
 
-                    b.Property<string>("VocationPlaceCode");
+                    b.Property<int?>("VocationPlaceCode");
 
                     b.Property<string>("VocationType");
 
@@ -322,7 +325,7 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddressCode");
+                    b.Property<int?>("AddressCode");
 
                     b.Property<string>("AddressDetail");
 

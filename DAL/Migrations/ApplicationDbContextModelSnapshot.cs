@@ -21,8 +21,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.AdminDivision", b =>
                 {
-                    b.Property<string>("Code")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name");
 
@@ -98,7 +99,7 @@ namespace DAL.Migrations
 
                     b.Property<int>("VocationLength");
 
-                    b.Property<string>("VocationPlaceCode");
+                    b.Property<int?>("VocationPlaceCode");
 
                     b.Property<string>("VocationType");
 
@@ -322,7 +323,7 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddressCode");
+                    b.Property<int?>("AddressCode");
 
                     b.Property<string>("AddressDetail");
 

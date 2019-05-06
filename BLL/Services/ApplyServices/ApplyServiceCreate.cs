@@ -49,11 +49,22 @@ namespace BLL.Services.ApplyServices
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestDTO model)
 		{
-			throw new System.NotImplementedException();
+			var r=new ApplyRequest()
+			{
+				OnTripLength = model.OnTripLength,
+				Reason = model.Reason,
+				StampLeave = model.StampLeave,
+				StampReturn = model.StampReturn,
+				VocationLength = model.VocationLength,
+				VocationPlace = model.VocationPlace,
+				VocationType = model.VocationType
+			};
+			_context.ApplyRequests.Add(r);
+			return r;
 		}
 		public async  Task<ApplyRequest> SubmitRequestAsync(ApplyRequestDTO model)
 		{
-			throw new System.NotImplementedException();
+			return await Task.Run(()=> SubmitRequest(model));
 		}
 	}
 }
