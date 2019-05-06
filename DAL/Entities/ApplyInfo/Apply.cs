@@ -6,8 +6,8 @@ namespace DAL.Entities.ApplyInfo
 {
 	public class Apply: BaseEntity
 	{
-		public ApplyBaseInfo BaseInfo { get; set; }
-		public ApplyRequest RequestInfo { get; set; }
+		public virtual ApplyBaseInfo BaseInfo { get; set; }
+		public virtual ApplyRequest RequestInfo { get; set; }
 
 		/// <summary>
 		/// 申请发布的时间

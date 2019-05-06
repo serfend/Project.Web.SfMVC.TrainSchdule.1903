@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class ApplyBaseInfo
+	public class ApplyBaseInfo:BaseEntity
 	{
 		public virtual User From { get; set; }
 		public virtual Company Company { get; set; }
