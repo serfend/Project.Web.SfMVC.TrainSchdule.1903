@@ -23,7 +23,7 @@ namespace BLL.Helpers
 			{
 				public static class Invalid
 				{
-					public static readonly Status Default = new Status(12100, "账号权限不足");
+					public static readonly Status Default = new Status(12100, "账号权限错误");
 					public static readonly Status Unknown = new Status(12110, "存在不存在的操作");
 					public static readonly Status NotLogin = new Status(12120, "用户未登录");
 					public static readonly Status ByMutilError = new Status(12130, "存在不存在的操作");
@@ -70,6 +70,12 @@ namespace BLL.Helpers
 			public static readonly Status NotExist = new Status(31000, "单位不存在");
 			public static readonly Status NoneCompanyBelong = new Status(32000, "用户不属于任何一个单位");
 			public static readonly Status CreateExisted = new Status(33000, "创建的单位已经存在");
+			public static class Manager
+			{
+				public static readonly Status Default = new Status(34000, "单位主管发生未知错误");
+				public static readonly Status NotExist=new Status(34100, "单位中不存在此主管");
+				public static readonly Status Existed=new Status(34200, "单位中已存在此主管");
+			}
 		}
 
 		public static class Apply

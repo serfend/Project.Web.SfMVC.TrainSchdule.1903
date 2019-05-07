@@ -25,7 +25,17 @@ namespace TrainSchdule.ViewModels
 			this.Message = message.message;
 		}
 	}
+	public class APIResponseResultViewModel : APIDataModel
+	{
+		public string Result { get; set; }
 
+		public APIResponseResultViewModel(string result, Status message)
+		{
+			this.Result = result;
+			this.Code = message.status;
+			this.Message = message.message;
+		}
+	}
 	public class APIResponseModelStateErrorViewModel : ModelStateExceptionViewModel
 	{
 		public Guid Id { get; set; }

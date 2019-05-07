@@ -11,7 +11,7 @@ namespace TrainSchdule.Controllers
 {
 	[Authorize]
 	[Route("[controller]/[action]")]
-    public class UsersController : Controller
+    public partial class UsersController : Controller
     {
         #region Fields
 
@@ -19,19 +19,21 @@ namespace TrainSchdule.Controllers
         private readonly ICurrentUserService _currentUserService;
         private readonly ICompaniesService _companiesService;
         private readonly IApplyService _applyService;
-
+        private readonly IGoogleAuthService _authService;
 		private bool _isDisposed;
 
         #endregion
 
         #region .ctors
 
-        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService)
+        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices)
         {
             _usersService = usersService;
             _currentUserService = currentUserService;
             _companiesService = companiesService;
             _applyService = applyService;
+            _authService = authService;
+            _companyManagerServices = companyManagerServices;
         }
 
 		#endregion
@@ -145,26 +147,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
-		/// <summary>
-		/// 此用户所管辖的单位
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		public IActionResult OnMyManage(string id)
-		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			var targetUser = _usersService.Get(id);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			return new JsonResult(new UserManageRangeViewModel()
-			{
-				Data = new UserManageRangeDataModel()
-				{
-					List = _usersService.InMyManage(id).Select(c=>c.ToDTO(_companiesService))
-				}
-			});
-		}
+		
 		#endregion
 
 		#region Disposing

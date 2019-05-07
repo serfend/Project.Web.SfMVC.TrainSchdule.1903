@@ -47,6 +47,7 @@ namespace TrainSchdule
 			services.AddScoped<ICompaniesService, CompaniesService > ();
 			services.AddScoped<IApplyService,ApplyService>();
 			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
+			services.AddScoped< ICompanyManagerServices, CompanyManagerServices>();
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
