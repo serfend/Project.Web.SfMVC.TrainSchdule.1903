@@ -96,6 +96,22 @@ namespace BLL.Services.ApplyServices
 			return Create(apply);
 		}
 
+		public IEnumerable<Apply> GetApplyByToAuditCompany(string code)
+		{
+			return _context.Applies.Where(a => a.Response.Any(r => r.Company.Code == code));
+		}
+
+		public IEnumerable<Apply> GetApplyBySubmitCompany(string code)
+		{
+			return _context.Applies.Where(a => a.BaseInfo.Company.Code == code);
+		}
+
+		public IEnumerable<Apply> GetApplyBySubmitUser(string id)
+		{
+			return _context.Applies.Where(a => a.BaseInfo.From.Id == id);
+		}
+
+
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
 		{
 			var responses = new List<ApplyResponse>();
@@ -119,5 +135,6 @@ namespace BLL.Services.ApplyServices
 
 			return responses;
 		}
+
 	}
 }

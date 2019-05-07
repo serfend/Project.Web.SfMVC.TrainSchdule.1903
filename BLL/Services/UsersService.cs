@@ -18,7 +18,7 @@ namespace BLL.Services
 	/// Contains methods with users processing logic.
 	/// Realization of <see cref="IUsersService"/>.
 	/// </summary>
-	public class UsersService : IUsersService
+	public partial class UsersService : IUsersService
     {
         #region Fields
 

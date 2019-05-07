@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DAL.Entities;
 
 namespace BLL.Interfaces
 {
@@ -15,8 +16,8 @@ namespace BLL.Interfaces
 	/// <remarks>
 	/// 此接口需要反射调用.
 	/// </remarks>
-	public interface IUsersService : IDisposable
-    {
+	public interface IUsersService : IDisposable, IUserServiceDetail
+	{
         /// <summary>
         /// 加载所有用户的信息
         /// </summary>
@@ -36,6 +37,8 @@ namespace BLL.Interfaces
         Task<bool> EditAsync(User newUser);
         bool Remove(string id);
         Task<bool> RemoveAsync(string id);
+
+		
 
     }
 }

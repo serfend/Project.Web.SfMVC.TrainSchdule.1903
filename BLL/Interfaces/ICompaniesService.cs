@@ -55,6 +55,7 @@ namespace BLL.Interfaces
         Task<bool> EditAsync(string code, Action<Company> editCallBack);
 
         IEnumerable<User> GetCompanyManagers(string code);
+        bool CheckManagers(string code, string userid);
 
     }
 }

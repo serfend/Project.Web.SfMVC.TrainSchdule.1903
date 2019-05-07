@@ -100,5 +100,9 @@ namespace BLL.Services
 			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m=>m.User);
 		}
 
+		public bool CheckManagers(string code, string userid)
+		{
+			return _context.CompanyManagers.Where(m => m.Company.Code == code).Any(m => m.User.Id == userid);
+		}
 	}
 }
