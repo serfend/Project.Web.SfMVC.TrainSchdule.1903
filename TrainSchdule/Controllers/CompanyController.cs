@@ -43,7 +43,7 @@ namespace TrainSchdule.Web.Controllers
 		[AllowAnonymous]
 		public IActionResult Managers(string id)
 		{
-			id = id ?? _currentUserService.CurrentUser.CompanyInfo.Company.Code;
+			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			var list = _companiesService.GetCompanyManagers(id);
 			if (list == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			return new JsonResult(new CompanyManagerViewModel()
