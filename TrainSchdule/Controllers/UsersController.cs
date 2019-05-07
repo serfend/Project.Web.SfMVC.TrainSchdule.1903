@@ -38,7 +38,11 @@ namespace TrainSchdule.Controllers
 
 		#region Logic
 
-		
+		/// <summary>
+		/// 系统信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Application(string id)
@@ -52,6 +56,11 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.Application.ToModel()
 			});
 		}
+		/// <summary>
+		/// 社会信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Social(string id)
@@ -64,6 +73,11 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.SocialInfo.ToModel()
 			});
 		}
+		/// <summary>
+		/// 职务信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Duties(string id)
@@ -76,7 +90,11 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.CompanyInfo.ToDutiesModel()
 			});
 		}
-
+		/// <summary>
+		/// 单位信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Company(string id)
@@ -89,6 +107,11 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
 			});
 		}
+		/// <summary>
+		/// 基础信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Base(string id)
@@ -101,7 +124,11 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.BaseInfo.ToModel(id)
 			});
 		}
-
+		/// <summary>
+		/// 此用户提交申请的审批流
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult AuditStream(string id)
@@ -115,6 +142,26 @@ namespace TrainSchdule.Controllers
 				Data = new UserAuditStreamDataModel()
 				{
 					List = list.Select(c=>c.Company.ToDTO(_companiesService))
+				}
+			});
+		}
+		/// <summary>
+		/// 此用户所管辖的单位
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult OnMyManage(string id)
+		{
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserManageRangeViewModel()
+			{
+				Data = new UserManageRangeDataModel()
+				{
+					List = _usersService.InMyManage(id).Select(c=>c.ToDTO(_companiesService))
 				}
 			});
 		}
