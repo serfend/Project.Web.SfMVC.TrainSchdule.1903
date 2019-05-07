@@ -5,10 +5,9 @@ using BLL.Interfaces;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.User;
 
-namespace TrainSchdule.WEB.Controllers
+namespace TrainSchdule.Controllers
 {
 	[Authorize]
 	[Route("[controller]/[action]")]

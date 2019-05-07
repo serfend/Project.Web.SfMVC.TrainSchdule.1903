@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-namespace TrainSchdule.WEB
+using TrainSchdule;
+
+namespace TrainSchdule
 {
     public class Program
     {

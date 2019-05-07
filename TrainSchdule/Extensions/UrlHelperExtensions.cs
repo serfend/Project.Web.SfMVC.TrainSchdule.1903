@@ -1,4 +1,4 @@
-using TrainSchdule.WEB.Controllers;
+using TrainSchdule.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc
 {

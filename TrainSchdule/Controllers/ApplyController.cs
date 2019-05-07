@@ -4,19 +4,16 @@ using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
-using DAL.Entities.ApplyInfo;
-using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.Apply;
-using TrainSchdule.ViewModels.System;
-using TrainSchdule.Web.ViewModels;
+using TrainSchdule.ViewModels;
 
-namespace TrainSchdule.Web.Controllers
+namespace TrainSchdule.Controllers
 {
 	[Authorize]
 	[Route("[controller]/[action]")]
-	public class ApplyController: Controller
+	public partial class ApplyController: Controller
 	{
 		#region filed
 		private readonly IUsersService _usersService;

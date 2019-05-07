@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities.UserInfo;
 using Newtonsoft.Json;
-using TrainSchdule.Web.ViewModels;
+using TrainSchdule.ViewModels;
 
 namespace TrainSchdule.ViewModels.User
 {

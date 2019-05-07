@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
-using TrainSchdule.ViewModels.System;
 
-namespace TrainSchdule.Web.ViewModels
+namespace TrainSchdule.ViewModels
 {
 
 	public  class APIDataModel

@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using BLL.Interfaces;
 
-namespace TrainSchdule.WEB.Extensions
+namespace TrainSchdule.Extensions
 {
     public static class EmailSenderExtensions
     {

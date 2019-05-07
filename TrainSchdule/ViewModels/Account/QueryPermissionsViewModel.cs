@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using DAL.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Verify;
-using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Account
 {

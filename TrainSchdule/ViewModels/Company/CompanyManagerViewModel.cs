@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.DTO.User;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.User;
-using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.ViewModels.Company
 {

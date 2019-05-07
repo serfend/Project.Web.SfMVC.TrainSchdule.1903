@@ -1,5 +1,8 @@
-﻿using BLL.Interfaces;
+﻿using System;
+using System.IO;
+using BLL.Interfaces;
 using BLL.Services;
+using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Builder;
@@ -10,11 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using System;
-using System.IO;
-using BLL.Services.ApplyServices;
 
-namespace TrainSchdule.WEB
+namespace TrainSchdule
 {
 	public class Startup
     {

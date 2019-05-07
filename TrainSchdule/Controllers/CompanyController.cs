@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -7,9 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Company;
-using TrainSchdule.ViewModels.User;
 
-namespace TrainSchdule.Web.Controllers
+namespace TrainSchdule.Controllers
 {
 	[Route("[controller]/[action]")]
 	public class CompanyController : ControllerBase

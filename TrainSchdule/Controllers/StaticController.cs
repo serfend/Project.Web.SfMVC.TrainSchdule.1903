@@ -4,8 +4,8 @@ using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Verify;
-using TrainSchdule.Web.ViewModels;
 
 namespace TrainSchdule.Controllers
 {

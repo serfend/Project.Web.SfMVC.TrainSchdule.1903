@@ -1,5 +1,8 @@
-﻿using BLL.Helpers;
+﻿using System;
+using System.Threading.Tasks;
+using BLL.Helpers;
 using BLL.Interfaces;
+using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
@@ -7,16 +10,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
-using DAL.Data;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Account;
-using TrainSchdule.ViewModels.System;
-using TrainSchdule.WEB.Extensions;
+using TrainSchdule.ViewModels;
 
-namespace TrainSchdule.WEB.Controllers
+namespace TrainSchdule.Controllers
 {
 	[Authorize]
     [Route("[controller]/[action]")]
