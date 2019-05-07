@@ -107,9 +107,9 @@ namespace BLL.Helpers
 					public static readonly Status NotExist = new Status(43420, "在申请中未发现此单位");
 				}
 
-				public static class Remove
+				public static class Publish
 				{
-					public static readonly Status AuditIsPublic = new Status(43510, "当前申请处于发布状态，请先撤回申请");
+					public static readonly Status AllReadyPublish = new Status(43510, "当前申请处于发布状态");
 				}
 				
 
@@ -118,6 +118,11 @@ namespace BLL.Helpers
 					public static readonly Status BeenAudit = new Status(43610, "审核已提交过，请勿重复审核");
 					public static readonly Status NotExist = new Status(43620, "不存在的审核流程");
 					
+				}
+				public static class Save
+				{
+					public static readonly Status AllReadySave = new Status(43710, "当前申请处于保存状态");
+
 				}
 
 

@@ -13,35 +13,38 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPut]
 		public IActionResult Save(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish).ToString());
-			return modelCheck;
+			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
+			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Save.AllReadySave);
+			return new JsonResult(modelCheck);
 		}
 		[HttpPut]
 		public IActionResult Publish(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing).ToString());
-			return modelCheck;
+			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
+			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Publish.AllReadyPublish);
+			return new JsonResult(modelCheck);
 		}
 
 		[HttpPut]
 		public IActionResult Withdrew(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew).ToString());
-			return modelCheck;
+			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
+			if(modelCheck.status==ActionStatusMessage.Fail.status)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
+			return new JsonResult(modelCheck);
 		}
-		private IActionResult CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,string>callBack)
+		private Status CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,bool>callBack)
 		{
 			var apply = _applyService.Get(Guid.Parse(id));
-			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) return ActionStatusMessage.Apply.NotExist;
 			var userid = _currentUserService.CurrentUser?.Id;
-			if (userid == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			if (userid == null) return ActionStatusMessage.Account.Auth.Invalid.NotLogin;
 			if (apply.BaseInfo.From.Id != userid)
 			{
-				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) return ActionStatusMessage.Account.Auth.Invalid.Default;
 			}
 
-			var result = callBack.Invoke(apply);
-			return new JsonResult(new APIResponseResultViewModel(result, ActionStatusMessage.Success));
+			if (callBack.Invoke(apply))return ActionStatusMessage.Success;
+			return ActionStatusMessage.Fail;
 		}
 	}
 }

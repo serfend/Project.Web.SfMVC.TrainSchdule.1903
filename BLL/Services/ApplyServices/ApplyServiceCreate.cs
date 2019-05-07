@@ -84,7 +84,7 @@ namespace BLL.Services.ApplyServices
 				Create = DateTime.Now,
 				Hidden = false,
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
-				Status = AuditStatus.NotPublish
+				//不要编辑当前状态，默认就是未保存
 			};
 			//流程 找到信息通信第二旅层级
 			var company = apply.BaseInfo?.Company;
@@ -176,6 +176,7 @@ namespace BLL.Services.ApplyServices
 				default: return false;//不支持其他
 			}
 
+			model.Status = status;
 			_context.SaveChanges();
 			return true;
 		}

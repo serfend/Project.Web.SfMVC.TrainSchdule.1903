@@ -4,38 +4,47 @@ using System.Linq;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TrainSchdule.Extensions;
 
 namespace TrainSchdule.ViewModels.System
 {
 
 	public class APIResponseIdViewModel : APIDataModel
 	{
-		public Guid Id { get; set; }
+		public APIResponseDataModel Data { get; set; }
 
 		public APIResponseIdViewModel(Guid id, Status message)
 		{
-			this.Id = id;
+			Data =new APIResponseDataModel()
+			{
+				Id = id
+			};
 			this.Code = message.status;
 			this.Message = message.message;
 		}
 	}
-	public class APIResponseResultViewModel : APIDataModel
-	{
-		public string Result { get; set; }
 
-		public APIResponseResultViewModel(string result, Status message)
-		{
-			this.Result = result;
-			this.Code = message.status;
-			this.Message = message.message;
-		}
-	}
-	public class APIResponseModelStateErrorViewModel : ModelStateExceptionViewModel
+	public class APIResponseDataModel
 	{
 		public Guid Id { get; set; }
-		public APIResponseModelStateErrorViewModel(Guid id, ModelStateDictionary state) : base(state)
+	}
+
+
+	public class APIResponseModelStateErrorViewModel : APIDataModel
+	{
+		public ModelStateResponseExceptionDataModel Data { get; set; }
+
+		public APIResponseModelStateErrorViewModel(Guid id,ModelStateDictionary state)
 		{
-			this.Id = id;
+			Data = new ModelStateResponseExceptionDataModel { List = state.AllModelStateErrors() ,Id=id};
+			this.Code = -2;
+			this.Message = "成功,数据格式错误";
 		}
+	}
+
+	public class ModelStateResponseExceptionDataModel
+	{
+		public IEnumerable<ShowError> List { get; set; }
+		public Guid Id { get; set; }
 	}
 }

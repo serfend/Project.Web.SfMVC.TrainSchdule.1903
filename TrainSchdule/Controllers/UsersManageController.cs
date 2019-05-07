@@ -50,7 +50,7 @@ namespace TrainSchdule.Controllers
 			var manage = _companyManagerServices.GetManagerByUC(model.Id, model.Code);
 			if(manage==null)return new JsonResult(ActionStatusMessage.Company.Manager.NotExist);
 			int result=_companyManagerServices.Delete(manage);
-			return new JsonResult(new APIResponseResultViewModel(result.ToString(),ActionStatusMessage.Success));
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 
 		[HttpPost]
