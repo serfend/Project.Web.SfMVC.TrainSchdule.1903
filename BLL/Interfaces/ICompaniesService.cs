@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DAL.DTO.User;
 using DAL.Entities;
 
 namespace BLL.Interfaces
@@ -52,5 +53,8 @@ namespace BLL.Interfaces
         bool Edit(string code, Action<Company> editCallBack);
 
         Task<bool> EditAsync(string code, Action<Company> editCallBack);
+
+        IEnumerable<User> GetCompanyManagers(string code);
+
     }
 }

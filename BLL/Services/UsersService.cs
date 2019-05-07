@@ -108,13 +108,13 @@ namespace BLL.Services
         /// <summary>
         /// Creates user.
         /// </summary>
-        public ApplicationUser Create(UserCreateDTO user) =>
+        public ApplicationUser Create(UserCreateVDTO user) =>
 	        CreateAsync(user).Result;
 
 		/// <summary>
 		/// Async creates user.
 		/// </summary>
-		public async Task<ApplicationUser> CreateAsync(UserCreateDTO user)
+		public async Task<ApplicationUser> CreateAsync(UserCreateVDTO user)
 		{
 			var identity = CreateUser(user);
 			if (identity == null) return null;
@@ -126,7 +126,7 @@ namespace BLL.Services
 			return identity;
         }
 
-		private User CreateAppUser(UserCreateDTO user)
+		private User CreateAppUser(UserCreateVDTO user)
 		{
 			var u = new User()
 			{
@@ -163,7 +163,7 @@ namespace BLL.Services
 			
 			return u;
 		}
-		private ApplicationUser CreateUser(UserCreateDTO user)
+		private ApplicationUser CreateUser(UserCreateVDTO user)
 		{
 			if (_context.AppUsers.Find(user.Id) != null) return null;
 

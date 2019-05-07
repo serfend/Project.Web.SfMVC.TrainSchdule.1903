@@ -1,8 +1,11 @@
-﻿using BLL.Helpers;
+﻿using System.Linq;
+using BLL.Extensions;
+using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.WEB.Controllers
@@ -16,18 +19,20 @@ namespace TrainSchdule.WEB.Controllers
         private readonly IUsersService _usersService;
         private readonly ICurrentUserService _currentUserService;
         private readonly ICompaniesService _companiesService;
+        private readonly IApplyService _applyService;
 
-        private bool _isDisposed;
+		private bool _isDisposed;
 
         #endregion
 
         #region .ctors
 
-        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService)
+        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService)
         {
             _usersService = usersService;
             _currentUserService = currentUserService;
             _companiesService = companiesService;
+            _applyService = applyService;
         }
 
 		#endregion
@@ -85,6 +90,8 @@ namespace TrainSchdule.WEB.Controllers
 				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
 			});
 		}
+		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult Base(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
@@ -93,6 +100,23 @@ namespace TrainSchdule.WEB.Controllers
 			return  new JsonResult(new UserBaseInfoViewModel()
 			{
 				Data = targetUser.BaseInfo.ToModel(id)
+			});
+		}
+
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult AuditStream(string id)
+		{
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company);
+			return new JsonResult(new UserAuditStreamViewModel()
+			{
+				Data = new UserAuditStreamDataModel()
+				{
+					List = list.Select(c=>c.Company.ToDTO(_companiesService))
+				}
 			});
 		}
 		#endregion

@@ -6,7 +6,7 @@ using DAL.Entities.UserInfo;
 namespace DAL.DTO.User
 {
 	
-	public class UserCreateDTO
+	public class UserCreateVDTO
 	{
 		public string Id { get; set; }
 		public string RealName { get; set; }

@@ -94,9 +94,9 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
 		{
 			var responses = new List<ApplyResponse>();
-			string nowId = company.Code;
+			string nowId = company?.Code;
 			bool anyToSubmit = false;
-			while (nowId.Length >= 7)
+			while (nowId?.Length >= 7)
 			{
 				var t = new ApplyResponse()
 				{

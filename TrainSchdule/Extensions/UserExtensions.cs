@@ -9,10 +9,10 @@ namespace TrainSchdule.Extensions
 {
 	public static class UserExtensions
 	{
-		public static UserCreateDTO ToDTO(this UserCreateDataModel model,string invitedBy)
+		public static UserCreateVDTO ToDTO(this UserCreateDataModel model,string invitedBy)
 		{
 			if (model == null) return null;
-			return new UserCreateDTO()
+			return new UserCreateVDTO()
 			{
 				Company = model.Company,
 				Duties = model.Duties,

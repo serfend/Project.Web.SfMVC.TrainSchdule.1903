@@ -91,6 +91,8 @@ namespace TrainSchdule.Web.Controllers
 			if(apply.Response==null||!apply.Response.Any())return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));
 		}
+
+		
 		#endregion
 	}
 }

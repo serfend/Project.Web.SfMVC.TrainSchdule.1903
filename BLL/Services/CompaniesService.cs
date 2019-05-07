@@ -93,6 +93,12 @@ namespace BLL.Services
 			return true;
 		}
 
+		public IEnumerable<User> GetCompanyManagers(string code)
+		{
+			var target = _context.Companies.Find(code);
+			if (target == null) return null;
+			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m=>m.User);
+		}
 
 	}
 }
