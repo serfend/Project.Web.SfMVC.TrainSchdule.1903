@@ -89,5 +89,10 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 		}
 
+		public IEnumerable<Apply> Find(Func<Apply, bool> predict)
+		{
+			var list = _context.Applies.Where(predict);
+			return list;
+		}
 	}
 }

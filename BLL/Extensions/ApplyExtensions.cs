@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 
@@ -10,6 +11,22 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
+		public static ApplySummaryDTO ToDTO(this Apply model)
+		{
+			var b=new ApplySummaryDTO()
+			{
+				Create = model.Create,
+				Status = model.Status,
+				CurrentCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
+				From = model.BaseInfo.RealName,
+				Id = model.Id,
+				StampLeave = model.RequestInfo.StampLeave,
+				StampReturn = model.RequestInfo.StampReturn,
+				VocationPlace = model.RequestInfo.VocationPlace.Name,
+				HomePlace=model.BaseInfo.Social.Address.Name
+			};
+			return b;
+		}
 		private static  Dictionary<int,AuditStatusMessage> statusDic { get; set; }
 		public static Dictionary<int, AuditStatusMessage> StatusDic => statusDic ?? (statusDic = InitStatusDic());
 		public static Dictionary<int,Color> StatusColors { get; set; }

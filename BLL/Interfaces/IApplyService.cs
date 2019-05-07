@@ -56,5 +56,7 @@ namespace BLL.Interfaces
 		Task<bool> EditAsync(string userName, Action<Apply> editCallBack);
 
 		void Delete(Apply item);
+
+		IEnumerable<Apply> Find(Func<Apply, bool> predict);
 	}
 }

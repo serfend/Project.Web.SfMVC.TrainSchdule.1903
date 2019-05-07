@@ -34,7 +34,7 @@ namespace TrainSchdule.Extensions
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
-				StampReturn = model.StampLeave,
+				StampReturn = model.StampLeave.AddDays(model.OnTripLength).AddDays(model.VocationLength),
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
 				VocationType = model.VocationType
