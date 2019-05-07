@@ -136,14 +136,14 @@ namespace TrainSchdule
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                
             }
             else if(env.IsProduction())
             {
-                app.UseHttpsRedirection();
+               
             }
-           
+			app.UseDeveloperExceptionPage();
+			app.UseDatabaseErrorPage();
 			app.UseWelcomePage(new WelcomePageOptions() {
 				Path="/welcome"
 			});

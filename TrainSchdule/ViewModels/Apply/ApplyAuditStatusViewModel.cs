@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Apply
 {

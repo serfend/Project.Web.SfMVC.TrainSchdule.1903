@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {

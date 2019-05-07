@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TrainSchdule.Extensions;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels
 {
+	
+	
 	public class ModelStateExceptionViewModel:APIDataModel
 	{
 		public ModelStateExceptionDataModel Data { get; set; }

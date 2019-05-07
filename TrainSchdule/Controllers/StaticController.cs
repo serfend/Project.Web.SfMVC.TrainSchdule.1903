@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers

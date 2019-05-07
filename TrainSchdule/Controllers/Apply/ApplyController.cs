@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
@@ -6,10 +7,11 @@ using BLL.Interfaces;
 using DAL.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TrainSchdule.ViewModels.Apply;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.Apply;
+using TrainSchdule.ViewModels.System;
 
-namespace TrainSchdule.Controllers
+namespace TrainSchdule.Controllers.Apply
 {
 	[Authorize]
 	[Route("[controller]/[action]")]
@@ -22,9 +24,10 @@ namespace TrainSchdule.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly ICompaniesService _companiesService;
 		private readonly IVerifyService _verifyService;
+		private readonly IGoogleAuthService _authService;
 
 
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -32,6 +35,7 @@ namespace TrainSchdule.Controllers
 			_companiesService = companiesService;
 			_verifyService = verifyService;
 			_context = context;
+			_authService = authService;
 		}
 
 		#endregion
@@ -89,6 +93,16 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));
 		}
 
+		[HttpDelete]
+		[AllowAnonymous]
+		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
+		{
+			if(!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var apply = _applyService.Get(Guid.Parse(model.Id));
+			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			_applyService.Delete(apply);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
 		
 		#endregion
 	}

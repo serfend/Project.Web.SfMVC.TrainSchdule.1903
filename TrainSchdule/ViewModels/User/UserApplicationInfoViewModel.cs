@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {

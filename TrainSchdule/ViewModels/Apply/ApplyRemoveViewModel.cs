@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.System;
-using TrainSchdule.ViewModels.Verify;
 
-namespace TrainSchdule.ViewModels.Account
+namespace TrainSchdule.ViewModels.Apply
 {
-	public class UserRemoveViewModel: IdSubmitViewModel
+	public class ApplyRemoveViewModel:IdSubmitViewModel
 	{
-		
 	}
 }

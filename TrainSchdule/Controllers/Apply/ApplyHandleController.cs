@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
+using DAL.DTO.Apply;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.Apply;
 
-namespace TrainSchdule.Controllers
+namespace TrainSchdule.Controllers.Apply
 {
 	public partial class ApplyController
 	{
@@ -91,6 +89,12 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
+		//[HttpGet]
+		//public IActionResult Detail(string id)
+		//{
+			
+		//}
 		
 	}
 }
