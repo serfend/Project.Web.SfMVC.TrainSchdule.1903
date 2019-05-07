@@ -15,7 +15,7 @@ namespace BLL.Services.ApplyServices
 	{
 		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVDTO model)
 		{
-			var m=new ApplyBaseInfo()
+			var m = new ApplyBaseInfo()
 			{
 				Company = _context.Companies.Find(model.Company),
 				Duties = _context.Duties.Find(model.Duties),
@@ -36,12 +36,12 @@ namespace BLL.Services.ApplyServices
 		{
 			var m = new ApplyBaseInfo()
 			{
-				Company =await _context.Companies.FindAsync(model.Company),
-				Duties =await _context.Duties.SingleOrDefaultAsync(d=>d.Name==model.Duties),
+				Company = await _context.Companies.FindAsync(model.Company),
+				Duties = await _context.Duties.SingleOrDefaultAsync(d => d.Name == model.Duties),
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
-					Address =await _context.AdminDivisions.FindAsync(model.HomeAddress),
+					Address = await _context.AdminDivisions.FindAsync(model.HomeAddress),
 					AddressDetail = model.HomeDetailAddress,
 					Phone = model.Phone,
 					Settle = model.Settle
@@ -57,7 +57,7 @@ namespace BLL.Services.ApplyServices
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestVDTO model)
 		{
-			var r=new ApplyRequest()
+			var r = new ApplyRequest()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
@@ -71,14 +71,14 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return r;
 		}
-		public async  Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVDTO model)
+		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVDTO model)
 		{
-			return await Task.Run(()=> SubmitRequest(model));
+			return await Task.Run(() => SubmitRequest(model));
 		}
 
 		public Apply Submit(ApplyVDTO model)
 		{
-			var apply=new Apply()
+			var apply = new Apply()
 			{
 				BaseInfo = _context.ApplyBaseInfos.Find(model.BaseInfoId),
 				Create = DateTime.Now,
@@ -90,9 +90,9 @@ namespace BLL.Services.ApplyServices
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
 
-			
+
 			apply.Response = GetAuditStream(company);
-			
+
 			return Create(apply);
 		}
 
@@ -136,5 +136,48 @@ namespace BLL.Services.ApplyServices
 			return responses;
 		}
 
+		public bool ModifyAuditStatus(Apply model, AuditStatus status)
+		{
+			switch (status)
+			{
+				case AuditStatus.Withdrew:
+					{
+						if (model.Status == AuditStatus.Auditing)
+						{
+							_context.Applies.Update(model);
+						}
+						else return false;
+						break;//撤回
+					}
+				case AuditStatus.NotPublish:
+					{
+						if (model.Status == AuditStatus.NotSave)
+						{
+							_context.Applies.Update(model);
+						}
+						else return false;
+						break;//保存
+					}
+				case AuditStatus.Auditing:
+					{
+						if (model.Status == AuditStatus.NotPublish||model.Status==AuditStatus.NotSave)
+						{
+							foreach (var r in model.Response)
+							{
+								r.Status = Auditing.Received;
+								break;
+							}
+							_context.Applies.Update(model);
+						}
+						else return false;
+
+						break;//发布
+					}
+				default: return false;//不支持其他
+			}
+
+			_context.SaveChanges();
+			return true;
+		}
 	}
 }
