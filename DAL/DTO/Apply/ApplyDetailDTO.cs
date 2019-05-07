@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.UserInfo;
 
 namespace DAL.DTO.Apply
 {
 	public class ApplyDetailDTO:BaseEntity
 	{
-		public  ApplyBaseInfo BaseInfo { get; set; }
+		public virtual Entities.Company Company { get; set; }
+		public virtual Duties Duties { get; set; }
+		public virtual UserSocialInfo Social { get; set; }
 		public  ApplyRequest RequestInfo { get; set; }
 		public DateTime Create { get; set; }
 		public virtual IEnumerable<ApplyResponse> Response { get; set; }

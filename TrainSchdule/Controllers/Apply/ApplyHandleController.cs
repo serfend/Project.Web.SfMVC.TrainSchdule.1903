@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
 using BLL.Extensions;
 using BLL.Helpers;
-using DAL.DTO.Apply;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Controllers.Apply
@@ -15,6 +17,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult FromUser(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
@@ -25,7 +28,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a=>a.ToDTO())
+					List = list.Select(a=>a.ToSummaryDTO())
 				}
 			});
 		}
@@ -36,6 +39,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult ToUser(string id,string code)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
@@ -52,6 +56,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult FromCompany(string code)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
@@ -61,7 +66,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.GetApplyBySubmitCompany(code).Select(a=>a.ToDTO())
+					List = _applyService.GetApplyBySubmitCompany(code).Select(a=>a.ToSummaryDTO())
 				}
 			});
 		}
@@ -71,6 +76,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult ToCompany(string code)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
@@ -85,16 +91,23 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a => a.ToDTO())
+					List = list.Select(a => a.ToSummaryDTO())
 				}
 			});
 		}
 
-		//[HttpGet]
-		//public IActionResult Detail(string id)
-		//{
-			
-		//}
-		
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Detail(string id)
+		{
+			Guid aId = Guid.Parse(id);
+			var apply = _applyService.Get(aId);
+			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			return new JsonResult(new InfoApplyDetailViewModel()
+			{
+				Data = apply.ToDetaiDTO()
+			});
+		}
+
 	}
 }

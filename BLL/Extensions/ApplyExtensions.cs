@@ -20,7 +20,24 @@ namespace BLL.Extensions
 				RealName = model.RealName
 			};
 		}
-		public static ApplySummaryDTO ToDTO(this Apply model)
+
+		public static ApplyDetailDTO ToDetaiDTO(this Apply model)
+		{
+			var b=new ApplyDetailDTO()
+			{
+				Company = model.BaseInfo.Company,
+				Create = model.Create,
+				Duties = model.BaseInfo.Duties,
+				Hidden = model.Hidden,
+				RequestInfo = model.RequestInfo,
+				Response = model.Response,
+				Id = model.Id,
+				Social = model.BaseInfo.Social,
+				Status = model.Status
+			};
+			return b;
+		}
+		public static ApplySummaryDTO ToSummaryDTO(this Apply model)
 		{
 			var b=new ApplySummaryDTO()
 			{
