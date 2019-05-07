@@ -11,14 +11,24 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
+		public static ApplyBaseInfoDTO ToDTO(this ApplyBaseInfo model)
+		{
+			return new ApplyBaseInfoDTO()
+			{
+				CompanyName=model.CompanyName,
+				DutiesName = model.DutiesName,
+				RealName = model.RealName
+			};
+		}
 		public static ApplySummaryDTO ToDTO(this Apply model)
 		{
 			var b=new ApplySummaryDTO()
 			{
 				Create = model.Create,
 				Status = model.Status,
-				CurrentCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
-				From = model.BaseInfo.RealName,
+				NowAuditCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
+				Base = model.BaseInfo.ToDTO(),
+				
 				Id = model.Id,
 				StampLeave = model.RequestInfo.StampLeave,
 				StampReturn = model.RequestInfo.StampReturn,

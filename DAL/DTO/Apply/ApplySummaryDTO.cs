@@ -8,8 +8,8 @@ namespace DAL.DTO.Apply
 {
 	public class ApplySummaryDTO : BaseEntity
 	{
-		public string From { get; set; }
-		public string CurrentCompany { get; set; }
+		public ApplyBaseInfoDTO Base { get; set; }
+		public string NowAuditCompany { get; set; }
 		public string VocationPlace { get; set; }
 		public string HomePlace { get; set; }
 		public DateTime StampLeave { get; set; }

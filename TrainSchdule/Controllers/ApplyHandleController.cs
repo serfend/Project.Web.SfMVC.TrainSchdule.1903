@@ -26,5 +26,21 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
+		[HttpGet]
+		public IActionResult FromCompany(string id)
+		{
+			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			var targetCompany = _companiesService.Get(id);
+			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			var list = _applyService.Find(a => a.BaseInfo.From.CompanyInfo.Company.Code == id && !a.Hidden);
+			return new JsonResult(new ApplyListViewModel()
+			{
+				Data = new ApplyListDataModel()
+				{
+					List = list.Select(a => a.ToDTO())
+				}
+			});
+		}
 	}
 }

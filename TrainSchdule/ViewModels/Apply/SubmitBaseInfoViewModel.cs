@@ -17,7 +17,7 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required]
 		public string Company { get; set; }
 		[Required]
-		public int Duties { get; set; }
+		public string Duties { get; set; }
 		[Required]
 		public int HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }

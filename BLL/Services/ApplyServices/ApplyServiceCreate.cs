@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.ApplyServices
 {
@@ -35,7 +37,7 @@ namespace BLL.Services.ApplyServices
 			var m = new ApplyBaseInfo()
 			{
 				Company =await _context.Companies.FindAsync(model.Company),
-				Duties =await _context.Duties.FindAsync(model.Duties),
+				Duties =await _context.Duties.SingleOrDefaultAsync(d=>d.Name==model.Duties),
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
@@ -44,8 +46,11 @@ namespace BLL.Services.ApplyServices
 					Phone = model.Phone,
 					Settle = model.Settle
 				},
-				RealName = model.RealName
+				RealName = model.RealName,
+				CompanyName = model.Company,
+				DutiesName = model.Duties
 			};
+			if (m.Company != null) m.CompanyName = m.Company.Name;
 			await _context.ApplyBaseInfos.AddAsync(m);
 			await _context.SaveChangesAsync();
 			return m;
