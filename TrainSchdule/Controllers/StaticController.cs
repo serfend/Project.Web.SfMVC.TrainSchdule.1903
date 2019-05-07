@@ -1,10 +1,14 @@
-﻿using BLL.Helpers;
+﻿using System.Linq;
+using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
+using DAL.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.Static;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 
@@ -15,10 +19,12 @@ namespace TrainSchdule.Controllers
 	{
 
 		private readonly IVerifyService _verifyService;
+		private readonly ApplicationDbContext _context;
 
-		public StaticController(IVerifyService verifyService)
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context)
 		{
 			_verifyService = verifyService;
+			_context = context;
 		}
 
 		[HttpGet]
@@ -71,6 +77,41 @@ namespace TrainSchdule.Controllers
 			});
 			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
 			return new FileContentResult(img, "image/jpg");
+		}
+
+		[HttpGet]
+		[AllowAnonymous]
+		[Route("Location")]
+		public IActionResult Location(int code)
+		{
+			var location=_context.AdminDivisions.Find(code);
+			if(location==null)return new JsonResult(ActionStatusMessage.Fail);
+			return new JsonResult(new LocationViewModel()
+			{
+				Data = new LocationDataModel()
+				{
+					Code = location.Code,
+					ParentCode = location.ParentCode,
+					Name = location.Name,
+					ShortName = location.ShortName
+				}
+			});
+		}
+		[HttpGet]
+		[AllowAnonymous]
+		[Route("LocationChildren")]
+		public IActionResult LocationChildren(int code)
+		{
+			var location = _context.AdminDivisions.Find(code);
+			if (location == null) return new JsonResult(ActionStatusMessage.Fail);
+			var list = _context.AdminDivisions.Where(a => a.ParentCode == code);
+			return new JsonResult(new LocationChildrenViewModel()
+			{
+				Data = new LocationChildrenDataModel()
+				{
+					List = list.Select(t=>t.ToDataModel())
+				}
+			});
 		}
 	}
 }
