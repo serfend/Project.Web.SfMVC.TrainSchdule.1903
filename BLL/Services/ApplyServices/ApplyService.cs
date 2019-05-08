@@ -17,9 +17,10 @@ namespace BLL.Services.ApplyServices
 		#endregion
 
 
-		public ApplyService(ApplicationDbContext context)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService)
 		{
 			_context = context;
+			_usersService = usersService;
 		}
 		
 

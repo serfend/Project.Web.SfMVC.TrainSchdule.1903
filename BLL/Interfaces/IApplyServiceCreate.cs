@@ -29,6 +29,6 @@ namespace BLL.Interfaces
 		IEnumerable<ApplyResponse> GetAuditStream(Company company);
 
 		bool ModifyAuditStatus(Apply model, AuditStatus status);
-
+		bool Audit(ApplyAuditVDTO model);
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities;
@@ -13,6 +14,7 @@ namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
+		private readonly IUsersService _usersService;
 		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVDTO model)
 		{
 			var m = new ApplyBaseInfo()
@@ -179,6 +181,64 @@ namespace BLL.Services.ApplyServices
 			model.Status = status;
 			_context.SaveChanges();
 			return true;
+		}
+
+		public bool Audit(ApplyAuditVDTO model)
+		{
+			var myManages = _usersService.InMyManage(model.AuditUser.Id);
+			if(myManages==null)throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var nowAudit=new List<ApplyResponse>();
+			foreach (var r in model.Apply.Response)
+			{
+				if(myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
+			}
+			if(nowAudit.Count==0)throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream);
+			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
+				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+			var result= AuditResponse(nowAudit,model.Apply, model.Action,model.Remark, model.AuditUser);
+			_context.SaveChanges();
+			return result;
+		}
+
+		private bool AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
+		{
+			foreach (var r in responses)
+			{
+				if (r.Status == Auditing.Received)
+				{
+					r.Remark = remark;
+					r.AuditingBy = auditBy;
+					r.HandleStamp=DateTime.Now;
+					AuditSingle(r,target,action);
+					return true;
+				}
+			}
+			throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived);
+		}
+
+		private void AuditSingle(ApplyResponse response, Apply target, AuditResult action)
+		{
+			switch (action)
+			{
+				case AuditResult.Accept:
+					response.Status = Auditing.Accept;
+					break;
+				case AuditResult.Deny:
+					response.Status = Auditing.Denied;
+					target.Status = AuditStatus.Denied;
+					return;
+				case AuditResult.NoAction:
+					return;
+			}
+			switch (target.Response.Count(r => r.Status != Auditing.Accept))
+			{
+				case 1:
+					target.Status = AuditStatus.AcceptAndWaitAdmin;
+					break;
+				case 0:
+					target.Status = AuditStatus.Accept;
+					break;
+			}
 		}
 	}
 }

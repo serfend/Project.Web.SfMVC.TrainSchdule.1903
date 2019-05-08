@@ -20,7 +20,7 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 单位处理审核的时间
 		/// </summary>
-		public DateTime HandleStamp { get; set; }
+		public DateTime?HandleStamp { get; set; }
 		/// <summary>
 		/// 单位批复
 		/// </summary>

@@ -17,7 +17,7 @@ namespace TrainSchdule.ViewModels.User
 	{
 		public string InvitedBy { get; set; }
 		public string About { get; set; }
-		public DateTime Create { get; set; }
+		public DateTime?Create { get; set; }
 		public string Email { get; set; }
 	}
 

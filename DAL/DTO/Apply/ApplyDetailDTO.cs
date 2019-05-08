@@ -13,8 +13,8 @@ namespace DAL.DTO.Apply
 		public virtual Duties Duties { get; set; }
 		public virtual UserSocialInfo Social { get; set; }
 		public  ApplyRequest RequestInfo { get; set; }
-		public DateTime Create { get; set; }
-		public virtual IEnumerable<ApplyResponse> Response { get; set; }
+		public DateTime?Create { get; set; }
+		public virtual IEnumerable<ApplyResponseDTO> Response { get; set; }
 		public AuditStatus Status { get; set; }
 		public bool Hidden { get; set; }
 	}

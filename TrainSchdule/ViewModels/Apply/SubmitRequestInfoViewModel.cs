@@ -11,7 +11,7 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required]
 		public string Id { get; set; }
 		[Required]
-		public DateTime StampLeave { get; set; }
+		public DateTime?StampLeave { get; set; }
 		[Required]
 		public int VocationLength { get; set; }
 		[Required]

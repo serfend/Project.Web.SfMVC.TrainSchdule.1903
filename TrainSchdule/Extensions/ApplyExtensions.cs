@@ -34,7 +34,7 @@ namespace TrainSchdule.Extensions
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
-				StampReturn = model.StampLeave.AddDays(model.OnTripLength).AddDays(model.VocationLength),
+				StampReturn = model.StampLeave?.AddDays(model.OnTripLength).AddDays(model.VocationLength),
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
 				VocationType = model.VocationType
@@ -48,6 +48,18 @@ namespace TrainSchdule.Extensions
 			{
 				BaseInfoId = model.BaseId??Guid.Empty,
 				RequestInfoId = model.RequestId ?? Guid.Empty
+			};
+			return b;
+		}
+
+		public static ApplyAuditVDTO ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
+		{
+			var b=new ApplyAuditVDTO()
+			{
+				Action = model.Data.Action,
+				Apply = applyService.Get(model.Data.Id),
+				AuditUser = usersService.Get(model.Auth.AuthByUserID),
+				Remark = model.Data.Remark
 			};
 			return b;
 		}

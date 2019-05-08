@@ -4,6 +4,8 @@ using BLL.Helpers;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.Extensions;
+using TrainSchdule.ViewModels.Apply;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.Apply
@@ -46,5 +48,22 @@ namespace TrainSchdule.Controllers.Apply
 			if (callBack.Invoke(apply))return ActionStatusMessage.Success;
 			return ActionStatusMessage.Fail;
 		}
+
+
+		[HttpPost]
+		public IActionResult Audit([FromBody]AuditApplyViewModel model)
+		{
+			if(!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			try
+			{
+				var result = _applyService.Audit(model.ToAuditVDTO(_usersService, _applyService));
+			}
+			catch (ActionStatusMessageException e)
+			{
+				return new JsonResult(e.Status);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
 	}
 }

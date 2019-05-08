@@ -117,7 +117,10 @@ namespace BLL.Helpers
 				{
 					public static readonly Status BeenAudit = new Status(43610, "审核已提交过，请勿重复审核");
 					public static readonly Status NotExist = new Status(43620, "不存在的审核流程");
+					public static readonly Status NoYourAuditStream=new Status(43630,"无用户审批的审批流");
+					public static readonly Status BeenAuditOrNotReceived = new Status(43640,"已审核或未收到审核");
 					
+
 				}
 				public static class Save
 				{

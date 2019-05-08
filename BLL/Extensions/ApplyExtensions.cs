@@ -20,7 +20,18 @@ namespace BLL.Extensions
 				RealName = model.RealName
 			};
 		}
-
+		public static ApplyResponseDTO ToResponseDTO(this ApplyResponse model)
+		{
+			var b = new ApplyResponseDTO()
+			{
+				AuditingUserRealName = model.AuditingBy?.BaseInfo?.RealName,
+				CompanyName = model.Company.Name,
+				HandleStamp = model.HandleStamp,
+				Remark = model.Remark,
+				Status = model.Status
+			};
+			return b;
+		}
 		public static ApplyDetailDTO ToDetaiDTO(this Apply model)
 		{
 			var b=new ApplyDetailDTO()
@@ -30,13 +41,15 @@ namespace BLL.Extensions
 				Duties = model.BaseInfo.Duties,
 				Hidden = model.Hidden,
 				RequestInfo = model.RequestInfo,
-				Response = model.Response,
+				Response = model.Response.Select(r=>r.ToResponseDTO()),
 				Id = model.Id,
 				Social = model.BaseInfo.Social,
 				Status = model.Status
 			};
 			return b;
 		}
+
+		
 		public static ApplySummaryDTO ToSummaryDTO(this Apply model)
 		{
 			var b=new ApplySummaryDTO()

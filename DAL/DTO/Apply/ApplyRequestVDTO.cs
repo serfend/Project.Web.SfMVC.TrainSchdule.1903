@@ -7,8 +7,8 @@ namespace DAL.DTO.Apply
 {
 	public class ApplyRequestVDTO
 	{
-		public DateTime StampLeave { get; set; }
-		public DateTime StampReturn { get; set; }
+		public DateTime?StampLeave { get; set; }
+		public DateTime?StampReturn { get; set; }
 		public int OnTripLength { get; set; }
 		public int VocationLength { get; set; }
 		public string VocationType { get; set; }

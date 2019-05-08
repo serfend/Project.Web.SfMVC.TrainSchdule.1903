@@ -12,7 +12,7 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 申请发布的时间
 		/// </summary>
-		public DateTime Create { get; set; }
+		public DateTime?Create { get; set; }
 
 		/// <summary>
 		/// 申请的审核情况

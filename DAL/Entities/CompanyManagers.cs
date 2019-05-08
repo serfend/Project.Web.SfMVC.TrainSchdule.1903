@@ -13,6 +13,6 @@ namespace DAL.Entities
 		public virtual User User { get; set; }
 		public virtual Company Company { get; set; }
 		public virtual User AuthBy { get; set; }
-		public DateTime Create { get; set; }
+		public DateTime?Create { get; set; }
 	}
 }
