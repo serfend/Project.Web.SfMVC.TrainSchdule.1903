@@ -17,11 +17,19 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
+
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BLL\BLL.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\data\avatars\" />
+    <Folder Include="wwwroot\data\settings\" />
   </ItemGroup>
 
 

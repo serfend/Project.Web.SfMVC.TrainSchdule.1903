@@ -20,7 +20,7 @@ namespace TrainSchdule
 	public class Startup
     {
         #region Properties
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         #endregion
