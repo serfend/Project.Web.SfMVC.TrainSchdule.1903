@@ -83,6 +83,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(AllMembersDataModel), 0)]
+
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
