@@ -88,10 +88,10 @@ namespace BLL.Services.ApplyServices
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
 				//不要编辑当前状态，默认就是未保存
 			};
+			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			//流程 找到信息通信第二旅层级
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
-
 
 			apply.Response = GetAuditStream(company);
 			return Create(apply);

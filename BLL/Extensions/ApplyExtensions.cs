@@ -57,9 +57,9 @@ namespace BLL.Extensions
 				Base = model.BaseInfo.ToDTO(),
 				
 				Id = model.Id,
-				StampLeave = model.RequestInfo.StampLeave,
-				StampReturn = model.RequestInfo.StampReturn,
-				VocationPlace = model.RequestInfo.VocationPlace.Name,
+				StampLeave = model.RequestInfo?.StampLeave,
+				StampReturn = model.RequestInfo?.StampReturn,
+				VocationPlace = model.RequestInfo?.VocationPlace.Name,
 				HomePlace=model.BaseInfo.Social.Address.Name
 			};
 			return b;
