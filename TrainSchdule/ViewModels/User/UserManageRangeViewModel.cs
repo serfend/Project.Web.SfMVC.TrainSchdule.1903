@@ -4,13 +4,24 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserManageRangeViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserManageRangeViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public UserManageRangeDataModel Data { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserManageRangeDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<CompanyDto> List { get; set; }
 	}
 }

@@ -10,6 +10,11 @@ namespace TrainSchdule.Controllers.Apply
 {
 	public partial class ApplyController
 	{
+		/// <summary>
+		/// 保存申请
+		/// </summary>
+		/// <param name="id">申请的id</param>
+		/// <returns></returns>
 		[HttpPut]
 		public IActionResult Save(string id)
 		{
@@ -17,6 +22,11 @@ namespace TrainSchdule.Controllers.Apply
 			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Save.AllReadySave);
 			return new JsonResult(modelCheck);
 		}
+		/// <summary>
+		/// 发布申请
+		/// </summary>
+		/// <param name="id">申请的id</param>
+		/// <returns></returns>
 		[HttpPut]
 		public IActionResult Publish(string id)
 		{
@@ -24,7 +34,11 @@ namespace TrainSchdule.Controllers.Apply
 			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Publish.AllReadyPublish);
 			return new JsonResult(modelCheck);
 		}
-
+		/// <summary>
+		/// 撤回申请
+		/// </summary>
+		/// <param name="id">申请的id</param>
+		/// <returns></returns>
 		[HttpPut]
 		public IActionResult Withdrew(string id)
 		{
@@ -32,9 +46,11 @@ namespace TrainSchdule.Controllers.Apply
 			if(modelCheck.status==ActionStatusMessage.Fail.status)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
 			return new JsonResult(modelCheck);
 		}
+		
 		private Status CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,bool>callBack)
 		{
-			var apply = _applyService.Get(Guid.Parse(id));
+			Guid.TryParse(id, out var gid);
+			var apply = _applyService.Get(gid);
 			if (apply == null) return ActionStatusMessage.Apply.NotExist;
 			var userid = _currentUserService.CurrentUser?.Id;
 			if (userid == null) return ActionStatusMessage.Account.Auth.Invalid.NotLogin;
@@ -47,7 +63,11 @@ namespace TrainSchdule.Controllers.Apply
 			return ActionStatusMessage.Fail;
 		}
 
-
+		/// <summary>
+		/// 审核申请
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{

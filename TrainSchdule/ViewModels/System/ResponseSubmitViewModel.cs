@@ -7,13 +7,24 @@ using TrainSchdule.Extensions;
 namespace TrainSchdule.ViewModels.System
 {
 
-	public class APIResponseIdViewModel : APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class APIResponseIdViewModel : ApiDataModel
 	{
-		public APIResponseDataModel Data { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public ApiResponseDataModel Data { get; set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="message"></param>
 		public APIResponseIdViewModel(Guid id, Status message)
 		{
-			Data =new APIResponseDataModel()
+			Data =new ApiResponseDataModel()
 			{
 				Id = id
 			};
@@ -22,17 +33,34 @@ namespace TrainSchdule.ViewModels.System
 		}
 	}
 
-	public class APIResponseDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class ApiResponseDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public Guid Id { get; set; }
 	}
 
 
-	public class APIResponseModelStateErrorViewModel : APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class ApiResponseModelStateErrorViewModel : ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public ModelStateResponseExceptionDataModel Data { get; set; }
 
-		public APIResponseModelStateErrorViewModel(Guid id,ModelStateDictionary state)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="state"></param>
+		public ApiResponseModelStateErrorViewModel(Guid id,ModelStateDictionary state)
 		{
 			Data = new ModelStateResponseExceptionDataModel { List = state.AllModelStateErrors() ,Id=id};
 			Code = -2;
@@ -40,9 +68,18 @@ namespace TrainSchdule.ViewModels.System
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ModelStateResponseExceptionDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<ShowError> List { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public Guid Id { get; set; }
 	}
 }

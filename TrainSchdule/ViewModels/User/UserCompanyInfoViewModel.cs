@@ -4,35 +4,83 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserCompanyInfoViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserCompanyInfoViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public UserCompanyInfoDataModel Data { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserCompanyDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Code { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Name { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Parent { get; set; }
 	}
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserCompanyInfoDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public UserCompanyDataModel Company { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Duties { get; set; }
 	}
 
-	public class UserDutiesViewModel : APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserDutiesViewModel : ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public UserDutiesDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserDutiesDataModel
 	{
+		/// <summary />
 		public int? Code { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Name { get; set; }
 	}
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class UserCompanyInfoExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="companiesService"></param>
+		/// <returns></returns>
 		public static UserCompanyInfoDataModel ToCompanyModel(this UserCompanyInfo model,ICompaniesService companiesService)
 		{
 			return new UserCompanyInfoDataModel()
@@ -46,7 +94,11 @@ namespace TrainSchdule.ViewModels.User
 				Duties = model.Duties?.Name
 			};
 		}
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static UserDutiesDataModel ToDutiesModel(this UserCompanyInfo model)
 		{
 			return new UserDutiesDataModel()

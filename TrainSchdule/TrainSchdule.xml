@@ -1,0 +1,1527 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrainSchdule</name>
+    </assembly>
+    <members>
+        <member name="T:TrainSchdule.Controllers.AccountController">
+            <summary>
+            账号管理
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.#ctor(Microsoft.AspNetCore.Identity.UserManager{DAL.Entities.UserInfo.ApplicationUser},Microsoft.AspNetCore.Identity.SignInManager{DAL.Entities.UserInfo.ApplicationUser},BLL.Interfaces.IEmailSender,Microsoft.Extensions.Logging.ILogger{TrainSchdule.Controllers.AccountController},BLL.Interfaces.IUsersService,BLL.Interfaces.IVerifyService,BLL.Interfaces.IGoogleAuthService,DAL.Data.ApplicationDbContext)">
+            <summary>
+            账号管理
+            </summary>
+            <param name="userManager"></param>
+            <param name="signInManager"></param>
+            <param name="emailSender"></param>
+            <param name="logger"></param>
+            <param name="usersService"></param>
+            <param name="verifyService"></param>
+            <param name="authService"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.ConfirmEmail(System.String,System.String)">
+             <summary>
+             确认邮箱
+             </summary>
+             <param name="userId"></param>
+             <param name="code">系统生成的校验码</param>
+             <remarks>
+            用户注册后，用户的邮箱将收到账号激活邮件，点击后将返回此处
+             </remarks>
+             <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Logout">
+            <summary>
+            退出登录
+            </summary>
+            <returns>需要登录</returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Permission(TrainSchdule.ViewModels.Account.QueryPermissionsViewModel)">
+            <summary>
+            获取当前用户的权限
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Permission(TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel)">
+            <summary>
+            修改权限情况
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.AuthKey(TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel)">
+            <summary>
+            修改安全码
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.AuthKey">
+            <summary>
+            获取安全码 二维码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Login(System.String)">
+            <summary>
+            用户登录界面回调
+            </summary>
+            <param name="returnUrl">登录回调页面</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Login(TrainSchdule.ViewModels.Account.LoginViewModel)">
+            <summary>
+            用户登录
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Remove(TrainSchdule.ViewModels.Account.UserRemoveViewModel)">
+            <summary>
+            移除用户
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.AccountController.Register(TrainSchdule.ViewModels.Account.UserCreateViewModel)">
+            <summary>
+            注册新用户
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Controllers.Apply.ApplyController">
+            <summary>
+            申请管理
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Save(System.String)">
+            <summary>
+            保存申请
+            </summary>
+            <param name="id">申请的id</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Publish(System.String)">
+            <summary>
+            发布申请
+            </summary>
+            <param name="id">申请的id</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Withdrew(System.String)">
+            <summary>
+            撤回申请
+            </summary>
+            <param name="id">申请的id</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Audit(TrainSchdule.ViewModels.Apply.AuditApplyViewModel)">
+            <summary>
+            审核申请
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService)">
+            <summary>
+            
+            </summary>
+            <param name="usersService"></param>
+            <param name="currentUserService"></param>
+            <param name="applyService"></param>
+            <param name="companiesService"></param>
+            <param name="verifyService"></param>
+            <param name="context"></param>
+            <param name="authService"></param>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.AllStatus">
+            <summary>
+            获取申请所有可能的状态信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.BaseInfo(TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel)">
+            <summary>
+            提交申请的基础信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.RequestInfo(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel)">
+            <summary>
+            提交本次申请的请求信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Submit(TrainSchdule.ViewModels.Apply.SubmitApplyViewModel)">
+            <summary>
+            创建申请
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Submit(TrainSchdule.ViewModels.Apply.ApplyRemoveViewModel)">
+            <summary>
+            删除指定申请
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.FromUser(System.String)">
+            <summary>
+            来自此用户发布的
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.ToUser(System.String,System.String)">
+            <summary>
+            交给此用户审批的（选定单位）
+            </summary>
+            <param name="id"></param>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.FromCompany(System.String)">
+            <summary>
+            来自此单位的
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.ToCompany(System.String)">
+            <summary>
+            交给此单位审批的
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.Detail(System.String)">
+            <summary>
+            获取申请的详情
+            </summary>
+            <param name="id">申请的id</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Controllers.CompanyController">
+            <summary>
+            单位管理
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Controllers.CompanyController.#ctor(BLL.Interfaces.ICompaniesService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IUsersService)">
+            <summary>
+            
+            </summary>
+            <param name="companiesService"></param>
+            <param name="currentUserService"></param>
+            <param name="usersService"></param>
+        </member>
+        <member name="M:TrainSchdule.Controllers.CompanyController.Child(System.String)">
+            <summary>
+            获取单位的子层级单位
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.CompanyController.Managers(System.String)">
+            <summary>
+            获取单位的主管
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Controllers.StaticController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext)">
+            <summary>
+            
+            </summary>
+            <param name="verifyService"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.VerifyCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.VerifyCodeFront">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.VerifyCodeBackground">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.Location(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.LocationChildren(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Controllers.UsersController">
+            <summary>
+            用户管理
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IApplyService,BLL.Interfaces.IGoogleAuthService,BLL.Interfaces.ICompanyManagerServices)">
+            <summary>
+            用户管理
+            </summary>
+            <param name="usersService"></param>
+            <param name="currentUserService"></param>
+            <param name="companiesService"></param>
+            <param name="applyService"></param>
+            <param name="authService"></param>
+            <param name="companyManagerServices"></param>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.Application(System.String)">
+            <summary>
+            系统信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.Social(System.String)">
+            <summary>
+            社会信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.Duties(System.String)">
+            <summary>
+            职务信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.Company(System.String)">
+            <summary>
+            单位信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.Base(System.String)">
+            <summary>
+            基础信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.AuditStream(System.String)">
+            <summary>
+            此用户提交申请的审批流
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.OnMyManage(System.String)">
+            <summary>
+            此用户所管辖的单位
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.OnMyManage(TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel)">
+            <summary>
+            移除管辖单位
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.UsersController.OnMyManage(TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel,System.String)">
+            <summary>
+            新增管辖单位
+            </summary>
+            <param name="model"></param>
+            <param name="mdzz">填充参数，无需填写</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.ApplyExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel,BLL.Interfaces.IUsersService)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="usersService"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitApplyViewModel)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToAuditVDTO(TrainSchdule.ViewModels.Apply.AuditApplyViewModel,BLL.Interfaces.IUsersService,BLL.Interfaces.IApplyService)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="usersService"></param>
+            <param name="applyService"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.CompanyExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.CompanyExtensions.ToCompanyModel(DAL.Entities.Company)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.EmailSenderExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.EmailSenderExtensions.SendEmailConfirmationAsync(BLL.Interfaces.IEmailSender,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="emailSender"></param>
+            <param name="email"></param>
+            <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.ModelStateExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ModelStateExtensions.AllModelStateErrors(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            
+            </summary>
+            <param name="modelState"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.ShowError">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.ShowError.#ctor(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="message"></param>
+        </member>
+        <member name="P:TrainSchdule.Extensions.ShowError.Key">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.Extensions.ShowError.Message">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.Extensions.StaticExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.StaticExtensions.ToDataModel(DAL.Entities.AdminDivision)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Extensions.UserExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Extensions.UserExtensions.ToDTO(TrainSchdule.ViewModels.Account.UserCreateDataModel,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="invitedBy"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrainSchdule.Program.BuildWebHost(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:TrainSchdule.Startup.AddApplicationServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:TrainSchdule.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:TrainSchdule.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,System.IServiceProvider)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+            <param name="services"></param>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.LoginViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.Verify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.UserName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.Password">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.RememberMe">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.NewKey">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.ModifyUserId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel.Id">
+            <summary>
+            指定id
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel.NewPermission">
+            <summary>
+            新的权限
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.QueryPermissionsOutViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.QueryPermissionsOutViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.UserCreateViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Verify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.UserCreateDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.RealName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Gender">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Password">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.ConfirmPassword">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Phone">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Email">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.HomeAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.HomeDetailAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Duties">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Company">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Account.UserRemoveViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditStatusViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditStatusViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditStatusDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditStatusDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyListViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyListViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyListDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyListDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyRemoveViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Action">
+            <summary>
+            <see cref="T:DAL.DTO.Apply.AuditResult"/> : 0:无操作 1:同意  2:驳回
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Remark">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.InfoApplyDetailViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.InfoApplyDetailViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.Verify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.BaseId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.RequestId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.RealName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Company">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Duties">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.HomeAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.HomeDetailAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Phone">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Settle">
+            <summary>
+            不符合随军,
+            符合随军未随军同地,
+            符合随军未随军异地,
+            已随军,
+            双军人同地,
+            双军人异地
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.Id">
+            <summary>
+            用户id
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.StampLeave">
+            <summary>
+            离队时间
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationLength">
+            <summary>
+            休假时长
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.OnTripLength">
+            <summary>
+            路途时间
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationType">
+            <summary>
+            休假类型
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationPlace">
+            <summary>
+            休假去向
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.Reason">
+            <summary>
+            休假原因
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.AllChildViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.AllChildViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.AllChildDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.AllChildDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.CompanyChildDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.CompanyChildDataModel.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.CompanyChildDataModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.CompanyManagerViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.CompanyManagerViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.CompanyManagerDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.CompanyManagerDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.LocationChildrenViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationChildrenViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.LocationChildrenDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationChildrenDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.LocationViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.LocationDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.ShortName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.ParentCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.ApiDataModel">
+            <summary>
+            API返回状态
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ApiDataModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ApiDataModel.Message">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.IdSubmitViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.IdSubmitViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.IdSubmitViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.APIResponseIdViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.APIResponseIdViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.System.APIResponseIdViewModel.#ctor(System.Guid,BLL.Helpers.Status)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="message"></param>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.ApiResponseDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ApiResponseDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel.#ctor(System.Guid,Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.ModelStateExceptionViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.ModelStateExceptionViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.ModelStateExceptionViewModel.#ctor(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.ModelStateExceptionDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.ModelStateExceptionDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserApplicationInfoViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserApplicationInfoViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserApplicationDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.InvitedBy">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.About">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.Create">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.Email">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserApplicationInfoExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.User.UserApplicationInfoExtensions.ToModel(DAL.Entities.UserInfo.UserApplicationInfo)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserAuditStreamViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserAuditStreamViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserAuditStreamDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserAuditStreamDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.RealName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Avatar">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Gender">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.PrivateAccount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.User.UserBaseInfoExtensions.ToModel(DAL.Entities.UserInfo.UserBaseInfo,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="userid"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserCompanyDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Parent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel.Company">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel.Duties">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserDutiesViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserDutiesViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserDutiesDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserDutiesDataModel.Code">
+            <summary />
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserDutiesDataModel.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions.ToCompanyModel(DAL.Entities.UserInfo.UserCompanyInfo,BLL.Interfaces.ICompaniesService)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <param name="companiesService"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions.ToDutiesModel(DAL.Entities.UserInfo.UserCompanyInfo)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Auth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserManageRangeViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserManageRangeViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserManageRangeDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserManageRangeDataModel.List">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserSocialViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserSocialViewModel.Data">
+            <summary>
+            社会情况信息
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserSocialDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserSocialDataModel.Phone">
+            <summary>
+            联系方式
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserSocialDataModel.Settle">
+            <summary>
+            不符合随军,
+            符合随军未随军同地,
+            符合随军未随军异地,
+            已随军,
+            双军人同地,
+            双军人异地
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserSocialDataModel.Address">
+            <summary>
+            家庭地址
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.User.UserSocialDataModel.AddressDetail">
+            <summary>
+            家庭详细地址
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.User.UserSocialExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.User.UserSocialExtensions.ToModel(DAL.Entities.UserInfo.UserSocialInfo)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Verify.GoogleAuthViewModel">
+            <summary>
+            谷歌授权码
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.GoogleAuthViewModel.AuthByUserID">
+            <summary>
+            授权权限来源
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.GoogleAuthViewModel.Code">
+            <summary>
+            授权码
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel.PosY">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyViewModel">
+            <summary>
+            滑动验证码
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.Verify.ScrollerVerifyViewModel.Verify(BLL.Interfaces.IVerifyService)">
+            <summary>
+            
+            </summary>
+            <param name="_verifyService"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyViewModel.Code">
+            <summary>
+            X轴位置
+            </summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Mvc.UrlHelperExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Mvc.UrlHelperExtensions.EmailConfirmationLink(Microsoft.AspNetCore.Mvc.IUrlHelper,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="urlHelper"></param>
+            <param name="userId"></param>
+            <param name="code"></param>
+            <param name="scheme"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

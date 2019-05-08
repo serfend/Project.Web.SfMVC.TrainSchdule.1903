@@ -4,21 +4,48 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserApplicationInfoViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserApplicationInfoViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public UserApplicationDataModel Data { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserApplicationDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public string InvitedBy { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string About { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public DateTime?Create { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Email { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class UserApplicationInfoExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static UserApplicationDataModel ToModel(this UserApplicationInfo model)
 		{
 			return new UserApplicationDataModel()

@@ -32,7 +32,11 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
-
+		/// <summary>
+		/// 移除管辖单位
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
@@ -47,6 +51,12 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
+		/// <summary>
+		/// 新增管辖单位
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="mdzz">填充参数，无需填写</param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model,string mdzz)

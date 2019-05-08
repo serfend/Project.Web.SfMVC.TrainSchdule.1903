@@ -4,21 +4,53 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserSocialViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserSocialViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 社会情况信息
+		/// </summary>
 		public UserSocialDataModel Data { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserSocialDataModel
 	{
+		/// <summary>
+		/// 联系方式
+		/// </summary>
 		public string Phone { get; set; }
+		/// <summary>
+		/// 不符合随军,
+		/// 符合随军未随军同地,
+		/// 符合随军未随军异地,
+		/// 已随军,
+		/// 双军人同地,
+		/// 双军人异地
+		/// </summary>
 		public SettleDownEnum Settle { get; set; }
-		public virtual AdminDivision Address { get; set; }
+		/// <summary>
+		/// 家庭地址
+		/// </summary>
+		public  AdminDivision Address { get; set; }
+		/// <summary>
+		/// 家庭详细地址
+		/// </summary>
 		public string AddressDetail { get; set; }
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class UserSocialExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static UserSocialDataModel ToModel(this UserSocialInfo model)
 		{
 			return new UserSocialDataModel()

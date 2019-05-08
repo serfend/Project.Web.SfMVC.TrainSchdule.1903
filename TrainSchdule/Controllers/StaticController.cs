@@ -12,6 +12,9 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Route("[controller]")]
 	public class StaticController : Controller
 	{
@@ -19,12 +22,21 @@ namespace TrainSchdule.Controllers
 		private readonly IVerifyService _verifyService;
 		private readonly ApplicationDbContext _context;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="verifyService"></param>
+		/// <param name="context"></param>
 		public StaticController(IVerifyService verifyService, ApplicationDbContext context)
 		{
 			_verifyService = verifyService;
 			_context = context;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("verify")]
@@ -47,13 +59,17 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("verify-ft.png")]
 		public IActionResult VerifyCodeFront()
 		{
 			var img = _verifyService.Front();
-			if (img == null) return new JsonResult(new APIDataModel()
+			if (img == null) return new JsonResult(new ApiDataModel()
 			{
 				Code = -1,
 				Message = _verifyService.Status
@@ -62,13 +78,17 @@ namespace TrainSchdule.Controllers
 			return new FileContentResult(img,"image/jpg");
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("verify-bg.png")]
 		public IActionResult VerifyCodeBackground()
 		{
 			var img = _verifyService.Background();
-			if (img == null) return new JsonResult(new APIDataModel()
+			if (img == null) return new JsonResult(new ApiDataModel()
 			{
 				Code = -1,
 				Message = _verifyService.Status
@@ -77,6 +97,11 @@ namespace TrainSchdule.Controllers
 			return new FileContentResult(img, "image/jpg");
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("Location")]
@@ -95,6 +120,11 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("LocationChildren")]

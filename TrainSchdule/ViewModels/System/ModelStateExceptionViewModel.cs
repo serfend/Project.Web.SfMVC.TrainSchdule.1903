@@ -7,10 +7,20 @@ namespace TrainSchdule.ViewModels
 {
 	
 	
-	public class ModelStateExceptionViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class ModelStateExceptionViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public ModelStateExceptionDataModel Data { get; set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="state"></param>
 		public ModelStateExceptionViewModel(ModelStateDictionary state)
 		{
 			Data = new ModelStateExceptionDataModel {List = state.AllModelStateErrors()};
@@ -19,8 +29,14 @@ namespace TrainSchdule.ViewModels
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ModelStateExceptionDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<ShowError> List { get; set; }
 	}
 }

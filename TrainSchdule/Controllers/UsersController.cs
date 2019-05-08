@@ -9,6 +9,9 @@ using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.Controllers
 {
+	/// <summary>
+	/// 用户管理
+	/// </summary>
 	[Authorize]
 	[Route("[controller]/[action]")]
     public partial class UsersController : Controller
@@ -24,7 +27,15 @@ namespace TrainSchdule.Controllers
         #endregion
 
         #region .ctors
-
+		/// <summary>
+		/// 用户管理
+		/// </summary>
+		/// <param name="usersService"></param>
+		/// <param name="currentUserService"></param>
+		/// <param name="companiesService"></param>
+		/// <param name="applyService"></param>
+		/// <param name="authService"></param>
+		/// <param name="companyManagerServices"></param>
         public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices)
         {
             _usersService = usersService;

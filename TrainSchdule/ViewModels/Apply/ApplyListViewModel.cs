@@ -4,13 +4,25 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Apply
 {
-	public class ApplyListViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class ApplyListViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public ApplyListDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ApplyListDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<ApplySummaryDto> List { get; set; }
 	}
 }

@@ -6,8 +6,17 @@ using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Extensions
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class ApplyExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="usersService"></param>
+		/// <returns></returns>
 		public static ApplyBaseInfoVdto ToVDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
 		{
 			var b=new ApplyBaseInfoVdto()
@@ -24,6 +33,12 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="context"></param>
+		/// <returns></returns>
 		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
 		{
 			var b=new ApplyRequestVdto()
@@ -39,6 +54,11 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static ApplyVdto ToVDTO(this SubmitApplyViewModel model)
 		{
 			var b=new ApplyVdto()
@@ -49,6 +69,13 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="usersService"></param>
+		/// <param name="applyService"></param>
+		/// <returns></returns>
 		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
 		{
 			var b=new ApplyAuditVdto()

@@ -5,14 +5,28 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class QueryPermissionsViewModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public GoogleAuthViewModel Auth { get; set; }
-		public string id;
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Id;
 	}
-
-	public class QueryPermissionsOutViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class QueryPermissionsOutViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IDictionary<string, PermissionRegion> Data { get; set; }
 	}
 }

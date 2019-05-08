@@ -5,8 +5,16 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace TrainSchdule.Extensions
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class ModelStateExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="modelState"></param>
+		/// <returns></returns>
 		public static IEnumerable<ShowError> AllModelStateErrors(this ModelStateDictionary modelState)
 		{
 			var result = new List<ShowError>();
@@ -25,14 +33,35 @@ namespace TrainSchdule.Extensions
 			return result;
 		}
 	}
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ShowError
 	{
+		private string _message;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="message"></param>
 		public ShowError(string key, string message)
 		{
 			Key = key;
 			Message = message;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Key { get; set; }
-		public string Message { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Message
+		{
+			get => _message;
+			set => _message = value;
+		}
 	}
 }

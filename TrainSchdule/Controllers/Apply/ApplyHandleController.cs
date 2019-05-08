@@ -95,11 +95,16 @@ namespace TrainSchdule.Controllers.Apply
 			});
 		}
 
+		/// <summary>
+		/// 获取申请的详情
+		/// </summary>
+		/// <param name="id">申请的id</param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Detail(string id)
 		{
-			var aId = Guid.Parse(id);
+			Guid.TryParse(id, out var aId);
 			var apply = _applyService.Get(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			return new JsonResult(new InfoApplyDetailViewModel()

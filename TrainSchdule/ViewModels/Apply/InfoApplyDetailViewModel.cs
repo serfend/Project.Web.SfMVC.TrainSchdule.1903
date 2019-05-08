@@ -3,8 +3,14 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Apply
 {
-	public class InfoApplyDetailViewModel : APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class InfoApplyDetailViewModel : ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public ApplyDetailDto Data { get; set; }
 	}
 

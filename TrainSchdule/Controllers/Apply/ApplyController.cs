@@ -13,6 +13,9 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.Apply
 {
+	/// <summary>
+	/// 申请管理
+	/// </summary>
 	[Authorize]
 	[Route("[controller]/[action]")]
 	public partial class ApplyController: Controller
@@ -27,6 +30,16 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IGoogleAuthService _authService;
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="usersService"></param>
+		/// <param name="currentUserService"></param>
+		/// <param name="applyService"></param>
+		/// <param name="companiesService"></param>
+		/// <param name="verifyService"></param>
+		/// <param name="context"></param>
+		/// <param name="authService"></param>
 		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService)
 		{
 			_usersService = usersService;
@@ -42,6 +55,10 @@ namespace TrainSchdule.Controllers.Apply
 
 		#region Logic
 
+		/// <summary>
+		/// 获取申请所有可能的状态信息
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult AllStatus()
@@ -54,6 +71,11 @@ namespace TrainSchdule.Controllers.Apply
 				}
 			});
 		}
+		/// <summary>
+		/// 提交申请的基础信息
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
@@ -65,10 +87,15 @@ namespace TrainSchdule.Controllers.Apply
 			if(info.Company==null)ModelState.AddModelError("company",$"不存在编号为{model.Company}的单位");
 			if(info.Duties==null)ModelState.AddModelError("duties",$"不存在职务代码:{model.Duties}");
 			if(info.Social.Address==null)ModelState.AddModelError("home",$"不存在的行政区划{model.HomeAddress}");
-			if (!ModelState.IsValid)return new JsonResult(new APIResponseModelStateErrorViewModel(info.Id, ModelState));
+			if (!ModelState.IsValid)return new JsonResult(new ApiResponseModelStateErrorViewModel(info.Id, ModelState));
 			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
 
+		/// <summary>
+		/// 提交本次申请的请求信息
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
@@ -78,10 +105,15 @@ namespace TrainSchdule.Controllers.Apply
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToVDTO(model,_context));
 			if(info.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
-			if (!ModelState.IsValid) return new JsonResult(new APIResponseModelStateErrorViewModel(info.Id,ModelState));
+			if (!ModelState.IsValid) return new JsonResult(new ApiResponseModelStateErrorViewModel(info.Id,ModelState));
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
 		}
 
+		/// <summary>
+		/// 创建申请
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
@@ -93,13 +125,18 @@ namespace TrainSchdule.Controllers.Apply
 			if(apply.Response==null||!apply.Response.Any())return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));
 		}
-
+		/// <summary>
+		/// 删除指定申请
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var apply = _applyService.Get(Guid.Parse(model.Id));
+			Guid.TryParse(model.Id, out var id);
+			var apply = _applyService.Get(id);
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			_applyService.Delete(apply);
 			return new JsonResult(ActionStatusMessage.Success);

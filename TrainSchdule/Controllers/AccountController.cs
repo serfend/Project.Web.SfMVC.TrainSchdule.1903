@@ -16,6 +16,9 @@ using TrainSchdule.ViewModels;
 
 namespace TrainSchdule.Controllers
 {
+	/// <summary>
+	/// 账号管理
+	/// </summary>
 	[Authorize]
     [Route("[controller]/[action]")]
     public class AccountController : Controller
@@ -35,7 +38,17 @@ namespace TrainSchdule.Controllers
         #endregion
 
         #region .ctors
-
+		/// <summary>
+		/// 账号管理
+		/// </summary>
+		/// <param name="userManager"></param>
+		/// <param name="signInManager"></param>
+		/// <param name="emailSender"></param>
+		/// <param name="logger"></param>
+		/// <param name="usersService"></param>
+		/// <param name="verifyService"></param>
+		/// <param name="authService"></param>
+		/// <param name="context"></param>
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -55,17 +68,19 @@ namespace TrainSchdule.Controllers
 
         #endregion
 
-        #region Properties
-
-        [TempData]
-        public string ErrorMessage { get; set; }
-
-		#endregion
 
 
 
 		#region Rest
-
+		/// <summary>
+		/// 确认邮箱
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="code">系统生成的校验码</param>
+		/// <remarks>
+		///用户注册后，用户的邮箱将收到账号激活邮件，点击后将返回此处
+		/// </remarks>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public async Task<IActionResult> ConfirmEmail(string userId, string code)
@@ -80,6 +95,10 @@ namespace TrainSchdule.Controllers
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 			return View(result.Succeeded ? "ConfirmEmail" : "Error");
 		}
+		/// <summary>
+		/// 退出登录
+		/// </summary>
+		/// <returns>需要登录</returns>
 		[HttpPost]
 		public async Task<IActionResult> Logout()
 		{
@@ -88,21 +107,30 @@ namespace TrainSchdule.Controllers
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-
+		/// <summary>
+		/// 获取当前用户的权限
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpGet]
 		public IActionResult Permission([FromBody]QueryPermissionsViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var targetUser = _usersService.Get(model.id);
+			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var permission = targetUser.Application.Permission;
 			return new JsonResult(new QueryPermissionsOutViewModel(){Data =permission.GetRegionList() });
 		}
+		/// <summary>
+		/// 修改权限情况
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public IActionResult Permission([FromBody]ModifyPermissionsViewModel model)
 		{
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var targetUser = _usersService.Get(model.id);
+			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
 			if(authUser==null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -110,6 +138,11 @@ namespace TrainSchdule.Controllers
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+		/// <summary>
+		/// 修改安全码
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
@@ -126,7 +159,10 @@ namespace TrainSchdule.Controllers
 			
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-
+		/// <summary>
+		/// 获取安全码 二维码
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult AuthKey()
@@ -138,13 +174,22 @@ namespace TrainSchdule.Controllers
 			HttpContext.Response.Cookies.Append("key",_authService.Code().ToString());
 			return new FileContentResult(img,"image/png");
 		}
-
+		/// <summary>
+		/// 用户登录界面回调
+		/// </summary>
+		/// <param name="returnUrl">登录回调页面</param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Login(string returnUrl)
 		{
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
+		/// <summary>
+		/// 用户登录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
@@ -183,7 +228,11 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			}
 		}
-
+		/// <summary>
+		/// 移除用户
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
@@ -197,6 +246,11 @@ namespace TrainSchdule.Controllers
 			if (!await _usersService.RemoveAsync(model.Id))return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+		/// <summary>
+		/// 注册新用户
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)

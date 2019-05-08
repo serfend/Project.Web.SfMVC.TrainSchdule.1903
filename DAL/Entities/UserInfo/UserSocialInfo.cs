@@ -11,8 +11,11 @@
 
 	public enum SettleDownEnum
 	{
-		Unmarried,
-		Difference,
-		Same,
+		不符合随军,
+		符合随军未随军同地,
+		符合随军未随军异地,
+		已随军,
+		双军人同地,
+		双军人异地
 	}
 }

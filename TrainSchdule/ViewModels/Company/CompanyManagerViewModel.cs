@@ -4,13 +4,25 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Company
 {
-	public class CompanyManagerViewModel:APIDataModel
+	/// <summary>
+	/// 
+	/// </summary>
+	public class CompanyManagerViewModel:ApiDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public CompanyManagerDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class CompanyManagerDataModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<UserSummaryDto> List { get; set; }
 	}
 }

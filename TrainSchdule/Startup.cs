@@ -17,9 +17,15 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace TrainSchdule
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Startup
     {
         #region Properties
+        /// <summary>
+        /// 
+        /// </summary>
         public IConfiguration Configuration { get; set; }
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -27,6 +33,10 @@ namespace TrainSchdule
 
         #region .ctors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
 			//注入Configuration服务
@@ -37,6 +47,10 @@ namespace TrainSchdule
 
         #region Logic
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public void AddApplicationServices(IServiceCollection services)
         {
 			//每次调用均对应一个实例
@@ -56,6 +70,10 @@ namespace TrainSchdule
 	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
         {
 
@@ -100,6 +118,10 @@ namespace TrainSchdule
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
+				// 为 Swagger JSON and UI设置xml文档注释路径
+				var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
+				var xmlPath = Path.Combine(basePath, "TrainSchdule.xml");
+				c.IncludeXmlComments(xmlPath);
 			});
 		}
 		private void AddAllowCorsServices(IServiceCollection services)
@@ -147,6 +169,12 @@ namespace TrainSchdule
 			});
 
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="app"></param>
+		/// <param name="env"></param>
+		/// <param name="services"></param>
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
         {
             if (env.IsDevelopment())
@@ -188,7 +216,7 @@ namespace TrainSchdule
                 routes.MapRoute(
                     name: "default",
 					//controller/action/param
-                    template: "{controller=Home}/{action=Cover}/{id?}");
+                    template: "{controller=Home}/{action=Cover}/{Id?}");
             });
 
             //seeder.Seed().Wait();

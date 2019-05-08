@@ -3,8 +3,17 @@ using TrainSchdule.ViewModels.Account;
 
 namespace TrainSchdule.Extensions
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class UserExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="invitedBy"></param>
+		/// <returns></returns>
 		public static UserCreateVdto ToDTO(this UserCreateDataModel model,string invitedBy)
 		{
 			if (model == null) return null;

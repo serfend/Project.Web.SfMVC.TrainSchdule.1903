@@ -3,8 +3,16 @@ using TrainSchdule.ViewModels.Company;
 
 namespace TrainSchdule.Extensions
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class CompanyExtensions
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static CompanyChildDataModel ToCompanyModel(this Company model)
 		{
 			var b=new CompanyChildDataModel()

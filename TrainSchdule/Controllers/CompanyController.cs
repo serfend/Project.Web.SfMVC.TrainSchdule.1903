@@ -9,17 +9,31 @@ using TrainSchdule.ViewModels.Company;
 
 namespace TrainSchdule.Controllers
 {
+	/// <summary>
+	/// 单位管理
+	/// </summary>
 	[Route("[controller]/[action]")]
 	public class CompanyController : ControllerBase
 	{
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="companiesService"></param>
+		/// <param name="currentUserService"></param>
+		/// <param name="usersService"></param>
 		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
 		}
+		/// <summary>
+		/// 获取单位的子层级单位
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		public IActionResult Child(string id)
 		{
@@ -35,6 +49,11 @@ namespace TrainSchdule.Controllers
 			});
 		}
 
+		/// <summary>
+		/// 获取单位的主管
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Managers(string id)
