@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace TrainSchdule
 {
@@ -63,6 +64,47 @@ namespace TrainSchdule
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
+
+			AddAllowCorsServices(services);
+			AddSwaggerServices(services);
+			services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredUniqueChars = 4;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            });
+
+  
+            AddApplicationServices(services);
+            
+          
+			services.AddMvc();
+
+		}
+
+		private void AddSwaggerServices(IServiceCollection services)
+		{
+			//注册Swagger生成器，定义一个和多个Swagger 文档
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
+			});
+		}
+		private void AddAllowCorsServices(IServiceCollection services)
+		{
+
 			services.AddCors(options =>
 			{
 				options.AddPolicy(MyAllowSpecificOrigins,
@@ -93,46 +135,19 @@ namespace TrainSchdule
 				});
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddDefaultTokenProviders();
 
 
-			
+
 			services.AddSession(s =>
 			{
 				s.IdleTimeout = TimeSpan.FromMinutes(60);
 				s.Cookie.SameSite = SameSiteMode.None;
 			});
 
-
-			services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 4;
-
-                // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 10;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // User settings
-                options.User.RequireUniqueEmail = true;
-            });
-
-  
-            AddApplicationServices(services);
-            
-          
-			services.AddMvc();
-
 		}
-
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
         {
             if (env.IsDevelopment())
             {
@@ -151,6 +166,13 @@ namespace TrainSchdule
             app.UseStaticFiles();
             app.UseSession();
 
+            //启用中间件服务生成Swagger作为JSON终结点
+            app.UseSwagger();
+            //启用中间件服务对swagger-ui，指定Swagger JSON终结点
+            app.UseSwaggerUI(c =>
+            {
+	            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions

@@ -20,7 +20,6 @@ namespace TrainSchdule.Controllers
         private readonly ICompaniesService _companiesService;
         private readonly IApplyService _applyService;
         private readonly IGoogleAuthService _authService;
-		private bool _isDisposed;
 
         #endregion
 
@@ -150,24 +149,5 @@ namespace TrainSchdule.Controllers
 		
 		#endregion
 
-		#region Disposing
-
-		protected override void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    _usersService.Dispose();
-                    _currentUserService.Dispose();
-                }
-
-                _isDisposed = true;
-
-                base.Dispose(disposing);
-            }
-        }
-
-        #endregion
     }
 }

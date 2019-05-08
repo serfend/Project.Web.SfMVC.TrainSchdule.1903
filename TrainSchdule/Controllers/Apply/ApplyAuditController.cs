@@ -53,7 +53,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
-			if(!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			try
 			{
 				var result = _applyService.Audit(model.ToAuditVDTO(_usersService, _applyService));

@@ -98,7 +98,7 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
-			if(!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var apply = _applyService.Get(Guid.Parse(model.Id));
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			_applyService.Delete(apply);
