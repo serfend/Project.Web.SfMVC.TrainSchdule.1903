@@ -52,9 +52,5 @@ namespace BLL.Services
 
 		public ICurrentUserService CurrentUserService { get; set; }
 
-		public void Dispose()
-		{
-			CurrentUserService?.Dispose();
-		}
 	}
 }

@@ -15,7 +15,6 @@ namespace BLL.Services
         #region Fields
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ApplicationDbContext _context;
-		private bool _isDisposed;
 
         #endregion
 
@@ -43,31 +42,5 @@ namespace BLL.Services
 
         #endregion
 
-        #region Disposing
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                }
-
-                _isDisposed = true;
-            }
-        }
-
-        ~CurrentUserService()
-        {
-            Dispose(false);
-        }
-
-        #endregion
     }
 }

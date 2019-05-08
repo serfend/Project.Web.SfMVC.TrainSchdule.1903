@@ -92,7 +92,7 @@
 
 				public static class Submit
 				{
-					public static readonly Status Crash = new Status(43310, "当前存在正在进行的申请（审核中、审核通过状态）");
+					public static readonly Status Crash = new Status(43310, "申请过于频繁");
 					public static readonly Status Began = new Status(43320, "申请已处于审核状态中");
 				}
 				public static class ToCompany

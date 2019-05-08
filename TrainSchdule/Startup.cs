@@ -82,7 +82,7 @@ namespace TrainSchdule
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
-
+			services.AddTimedJob();
 			AddAllowCorsServices(services);
 			AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
@@ -185,6 +185,7 @@ namespace TrainSchdule
             {
                
             }
+            app.UseTimedJob();
 			app.UseDeveloperExceptionPage();
 			app.UseDatabaseErrorPage();
 			app.UseWelcomePage(new WelcomePageOptions() {

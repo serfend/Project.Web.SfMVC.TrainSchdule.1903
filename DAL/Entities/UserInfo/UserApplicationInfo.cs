@@ -15,5 +15,6 @@ namespace DAL.Entities.UserInfo
 		public string Email { get; set; }
 		public string AuthKey { get; set; }
 
+		public virtual UserApplicationSetting ApplicationSetting { get; set; }
 	}
 }

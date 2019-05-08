@@ -94,7 +94,6 @@ namespace BLL.Services.ApplyServices
 
 
 			apply.Response = GetAuditStream(company);
-
 			return Create(apply);
 		}
 

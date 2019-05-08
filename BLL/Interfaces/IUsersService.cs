@@ -15,7 +15,7 @@ namespace BLL.Interfaces
 	/// <remarks>
 	/// 此接口需要反射调用.
 	/// </remarks>
-	public interface IUsersService : IDisposable, IUserServiceDetail
+	public interface IUsersService :  IUserServiceDetail
 	{
         /// <summary>
         /// 加载所有用户的信息

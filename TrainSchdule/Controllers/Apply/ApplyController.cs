@@ -128,6 +128,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if(!model.Verify.Verify(_verifyService)) return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
 			var apply = _applyService.Submit(Extensions.ApplyExtensions.ToVDTO(model));
+			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
 			if(apply.BaseInfo?.Company==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if(apply.Response==null||!apply.Response.Any())return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));

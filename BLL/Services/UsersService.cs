@@ -25,7 +25,6 @@ namespace BLL.Services
         private readonly ICurrentUserService _currentUserService;
         private readonly ApplicationDbContext _context;
 
-        private bool _isDisposed;
 
         #endregion
 
@@ -142,6 +141,10 @@ namespace BLL.Services
 					InvitedBy = user.InvitedBy,
 					Create = DateTime.Now,
 					AuthKey = user.Id.GetHashCode().ToString(),
+					ApplicationSetting = new UserApplicationSetting()
+					{
+						LastSubmitApplyTime = DateTime.Now
+					}
 				},
 				BaseInfo = new UserBaseInfo()
 				{
@@ -233,32 +236,6 @@ namespace BLL.Services
 		#endregion
 
 
-		#region Disposing
 
-		public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    _currentUserService.Dispose();
-                }
-
-                _isDisposed = true;
-            }
-        }
-
-        ~UsersService()
-        {
-            Dispose(false);
-        }
-
-        #endregion
     }
 }

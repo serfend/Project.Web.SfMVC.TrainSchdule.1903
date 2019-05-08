@@ -6,7 +6,7 @@ namespace BLL.Interfaces
     /// <summary>
     /// Interface for getting current user services.
     /// </summary>
-    public interface ICurrentUserService : IDisposable
+    public interface ICurrentUserService 
     {
         User CurrentUser { get; }
 

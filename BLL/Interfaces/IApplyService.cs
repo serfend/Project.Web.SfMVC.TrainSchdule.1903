@@ -6,7 +6,7 @@ using DAL.Entities.ApplyInfo;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyService :IApplyServiceCreate
+	public interface IApplyService :IApplyServiceCreate, IApplyServiceManage
 	{
 		Apply Get(Guid id);
 

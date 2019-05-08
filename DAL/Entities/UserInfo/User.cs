@@ -10,7 +10,6 @@
 		public virtual UserCompanyInfo CompanyInfo { get; set; }
 		public virtual UserSocialInfo SocialInfo { get; set; }
 		
-
 		
         #endregion
 
