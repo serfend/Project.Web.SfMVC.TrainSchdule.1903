@@ -57,6 +57,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserApplicationInfoViewModel), 0)]
+
 		public IActionResult Application(string id)
 		{
 			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -75,6 +77,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
+
 		public IActionResult Social(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
@@ -92,6 +96,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
+
 		public IActionResult Duties(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
@@ -109,6 +115,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
+
 		public IActionResult Company(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
@@ -126,6 +134,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
+
 		public IActionResult Base(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
@@ -143,6 +153,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
+
 		public IActionResult AuditStream(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;

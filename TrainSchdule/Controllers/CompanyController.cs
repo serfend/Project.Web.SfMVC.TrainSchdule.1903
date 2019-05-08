@@ -56,6 +56,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(CompanyManagerDataModel), 0)]
+
 		public IActionResult Managers(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;

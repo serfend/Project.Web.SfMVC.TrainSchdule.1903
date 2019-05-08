@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
+using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels;
@@ -61,6 +63,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>),0)]
 		public IActionResult AllStatus()
 		{
 			return new JsonResult(new ApplyAuditStatusViewModel()
@@ -78,6 +81,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -98,6 +102,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
 		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -116,6 +121,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
+
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -132,6 +139,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
+
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);

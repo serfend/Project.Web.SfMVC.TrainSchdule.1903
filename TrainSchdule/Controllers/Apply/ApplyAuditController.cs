@@ -16,6 +16,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[ProducesResponseType(typeof(Status),0)]
+
 		public IActionResult Save(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
@@ -28,6 +30,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult Publish(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
@@ -40,6 +44,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult Withdrew(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
@@ -69,6 +75,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.DrawingCore;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -83,6 +85,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status),0)]
 		public async Task<IActionResult> ConfirmEmail(string userId, string code)
 		{
 			if (userId == null || code == null)
@@ -93,13 +96,15 @@ namespace TrainSchdule.Controllers
 			           throw new ApplicationException($"无法加载当前用户信息 '{userId}'.");
 
 			var result = await _userManager.ConfirmEmailAsync(user, code);
-			return View(result.Succeeded ? "ConfirmEmail" : "Error");
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
 		/// 退出登录
 		/// </summary>
 		/// <returns>需要登录</returns>
 		[HttpPost]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
@@ -113,6 +118,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[ProducesResponseType(typeof(IDictionary<string, PermissionRegion>), 0)]
+
 		public IActionResult Permission([FromBody]QueryPermissionsViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -127,6 +134,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult Permission([FromBody]ModifyPermissionsViewModel model)
 		{
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -145,6 +154,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
@@ -165,6 +176,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Image), 0)]
+
 		public IActionResult AuthKey()
 		{
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -181,6 +194,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult Login(string returnUrl)
 		{
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -192,6 +207,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
 			if (ModelState.IsValid)
@@ -235,6 +252,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -253,6 +272,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));

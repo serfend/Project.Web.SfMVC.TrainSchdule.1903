@@ -19,6 +19,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserManageRangeDataModel), 0)]
+
 		public IActionResult OnMyManage(string id)
 		{
 			id=id ?? _currentUserService.CurrentUser?.Id;
@@ -39,6 +41,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -59,6 +63,8 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model,string mdzz)
 		{
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);

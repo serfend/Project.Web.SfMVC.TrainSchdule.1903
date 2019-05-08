@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using BLL.Extensions;
 using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using DAL.DTO.Apply;
 using Microsoft.AspNetCore.Authorization;
 using TrainSchdule.ViewModels.Apply;
 
@@ -17,6 +19,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
+
 		public IActionResult FromUser(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
@@ -39,6 +43,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
 		public IActionResult ToUser(string id,string code)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
@@ -56,6 +61,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
+
 		public IActionResult FromCompany(string code)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
@@ -76,6 +83,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
+		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
+
 		public IActionResult ToCompany(string code)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;

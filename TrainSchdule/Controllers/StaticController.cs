@@ -105,6 +105,8 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("Location")]
+		[ProducesResponseType(typeof(LocationDataModel), 0)]
+
 		public IActionResult Location(int code)
 		{
 			var location=_context.AdminDivisions.Find(code);
@@ -128,6 +130,8 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("LocationChildren")]
+		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
+
 		public IActionResult LocationChildren(int code)
 		{
 			var location = _context.AdminDivisions.Find(code);
