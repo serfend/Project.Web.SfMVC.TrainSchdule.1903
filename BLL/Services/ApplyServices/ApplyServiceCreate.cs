@@ -15,7 +15,7 @@ namespace BLL.Services.ApplyServices
 	public partial class ApplyService
 	{
 		private readonly IUsersService _usersService;
-		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVDTO model)
+		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model)
 		{
 			var m = new ApplyBaseInfo()
 			{
@@ -34,7 +34,7 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return m;
 		}
-		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVDTO model)
+		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
 		{
 			var m = new ApplyBaseInfo()
 			{
@@ -57,7 +57,7 @@ namespace BLL.Services.ApplyServices
 			await _context.SaveChangesAsync();
 			return m;
 		}
-		public ApplyRequest SubmitRequest(ApplyRequestVDTO model)
+		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
 		{
 			var r = new ApplyRequest()
 			{
@@ -73,12 +73,12 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return r;
 		}
-		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVDTO model)
+		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
 		{
 			return await Task.Run(() => SubmitRequest(model));
 		}
 
-		public Apply Submit(ApplyVDTO model)
+		public Apply Submit(ApplyVdto model)
 		{
 			var apply = new Apply()
 			{
@@ -117,8 +117,8 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
 		{
 			var responses = new List<ApplyResponse>();
-			string nowId = company?.Code;
-			bool anyToSubmit = false;
+			var nowId = company?.Code;
+			var anyToSubmit = false;
 			while (nowId?.Length >= 7)
 			{
 				var t = new ApplyResponse()
@@ -183,7 +183,7 @@ namespace BLL.Services.ApplyServices
 			return true;
 		}
 
-		public bool Audit(ApplyAuditVDTO model)
+		public bool Audit(ApplyAuditVdto model)
 		{
 			var myManages = _usersService.InMyManage(model.AuditUser.Id);
 			if(myManages==null)throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);

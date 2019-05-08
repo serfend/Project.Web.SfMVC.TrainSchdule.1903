@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace DAL.Entities
@@ -42,8 +38,8 @@ namespace DAL.Entities
 
 		public PermissionDescription(string name, string description)
 		{
-			this.Name = name;
-			this.Description = description;
+			Name = name;
+			Description = description;
 		}
 	}
 	public static class PermissionCheckExtension
@@ -196,9 +192,9 @@ namespace DAL.Entities
 
 		
 		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation,
-			Entities.Company targetUserCompany) => Check(permissions, key, operation, targetUserCompany?.Code);
+			Company targetUserCompany) => Check(permissions, key, operation, targetUserCompany?.Code);
 		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation,
-			Entities.UserInfo.User user) => Check(permissions, key, operation, user.CompanyInfo.Company?.Code);
+			UserInfo.User user) => Check(permissions, key, operation, user.CompanyInfo.Company?.Code);
 	}
 
 

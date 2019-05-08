@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL.Entities;
+﻿using System.Collections.Generic;
 using DAL.Entities.ApplyInfo;
-using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Apply

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Company;
@@ -36,7 +35,7 @@ namespace BLL.Services
 			return _context.SaveChanges();
 		}
 
-		public CompanyManagers CreateManagers(CompanyManagerVDTO model)
+		public CompanyManagers CreateManagers(CompanyManagerVdto model)
 		{
 			var manager=new CompanyManagers()
 			{

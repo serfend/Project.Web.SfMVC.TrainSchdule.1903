@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DAL.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DAL.DTO.User;
-using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
-using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.ViewModels.Company
 {
@@ -16,6 +11,6 @@ namespace TrainSchdule.ViewModels.Company
 
 	public class CompanyManagerDataModel
 	{
-		public IEnumerable<UserSummaryDTO> List { get; set; }
+		public IEnumerable<UserSummaryDto> List { get; set; }
 	}
 }

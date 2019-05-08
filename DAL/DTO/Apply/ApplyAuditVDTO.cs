@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DAL.DTO.Apply
+﻿namespace DAL.DTO.Apply
 {
-	public class ApplyAuditVDTO
+	public class ApplyAuditVdto
 	{
 		public AuditResult Action { get; set; }
 		public string Remark { get; set; }

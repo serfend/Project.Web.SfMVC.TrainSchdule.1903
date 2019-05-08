@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TrainSchdule.Extensions;
@@ -19,8 +17,8 @@ namespace TrainSchdule.ViewModels.System
 			{
 				Id = id
 			};
-			this.Code = message.status;
-			this.Message = message.message;
+			Code = message.status;
+			Message = message.message;
 		}
 	}
 
@@ -37,8 +35,8 @@ namespace TrainSchdule.ViewModels.System
 		public APIResponseModelStateErrorViewModel(Guid id,ModelStateDictionary state)
 		{
 			Data = new ModelStateResponseExceptionDataModel { List = state.AllModelStateErrors() ,Id=id};
-			this.Code = -2;
-			this.Message = "成功,数据格式错误";
+			Code = -2;
+			Message = "成功,数据格式错误";
 		}
 	}
 

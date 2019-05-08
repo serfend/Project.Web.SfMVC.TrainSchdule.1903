@@ -1,8 +1,6 @@
-﻿using System;
+﻿using DAL.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DAL.Entities;
 
 namespace BLL.Services
 {

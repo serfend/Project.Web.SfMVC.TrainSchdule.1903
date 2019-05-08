@@ -1,28 +1,25 @@
-﻿using System;
+﻿using DAL.DTO.Apply;
+using DAL.Entities.ApplyInfo;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using DAL.DTO.Apply;
-using DAL.Entities;
-using DAL.Entities.ApplyInfo;
 
 namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
-		public static ApplyBaseInfoDTO ToDTO(this ApplyBaseInfo model)
+		public static ApplyBaseInfoDto ToDTO(this ApplyBaseInfo model)
 		{
-			return new ApplyBaseInfoDTO()
+			return new ApplyBaseInfoDto()
 			{
 				CompanyName=model.CompanyName,
 				DutiesName = model.DutiesName,
 				RealName = model.RealName
 			};
 		}
-		public static ApplyResponseDTO ToResponseDTO(this ApplyResponse model)
+		public static ApplyResponseDto ToResponseDTO(this ApplyResponse model)
 		{
-			var b = new ApplyResponseDTO()
+			var b = new ApplyResponseDto()
 			{
 				AuditingUserRealName = model.AuditingBy?.BaseInfo?.RealName,
 				CompanyName = model.Company.Name,
@@ -32,9 +29,9 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
-		public static ApplyDetailDTO ToDetaiDTO(this Apply model)
+		public static ApplyDetailDto ToDetaiDTO(this Apply model)
 		{
-			var b=new ApplyDetailDTO()
+			var b=new ApplyDetailDto()
 			{
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
@@ -50,9 +47,9 @@ namespace BLL.Extensions
 		}
 
 		
-		public static ApplySummaryDTO ToSummaryDTO(this Apply model)
+		public static ApplySummaryDto ToSummaryDTO(this Apply model)
 		{
-			var b=new ApplySummaryDTO()
+			var b=new ApplySummaryDto()
 			{
 				Create = model.Create,
 				Status = model.Status,
@@ -67,8 +64,8 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
-		private static  Dictionary<int,AuditStatusMessage> statusDic { get; set; }
-		public static Dictionary<int, AuditStatusMessage> StatusDic => statusDic ?? (statusDic = InitStatusDic());
+		private static  Dictionary<int,AuditStatusMessage> _statusDic { get; set; }
+		public static Dictionary<int, AuditStatusMessage> StatusDic => _statusDic ?? (_statusDic = InitStatusDic());
 		public static Dictionary<int,Color> StatusColors { get; set; }
 		public static Dictionary<int,string> StatusDesc { get; set; }
 
@@ -97,7 +94,7 @@ namespace BLL.Extensions
 			};
 			var statusMessages = new Dictionary<int, AuditStatusMessage>();
 			var type = typeof(AuditStatus).GetFields();
-			for (int i=1;i<type.Length ;i++)
+			for (var i=1;i<type.Length ;i++)
 			{
 				var fieldInfo = type[i];
 				var key =(int)fieldInfo.GetRawConstantValue();

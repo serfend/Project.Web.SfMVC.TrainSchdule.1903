@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GoogleAuther
 {
@@ -15,15 +13,15 @@ namespace GoogleAuther
             }
 
             input = input.TrimEnd('='); //remove padding characters
-            int byteCount = input.Length * 5 / 8; //this must be TRUNCATED
-            byte[] returnArray = new byte[byteCount];
+            var byteCount = input.Length * 5 / 8; //this must be TRUNCATED
+            var returnArray = new byte[byteCount];
 
             byte curByte = 0, bitsRemaining = 8;
             int mask = 0, arrayIndex = 0;
 
-            foreach (char c in input)
+            foreach (var c in input)
             {
-                int cValue = CharToValue(c);
+                var cValue = CharToValue(c);
 
                 if (bitsRemaining > 5)
                 {
@@ -57,13 +55,13 @@ namespace GoogleAuther
                 throw new ArgumentNullException("input");
             }
 
-            int charCount = (int)Math.Ceiling(input.Length / 5d) * 8;
-            char[] returnArray = new char[charCount];
+            var charCount = (int)Math.Ceiling(input.Length / 5d) * 8;
+            var returnArray = new char[charCount];
 
             byte nextChar = 0, bitsRemaining = 5;
-            int arrayIndex = 0;
+            var arrayIndex = 0;
 
-            foreach (byte b in input)
+            foreach (var b in input)
             {
                 nextChar = (byte)(nextChar | (b >> (8 - bitsRemaining)));
                 returnArray[arrayIndex++] = ValueToChar(nextChar);

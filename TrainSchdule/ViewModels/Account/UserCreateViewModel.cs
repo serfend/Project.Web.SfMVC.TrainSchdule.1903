@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.Verify;
 

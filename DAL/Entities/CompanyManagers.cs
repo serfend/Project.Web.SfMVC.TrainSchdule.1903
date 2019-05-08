@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.UserInfo;
+﻿using DAL.Entities.UserInfo;
+using System;
 
 namespace DAL.Entities
 {

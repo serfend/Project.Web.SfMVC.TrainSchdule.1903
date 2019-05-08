@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.DrawingCore;
-using System.IO;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Interfaces
 {

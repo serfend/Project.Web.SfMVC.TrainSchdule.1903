@@ -14,25 +14,23 @@ namespace TrainSchdule.Controllers
 	{
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
-		private readonly IUsersService _usersService;
 
 		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
-			_usersService = usersService;
 		}
 		[HttpGet]
 		public IActionResult Child(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser.CompanyInfo.Company.Code;
-			var companys = _companiesService.FindAllChild(id);
+			var company = _companiesService.FindAllChild(id);
 
 			return new JsonResult(new AllChildViewModel()
 			{
 				Data = new AllChildDataModel()
 				{
-					List = companys.Select(c => c.ToCompanyModel())
+					List = company.Select(c => c.ToCompanyModel())
 				}
 			});
 		}

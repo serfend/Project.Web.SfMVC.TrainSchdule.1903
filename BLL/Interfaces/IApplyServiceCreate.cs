@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
-using DAL.Entities.UserInfo;
 
 namespace BLL.Interfaces
 {
 	public interface IApplyServiceCreate
 	{
-		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVDTO model);
-		ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVDTO model);
-		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVDTO model);
-		ApplyRequest SubmitRequest(ApplyRequestVDTO model);
-		Apply Submit(ApplyVDTO model);
+		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model);
+		ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model);
+		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model);
+		ApplyRequest SubmitRequest(ApplyRequestVdto model);
+		Apply Submit(ApplyVdto model);
 		IEnumerable<Apply> GetApplyByToAuditCompany(string code);
 		IEnumerable<Apply> GetApplyBySubmitCompany(string code);
 
@@ -29,6 +26,6 @@ namespace BLL.Interfaces
 		IEnumerable<ApplyResponse> GetAuditStream(Company company);
 
 		bool ModifyAuditStatus(Apply model, AuditStatus status);
-		bool Audit(ApplyAuditVDTO model);
+		bool Audit(ApplyAuditVdto model);
 	}
 }

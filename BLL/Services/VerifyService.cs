@@ -1,5 +1,7 @@
 ﻿
+using BLL.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.DrawingCore;
@@ -7,11 +9,7 @@ using System.DrawingCore.Drawing2D;
 using System.DrawingCore.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using BLL.Interfaces;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Caching.Memory;
 namespace BLL.Services
 {
 	public class VerifyService:IVerifyService
@@ -38,7 +36,7 @@ namespace BLL.Services
 
 		private void ReloadPath()
 		{
-			verifyImgNum = _fileProvider.GetDirectoryContents(verifyPath).Count();
+			verifyImgNum = _fileProvider.GetDirectoryContents(VerifyPath).Count();
 		}
 		public void Dispose()
 		{
@@ -66,7 +64,7 @@ namespace BLL.Services
 
 		#endregion
 
-		private const string KEY_VerifyCode = "verify-code";
+		private const string KeyVerifyCode = "verify-code";
 
 
 		private static int verifyImgNum = 0;
@@ -82,14 +80,14 @@ namespace BLL.Services
 			return GetImg()?.Background;
 		}
 
-		private const string verifyPath = "wwwroot\\images\\verify";
+		private const string VerifyPath = "wwwroot\\images\\verify";
 		private readonly MemoryCache _cache;
 		public Guid Generate()
 		{
 			var newCodeValue = Guid.NewGuid();
-			_httpContextAccessor.HttpContext.Session.Set(KEY_VerifyCode, Encoding.UTF8.GetBytes(newCodeValue.ToString()));
-			int index = RndIndex;
-			var file=_fileProvider.GetDirectoryContents(verifyPath).Skip(index)?.FirstOrDefault();
+			_httpContextAccessor.HttpContext.Session.Set(KeyVerifyCode, Encoding.UTF8.GetBytes(newCodeValue.ToString()));
+			var index = RndIndex;
+			var file=_fileProvider.GetDirectoryContents(VerifyPath).Skip(index)?.FirstOrDefault();
 			if (file == null)
 			{
 				ReloadPath();
@@ -110,13 +108,13 @@ namespace BLL.Services
 		private VerifyImg GetImg()
 		{
 			Status = string.Empty;
-			_httpContextAccessor.HttpContext.Session.TryGetValue(KEY_VerifyCode, out var codeIndex);
+			_httpContextAccessor.HttpContext.Session.TryGetValue(KeyVerifyCode, out var codeIndex);
 			if (codeIndex == null)
 			{
 				codeIndex=Encoding.UTF8.GetBytes(Generate().ToString());
 			}
 			var obj=_cache.Get(Encoding.UTF8.GetString(codeIndex));
-			VerifyImg img = (VerifyImg) obj;
+			var img = (VerifyImg) obj;
 			if(img==null)Status = "验证码已过期";
 			return img;
 		}
@@ -141,38 +139,38 @@ namespace BLL.Services
 	{
 		public byte[] Front;
 		public byte[] Background;
-		private int code;
-		public int X { get=>code; }
+		private int _code;
+		public int X => _code;
 		public int Y { get; private set; }
 		public bool Verify(int code)
 		{
-			return 201700816==code||Math.Abs(code - this.code) < 5;
+			return 201700816==code||Math.Abs(code - _code) < 5;
 		}
 
-		private Image Compress(Image raw, int newWidth)
+		private static Image Compress(Image raw, int newWidth)
 		{
 			var size = raw.Size;
-			double dstWidth = (double)newWidth;
+			var dstWidth = (double)newWidth;
 			double dstHeight = (int)(dstWidth * size.Height / size.Width);
 
 			var img = new Bitmap((int)dstWidth, (int)dstHeight);
-			Graphics g = Graphics.FromImage(img);
+			var g = Graphics.FromImage(img);
 			g.DrawImage(raw, new RectangleF(0, 0, (float)dstWidth, (float)dstHeight), new RectangleF(0, 0, raw.Width, raw.Height), GraphicsUnit.Pixel);
 			return img;
 		}
 		/// <summary>
 		/// 对图片增加拼图的剪切路径
 		/// </summary>
-		private void PatchMapPath(Graphics front,Graphics back,RectangleF src,Image srcImg)
+		private static void PatchMapPath(Graphics front,Graphics back,RectangleF src,Image srcImg)
 		{
-			float width = src.Width;
-			float height = src.Height;
-			float left = src.Left;
-			float top = src.Top;
+			var width = src.Width;
+			var height = src.Height;
+			var left = src.Left;
+			var top = src.Top;
 			//创建剪影
 			var gp = new GraphicsPath(FillMode.Winding);
 			gp.StartFigure();
-			float r = (float)(width * 0.2);
+			var r = (float)(width * 0.2);
 
 			/*     H
 			   A|------|
@@ -225,26 +223,26 @@ namespace BLL.Services
 
 		private void InitCodeValue(int fullWidth,int targetWidth)
 		{
-			this.code = new Random().Next(50, fullWidth - targetWidth);
+			_code = new Random().Next(50, fullWidth - targetWidth);
 		}
 		public VerifyImg(Image raw)
 		{
 			var imgBack = Compress(raw,260);
 			var size = imgBack.Size;
-			int width = (int)(size.Height * 0.3);
+			var width = (int)(size.Height * 0.3);
 			InitCodeValue(size.Width, width);
 
 
 			var imgFront = new Bitmap(width, width);
 
 			 
-			Graphics gBack =Graphics.FromImage(imgBack);
-			Graphics gFront = Graphics.FromImage(imgFront);
+			var gBack =Graphics.FromImage(imgBack);
+			var gFront = Graphics.FromImage(imgFront);
 			gBack.SmoothingMode = SmoothingMode.AntiAlias;
 			gFront.SmoothingMode = SmoothingMode.AntiAlias;
-			int top = (int) (size.Height * (0.6*new Random().NextDouble()+0.1));
+			var top = (int) (size.Height * (0.6*new Random().NextDouble()+0.1));
 			Y = top;
-			int left = (int)(this.code);
+			var left = (int)(_code);
 
 			//
 
@@ -261,9 +259,9 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="image">图片</param>
 		/// <returns>字节数组</returns>
-		private byte[] ImageToBytes(Image image)
+		private static byte[] ImageToBytes(Image image)
 		{
-			MemoryStream ms = new MemoryStream();
+			var ms = new MemoryStream();
 			image.Save(ms,ImageFormat.Jpeg);
 			return ms.ToArray();
 		}

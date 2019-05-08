@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BLL.Interfaces;
+﻿using BLL.Interfaces;
 using DAL.Entities.UserInfo;
-using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DAL.DTO.Company
+﻿namespace DAL.DTO.Company
 {
-	public class CompanyManagerVDTO
+	public class CompanyManagerVdto
 	{
 		public string CompanyCode { get; set; }
 		public string UserId { get; set; }

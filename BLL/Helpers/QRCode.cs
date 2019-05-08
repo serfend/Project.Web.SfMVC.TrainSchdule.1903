@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
-using BLL.Interfaces;
 using QRCoder;
 
 namespace BLL.Helpers
@@ -31,11 +27,11 @@ namespace BLL.Helpers
 
 		public  Image Generate(string text)
 		{
-			using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+			using (var qrGenerator = new QRCodeGenerator())
 			{
-				using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, EccLevel))
+				using (var qrCodeData = qrGenerator.CreateQrCode(text, EccLevel))
 				{
-					using (QRCode qrCode = new QRCode(qrCodeData))
+					using (var qrCode = new QrCode(qrCodeData))
 					{
 
 						return qrCode.GetGraphic(PixelsPerModule, DarkColor, LightColor,
@@ -53,7 +49,7 @@ namespace BLL.Helpers
 		/// <returns>字节数组</returns>
 		private byte[] ImageToBytes(Image image)
 		{
-			MemoryStream ms = new MemoryStream();
+			var ms = new MemoryStream();
 			image.Save(ms, ImageFormat.Png);
 			return ms.ToArray();
 		}

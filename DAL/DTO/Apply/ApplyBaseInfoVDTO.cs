@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.UserInfo;
+﻿using DAL.Entities.UserInfo;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplyBaseInfoVDTO
+	public class ApplyBaseInfoVdto
 	{
 		public Entities.UserInfo.User From { get; set; }
 		public string RealName { get; set; }

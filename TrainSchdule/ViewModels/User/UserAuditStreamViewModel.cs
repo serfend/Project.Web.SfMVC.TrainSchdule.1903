@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DAL.DTO.Company;
-using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -15,7 +11,7 @@ namespace TrainSchdule.ViewModels.User
 
 	public class UserAuditStreamDataModel
 	{
-		public IEnumerable<CompanyDTO> List { get; set; }
+		public IEnumerable<CompanyDto> List { get; set; }
 	}
 
 }

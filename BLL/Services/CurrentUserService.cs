@@ -1,9 +1,8 @@
 ﻿using BLL.Interfaces;
+using DAL.Data;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Linq;
-using DAL.Data;
 
 namespace BLL.Services
 {

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities;
+﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using System;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplySummaryDTO : BaseEntity
+	public class ApplySummaryDto : BaseEntity
 	{
-		public ApplyBaseInfoDTO Base { get; set; }
+		public ApplyBaseInfoDto Base { get; set; }
 		public string NowAuditCompany { get; set; }
 		public string VocationPlace { get; set; }
 		public string HomePlace { get; set; }

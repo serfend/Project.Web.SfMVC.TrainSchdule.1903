@@ -3,7 +3,6 @@ using BLL.Extensions;
 using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using TrainSchdule.ViewModels.Apply;
 
@@ -100,7 +99,7 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult Detail(string id)
 		{
-			Guid aId = Guid.Parse(id);
+			var aId = Guid.Parse(id);
 			var apply = _applyService.Get(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			return new JsonResult(new InfoApplyDetailViewModel()

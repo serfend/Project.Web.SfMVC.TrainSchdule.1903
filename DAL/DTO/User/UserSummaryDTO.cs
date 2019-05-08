@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DAL.DTO.User
+﻿namespace DAL.DTO.User
 {
-	public class UserSummaryDTO
+	public class UserSummaryDto
 	{
 		public string Id { get; set; }
 		public string RealName { get; set; }

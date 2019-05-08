@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.ApplyInfo;
+﻿using DAL.Entities.ApplyInfo;
+using System;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplyResponseDTO
+	public class ApplyResponseDto
 	{
 		public  string AuditingUserRealName { get; set; }
 		public string CompanyName { get; set; }

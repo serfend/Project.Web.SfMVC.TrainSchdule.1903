@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace DAL.Entities
 {
@@ -11,7 +7,7 @@ namespace DAL.Entities
 	{
 
 		[Key]
-		[DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public int Code { get; set; }
 		public int ParentCode { get; set; }
 		/// <summary>

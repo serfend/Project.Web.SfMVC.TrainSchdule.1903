@@ -14,7 +14,7 @@ namespace GoogleAuth
 
 	public class Auth :IAuth
 	{
-		private readonly GoogleAuther.GoogleAuthMain _auth=new GoogleAuther.GoogleAuthMain();
+		private readonly GoogleAuthMain _auth=new GoogleAuthMain();
 
 
 		public string UserName
@@ -32,7 +32,7 @@ namespace GoogleAuth
 		public bool Verify(int code, int tryTime = 0)
 		{
 			var timestamp = GoogleAuthMain.GetUnixTimestamp();
-			for (int i = 0; i <= tryTime; i++)
+			for (var i = 0; i <= tryTime; i++)
 			{
 				if (_auth.CalculateOneTimePassword(timestamp + 30 * i)==code)return true;
 				if (_auth.CalculateOneTimePassword(timestamp - 30 * i)==code)return true;

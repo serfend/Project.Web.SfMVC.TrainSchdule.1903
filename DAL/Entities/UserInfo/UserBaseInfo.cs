@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.UserInfo;
-
-namespace DAL.Entities.UserInfo
+﻿namespace DAL.Entities.UserInfo
 {
 	public class UserBaseInfo : BaseEntity
 	{

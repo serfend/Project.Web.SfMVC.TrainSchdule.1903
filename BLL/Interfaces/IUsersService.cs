@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using DAL.Entities;
 
 namespace BLL.Interfaces
 {
@@ -28,9 +27,9 @@ namespace BLL.Interfaces
         IQueryable<User> Find(Expression<Func<User, bool>>predict);
 
         ApplicationUser ApplicaitonUser(string id);
-        ApplicationUser Create(UserCreateVDTO user);
+        ApplicationUser Create(UserCreateVdto user);
 
-        Task<ApplicationUser> CreateAsync(UserCreateVDTO user);
+        Task<ApplicationUser> CreateAsync(UserCreateVdto user);
 
         bool Edit(User newUser);
 

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities
 {
-    /// <summary>
-    /// Base class for entities.
-    /// Contains <see cref="Id"/> property.
-    /// </summary>
-    public class BaseEntity
+	/// <summary>
+	/// Base class for entities.
+	/// Contains <see cref="Id"/> property.
+	/// </summary>
+	public class BaseEntity
     {
 		/// <summary>
 		/// Gets and sets id.

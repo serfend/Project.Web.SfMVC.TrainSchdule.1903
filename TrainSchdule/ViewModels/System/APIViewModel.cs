@@ -1,7 +1,4 @@
-﻿using System;
-using BLL.Helpers;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TrainSchdule.ViewModels.System
 {

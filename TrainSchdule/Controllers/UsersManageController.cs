@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Company;
-using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TrainSchdule.ViewModels;
-using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.Controllers
@@ -49,7 +43,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var manage = _companyManagerServices.GetManagerByUC(model.Id, model.Code);
 			if(manage==null)return new JsonResult(ActionStatusMessage.Company.Manager.NotExist);
-			int result=_companyManagerServices.Delete(manage);
+			var unused=_companyManagerServices.Delete(manage);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -63,7 +57,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var manage = _companyManagerServices.GetManagerByUC(model.Id, model.Code);
 			if (manage != null) return new JsonResult(ActionStatusMessage.Company.Manager.Existed);
-			var dto = new CompanyManagerVDTO()
+			var dto = new CompanyManagerVdto()
 			{
 				AuditById = model.Auth.AuthByUserID,
 				CompanyCode = model.Code,

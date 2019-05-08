@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DAL.Entities.UserInfo;
+﻿using DAL.Entities.UserInfo;
 
 namespace DAL.DTO.User
 {
-	
-	public class UserCreateVDTO
+
+	public class UserCreateVdto
 	{
 		public string Id { get; set; }
 		public string RealName { get; set; }

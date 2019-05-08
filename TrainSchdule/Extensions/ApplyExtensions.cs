@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
@@ -11,9 +8,9 @@ namespace TrainSchdule.Extensions
 {
 	public static class ApplyExtensions
 	{
-		public static ApplyBaseInfoVDTO ToVDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
+		public static ApplyBaseInfoVdto ToVDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
 		{
-			var b=new ApplyBaseInfoVDTO()
+			var b=new ApplyBaseInfoVdto()
 			{
 				Company = model.Company,
 				Duties = model.Duties,
@@ -27,9 +24,9 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
-		public static ApplyRequestVDTO ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
+		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
 		{
-			var b=new ApplyRequestVDTO()
+			var b=new ApplyRequestVdto()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
@@ -42,9 +39,9 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
-		public static ApplyVDTO ToVDTO(this SubmitApplyViewModel model)
+		public static ApplyVdto ToVDTO(this SubmitApplyViewModel model)
 		{
-			var b=new ApplyVDTO()
+			var b=new ApplyVdto()
 			{
 				BaseInfoId = model.BaseId??Guid.Empty,
 				RequestInfoId = model.RequestId ?? Guid.Empty
@@ -52,9 +49,9 @@ namespace TrainSchdule.Extensions
 			return b;
 		}
 
-		public static ApplyAuditVDTO ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
+		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
 		{
-			var b=new ApplyAuditVDTO()
+			var b=new ApplyAuditVdto()
 			{
 				Action = model.Data.Action,
 				Apply = applyService.Get(model.Data.Id),
