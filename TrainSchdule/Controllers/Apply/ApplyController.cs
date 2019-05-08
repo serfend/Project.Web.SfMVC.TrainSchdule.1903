@@ -43,6 +43,7 @@ namespace TrainSchdule.Controllers.Apply
 		#region Logic
 
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult AllStatus()
 		{
 			return new JsonResult(new ApplyAuditStatusViewModel()

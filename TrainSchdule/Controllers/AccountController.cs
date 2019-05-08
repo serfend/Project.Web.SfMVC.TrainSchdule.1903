@@ -138,7 +138,13 @@ namespace TrainSchdule.Controllers
 			HttpContext.Response.Cookies.Append("key",_authService.Code().ToString());
 			return new FileContentResult(img,"image/png");
 		}
-		
+
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Login(string returnUrl)
+		{
+			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+		}
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
