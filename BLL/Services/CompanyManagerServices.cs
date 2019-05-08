@@ -6,6 +6,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Company;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
 
 namespace BLL.Services
 {
@@ -65,6 +66,12 @@ namespace BLL.Services
 		public CompanyManagers GetManagerByUC(string userId, string companyCode)
 		{
 			return _context.CompanyManagers.Where(m => m.User.Id == userId).SingleOrDefault(m => m.Company.Code == companyCode);
+		}
+
+		public IEnumerable<User> GetMembers(string code, int page, int pageSize)
+		{
+			return _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).Skip(page * pageSize)
+				.Take(pageSize);
 		}
 	}
 }

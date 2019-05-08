@@ -214,13 +214,14 @@
             单位管理
             </summary>
         </member>
-        <member name="M:TrainSchdule.Controllers.CompanyController.#ctor(BLL.Interfaces.ICompaniesService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IUsersService)">
+        <member name="M:TrainSchdule.Controllers.CompanyController.#ctor(BLL.Interfaces.ICompaniesService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompanyManagerServices)">
             <summary>
             
             </summary>
             <param name="companiesService"></param>
             <param name="currentUserService"></param>
             <param name="usersService"></param>
+            <param name="companyManagerServices"></param>
         </member>
         <member name="M:TrainSchdule.Controllers.CompanyController.Child(System.String)">
             <summary>
@@ -234,6 +235,15 @@
             获取单位的主管
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.CompanyController.Members(System.String,System.Int32,System.Int32)">
+            <summary>
+            获取单位中的人员列表
+            </summary>
+            <param name="code"></param>
+            <param name="page"></param>
+            <param name="pageSize">默认每页为100个用户</param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Controllers.StaticController">
@@ -944,6 +954,26 @@
         <member name="P:TrainSchdule.ViewModels.Company.CompanyChildDataModel.Code">
             <summary>
             
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.AllMembersViewModel">
+            <summary>
+            单位全部成员
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.AllMembersViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Company.AllMembersDataModel">
+            <summary>
+            单位全部成员
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Company.AllMembersDataModel.List">
+            <summary>
+            用户列表
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.CompanyManagerViewModel">

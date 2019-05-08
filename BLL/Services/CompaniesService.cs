@@ -49,7 +49,7 @@ namespace BLL.Services
 			return _context.Companies.Find(parent);
 		}
 
-		private string ParentCode(string code)=> code.Length > 1 ? code.Substring(0, code.Length - 1) : null;
+		private string ParentCode(string code)=>(code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
 
 		public Company Create(string name,string code)
 		{

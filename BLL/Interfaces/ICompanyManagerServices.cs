@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using DAL.DTO.Company;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
 
 namespace BLL.Interfaces
 {
@@ -15,5 +16,7 @@ namespace BLL.Interfaces
 		CompanyManagers Create(CompanyManagers model);
 		int Delete(CompanyManagers model);
 		CompanyManagers GetManagerByUC(string userId, string companyCode);
+
+		IEnumerable<User> GetMembers(string code, int page, int pageSize);
 	}
 }

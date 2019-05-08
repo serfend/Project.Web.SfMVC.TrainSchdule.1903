@@ -17,6 +17,7 @@ namespace TrainSchdule.Controllers
 	{
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
+		private readonly ICompanyManagerServices _companyManagerServices;
 
 		/// <summary>
 		/// 
@@ -24,10 +25,12 @@ namespace TrainSchdule.Controllers
 		/// <param name="companiesService"></param>
 		/// <param name="currentUserService"></param>
 		/// <param name="usersService"></param>
-		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService)
+		/// <param name="companyManagerServices"></param>
+		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService, ICompanyManagerServices companyManagerServices)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
+			_companyManagerServices = companyManagerServices;
 		}
 		/// <summary>
 		/// 获取单位的子层级单位
@@ -71,6 +74,25 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
-
+		/// <summary>
+		/// 获取单位中的人员列表
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize">默认每页为100个用户</param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Members(string code, int page, int pageSize = 100)
+		{
+			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
+			return new JsonResult(new AllMembersViewModel()
+			{
+				Data = new AllMembersDataModel()
+				{
+					List = _companyManagerServices.GetMembers(code,page,pageSize).Select(u=>u.ToDTO())
+				}
+			});
+		}
 	}
 }
