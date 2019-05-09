@@ -223,6 +223,8 @@ namespace BLL.Services.ApplyServices
 			{
 				case AuditResult.Accept:
 					response.Status = Auditing.Accept;
+					var next=target.Response.SingleOrDefault(r => r.Status == Auditing.UnReceive);
+					if(next!=null)next.Status = Auditing.Received;//=下一级变更为审核中
 					break;
 				case AuditResult.Deny:
 					response.Status = Auditing.Denied;

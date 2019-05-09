@@ -19,7 +19,7 @@
 			{
 				public static class Invalid
 				{
-					public static readonly Status Default = new Status(12100, "账号权限错误");
+					public static readonly Status Default = new Status(12100, "访问被拒绝");
 					public static readonly Status Unknown = new Status(12110, "存在不存在的操作");
 					public static readonly Status NotLogin = new Status(12120, "用户未登录");
 				}
