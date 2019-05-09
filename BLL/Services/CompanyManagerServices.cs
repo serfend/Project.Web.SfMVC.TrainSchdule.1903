@@ -65,7 +65,7 @@ namespace BLL.Services
 
 		public CompanyManagers GetManagerByUC(string userId, string companyCode)
 		{
-			return _context.CompanyManagers.Where(m => m.User.Id == userId).SingleOrDefault(m => m.Company.Code == companyCode);
+			return _context.CompanyManagers.Where(m => m.User.Id == userId).FirstOrDefault(m => m.Company.Code == companyCode);
 		}
 
 		public IEnumerable<User> GetMembers(string code, int page, int pageSize)

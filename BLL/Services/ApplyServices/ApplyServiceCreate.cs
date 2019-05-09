@@ -40,7 +40,7 @@ namespace BLL.Services.ApplyServices
 			var m = new ApplyBaseInfo()
 			{
 				Company = await _context.Companies.FindAsync(model.Company),
-				Duties = await _context.Duties.FirstOrDefault(d => d.Name == model.Duties),
+				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties),
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
@@ -120,7 +120,7 @@ namespace BLL.Services.ApplyServices
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
 			var anyToSubmit = false;
-			while (nowId?.Length >= 7)
+			while (nowId?.Length >= 8)
 			{
 				var t = new ApplyResponse()
 				{
