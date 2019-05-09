@@ -5,7 +5,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup >
     <DocumentationFile>C:\aserfend\workSpace\repos\projects\com.sf.trainTaskSchedule.mvc\Project.Web.SfMVC.TrainSchdule.1903\TrainSchdule\TrainSchdule.xml</DocumentationFile>
   </PropertyGroup>
 
