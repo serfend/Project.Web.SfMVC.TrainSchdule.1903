@@ -82,13 +82,17 @@ namespace TrainSchdule.Controllers.Apply
 			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			try
 			{
-				var unused = _applyService.Audit(model.ToAuditVDTO(_usersService, _applyService));
+				var results = _applyService.Audit(model.ToAuditVDTO(_usersService, _applyService));
+				int count = 0;
+				return new JsonResult(new ApplyAuditResponseStatusViewModel()
+				{
+					Data = results.Select(r=>new ApplyAuditResponseStatusDataModel(model.Data.List.ElementAt(count++).Id,r))
+				});
 			}
 			catch (ActionStatusMessageException e)
 			{
 				return new JsonResult(e.Status);
 			}
-			return new JsonResult(ActionStatusMessage.Success);
 		}
 
 	}

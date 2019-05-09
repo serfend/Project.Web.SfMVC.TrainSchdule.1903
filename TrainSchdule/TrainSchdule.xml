@@ -786,20 +786,57 @@
             
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Id">
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.List">
             <summary>
             
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Action">
+        <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Action">
             <summary>
             <see cref="T:DAL.DTO.Apply.AuditResult"/> : 0:无操作 1:同意  2:驳回
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.Remark">
+        <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Remark">
             <summary>
             
             </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusViewModel">
+            <summary>
+            返回审核结果
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel.#ctor(System.Guid,BLL.Helpers.Status)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="status"></param>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.InfoApplyDetailViewModel">
             <summary>

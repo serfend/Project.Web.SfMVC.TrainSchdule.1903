@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using BLL.Helpers;
 using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -26,6 +27,6 @@ namespace BLL.Interfaces
 		IEnumerable<ApplyResponse> GetAuditStream(Company company);
 
 		bool ModifyAuditStatus(Apply model, AuditStatus status);
-		bool Audit(ApplyAuditVdto model);
+		IEnumerable<Status> Audit(ApplyAuditVdto models);
 	}
 }

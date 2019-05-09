@@ -184,24 +184,40 @@ namespace BLL.Services.ApplyServices
 			return true;
 		}
 
-		public bool Audit(ApplyAuditVdto model)
+		public IEnumerable<Status> Audit(ApplyAuditVdto model)
 		{
-			var myManages = _usersService.InMyManage(model.AuditUser.Id);
-			if(myManages==null)throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var nowAudit=new List<ApplyResponse>();
-			foreach (var r in model.Apply.Response)
+			var myManages = _usersService.InMyManage(model.AuditUser.Id)?.ToList();
+			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+
+			var list =new List<Status>();
+			foreach (var apply in model.List)
 			{
-				if(myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
+				var result = AuditSingle(apply, myManages, model.AuditUser);
+				list.Add(result);
 			}
-			if(nowAudit.Count==0)throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream);
-			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
-				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
-			var result= AuditResponse(nowAudit,model.Apply, model.Action,model.Remark, model.AuditUser);
+			
 			_context.SaveChanges();
-			return result;
+			return list;
 		}
 
-		private bool AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
+		private Status AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages,User AuditUser)
+		{
+			var nowAudit = new List<ApplyResponse>();
+			foreach (var r in model.Apply.Response)
+			{
+				if (myManages.Any(c => c.Code == r.Company.Code))
+				{
+					nowAudit.Add(r);
+					break;
+				}
+			}
+			if (nowAudit.Count == 0) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream);
+			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
+				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+			var result = AuditResponse(nowAudit, model.Apply, model.Action, model.Remark, AuditUser);
+			return result;
+		}
+		private Status AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
 		{
 			foreach (var r in responses)
 			{
@@ -211,10 +227,10 @@ namespace BLL.Services.ApplyServices
 					r.AuditingBy = auditBy;
 					r.HandleStamp=DateTime.Now;
 					AuditSingle(r,target,action);
-					return true;
+					return ActionStatusMessage.Success;
 				}
 			}
-			throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived);
+			return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 		}
 
 		private void AuditSingle(ApplyResponse response, Apply target, AuditResult action)

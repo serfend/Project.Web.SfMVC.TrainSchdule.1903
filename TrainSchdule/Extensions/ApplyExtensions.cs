@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
@@ -78,12 +80,17 @@ namespace TrainSchdule.Extensions
 		/// <returns></returns>
 		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
 		{
-			var b=new ApplyAuditVdto()
+			var user = usersService.Get(model.Auth.AuthByUserID);
+			var b = new ApplyAuditVdto()
 			{
-				Action = model.Data.Action,
-				Apply = applyService.Get(model.Data.Id),
-				AuditUser = usersService.Get(model.Auth.AuthByUserID),
-				Remark = model.Data.Remark
+				AuditUser = user,
+				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
+				{
+					Action = d.Action,
+					Apply = applyService.Get(d.Id),
+					Remark = d.Remark
+				})
+
 			};
 			return b;
 		}

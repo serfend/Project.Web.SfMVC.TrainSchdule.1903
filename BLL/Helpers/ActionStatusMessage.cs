@@ -143,7 +143,7 @@
 
 	}
 
-	public struct Status
+	public class Status
 	{
 		public int status;
 		public string message;
