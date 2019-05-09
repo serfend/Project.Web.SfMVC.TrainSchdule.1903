@@ -28,7 +28,8 @@ namespace BLL.Services.ApplyServices
 					AddressDetail = model.HomeDetailAddress,
 					Phone = model.Phone,
 					Settle = model.Settle
-				}
+				},
+				CreateTime = DateTime.Now
 			};
 			_context.Add(m);
 			_context.SaveChanges();
@@ -67,7 +68,8 @@ namespace BLL.Services.ApplyServices
 				StampReturn = model.StampReturn,
 				VocationLength = model.VocationLength,
 				VocationPlace = model.VocationPlace,
-				VocationType = model.VocationType
+				VocationType = model.VocationType,
+				CreateTime = DateTime.Now
 			};
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();

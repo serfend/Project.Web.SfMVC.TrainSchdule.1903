@@ -14,5 +14,6 @@ namespace DAL.Entities.ApplyInfo
 		public string VocationType { get; set; }
 		public virtual AdminDivision VocationPlace { get; set; }
 		public string Reason { get; set; }
+		public DateTime CreateTime { get; set; }
 	}
 }

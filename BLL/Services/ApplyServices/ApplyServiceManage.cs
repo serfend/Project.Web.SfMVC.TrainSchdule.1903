@@ -26,7 +26,7 @@ namespace BLL.Services.ApplyServices
 			}
 
 			var applies = _context.Applies;
-			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id));
+			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r=>DateTime.Now.Day!= r.CreateTime.Day);
 			_context.ApplyRequests.RemoveRange(request);
 			_context.SaveChanges();
 		}

@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using System;
+using DAL.Entities.UserInfo;
 
 namespace DAL.Entities.ApplyInfo
 {
@@ -11,5 +12,6 @@ namespace DAL.Entities.ApplyInfo
 		public virtual Company Company { get; set; }
 		public virtual Duties Duties { get; set; }
 		public virtual UserSocialInfo Social { get; set; }
+		public DateTime CreateTime { get; set; }
 	}
 }

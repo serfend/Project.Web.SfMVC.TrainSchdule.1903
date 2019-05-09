@@ -24,6 +24,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult FromUser(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
+			if(id==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var list = _applyService.GetApplyBySubmitUser(id);
@@ -47,6 +48,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ToUser(string id,string code)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
+			if(id==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetCompany = _companiesService.Get(code);
@@ -66,6 +68,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult FromCompany(string code)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			if(code==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetCompany = _companiesService.Get(code);
 			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			return new JsonResult(new ApplyListViewModel()
