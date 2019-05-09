@@ -33,6 +33,7 @@ namespace BLL.Extensions
 		{
 			var b=new ApplyDetailDto()
 			{
+				Base = model.BaseInfo.From.ToDTO(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
