@@ -154,7 +154,7 @@ namespace BLL.Services
 				CompanyInfo = new UserCompanyInfo()
 				{
 					Company = _context.Companies.Find(user.Company),
-					Duties = _context.Duties.SingleOrDefault(d=>d.Name==user.Duties)
+					Duties = _context.Duties.FirstOrDefault(d=>d.Name==user.Duties)
 				},
 				SocialInfo = new UserSocialInfo()
 				{
@@ -216,7 +216,7 @@ namespace BLL.Services
 			var user =  _context.AppUsers.Find(id);
 			if (user == null) return false;
 			_context.AppUsers.Remove(user);
-			var appUser =  _context.Users.SingleOrDefault(u=>u.UserName==id);
+			var appUser =  _context.Users.FirstOrDefault(u=>u.UserName==id);
 			if (appUser == null) return false;
 			_context.Users.Remove(appUser);
 			_context.SaveChanges();
@@ -228,7 +228,7 @@ namespace BLL.Services
 	        if (user == null) return false;
 			//TODO 级联删除相关
 	        _context.AppUsers.Remove(user);
-	        var appUser = await _context.Users.SingleOrDefaultAsync(u => u.UserName==id);
+	        var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName==id);
 	        _context.Users.Remove(appUser);
 			await _context.SaveChangesAsync();
 	        return true;

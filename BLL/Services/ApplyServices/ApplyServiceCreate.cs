@@ -40,7 +40,7 @@ namespace BLL.Services.ApplyServices
 			var m = new ApplyBaseInfo()
 			{
 				Company = await _context.Companies.FindAsync(model.Company),
-				Duties = await _context.Duties.SingleOrDefaultAsync(d => d.Name == model.Duties),
+				Duties = await _context.Duties.FirstOrDefault(d => d.Name == model.Duties),
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
@@ -223,7 +223,7 @@ namespace BLL.Services.ApplyServices
 			{
 				case AuditResult.Accept:
 					response.Status = Auditing.Accept;
-					var next=target.Response.SingleOrDefault(r => r.Status == Auditing.UnReceive);
+					var next=target.Response.FirstOrDefault(r => r.Status == Auditing.UnReceive);
 					if(next!=null)next.Status = Auditing.Received;//=下一级变更为审核中
 					break;
 				case AuditResult.Deny:
