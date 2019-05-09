@@ -10,7 +10,7 @@ namespace BLL.Job
 	public class ApplyClearJob:Pomelo.AspNetCore.TimedJob.Job
 	{
 		private ApplicationDbContext _context;
-		private IApplyService _applyService;
+		private readonly IApplyService _applyService;
 
 		public ApplyClearJob(ApplicationDbContext context, IApplyService applyService)
 		{

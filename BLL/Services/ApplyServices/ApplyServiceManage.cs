@@ -13,7 +13,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.Applies
 				.Where(a => a.Status == AuditStatus.NotSave)
 				.Where(a=>a.Create.HasValue && a.Create.Value.AddDays(1).CompareTo(DateTime.Now)<0).ToList();
-			if (list.Count > 0) return;
+			if (list.Count == 0) return;
 			foreach (var apply in list)
 			{
 				_context.ApplyResponses.RemoveRange(apply.Response);
