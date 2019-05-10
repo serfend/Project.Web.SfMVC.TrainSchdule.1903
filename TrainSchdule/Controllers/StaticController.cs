@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
@@ -20,6 +21,7 @@ namespace TrainSchdule.Controllers
 	{
 
 		private readonly IVerifyService _verifyService;
+		private readonly IVocationCheckServices _vocationCheckServices;
 		private readonly ApplicationDbContext _context;
 
 		/// <summary>
@@ -27,10 +29,11 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="verifyService"></param>
 		/// <param name="context"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context)
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices)
 		{
 			_verifyService = verifyService;
 			_context = context;
+			_vocationCheckServices = vocationCheckServices;
 		}
 
 		/// <summary>
@@ -142,6 +145,30 @@ namespace TrainSchdule.Controllers
 				Data = new LocationChildrenDataModel()
 				{
 					List = list.Select(t=>t.ToDataModel())
+				}
+			});
+		}
+		/// <summary>
+		/// 获取法定节假日情况
+		/// </summary>
+		/// <param name="start"></param>
+		/// <param name="length"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
+		[Route("VocationDate")]
+		public IActionResult VocationDate(DateTime start, int length)
+		{
+			var list = _vocationCheckServices.GetVocationDescriptions(start, length);
+			return new JsonResult(new VocationDescriptionViewModel()
+			{
+				Data = new VocationDescriptionDataModel()
+				{
+					Descriptions	= list,
+					EndDate = _vocationCheckServices.EndDate,
+					StartDate = start,
+					VocationDays = _vocationCheckServices.EndDate.Subtract(start).Days
 				}
 			});
 		}

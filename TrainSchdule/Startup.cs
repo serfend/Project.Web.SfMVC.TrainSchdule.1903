@@ -63,12 +63,14 @@ namespace TrainSchdule
 			services.AddScoped<IApplyService,ApplyService>();
 			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
 			services.AddScoped< ICompanyManagerServices, CompanyManagerServices>();
+			services.AddScoped<IVocationCheckServices, VocationCheckServices>();
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IVerifyService,VerifyService>();
             services.AddSingleton<IFileProvider>(
 	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-		}
+            
+        }
 
 		/// <summary>
 		/// 

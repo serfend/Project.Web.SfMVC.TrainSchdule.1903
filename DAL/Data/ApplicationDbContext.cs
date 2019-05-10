@@ -31,14 +31,16 @@ namespace DAL.Data
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 
-        #endregion
+		public DbSet<VocationDescription> VocationDescriptions { get; set; }
 
-        #region .ctors
+		#endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationDbContext"/>.
-        /// </summary>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+		#region .ctors
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ApplicationDbContext"/>.
+		/// </summary>
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }

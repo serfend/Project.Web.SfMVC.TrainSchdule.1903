@@ -258,7 +258,7 @@
             
             </summary>
         </member>
-        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext)">
+        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices)">
             <summary>
             
             </summary>
@@ -295,6 +295,14 @@
             
             </summary>
             <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.VocationDate(System.DateTime,System.Int32)">
+            <summary>
+            获取法定节假日情况
+            </summary>
+            <param name="start"></param>
+            <param name="length"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Controllers.UsersController">
@@ -1148,6 +1156,41 @@
         <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.ParentCode">
             <summary>
             
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.Descriptions">
+            <summary>
+            期间经历的节假日
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.VocationDays">
+            <summary>
+            休假中法定节假日天数
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.StartDate">
+            <summary>
+            休假开始时间
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.EndDate">
+            <summary>
+            休假预计结束时间
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.ApiDataModel">
