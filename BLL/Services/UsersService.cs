@@ -149,7 +149,8 @@ namespace BLL.Services
 				BaseInfo = new UserBaseInfo()
 				{
 					Gender = user.Gender,
-					RealName = user.RealName
+					RealName = user.RealName,
+					Cid = user.Cid
 				},
 				CompanyInfo = new UserCompanyInfo()
 				{
