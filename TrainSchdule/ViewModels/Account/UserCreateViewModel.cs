@@ -33,17 +33,16 @@ namespace TrainSchdule.ViewModels.Account
 		/// </summary>
 		[Required]
 		public string Id { get; set; }
-
+		/// <summary>
+		/// 身份证号
+		/// </summary>
+		[Required]
+		public string Cid { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
 		[Required]
 		public string RealName { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-
-		public GenderEnum Gender { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>

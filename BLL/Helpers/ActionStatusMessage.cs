@@ -55,7 +55,10 @@
 			public static readonly Status Default = new Status(20000, "用户发生未知错误");
 			public static readonly Status NotExist = new Status(21000, "用户不存在");
 			public static readonly Status NoCompany = new Status(22000, "无归属单位");
-			
+			public static readonly Status NotCorrectId=new Status(23000, "非法的用户身份号，仅可为7位身份号或18位身份证号");
+			public static readonly Status NoId=new Status(24000,"未填写用户身份号");
+
+
 		}
 
 

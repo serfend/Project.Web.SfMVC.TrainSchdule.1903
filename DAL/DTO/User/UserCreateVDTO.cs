@@ -6,6 +6,7 @@ namespace DAL.DTO.User
 	public class UserCreateVdto
 	{
 		public string Id { get; set; }
+		public string Cid { get; set; }
 		public string RealName { get; set; }
 		public string Phone { get; set; }
 		public GenderEnum Gender { get; set; }

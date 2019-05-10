@@ -152,6 +152,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.GetUserById(System.String)">
+            <summary>
+            可能为User类型也可能为Status类型
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:TrainSchdule.Controllers.Apply.ApplyController.RequestInfo(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel)">
             <summary>
             提交本次申请的请求信息
@@ -666,12 +673,12 @@
             
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.RealName">
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Cid">
             <summary>
-            
+            身份证号
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Gender">
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.RealName">
             <summary>
             
             </summary>
