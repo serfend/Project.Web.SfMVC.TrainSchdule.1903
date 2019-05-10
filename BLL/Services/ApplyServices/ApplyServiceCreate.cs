@@ -51,7 +51,8 @@ namespace BLL.Services.ApplyServices
 				},
 				RealName = model.RealName,
 				CompanyName = model.Company,
-				DutiesName = model.Duties
+				DutiesName = model.Duties,
+				CreateTime = DateTime.Now
 			};
 			if (m.Company != null) m.CompanyName = m.Company.Name;
 			await _context.ApplyBaseInfos.AddAsync(m);

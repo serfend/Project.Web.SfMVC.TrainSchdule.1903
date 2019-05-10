@@ -19,15 +19,12 @@ namespace BLL.Services.ApplyServices
 				_context.ApplyResponses.RemoveRange(apply.Response);
 			}
 			_context.Applies.RemoveRange(list);
-			foreach (var apply in list)
-			{
-				_context.ApplyBaseInfos.Remove(apply.BaseInfo);
-				_context.ApplyRequests.Remove(apply.RequestInfo);
-			}
-
+			_context.SaveChanges();
 			var applies = _context.Applies;
-			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r=>DateTime.Now.Day!= r.CreateTime.Day);
+			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
 			_context.ApplyRequests.RemoveRange(request);
+			var baseInfos = _context.ApplyBaseInfos.Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
+			_context.ApplyBaseInfos.RemoveRange(baseInfos);
 			_context.SaveChanges();
 		}
 	}
