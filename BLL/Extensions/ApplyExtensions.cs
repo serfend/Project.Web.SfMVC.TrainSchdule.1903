@@ -56,7 +56,7 @@ namespace BLL.Extensions
 				Status = model.Status,
 				NowAuditCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
 				Base = model.BaseInfo.ToDTO(),
-				
+				UserBase = model.BaseInfo.From.ToDTO(),
 				Id = model.Id,
 				StampLeave = model.RequestInfo?.StampLeave,
 				StampReturn = model.RequestInfo?.StampReturn,

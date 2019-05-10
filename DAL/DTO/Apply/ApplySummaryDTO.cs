@@ -1,11 +1,13 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using System;
+using DAL.DTO.User;
 
 namespace DAL.DTO.Apply
 {
 	public class ApplySummaryDto : BaseEntity
 	{
+		public UserSummaryDto UserBase { get; set; }
 		public ApplyBaseInfoDto Base { get; set; }
 		public string NowAuditCompany { get; set; }
 		public string VocationPlace { get; set; }
