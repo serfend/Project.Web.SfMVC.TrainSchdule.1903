@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DrawingCore;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -74,6 +75,28 @@ namespace TrainSchdule.Controllers
 
 
 		#region Rest
+		/// <summary>
+		/// 通过身份证号查询身份号
+		/// </summary>
+		/// <param name="cid">身份证号</param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+		public IActionResult GetUserIdByCid(string cid)
+		{
+			if(cid==null)return new JsonResult(ActionStatusMessage.User.NoId);
+			if(cid.Length!=18)return new JsonResult(ActionStatusMessage.User.NotCorrectId);
+			var user = _context.AppUsers.FirstOrDefault(u => u.BaseInfo.Cid == cid);
+			if(user==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			return new JsonResult(new UserIdByCidViewModel()
+			{
+				Data = new UserIdByCidDataModel()
+				{
+					Id = user.Id
+				}
+			});
+		}
 		/// <summary>
 		/// 确认邮箱
 		/// </summary>
