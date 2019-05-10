@@ -32,6 +32,31 @@ namespace TrainSchdule.ViewModels.Apply
 		public IEnumerable<AuditApplyNodeDataModel> List { get; set; } 
 	}
 	/// <summary>
+	/// 等价比较审批节点
+	/// </summary>
+	public class CompareAudit : IEqualityComparer<AuditApplyNodeDataModel>
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public bool Equals(AuditApplyNodeDataModel x, AuditApplyNodeDataModel y)
+		{
+			return x.Id == y.Id;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public int GetHashCode(AuditApplyNodeDataModel obj)
+		{
+			return obj.Id.GetHashCode();
+		}
+	}
+	/// <summary>
 	/// 
 	/// </summary>
 

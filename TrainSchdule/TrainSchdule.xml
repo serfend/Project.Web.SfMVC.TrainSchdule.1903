@@ -791,6 +791,26 @@
             
             </summary>
         </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.CompareAudit">
+            <summary>
+            等价比较审批节点
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.Apply.CompareAudit.Equals(TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel,TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel)">
+            <summary>
+            
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.Apply.CompareAudit.GetHashCode(TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
         <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel">
             <summary>
             

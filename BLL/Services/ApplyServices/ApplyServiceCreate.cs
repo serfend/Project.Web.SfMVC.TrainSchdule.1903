@@ -202,6 +202,7 @@ namespace BLL.Services.ApplyServices
 
 		private Status AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages,User AuditUser)
 		{
+			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
 			var nowAudit = new List<ApplyResponse>();
 			foreach (var r in model.Apply.Response)
 			{
@@ -211,7 +212,7 @@ namespace BLL.Services.ApplyServices
 					break;
 				}
 			}
-			if (nowAudit.Count == 0) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream);
+			if (nowAudit.Count == 0) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
 			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
 			var result = AuditResponse(nowAudit, model.Apply, model.Action, model.Remark, AuditUser);
