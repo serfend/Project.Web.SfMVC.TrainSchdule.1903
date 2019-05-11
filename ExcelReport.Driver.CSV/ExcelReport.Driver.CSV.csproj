@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <SignAssembly>false</SignAssembly>
+    <Description>csv driver of ExcelReport .</Description>
+    <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/hanzhaoxin/638238/o_e-csv.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/hanzhaoxin/ExcelReport/blob/master/License.txt</PackageLicenseUrl>
+    <Copyright>Copyright 2019</Copyright>
+    <PackageProjectUrl>https://github.com/hanzhaoxin/ExcelReport</PackageProjectUrl>
+    <PackageReleaseNotes>添加获取被代理对象的接口，方便用户自己扩展。</PackageReleaseNotes>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="第一步.bat" />
+    <None Remove="第三步.bat" />
+    <None Remove="第二步.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AxinLib.IO.CSV" Version="1.0.0" />
+    <PackageReference Include="ExcelReport.Driver" Version="2.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.1" />
+  </ItemGroup>
+
+</Project>
