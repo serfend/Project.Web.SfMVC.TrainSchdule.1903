@@ -8,10 +8,43 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
+		public static string ToStr(this Auditing model)
+		{
+			switch (model)
+			{
+				case Auditing.Received: return "审核中";
+				case Auditing.Denied: return "驳回";
+				case Auditing.UnReceive: return "未收到审核";
+				case Auditing.Accept: return "同意";
+				default: return "null";
+			}
+		}
+
+		public static ApplyResponseDto SelfRankAuditStatus(this IEnumerable<ApplyResponseDto> model)
+		{
+			var list = model.ToList();
+			if (list?.Count() == 0) return null;
+			var item = list.ElementAtOrDefault(0);
+			return item;
+		}
+		public static ApplyResponseDto LastRankAuditStatus(this IEnumerable<ApplyResponseDto> model)
+		{
+			var list = model.ToList();
+
+			if (list?.Count() <2 ) return null;
+			var item = list.ElementAtOrDefault(list.Count()-2);
+			return item;
+		}
+
+		public static string AuditResult(this ApplyResponseDto model)
+		{
+			if (model == null) return "无审批结果";
+			var remark = model.Remark!=null ? $"({model.Remark})" : null;
+			return $"{model.Status.ToStr()}{remark}";
+		}
 		public static int VocationTotalLength(this ApplyRequest model)
 		{
-			if (model == null) return 0;
-			if (!model.StampReturn.HasValue||!model.StampLeave.HasValue) return 0;
+			if (model?.StampReturn == null||!model.StampLeave.HasValue) return 0;
 			return model.StampReturn.Value.Subtract(model.StampLeave.Value).Days;
 		}
 		public static string VocationDescription(this ApplyRequest model)
@@ -19,7 +52,7 @@ namespace BLL.Extensions
 			if (model == null) return "休假申请无效";
 			return $"共计{model.OnTripLength+model.VocationLength}天(其中{model.VocationType}{model.VocationLength}天,路途{model.OnTripLength}天)";
 		}
-		public static ApplyBaseInfoDto ToDTO(this ApplyBaseInfo model)
+		public static ApplyBaseInfoDto ToDto(this ApplyBaseInfo model)
 		{
 			return new ApplyBaseInfoDto()
 			{
@@ -28,7 +61,7 @@ namespace BLL.Extensions
 				RealName = model.RealName
 			};
 		}
-		public static ApplyResponseDto ToResponseDTO(this ApplyResponse model)
+		public static ApplyResponseDto ToResponseDto(this ApplyResponse model)
 		{
 			var b = new ApplyResponseDto()
 			{
@@ -40,34 +73,35 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
-		public static ApplyDetailDto ToDetaiDTO(this Apply model)
+		public static ApplyDetailDto ToDetaiDto(this Apply model)
 		{
 			var b=new ApplyDetailDto()
 			{
-				Base = model.BaseInfo.From.ToDTO(),
+				Base = model.BaseInfo.From.ToDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
 				Hidden = model.Hidden,
 				RequestInfo = model.RequestInfo,
-				Response = model.Response.Select(r=>r.ToResponseDTO()),
+				Response = model.Response.Select(r=>r.ToResponseDto()),
 				Id = model.Id,
 				Social = model.BaseInfo.Social,
-				Status = model.Status
+				Status = model.Status,
+				AuditLeader = model.AuditLeader
 			};
 			return b;
 		}
 
 		
-		public static ApplySummaryDto ToSummaryDTO(this Apply model)
+		public static ApplySummaryDto ToSummaryDto(this Apply model)
 		{
 			var b=new ApplySummaryDto()
 			{
 				Create = model.Create,
 				Status = model.Status,
 				NowAuditCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
-				Base = model.BaseInfo.ToDTO(),
-				UserBase = model.BaseInfo.From.ToDTO(),
+				Base = model.BaseInfo.ToDto(),
+				UserBase = model.BaseInfo.From.ToDto(),
 				Id = model.Id,
 				StampLeave = model.RequestInfo?.StampLeave,
 				StampReturn = model.RequestInfo?.StampReturn,
@@ -76,8 +110,8 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
-		private static  Dictionary<int,AuditStatusMessage> _statusDic { get; set; }
-		public static Dictionary<int, AuditStatusMessage> StatusDic => _statusDic ?? (_statusDic = InitStatusDic());
+
+		public static Dictionary<int, AuditStatusMessage> StatusDic { get; } = InitStatusDic();
 		public static Dictionary<int,Color> StatusColors { get; set; }
 		public static Dictionary<int,string> StatusDesc { get; set; }
 

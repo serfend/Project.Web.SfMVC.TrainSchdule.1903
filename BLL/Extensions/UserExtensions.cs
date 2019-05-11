@@ -6,7 +6,7 @@ namespace BLL.Extensions
 {
 	public static class UserExtensions
 	{
-		public static UserSummaryDto ToDTO(this User user)
+		public static UserSummaryDto ToDto(this User user)
 		{
 			if (user == null) return null;
 			var b=new UserSummaryDto()

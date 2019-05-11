@@ -211,7 +211,7 @@ namespace TrainSchdule.Controllers
 			{
 				Guid.TryParse(form.Model.Apply, out var guid);
 				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
-				var apply = _applyService.Get(guid)?.ToDetaiDTO();
+				var apply = _applyService.Get(guid)?.ToDetaiDto();
 				if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, apply);
 			}
@@ -222,7 +222,7 @@ namespace TrainSchdule.Controllers
 				else if (form.Model.Company != null) list = _applyService.GetApplyByToAuditCompany(form.Model.Company);
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 				if(list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
-				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, list.Select(a=>a.ToDetaiDTO()));
+				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, list.Select(a=>a.ToDetaiDto()));
 			}
 
 			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

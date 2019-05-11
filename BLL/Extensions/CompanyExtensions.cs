@@ -7,11 +7,11 @@ namespace BLL.Extensions
 {
 	public static class CompanyExtensions
 	{
-		public static CompanyDto ToDTO(this Company company, ICompaniesService companiesService)
+		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService)
 		{
 			var b=new CompanyDto()
 			{
-				Managers = companiesService.GetCompanyManagers(company.Code).Select(u=>u.ToDTO()),
+				Managers = companiesService.GetCompanyManagers(company.Code).Select(u=>u.ToDto()),
 				Code = company.Code,
 				Name = company.Name
 			};

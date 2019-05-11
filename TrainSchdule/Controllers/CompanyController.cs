@@ -70,7 +70,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new CompanyManagerDataModel()
 				{
-					List = list.Select(u => u.ToDTO())
+					List = list.Select(u => u.ToDto())
 				}
 			});
 		}
@@ -92,7 +92,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new AllMembersDataModel()
 				{
-					List = _companyManagerServices.GetMembers(code,page,pageSize).Select(u=>u.ToDTO())
+					List = _companyManagerServices.GetMembers(code,page,pageSize).Select(u=>u.ToDto())
 				}
 			});
 		}

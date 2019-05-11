@@ -10,6 +10,10 @@ namespace DAL.DTO.Apply
 	public sealed class ApplyDetailDto:BaseEntity
 	{
 		/// <summary>
+		/// 批准首长
+		/// </summary>
+		public string AuditLeader { get; set; }
+		/// <summary>
 		/// 从用户原始库中导出的信息
 		/// </summary>
 		public UserSummaryDto Base { get; set; }

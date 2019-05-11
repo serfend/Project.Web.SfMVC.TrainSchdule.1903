@@ -165,7 +165,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					List = list.Select(c=>c.Company.ToDTO(_companiesService))
+					List = list.Select(c=>c.Company.ToDto(_companiesService))
 				}
 			});
 		}

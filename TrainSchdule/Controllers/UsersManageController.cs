@@ -30,7 +30,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new UserManageRangeDataModel()
 				{
-					List = _usersService.InMyManage(id).Select(c => c.ToDTO(_companiesService))
+					List = _usersService.InMyManage(id).Select(c => c.ToDto(_companiesService))
 				}
 			});
 		}

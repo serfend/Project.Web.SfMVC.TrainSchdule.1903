@@ -7,7 +7,7 @@ namespace DAL.Entities.ApplyInfo
 	{
 		public virtual ApplyBaseInfo BaseInfo { get; set; }
 		public virtual ApplyRequest RequestInfo { get; set; }
-
+		public string AuditLeader { get; set; }
 		/// <summary>
 		/// 申请发布的时间
 		/// </summary>

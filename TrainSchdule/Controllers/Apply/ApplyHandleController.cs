@@ -32,7 +32,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a=>a.ToSummaryDTO())
+					List = list.Select(a=>a.ToSummaryDto())
 				}
 			});
 		}
@@ -75,7 +75,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.GetApplyBySubmitCompany(code).Select(a=>a.ToSummaryDTO())
+					List = _applyService.GetApplyBySubmitCompany(code).Select(a=>a.ToSummaryDto())
 				}
 			});
 		}
@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a => a.ToSummaryDTO())
+					List = list.Select(a => a.ToSummaryDto())
 				}
 			});
 		}
@@ -121,7 +121,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDTO()
+				Data = apply.ToDetaiDto()
 			});
 		}
 

@@ -13,10 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRCoder.NETCore20", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleAuthentiator", "GoogleAuthentiator\GoogleAuthentiator.csproj", "{129707D9-241D-4F53-A1A9-27517994C4C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelReport", "..\..\ExcelReport\src\ExcelReport\ExcelReport.csproj", "{22002B2B-6446-4447-8EFF-21C05D19A6FC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelReport.Driver.NPOI", "..\..\ExcelReport\src\ExcelReport.Driver.NPOI\ExcelReport.Driver.NPOI.csproj", "{D54EA159-0229-4C3B-9576-C7766BD91AAC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,30 +83,6 @@ Global
 		{129707D9-241D-4F53-A1A9-27517994C4C9}.Release|x64.Build.0 = Release|Any CPU
 		{129707D9-241D-4F53-A1A9-27517994C4C9}.Release|x86.ActiveCfg = Release|Any CPU
 		{129707D9-241D-4F53-A1A9-27517994C4C9}.Release|x86.Build.0 = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|x64.Build.0 = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Debug|x86.Build.0 = Debug|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|x64.ActiveCfg = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|x64.Build.0 = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|x86.ActiveCfg = Release|Any CPU
-		{22002B2B-6446-4447-8EFF-21C05D19A6FC}.Release|x86.Build.0 = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|x64.Build.0 = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Debug|x86.Build.0 = Debug|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|x64.ActiveCfg = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|x64.Build.0 = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|x86.ActiveCfg = Release|Any CPU
-		{D54EA159-0229-4C3B-9576-C7766BD91AAC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
