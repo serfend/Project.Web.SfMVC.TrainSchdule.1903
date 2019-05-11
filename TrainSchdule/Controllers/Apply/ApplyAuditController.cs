@@ -2,6 +2,7 @@
 using System.Linq;
 using BLL.Helpers;
 using DAL.Entities.ApplyInfo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Apply;
@@ -16,6 +17,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(Status),0)]
 
 		public IActionResult Save(string id)
@@ -30,6 +32,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[AllowAnonymous]
+
 		[ProducesResponseType(typeof(Status), 0)]
 
 		public IActionResult Publish(string id)
@@ -44,6 +48,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="id">申请的id</param>
 		/// <returns></returns>
 		[HttpPut]
+		[AllowAnonymous]
+
 		[ProducesResponseType(typeof(Status), 0)]
 
 		public IActionResult Withdrew(string id)
@@ -75,6 +81,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(Status), 0)]
 
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
