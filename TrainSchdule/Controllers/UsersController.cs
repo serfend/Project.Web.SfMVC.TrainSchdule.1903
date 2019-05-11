@@ -61,8 +61,8 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult Application(string id)
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserApplicationInfoViewModel()
@@ -82,6 +82,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Social(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserSocialViewModel()
@@ -101,6 +102,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Duties(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserDutiesViewModel()
@@ -120,6 +122,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Company(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserCompanyInfoViewModel()
@@ -139,6 +142,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Base(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			return  new JsonResult(new UserBaseInfoViewModel()
@@ -158,6 +162,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult AuditStream(string id)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company);
