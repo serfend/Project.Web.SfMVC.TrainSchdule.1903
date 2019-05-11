@@ -1,11 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Data;
+using DAL.DTO.Apply;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Static;
 using TrainSchdule.ViewModels.System;
@@ -23,17 +31,24 @@ namespace TrainSchdule.Controllers
 		private readonly IVerifyService _verifyService;
 		private readonly IVocationCheckServices _vocationCheckServices;
 		private readonly ApplicationDbContext _context;
+		private readonly IApplyService _applyService;
+		private readonly IHostingEnvironment _hostingEnvironment;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="verifyService"></param>
 		/// <param name="context"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices)
+		/// <param name="vocationCheckServices"></param>
+		/// <param name="hostingEnvironment"></param>
+		/// <param name="applyService"></param>
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService)
 		{
 			_verifyService = verifyService;
 			_context = context;
 			_vocationCheckServices = vocationCheckServices;
+			_hostingEnvironment = hostingEnvironment;
+			_applyService = applyService;
 		}
 
 		/// <summary>
@@ -171,6 +186,46 @@ namespace TrainSchdule.Controllers
 					VocationDays = _vocationCheckServices.EndDate.Subtract(start).Days
 				}
 			});
+		}
+		/// <summary>
+		/// 依据模板导出Xls
+		/// </summary>
+		/// <param name="form"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(string),0)]
+
+		[Route("XlsExport")]
+		public IActionResult XlsExport([FromBody] XlsExportViewModel form)
+		{
+			var sWebRootFolder = _hostingEnvironment.WebRootPath;
+			form.Templete = $"Templete\\{form.Templete}";
+			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, form.Templete));
+			if(!tempFile.Exists)return new JsonResult(ActionStatusMessage.Static.TempXlsNotExist);
+
+			var sFileName = $"wwwroot\\Cache\\XlsExport\\{Guid.NewGuid()}.xlsx";
+			var file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+			byte[] fileContent = null;
+			if (!form.Model.Apply.IsNullOrEmpty())
+			{
+				Guid.TryParse(form.Model.Apply, out var guid);
+				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
+				var apply = _applyService.Get(guid)?.ToDetaiDTO();
+				if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, apply);
+			}
+			else
+			{
+				IEnumerable<DAL.Entities.ApplyInfo.Apply> list=null;
+				if (form.Model.User != null) list = _applyService.GetApplyBySubmitUser(form.Model.User);
+				else if (form.Model.Company != null) list = _applyService.GetApplyByToAuditCompany(form.Model.Company);
+				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
+				if(list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, list.Select(a=>a.ToDetaiDTO()));
+			}
+
+			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		}
 	}
 }

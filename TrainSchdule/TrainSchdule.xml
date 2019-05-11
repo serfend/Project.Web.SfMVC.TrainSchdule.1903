@@ -134,7 +134,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService)">
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService,BLL.Interfaces.IVocationCheckServices)">
             <summary>
             
             </summary>
@@ -145,6 +145,7 @@
             <param name="verifyService"></param>
             <param name="context"></param>
             <param name="authService"></param>
+            <param name="vocationCheckServices"></param>
         </member>
         <member name="M:TrainSchdule.Controllers.Apply.ApplyController.AllStatus">
             <summary>
@@ -258,12 +259,15 @@
             
             </summary>
         </member>
-        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices)">
+        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService)">
             <summary>
             
             </summary>
             <param name="verifyService"></param>
             <param name="context"></param>
+            <param name="vocationCheckServices"></param>
+            <param name="hostingEnvironment"></param>
+            <param name="applyService"></param>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.VerifyCode">
             <summary>
@@ -303,6 +307,13 @@
             </summary>
             <param name="start"></param>
             <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrainSchdule.Controllers.StaticController.XlsExport(TrainSchdule.ViewModels.Static.XlsExportViewModel)">
+            <summary>
+            依据模板导出Xls
+            </summary>
+            <param name="form"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Controllers.UsersController">
@@ -398,12 +409,13 @@
             <param name="usersService"></param>
             <returns></returns>
         </member>
-        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext)">
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices)">
             <summary>
             
             </summary>
             <param name="model"></param>
             <param name="context"></param>
+            <param name="vocationCheckServices"></param>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitApplyViewModel)">
@@ -983,6 +995,11 @@
             用户id
             </summary>
         </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.ByTransportation">
+            <summary>
+            交通工具 0:无 1:汽车 2:火车 3:飞机
+            </summary>
+        </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.StampLeave">
             <summary>
             离队时间
@@ -1191,6 +1208,41 @@
         <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.EndDate">
             <summary>
             休假预计结束时间
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.XlsExportViewModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Templete">
+            <summary>
+            使用的模板文件名称
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Model">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.User">
+            <summary>
+            获取某个用户的所有申请
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.Company">
+            <summary>
+            获取单位下所有申请
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.Apply">
+            <summary>
+            获取某个申请的信息
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.ApiDataModel">

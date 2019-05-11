@@ -40,19 +40,22 @@ namespace TrainSchdule.Extensions
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="context"></param>
+		/// <param name="vocationCheckServices"></param>
 		/// <returns></returns>
-		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context)
+		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context,IVocationCheckServices vocationCheckServices)
 		{
 			var b=new ApplyRequestVdto()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
-				StampReturn = model.StampLeave?.AddDays(model.OnTripLength).AddDays(model.VocationLength),
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
-				VocationType = model.VocationType
+				VocationType = model.VocationType,
+				ByTransportation = model.ByTransportation
 			};
+			if (b.StampLeave != null)
+				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength);
 			return b;
 		}
 

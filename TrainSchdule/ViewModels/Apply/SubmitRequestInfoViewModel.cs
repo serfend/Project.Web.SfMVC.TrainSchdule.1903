@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DAL.Entities.ApplyInfo;
 
 namespace TrainSchdule.ViewModels.Apply
 {
@@ -13,6 +14,11 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		[Required]
 		public string Id { get; set; }
+		/// <summary>
+		/// 交通工具 0:无 1:汽车 2:火车 3:飞机
+		/// </summary>
+		[Required]
+		public Transportation ByTransportation { get; set; }
 		/// <summary>
 		/// 离队时间
 		/// </summary>
@@ -43,5 +49,6 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 休假原因
 		/// </summary>
 		public string Reason { get; set; }
+
 	}
 }

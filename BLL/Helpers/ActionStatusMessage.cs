@@ -140,7 +140,10 @@
 			}
 		}
 
-
+		public static class Static
+		{
+			public static readonly Status TempXlsNotExist=new Status(50000,"未找到Excel模板");
+		}
 
 
 

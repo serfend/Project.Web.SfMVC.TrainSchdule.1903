@@ -26,6 +26,7 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyService _applyService;
+		private readonly IVocationCheckServices _vocationCheckServices;
 		private readonly ApplicationDbContext _context;
 		private readonly ICompaniesService _companiesService;
 		private readonly IVerifyService _verifyService;
@@ -42,7 +43,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="verifyService"></param>
 		/// <param name="context"></param>
 		/// <param name="authService"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService)
+		/// <param name="vocationCheckServices"></param>
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -51,6 +53,7 @@ namespace TrainSchdule.Controllers.Apply
 			_verifyService = verifyService;
 			_context = context;
 			_authService = authService;
+			_vocationCheckServices = vocationCheckServices;
 		}
 
 		#endregion
@@ -108,7 +111,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToVDTO(model,_context));
+			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToVDTO(model,_context, _vocationCheckServices));
 			if(info.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
 			if (!ModelState.IsValid) return new JsonResult(new ApiResponseModelStateErrorViewModel(info.Id,ModelState));
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));

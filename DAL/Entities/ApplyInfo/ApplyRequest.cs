@@ -15,5 +15,14 @@ namespace DAL.Entities.ApplyInfo
 		public virtual AdminDivision VocationPlace { get; set; }
 		public string Reason { get; set; }
 		public DateTime CreateTime { get; set; }
+		public Transportation ByTransportation { get; set; }
+	}
+
+	public enum Transportation
+	{
+		无,
+		汽车,
+		火车,
+		飞机
 	}
 }

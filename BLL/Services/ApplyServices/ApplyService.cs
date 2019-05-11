@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities.ApplyInfo;
+using ExcelReport;
+using ExcelReport.Driver.NPOI;
 
 namespace BLL.Services.ApplyServices
 {
@@ -21,6 +23,7 @@ namespace BLL.Services.ApplyServices
 		{
 			_context = context;
 			_usersService = usersService;
+			Configurator.Put(".xlsx", new WorkbookLoader());
 		}
 		
 

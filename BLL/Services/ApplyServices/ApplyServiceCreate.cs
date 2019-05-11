@@ -70,7 +70,8 @@ namespace BLL.Services.ApplyServices
 				VocationLength = model.VocationLength,
 				VocationPlace = model.VocationPlace,
 				VocationType = model.VocationType,
-				CreateTime = DateTime.Now
+				CreateTime = DateTime.Now,
+				ByTransportation = model.ByTransportation
 			};
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();

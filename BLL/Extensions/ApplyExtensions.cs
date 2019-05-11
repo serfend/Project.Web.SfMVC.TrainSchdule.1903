@@ -8,6 +8,17 @@ namespace BLL.Extensions
 {
 	public static class ApplyExtensions
 	{
+		public static int VocationTotalLength(this ApplyRequest model)
+		{
+			if (model == null) return 0;
+			if (!model.StampReturn.HasValue||!model.StampLeave.HasValue) return 0;
+			return model.StampReturn.Value.Subtract(model.StampLeave.Value).Days;
+		}
+		public static string VocationDescription(this ApplyRequest model)
+		{
+			if (model == null) return "休假申请无效";
+			return $"共计{model.OnTripLength+model.VocationLength}天(其中{model.VocationType}{model.VocationLength}天,路途{model.OnTripLength}天)";
+		}
 		public static ApplyBaseInfoDto ToDTO(this ApplyBaseInfo model)
 		{
 			return new ApplyBaseInfoDto()

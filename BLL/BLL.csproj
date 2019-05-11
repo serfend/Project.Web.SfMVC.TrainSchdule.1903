@@ -8,6 +8,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Pomelo.AspNetCore.TimedJob" Version="2.0.0-rtm-10046" />
     <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
+    <PackageReference Include="ExcelReport" Version="3.1.5" />
+    <PackageReference Include="ExcelReport.Driver.NPOI" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
