@@ -23,7 +23,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Save(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
-			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Save.AllReadySave);
+			if (modelCheck.Code == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Save.AllReadySave);
 			return new JsonResult(modelCheck);
 		}
 		/// <summary>
@@ -39,7 +39,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Publish(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
-			if (modelCheck.status == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Publish.AllReadyPublish);
+			if (modelCheck.Code == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Publish.AllReadyPublish);
 			return new JsonResult(modelCheck);
 		}
 		/// <summary>
@@ -55,24 +55,24 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Withdrew(string id)
 		{
 			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
-			if(modelCheck.status==ActionStatusMessage.Fail.status)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
+			if(modelCheck.Code==ActionStatusMessage.Fail.status)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
 			return new JsonResult(modelCheck);
 		}
 		
-		private Status CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,bool>callBack)
+		private ApplyActionResponseViewModel CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,bool>callBack)
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.Get(gid);
-			if (apply == null) return ActionStatusMessage.Apply.NotExist;
+			if (apply == null) return new ApplyActionResponseViewModel(ActionStatusMessage.Apply.NotExist);
 			var userid = _currentUserService.CurrentUser?.Id;
-			if (userid == null) return ActionStatusMessage.Account.Auth.Invalid.NotLogin;
+			if (userid == null) return new ApplyActionResponseViewModel(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (apply.BaseInfo.From.Id != userid)
 			{
-				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) return ActionStatusMessage.Account.Auth.Invalid.Default;
+				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) return new ApplyActionResponseViewModel(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 
-			if (callBack.Invoke(apply))return ActionStatusMessage.Success;
-			return ActionStatusMessage.Fail;
+			if (callBack.Invoke(apply))return new ApplyActionResponseViewModel(ActionStatusMessage.Success){Data = new ApplyActionResponseDataModel(){Status = apply.Status}};
+			return new ApplyActionResponseViewModel(ActionStatusMessage.Fail);
 		}
 
 		/// <summary>

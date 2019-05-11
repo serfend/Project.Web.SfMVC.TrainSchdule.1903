@@ -768,6 +768,32 @@
             
             </summary>
         </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel">
+            <summary>
+            返回操作结果
+            </summary>
+        </member>
+        <member name="M:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel.#ctor(BLL.Helpers.Status)">
+            <summary>
+            
+            </summary>
+            <param name="status"></param>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrainSchdule.ViewModels.Apply.ApplyActionResponseDataModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrainSchdule.ViewModels.Apply.ApplyActionResponseDataModel.Status">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditStatusViewModel">
             <summary>
             
