@@ -193,8 +193,11 @@ namespace TrainSchdule
 			app.UseWelcomePage(new WelcomePageOptions() {
 				Path="/welcome"
 			});
+			DefaultFilesOptions options = new DefaultFilesOptions();
+			options.DefaultFileNames.Add("index.html");    //将index.html改为需要默认起始页的文件名.
+			app.UseDefaultFiles(options);
 			//中间件方法
-            app.UseStaticFiles();
+			app.UseStaticFiles();
             app.UseSession();
 
             //启用中间件服务生成Swagger作为JSON终结点
