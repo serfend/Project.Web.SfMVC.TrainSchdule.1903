@@ -17,5 +17,6 @@ namespace DAL.DTO.User
 		public string Duties { get; set; }
 		public string Company { get; set; }
 		public string InvitedBy { get; set; }
+		public SettleDownEnum Settle { get; set; }
 	}
 }

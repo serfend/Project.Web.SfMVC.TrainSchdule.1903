@@ -203,7 +203,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(string),0)]
 
 		[Route("XlsExport")]
-		public IActionResult XlsExport([FromBody] XlsExportViewModel form)
+		public IActionResult XlsExport( XlsExportViewModel form)
 		{
 			var sWebRootFolder = _hostingEnvironment.WebRootPath;
 			form.Templete = $"Templete\\{form.Templete}";
@@ -212,9 +212,9 @@ namespace TrainSchdule.Controllers
 
 			byte[] fileContent = null;
 			string fileName = DateTime.Now.ToString("yyyy年mm月dd日导出.xlsx");
-			if (!form.Model.Apply.IsNullOrEmpty())
+			if (!form.Apply.IsNullOrEmpty())
 			{
-				Guid.TryParse(form.Model.Apply, out var guid);
+				Guid.TryParse(form.Apply, out var guid);
 				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 				var apply = _applyService.Get(guid)?.ToDetaiDto();
 				if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
@@ -225,17 +225,17 @@ namespace TrainSchdule.Controllers
 			{
 				IEnumerable<DAL.Entities.ApplyInfo.Apply> list=null;
 				string fromName = string.Empty;
-				if (form.Model.User != null)
+				if (form.User != null)
 				{
-					list = _applyService.GetApplyBySubmitUser(form.Model.User);
-					var targetUser = _usersService.Get(form.Model.User);
-					fromName = targetUser?.BaseInfo.RealName ?? form.Model.User;
+					list = _applyService.GetApplyBySubmitUser(form.User);
+					var targetUser = _usersService.Get(form.User);
+					fromName = targetUser?.BaseInfo.RealName ?? form.User;
 				}
-				else if (form.Model.Company != null)
+				else if (form.Company != null)
 				{
-					list = _applyService.GetApplyByToAuditCompany(form.Model.Company);
-					var targetCompany = _companiesService.Get(form.Model.Company);
-					fromName = targetCompany?.Name ?? form.Model.Company;
+					list = _applyService.GetApplyByToAuditCompany(form.Company);
+					var targetCompany = _companiesService.Get(form.Company);
+					fromName = targetCompany?.Name ?? form.Company;
 				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 				if(list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);

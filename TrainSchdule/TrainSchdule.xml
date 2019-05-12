@@ -259,7 +259,7 @@
             
             </summary>
         </member>
-        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService)">
+        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompaniesService)">
             <summary>
             
             </summary>
@@ -268,6 +268,8 @@
             <param name="vocationCheckServices"></param>
             <param name="hostingEnvironment"></param>
             <param name="applyService"></param>
+            <param name="usersService"></param>
+            <param name="companiesService"></param>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.VerifyCode">
             <summary>
@@ -1246,27 +1248,17 @@
             使用的模板文件名称
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Model">
+        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.User">
             <summary>
-            
+            获取单个用户的
             </summary>
         </member>
-        <member name="T:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.User">
-            <summary>
-            获取某个用户的所有申请
-            </summary>
-        </member>
-        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.Company">
+        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Company">
             <summary>
             获取单位下所有申请
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.XlsTempleteModelDataModel.Apply">
+        <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Apply">
             <summary>
             获取某个申请的信息
             </summary>

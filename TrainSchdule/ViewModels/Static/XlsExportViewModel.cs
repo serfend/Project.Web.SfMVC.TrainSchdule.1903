@@ -16,18 +16,7 @@ namespace TrainSchdule.ViewModels.Static
 		public string Templete { get; set; }
 
 		/// <summary>
-		/// 
-		/// </summary>
-		public XlsTempleteModelDataModel Model { get; set; }
-
-	}
-	/// <summary>
-	/// 
-	/// </summary>
-	public class XlsTempleteModelDataModel
-	{
-		/// <summary>
-		/// 获取某个用户的所有申请
+		/// 获取单个用户的
 		/// </summary>
 		public string User { get; set; }
 		/// <summary>
@@ -38,5 +27,7 @@ namespace TrainSchdule.ViewModels.Static
 		/// 获取某个申请的信息
 		/// </summary>
 		public string Apply { get; set; }
+
 	}
+
 }

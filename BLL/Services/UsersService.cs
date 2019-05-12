@@ -161,7 +161,8 @@ namespace BLL.Services
 				{
 					Address = _context.AdminDivisions.Find(user.HomeAddress),
 					AddressDetail = user.HomeDetailAddress,
-					Phone = user.Phone
+					Phone = user.Phone,
+					Settle = user.Settle
 				}
 			};
 			

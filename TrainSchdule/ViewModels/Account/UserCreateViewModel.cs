@@ -82,6 +82,11 @@ namespace TrainSchdule.ViewModels.Account
 		/// 
 		/// </summary>
 		public string Company { get; set; }
+		/// <summary>
+		/// 随军情况
+		/// </summary>
+
+		public SettleDownEnum Settle { get; set; }
 	}
 
 }

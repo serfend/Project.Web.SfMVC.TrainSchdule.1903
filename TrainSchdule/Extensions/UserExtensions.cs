@@ -32,7 +32,8 @@ namespace TrainSchdule.Extensions
 				InvitedBy = invitedBy,
 				Password = model.Password,
 				RealName = model.RealName,
-				Phone = model.Phone
+				Phone = model.Phone,
+				Settle = model.Settle
 			};
 		}
 	}
