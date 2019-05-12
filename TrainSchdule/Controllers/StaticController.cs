@@ -33,6 +33,8 @@ namespace TrainSchdule.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
 		private readonly IHostingEnvironment _hostingEnvironment;
+		private readonly IUsersService _usersService;
+		private readonly ICompaniesService _companiesService;
 
 		/// <summary>
 		/// 
@@ -42,13 +44,17 @@ namespace TrainSchdule.Controllers
 		/// <param name="vocationCheckServices"></param>
 		/// <param name="hostingEnvironment"></param>
 		/// <param name="applyService"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService)
+		/// <param name="usersService"></param>
+		/// <param name="companiesService"></param>
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService, IUsersService usersService, ICompaniesService companiesService)
 		{
 			_verifyService = verifyService;
 			_context = context;
 			_vocationCheckServices = vocationCheckServices;
 			_hostingEnvironment = hostingEnvironment;
 			_applyService = applyService;
+			_usersService = usersService;
+			_companiesService = companiesService;
 		}
 
 		/// <summary>
@@ -204,28 +210,40 @@ namespace TrainSchdule.Controllers
 			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, form.Templete));
 			if(!tempFile.Exists)return new JsonResult(ActionStatusMessage.Static.TempXlsNotExist);
 
-			var sFileName = $"wwwroot\\Cache\\XlsExport\\{Guid.NewGuid()}.xlsx";
-			var file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
 			byte[] fileContent = null;
+			string fileName = DateTime.Now.ToString("yyyy年mm月dd日导出.xlsx");
 			if (!form.Model.Apply.IsNullOrEmpty())
 			{
 				Guid.TryParse(form.Model.Apply, out var guid);
 				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 				var apply = _applyService.Get(guid)?.ToDetaiDto();
 				if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
-				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, apply);
+				fileContent=_applyService.ExportExcel(tempFile.FullName, apply);
+				fileName = $"{apply.Base.RealName}的{apply.RequestInfo.VocationTotalLength()}天休假申请导出到{form.Templete}";
 			}
 			else
 			{
 				IEnumerable<DAL.Entities.ApplyInfo.Apply> list=null;
-				if (form.Model.User != null) list = _applyService.GetApplyBySubmitUser(form.Model.User);
-				else if (form.Model.Company != null) list = _applyService.GetApplyByToAuditCompany(form.Model.Company);
+				string fromName = string.Empty;
+				if (form.Model.User != null)
+				{
+					list = _applyService.GetApplyBySubmitUser(form.Model.User);
+					var targetUser = _usersService.Get(form.Model.User);
+					fromName = targetUser?.BaseInfo.RealName ?? form.Model.User;
+				}
+				else if (form.Model.Company != null)
+				{
+					list = _applyService.GetApplyByToAuditCompany(form.Model.Company);
+					var targetCompany = _companiesService.Get(form.Model.Company);
+					fromName = targetCompany?.Name ?? form.Model.Company;
+				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
 				if(list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
-				fileContent=_applyService.ExportExcel(tempFile.FullName, sFileName, list.Select(a=>a.ToDetaiDto()));
+				fileContent=_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()));
+				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
-			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 		}
 	}
 }

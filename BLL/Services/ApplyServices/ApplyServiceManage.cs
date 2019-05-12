@@ -31,7 +31,7 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 		}
 
-		public byte[] ExportExcel(string templete, string outPath, ApplyDetailDto model)
+		public byte[] ExportExcel(string templete, ApplyDetailDto model)
 		{
 			var sheetRenderers=new SheetRenderer[]
 			{
@@ -50,7 +50,7 @@ namespace BLL.Services.ApplyServices
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
 
-		public byte[] ExportExcel(string templete, string outPath, IEnumerable<ApplyDetailDto> model)
+		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model)
 		{
 			var list = model.ToList();
 			int index = 1;
