@@ -114,6 +114,7 @@ namespace BLL.Extensions
 		public static Dictionary<int, AuditStatusMessage> StatusDic { get; } = InitStatusDic();
 		public static Dictionary<int,Color> StatusColors { get; set; }
 		public static Dictionary<int,string> StatusDesc { get; set; }
+		public static Dictionary<int, IEnumerable<string>> StatusAcessable { get; set; }
 
 
 		private static Dictionary<int, AuditStatusMessage> InitStatusDic()
@@ -138,6 +139,16 @@ namespace BLL.Extensions
 				{(int)AuditStatus.Denied, "已驳回"},
 				{(int)AuditStatus.NotSave,"未保存" }
 			};
+			StatusAcessable=new Dictionary<int, IEnumerable<string>>()
+			{
+				{(int)AuditStatus.NotPublish,new List<string>(){"Publish","Delete"}},
+				{(int)AuditStatus.Auditing, new List<string>(){"Withdrew","Delete"}},
+				{(int)AuditStatus.Withdrew, new List<string>(){"Delete"}},
+				{(int)AuditStatus.AcceptAndWaitAdmin, new List<string>(){"Withdrew","Delete"}},
+				{(int)AuditStatus.Accept, new List<string>(){""}},
+				{(int)AuditStatus.Denied, new List<string>(){"Delete"}},
+				{(int)AuditStatus.NotSave,new List<string>(){"Delete","Save","Publish"} }
+			};
 			var statusMessages = new Dictionary<int, AuditStatusMessage>();
 			var type = typeof(AuditStatus).GetFields();
 			for (var i=1;i<type.Length ;i++)
@@ -149,7 +160,8 @@ namespace BLL.Extensions
 					Code = key,
 					Color = ColorTranslator.ToHtml(Color.FromArgb(StatusColors[key].ToArgb())),
 					Message = fieldInfo.Name,
-					Desc = StatusDesc[key]
+					Desc = StatusDesc[key],
+					Acessable = StatusAcessable[key]
 				});
 			}
 

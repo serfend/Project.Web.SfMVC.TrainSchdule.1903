@@ -3,7 +3,7 @@ using System.DrawingCore;
 
 namespace BLL.Interfaces
 {
-	public interface IVerifyService:IDisposable
+	public interface IVerifyService
 	{
 
 		/// <summary>

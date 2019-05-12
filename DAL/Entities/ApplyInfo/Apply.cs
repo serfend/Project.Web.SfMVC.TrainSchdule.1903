@@ -45,5 +45,9 @@ namespace DAL.Entities.ApplyInfo
 		public string Message { get; set; }
 		public string Desc { get; set; }
 		public string Color { get; set; }
+		/// <summary>
+		/// 可进行的操作
+		/// </summary>
+		public IEnumerable<string> Acessable { get; set; }
 	}
 }

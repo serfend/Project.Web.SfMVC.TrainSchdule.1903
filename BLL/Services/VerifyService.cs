@@ -19,9 +19,6 @@ namespace BLL.Services
 		private readonly IFileProvider _fileProvider;
 
 		#endregion
-		#region Disposing
-
-		private bool _isDisposed;
 
 		public VerifyService( IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
 		{
@@ -38,31 +35,7 @@ namespace BLL.Services
 		{
 			verifyImgNum = _fileProvider.GetDirectoryContents(VerifyPath).Count();
 		}
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
 
-		public virtual void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					
-				}
-
-				_isDisposed = true;
-			}
-		}
-
-		~VerifyService()
-		{
-			Dispose(false);
-		}
-
-		#endregion
 
 		private const string KeyVerifyCode = "verify-code";
 
