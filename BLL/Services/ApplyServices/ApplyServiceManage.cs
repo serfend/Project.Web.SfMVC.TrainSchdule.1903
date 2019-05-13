@@ -121,7 +121,9 @@ namespace BLL.Services.ApplyServices
 
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
-				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList)
+				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList),
+				new ParameterRenderer("Audit_SelfCompanyName",list[0].Company.CompanyTypeDesc),
+				new ParameterRenderer("Audit_SelfCompanyName", list[0].Company.CompanyParentTypeDesc)
 			));
 		}
 	}

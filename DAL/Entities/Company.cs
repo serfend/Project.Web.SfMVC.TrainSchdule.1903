@@ -7,7 +7,11 @@ namespace DAL.Entities
 	public class Company
 	{
 		public string Name { get; set; }
-
+		/// <summary>
+		/// 单位类型 连/科 营/部 部 首长
+		/// </summary>
+		public string CompanyTypeDesc { get; set; }
+		public string CompanyParentTypeDesc { get; set; }
 		public bool IsPrivate { get; set; }
 		/// <summary>
 		/// 单位代码
