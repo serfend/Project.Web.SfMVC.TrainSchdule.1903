@@ -18,5 +18,10 @@ namespace DAL.DTO.Apply
 		
 		public AuditStatus Status { get; set; }
 
+		/// <summary>
+		/// 当前用户/单位是否正在可审核中状态
+		/// </summary>
+		public bool AuditAvailable { get; set; }
+
 	}
 }

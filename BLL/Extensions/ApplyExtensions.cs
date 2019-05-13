@@ -93,7 +93,7 @@ namespace BLL.Extensions
 		}
 
 		
-		public static ApplySummaryDto ToSummaryDto(this Apply model)
+		public static ApplySummaryDto ToSummaryDto(this Apply model,string auditFrom)
 		{
 			var b=new ApplySummaryDto()
 			{
@@ -106,7 +106,8 @@ namespace BLL.Extensions
 				StampLeave = model.RequestInfo?.StampLeave,
 				StampReturn = model.RequestInfo?.StampReturn,
 				VocationPlace = model.RequestInfo?.VocationPlace.Name,
-				HomePlace=model.BaseInfo.Social.Address.Name
+				HomePlace=model.BaseInfo.Social.Address.Name,
+				AuditAvailable = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received)?.Company.Code==code
 			};
 			return b;
 		}
