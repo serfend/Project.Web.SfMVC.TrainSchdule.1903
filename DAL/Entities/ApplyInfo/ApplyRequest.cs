@@ -20,9 +20,9 @@ namespace DAL.Entities.ApplyInfo
 
 	public enum Transportation
 	{
-		无,
-		汽车,
-		火车,
-		飞机
+		无=-1,
+		汽车=0,
+		火车=1,
+		飞机=2
 	}
 }

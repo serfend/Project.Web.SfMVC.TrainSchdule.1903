@@ -36,16 +36,43 @@ namespace BLL.Services.ApplyServices
 			var sheetRenderers=new SheetRenderer[]
 			{
 				new SheetRenderer("Sheet1",
-					new ParameterRenderer("RealName", model.Base?.RealName),//真实姓名不允许修改
-					new ParameterRenderer("CompanyName", model.Company?.Name),
-					new ParameterRenderer("StampLeave", model.RequestInfo?.StampLeave),
-					new ParameterRenderer("StampReturn", model.RequestInfo?.StampReturn),
-					new ParameterRenderer("HomeAddressDetail", model.Social?.AddressDetail),
-					new ParameterRenderer("Phone", model.Social?.Phone),
-					new ParameterRenderer("VocationType",model.RequestInfo?.VocationType),
-					new ParameterRenderer("VocationDescription",model.RequestInfo.VocationDescription()),
-					new ParameterRenderer("ByTransportation",model.RequestInfo?.ByTransportation),
-					new ParameterRenderer("VocationLength",model.RequestInfo.VocationTotalLength()))
+					new ParameterRenderer("RequestInfo_VocationTotalLength",
+					model.RequestInfo.VocationTotalLength()),
+				new ParameterRenderer("RequestInfo_VocationDescription",
+					model.RequestInfo.VocationDescription()),
+				new ParameterRenderer("RequestInfo_OnTripLength", model.RequestInfo?.OnTripLength),
+				new ParameterRenderer("RequestInfo_StampLeave", model.RequestInfo?.StampLeave),
+				new ParameterRenderer("RequestInfo_StampReturn", model.RequestInfo?.StampReturn),
+				new ParameterRenderer("RequestInfo_VocationLength", model.RequestInfo?.VocationLength),
+				new ParameterRenderer("RequestInfo_VocationType", model.RequestInfo?.VocationType),
+				new ParameterRenderer("RequestInfo_ByTransportation",
+					model.RequestInfo?.ByTransportation),
+				new ParameterRenderer("RequestInfo_CreateTime", model.RequestInfo?.CreateTime),
+				new ParameterRenderer("RequestInfo_Reason", model.RequestInfo?.Reason),
+				new ParameterRenderer("RequestInfo_Id", model.RequestInfo?.Id),
+				new ParameterRenderer("RequestInfo_VocationPlace", model.RequestInfo?.VocationPlace.Name),
+				new ParameterRenderer("Base_Company", model.Base?.Company),
+				new ParameterRenderer("Base_Duties", model.Base?.Duties),
+				new ParameterRenderer("Base_RealName", model.Base?.RealName),
+				new ParameterRenderer("Base_Id", model.Base?.Id),
+				new ParameterRenderer("Company_Name", model.Company?.Name),
+				new ParameterRenderer("Company_Code", model.Company?.Code),
+				new ParameterRenderer("Status", model.Status),
+				new ParameterRenderer("Create", model.Create),
+				new ParameterRenderer("Duties_Name", model.Duties?.Name),
+				new ParameterRenderer("Social_Phone", model.Social?.Phone),
+				new ParameterRenderer("Social_Address.Name", model.Social?.Address?.Name),
+				new ParameterRenderer("Social_Address.Code", model.Social?.Address?.Code),
+				new ParameterRenderer("Social_Address.ShortName", model.Social?.Address?.ShortName),
+				new ParameterRenderer("Social_AddressDetail", model.Social?.AddressDetail),
+				new ParameterRenderer("Social_Settle", model.Social?.Settle),
+				new ParameterRenderer("Social_Id", model.Social?.Id),
+				new ParameterRenderer("Id", model.Id),
+				new ParameterRenderer("Response_SelfRankAudit", model.Response?.SelfRankAuditStatus().AuditResult()),
+				new ParameterRenderer("Response_LastRankAudit", model.Response?.LastRankAuditStatus().AuditResult()),
+				new ParameterRenderer("AuditLeader", model.AuditLeader)
+					),
+					
 			};
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}

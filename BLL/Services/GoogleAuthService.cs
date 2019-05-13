@@ -44,7 +44,7 @@ namespace BLL.Services
 			password = password ?? currentUser?.Application.AuthKey;
 			password = password ?? currentUser?.Id;
 			if (password == null) return null;
-			_auth.Password = Base32.ToString(new HMACSHA1(new byte[]{17,24,33,45}).ComputeHash(Encoding.UTF8.GetBytes(password)));
+			_auth.Password = Base32.ToString(Encoding.UTF8.GetBytes(password));
 			return _auth.Password;
 		}
 

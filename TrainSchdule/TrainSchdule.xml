@@ -745,6 +745,11 @@
             
             </summary>
         </member>
+        <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Settle">
+            <summary>
+            随军情况
+            </summary>
+        </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserIdByCidViewModel">
             <summary>
             
@@ -1025,7 +1030,7 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.ByTransportation">
             <summary>
-            交通工具 0:无 1:汽车 2:火车 3:飞机
+            交通工具 0:无 1:汽车 2:火车 3:飞机 -1：其他
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.StampLeave">
