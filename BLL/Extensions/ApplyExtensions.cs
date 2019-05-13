@@ -107,7 +107,7 @@ namespace BLL.Extensions
 				StampReturn = model.RequestInfo?.StampReturn,
 				VocationPlace = model.RequestInfo?.VocationPlace.Name,
 				HomePlace=model.BaseInfo.Social.Address.Name,
-				AuditAvailable = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received)?.Company.Code==code
+				AuditAvailable = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received)?.Company.Code== auditFrom
 			};
 			return b;
 		}
