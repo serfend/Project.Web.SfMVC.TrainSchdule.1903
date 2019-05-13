@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.DTO.Company;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.Controllers
@@ -45,7 +46,8 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
-			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);

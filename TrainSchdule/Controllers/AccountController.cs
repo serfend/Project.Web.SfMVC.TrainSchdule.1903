@@ -145,7 +145,8 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult Permission([FromBody]QueryPermissionsViewModel model)
 		{
-			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var permission = targetUser.Application.Permission;

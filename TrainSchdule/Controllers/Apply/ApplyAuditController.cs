@@ -5,6 +5,7 @@ using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Controllers.Apply
@@ -86,7 +87,8 @@ namespace TrainSchdule.Controllers.Apply
 
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
-			if(model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			try
 			{
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());
