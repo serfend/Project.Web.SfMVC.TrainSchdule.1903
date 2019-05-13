@@ -16,7 +16,6 @@ namespace TrainSchdule.ViewModels.Verify
 		/// 授权码
 		/// </summary>
 		[Required]
-		[StringLength(maximumLength:10,MinimumLength = 6)]
 		public int Code { get; set; }
 	}
 }
