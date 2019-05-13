@@ -8,6 +8,7 @@ using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -238,8 +239,11 @@ namespace TrainSchdule.Controllers
 					fromName = targetCompany?.Name ?? form.Company;
 				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
-				if(list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
-				fileContent=_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()));
+				if (list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				list = list.Where(a =>
+					a.Status != AuditStatus.NotPublish && a.Status != AuditStatus.NotSave &&
+					a.Status != AuditStatus.Withdrew).ToList();
+				fileContent =_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()));
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
