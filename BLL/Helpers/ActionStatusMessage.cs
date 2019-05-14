@@ -143,6 +143,9 @@
 		public static class Static
 		{
 			public static readonly Status TempXlsNotExist=new Status(50000,"未找到Excel模板");
+			public static readonly Status XlsNoData = new Status(51000,"生成的Excel文件无数据");
+
+			
 		}
 
 

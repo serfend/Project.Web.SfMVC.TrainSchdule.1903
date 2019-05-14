@@ -101,19 +101,25 @@ namespace BLL.Services.ApplyServices
 			return Create(apply);
 		}
 
-		public IEnumerable<Apply> GetApplyByToAuditCompany(string code)
+		public IEnumerable<Apply> GetApplyByToAuditCompany(string code,int page,int pageSize)
 		{
-			return _context.Applies.Where(a => a.Response.Any(r => r.Company.Code == code));
+			IQueryable<Apply> list= _context.Applies.Where(a => a.Response.Any(r => r.Company.Code == code)).OrderByDescending(a => a.Status);
+			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
+			return list;
 		}
 
-		public IEnumerable<Apply> GetApplyBySubmitCompany(string code)
+		public IEnumerable<Apply> GetApplyBySubmitCompany(string code,int page,int pageSize)
 		{
-			return _context.Applies.Where(a => a.BaseInfo.Company.Code == code);
+			IQueryable<Apply> list = _context.Applies.Where(a => a.BaseInfo.Company.Code == code).OrderByDescending(a => a.Status);
+			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
+			return list;
 		}
 
-		public IEnumerable<Apply> GetApplyBySubmitUser(string id)
+		public IEnumerable<Apply> GetApplyBySubmitUser(string id,int page,int pageSize)
 		{
-			return _context.Applies.Where(a => a.BaseInfo.From.Id == id);
+			IQueryable<Apply> list = _context.Applies.Where(a => a.BaseInfo.From.Id == id).OrderByDescending(a => a.Status);
+			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
+			return list;
 		}
 
 

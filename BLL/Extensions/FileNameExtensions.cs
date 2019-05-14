@@ -6,6 +6,10 @@ namespace BLL.Extensions
 {
 	public static class FileNameExtensions
 	{
+		public static string ToUrlEncode(this string s)
+		{
+			return System.Web.HttpUtility.UrlEncode(s, System.Text.Encoding.UTF8);
+		}
 		/// <summary>
 		/// 为字符串中的非英文字符编码
 		/// </summary>

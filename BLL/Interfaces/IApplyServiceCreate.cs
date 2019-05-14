@@ -14,10 +14,10 @@ namespace BLL.Interfaces
 		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model);
 		ApplyRequest SubmitRequest(ApplyRequestVdto model);
 		Apply Submit(ApplyVdto model);
-		IEnumerable<Apply> GetApplyByToAuditCompany(string code);
-		IEnumerable<Apply> GetApplyBySubmitCompany(string code);
+		IEnumerable<Apply> GetApplyByToAuditCompany(string code,int page,int pageSize);
+		IEnumerable<Apply> GetApplyBySubmitCompany(string code,int page,int pageSize);
 
-		IEnumerable<Apply> GetApplyBySubmitUser(string id);
+		IEnumerable<Apply> GetApplyBySubmitUser(string id,int page,int pageSize);
 
 		/// <summary>
 		/// 依据用户所在单位获取审批流，后期将修改为自定义审批方式

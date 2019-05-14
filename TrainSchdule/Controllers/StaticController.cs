@@ -5,20 +5,22 @@ using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
-using Castle.Core.Internal;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Static;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
+using CollectionExtensions = Castle.Core.Internal.CollectionExtensions;
 
 namespace TrainSchdule.Controllers
 {
@@ -68,7 +70,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult VerifyCode()
 		{
 			var imgId = _verifyService.Generate().ToString();
-			if (!_verifyService.Status.IsNullOrEmpty())
+			if (!CollectionExtensions.IsNullOrEmpty(_verifyService.Status))
 			{
 				var status = _verifyService.Status;
 				_verifyService.Generate();
@@ -90,7 +92,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("verify-ft.png")]
+		[Route("verify-ft.jpg")]
 		public IActionResult VerifyCodeFront()
 		{
 			var img = _verifyService.Front();
@@ -109,7 +111,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("verify-bg.png")]
+		[Route("verify-bg.jpg")]
 		public IActionResult VerifyCodeBackground()
 		{
 			var img = _verifyService.Background();
@@ -213,7 +215,7 @@ namespace TrainSchdule.Controllers
 
 			byte[] fileContent = null;
 			string fileName = DateTime.Now.ToString("yyyy年mm月dd日导出.xlsx");
-			if (!form.Apply.IsNullOrEmpty())
+			if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
 			{
 				Guid.TryParse(form.Apply, out var guid);
 				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
@@ -226,16 +228,18 @@ namespace TrainSchdule.Controllers
 			{
 				IEnumerable<DAL.Entities.ApplyInfo.Apply> list=null;
 				string fromName = string.Empty;
+				Company targetCompany= null;
 				if (form.User != null)
 				{
-					list = _applyService.GetApplyBySubmitUser(form.User);
+					list = _applyService.GetApplyBySubmitUser(form.User,0,0);
 					var targetUser = _usersService.Get(form.User);
 					fromName = targetUser?.BaseInfo.RealName ?? form.User;
+					targetCompany = targetUser?.CompanyInfo?.Company;
 				}
 				else if (form.Company != null)
 				{
-					list = _applyService.GetApplyByToAuditCompany(form.Company);
-					var targetCompany = _companiesService.Get(form.Company);
+					list = _applyService.GetApplyByToAuditCompany(form.Company,0,0);
+					targetCompany = _companiesService.Get(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
@@ -243,11 +247,12 @@ namespace TrainSchdule.Controllers
 				list = list.Where(a =>
 					a.Status != AuditStatus.NotPublish && a.Status != AuditStatus.NotSave &&
 					a.Status != AuditStatus.Withdrew).ToList();
-				fileContent =_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()));
+				fileContent =_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()), targetCompany?.ToDto(_companiesService));
+				if(fileContent==null)return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
-			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName.ToUrlEncode());
 		}
 	}
 }

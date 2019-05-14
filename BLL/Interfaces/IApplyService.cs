@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DAL.DTO.Company;
 using DAL.Entities.ApplyInfo;
 
 namespace BLL.Interfaces

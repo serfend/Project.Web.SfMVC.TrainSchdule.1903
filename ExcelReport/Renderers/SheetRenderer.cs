@@ -23,7 +23,9 @@ namespace ExcelReport.Renderers
             {
                 return;
             }
-            foreach (var renderer in RendererList.OrderBy(renderer => renderer.SortNum(worksheetContext)))
+
+            if (RendererList.Count == 0) return;
+            foreach (var renderer in RendererList)
             {
                 renderer.Render(worksheetContext);
             }

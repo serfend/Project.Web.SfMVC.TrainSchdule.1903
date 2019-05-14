@@ -16,18 +16,20 @@ namespace TrainSchdule.Controllers.Apply
 		/// 来自此用户发布的
 		/// </summary>
 		/// <param name="id"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
 
-		public IActionResult FromUser(string id)
+		public IActionResult FromUser(string id,int page,int pageSize)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
 			if(id==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			var list = _applyService.GetApplyBySubmitUser(id);
+			var list = _applyService.GetApplyBySubmitUser(id, page,pageSize);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
@@ -36,16 +38,19 @@ namespace TrainSchdule.Controllers.Apply
 				}
 			});
 		}
+
 		/// <summary>
 		/// 交给此用户审批的（选定单位）
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="code"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
-		public IActionResult ToUser(string id,string code)
+		public IActionResult ToUser(string id,string code,int page,int pageSize)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
 			if(id==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -54,18 +59,21 @@ namespace TrainSchdule.Controllers.Apply
 			var targetCompany = _companiesService.Get(code);
 			if(targetCompany==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if(!_companiesService.CheckManagers(code, id))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default) ;
-			return GetCompanyApply(code);
+			return GetCompanyApply(code,page,pageSize);
 		}
+
 		/// <summary>
 		/// 来自此单位的
 		/// </summary>
 		/// <param name="code"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
 
-		public IActionResult FromCompany(string code)
+		public IActionResult FromCompany(string code,int page,int pageSize)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			if(code==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -75,29 +83,32 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.GetApplyBySubmitCompany(code).Select(a=>a.ToSummaryDto(code))
+					List = _applyService.GetApplyBySubmitCompany(code,page,pageSize).Select(a=>a.ToSummaryDto(code))
 				}
 			});
 		}
+
 		/// <summary>
 		/// 交给此单位审批的
 		/// </summary>
 		/// <param name="code"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
 
-		public IActionResult ToCompany(string code)
+		public IActionResult ToCompany(string code,int page,int pageSize)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			var targetCompany = _companiesService.Get(code);
 			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			return GetCompanyApply(targetCompany.Code);
+			return GetCompanyApply(targetCompany.Code,page,pageSize);
 		}
-		private IActionResult GetCompanyApply(string code)
+		private IActionResult GetCompanyApply(string code,int page,int pageSize)
 		{
-			var list = _applyService.GetApplyByToAuditCompany(code);
+			var list = _applyService.GetApplyByToAuditCompany(code, page, pageSize);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()

@@ -6,6 +6,7 @@ using ExcelReport.Renderers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DAL.DTO.Company;
 
 namespace BLL.Services.ApplyServices
 {
@@ -72,15 +73,15 @@ namespace BLL.Services.ApplyServices
 				new ParameterRenderer("Response_LastRankAudit", model.Response?.LastRankAuditStatus().AuditResult()),
 				new ParameterRenderer("AuditLeader", model.AuditLeader)
 					),
-					
 			};
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
 
-		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model)
+		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model,CompanyDto currentCompany)
 		{
 			var list = model.ToList();
 			int index = 1;
+			if (list.Count == 0) return null;
 			IEmbeddedRenderer<ApplyDetailDto>[] parmList = {
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationTotalLength",
 					t => t.RequestInfo.VocationTotalLength()),
@@ -122,8 +123,8 @@ namespace BLL.Services.ApplyServices
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
 				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList),
-				new ParameterRenderer("Audit_SelfCompanyName",list[0].Company.CompanyTypeDesc),
-				new ParameterRenderer("Audit_SelfCompanyName", list[0].Company.CompanyParentTypeDesc)
+				new ParameterRenderer("Audit_SelfCompanyName", currentCompany.CompanyTypeDesc),
+				new ParameterRenderer("Audit_HeadCompanyName", currentCompany.CompanyParentTypeDesc)
 			));
 		}
 	}
