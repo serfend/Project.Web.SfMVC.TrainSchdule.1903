@@ -30,13 +30,13 @@ namespace DAL.Entities.ApplyInfo
 
 	public enum AuditStatus
 	{
-		NotSave=0,
-		NotPublish=-1,
-		Withdrew=1,
-		Auditing=2,
-		AcceptAndWaitAdmin=4,
-		Accept=8,
-		Denied=16,
+		NotSave=-10,
+		NotPublish=10,
+		Withdrew=20,
+		Denied=30,
+		Auditing=40,
+		AcceptAndWaitAdmin=50,
+		Accept=100,
 	}
 
 	public class AuditStatusMessage
