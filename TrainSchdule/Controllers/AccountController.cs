@@ -205,7 +205,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult AuthKey()
 		{
 			if(!User.Identity.IsAuthenticated)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var qrCoder = new BLL.Helpers.QRCoder();
+			var qrCoder = new BLL.Helpers.SfQRCoder();
 			_authService.InitCode();
 			var img = qrCoder.GenerateBytes(_authService.Url);
 			HttpContext.Response.Cookies.Append("key",_authService.Code().ToString());

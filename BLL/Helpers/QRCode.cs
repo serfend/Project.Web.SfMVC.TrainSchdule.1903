@@ -2,10 +2,9 @@
 using System.Drawing.Imaging;
 using System.IO;
 using QRCoder;
-
 namespace BLL.Helpers
 {
-	public class QRCoder
+	public class SfQRCoder
 	{
 		public QRCodeGenerator.ECCLevel EccLevel { get; set; }
 		public Bitmap CenterIcon { get; set; }
@@ -15,7 +14,7 @@ namespace BLL.Helpers
 		public Color DarkColor { get; set; }
 		public int PixelsPerModule { get; set; }
 
-		public QRCoder()
+		public SfQRCoder()
 		{
 			EccLevel = QRCodeGenerator.ECCLevel.M;
 			LightColor = Color.White;
@@ -31,7 +30,7 @@ namespace BLL.Helpers
 			{
 				using (var qrCodeData = qrGenerator.CreateQrCode(text, EccLevel))
 				{
-					using (var qrCode = new QrCode(qrCodeData))
+					using (var qrCode = new QRCoder.QRCode(qrCodeData))
 					{
 
 						return qrCode.GetGraphic(PixelsPerModule, DarkColor, LightColor,
