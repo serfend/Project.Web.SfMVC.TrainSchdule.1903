@@ -2,20 +2,24 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/TrainSchdule",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:28698/",
-      "sslPort": 44310
+      "sslPort": 44311
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "https://localhost:44310/",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
+	"IIS Express": {
+	  "commandName": "IISExpress",
+	  "launchBrowser": true,
+	  "launchUrl": "https://localhost:44311/",
+	  "environmentVariables": {
+		"ASPNETCORE_ENVIRONMENT": "Development"
+	  }
+	},
     "TrainSchdule": {
       "commandName": "Project",
       "launchBrowser": true,

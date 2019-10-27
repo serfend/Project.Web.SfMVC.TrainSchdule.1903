@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace TrainSchdule
 {
@@ -86,7 +85,6 @@ namespace TrainSchdule
 			});
 			services.AddTimedJob();
 			AddAllowCorsServices(services);
-			AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
@@ -110,22 +108,11 @@ namespace TrainSchdule
             AddApplicationServices(services);
             
           
-			services.AddMvc();
+			services.AddControllers();
 
+			services.AddSession();
 		}
 
-		private void AddSwaggerServices(IServiceCollection services)
-		{
-			//注册Swagger生成器，定义一个和多个Swagger 文档
-			services.AddSwaggerGen(c =>
-			{
-				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
-				// 为 Swagger JSON and UI设置xml文档注释路径
-				var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
-				var xmlPath = Path.Combine(basePath, "TrainSchdule.xml");
-				c.IncludeXmlComments(xmlPath);
-			});
-		}
 		private void AddAllowCorsServices(IServiceCollection services)
 		{
 
@@ -162,13 +149,7 @@ namespace TrainSchdule
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
-
-
-			services.AddSession(s =>
-			{
-				s.IdleTimeout = TimeSpan.FromMinutes(60);
-				s.Cookie.SameSite = SameSiteMode.None;
-			});
+			services.AddControllers().AddNewtonsoftJson();
 
 		}
 		/// <summary>
@@ -177,19 +158,10 @@ namespace TrainSchdule
 		/// <param name="app"></param>
 		/// <param name="env"></param>
 		/// <param name="services"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) 
         {
-            if (env.IsDevelopment())
-            {
-                
-            }
-            else if(env.IsProduction())
-            {
-               
-            }
             app.UseTimedJob();
 			app.UseDeveloperExceptionPage();
-			app.UseDatabaseErrorPage();
 			app.UseWelcomePage(new WelcomePageOptions() {
 				Path="/welcome"
 			});
@@ -198,37 +170,25 @@ namespace TrainSchdule
 			app.UseDefaultFiles(options);
 			//中间件方法
 			app.UseStaticFiles();
-            app.UseSession();
-
-            //启用中间件服务生成Swagger作为JSON终结点
-            app.UseSwagger();
-            //启用中间件服务对swagger-ui，指定Swagger JSON终结点
-            app.UseSwaggerUI(c =>
-            {
-	            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
 
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				MinimumSameSitePolicy = SameSiteMode.None,
 			});
-			app.UseAuthentication();
 
+			app.UseRouting();
 
-			//默认路由
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-					//controller/action/param
-                    template: "{controller=Home}/{action=Cover}/{Id?}");
-            });
+			app.UseAuthorization();
 
-            //seeder.Seed().Wait();
-            //seeder.CreateUserRoles(services).Wait();
-
-        }
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllerRoute(
+					name: "default",
+					pattern: "{controller=Home}/{action=Index}/{id?}");
+			});
+			app.UseSession();
+		}
 
         #endregion
     }
