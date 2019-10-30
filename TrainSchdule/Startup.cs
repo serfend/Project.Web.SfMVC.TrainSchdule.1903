@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Session;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,7 +56,7 @@ namespace TrainSchdule
             services.AddTransient<IEmailSender, EmailSender>();
 
 			//每个http请求对应一个实例
-			services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<ICompaniesService, CompaniesService > ();
 			services.AddScoped<IApplyService,ApplyService>();
@@ -69,9 +68,8 @@ namespace TrainSchdule
             services.AddSingleton<IVerifyService,VerifyService>();
             services.AddSingleton<IFileProvider>(
 	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-			services.AddSingleton<ISessionStore, DistributedSessionStore>();
-
-		}
+            
+        }
 
 		/// <summary>
 		/// 
@@ -112,7 +110,6 @@ namespace TrainSchdule
           
 			services.AddControllers();
 
-			services.AddDistributedMemoryCache();
 			services.AddSession();
 		}
 
@@ -181,15 +178,16 @@ namespace TrainSchdule
 			});
 
 			app.UseRouting();
-			app.UseSession();
 
 			app.UseAuthorization();
+
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
+			app.UseSession();
 		}
 
         #endregion
