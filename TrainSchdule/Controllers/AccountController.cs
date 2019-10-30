@@ -16,7 +16,6 @@ using Newtonsoft.Json;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels;
-using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers
 {
@@ -58,7 +57,7 @@ namespace TrainSchdule.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context ) 
+            IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -68,7 +67,7 @@ namespace TrainSchdule.Controllers
             _verifyService = verifyService;
             _authService = authService;
             _context = context;
-		}
+        }
 
         #endregion
 
@@ -249,7 +248,7 @@ namespace TrainSchdule.Controllers
 				if (result.Succeeded)
 				{
 					_logger.LogInformation($"用户登录:{model.UserName}");
-					return new JsonResult(new APIResponseIdViewModel(Guid.NewGuid(),new Status(0,$"登录成功:{model.UserName}")));
+					return new JsonResult(ActionStatusMessage.Success);
 				}
 				else if (result.RequiresTwoFactor)
 				{
