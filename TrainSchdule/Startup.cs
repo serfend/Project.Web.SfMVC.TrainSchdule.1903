@@ -102,8 +102,8 @@ namespace TrainSchdule
                 options.Lockout.MaxFailedAccessAttempts = 10;
                 options.Lockout.AllowedForNewUsers = true;
 
-				// User settings
-				options.User.RequireUniqueEmail = true;
+                // User settings
+                options.User.RequireUniqueEmail = true;
             });
 
   
@@ -113,11 +113,7 @@ namespace TrainSchdule
 			services.AddControllers();
 
 			services.AddDistributedMemoryCache();
-			services.AddSession(s =>
-			{
-				s.IdleTimeout = TimeSpan.FromMinutes(60);
-				s.Cookie.SameSite = SameSiteMode.None;
-			});
+			services.AddSession();
 		}
 
 		private void AddAllowCorsServices(IServiceCollection services)
