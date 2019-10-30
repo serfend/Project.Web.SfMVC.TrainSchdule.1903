@@ -14,9 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj" />
-    <ProjectReference Include="..\ExcelReport.Driver.NPOI\ExcelReport.Driver.NPOI.csproj" />
-    <ProjectReference Include="..\ExcelReport.Driver\ExcelReport.Driver.csproj" />
-    <ProjectReference Include="..\ExcelReport\ExcelReport.csproj" />
     <ProjectReference Include="..\GoogleAuthentiator\GoogleAuthentiator.csproj" />
   </ItemGroup>
 
