@@ -1,4 +1,5 @@
 ﻿using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 
 namespace DAL.DTO.Apply
 {
@@ -11,6 +12,6 @@ namespace DAL.DTO.Apply
 		public int HomeAddress { get; set; }
 		public string HomeDetailAddress { get; set; }
 		public string Phone { get; set; }
-		public SettleDownEnum Settle { get; set; }
+		public Settle Settle { get; set; }
 	}
 }
