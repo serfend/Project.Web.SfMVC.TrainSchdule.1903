@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190506140724_init2")]
+    partial class init2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,10 +27,6 @@ namespace DAL.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("ParentCode");
-
-                    b.Property<string>("ShortName");
-
                     b.HasKey("Code");
 
                     b.ToTable("AdminDivisions");
@@ -39,11 +37,9 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuditLeader");
-
                     b.Property<Guid?>("BaseInfoId");
 
-                    b.Property<DateTime?>("Create");
+                    b.Property<DateTime>("Create");
 
                     b.Property<bool>("Hidden");
 
@@ -67,13 +63,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("CompanyCode");
 
-                    b.Property<string>("CompanyName");
-
-                    b.Property<DateTime>("CreateTime");
-
                     b.Property<int?>("DutiesCode");
-
-                    b.Property<string>("DutiesName");
 
                     b.Property<string>("FromId");
 
@@ -99,17 +89,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ByTransportation");
-
-                    b.Property<DateTime>("CreateTime");
-
                     b.Property<int>("OnTripLength");
 
                     b.Property<string>("Reason");
 
-                    b.Property<DateTime?>("StampLeave");
+                    b.Property<DateTime>("StampLeave");
 
-                    b.Property<DateTime?>("StampReturn");
+                    b.Property<DateTime>("StampReturn");
 
                     b.Property<int>("VocationLength");
 
@@ -135,7 +121,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("CompanyCode");
 
-                    b.Property<DateTime?>("HandleStamp");
+                    b.Property<DateTime>("HandleStamp");
 
                     b.Property<string>("Remark");
 
@@ -156,10 +142,6 @@ namespace DAL.Migrations
                 {
                     b.Property<string>("Code");
 
-                    b.Property<string>("CompanyParentTypeDesc");
-
-                    b.Property<string>("CompanyTypeDesc");
-
                     b.Property<bool>("IsPrivate");
 
                     b.Property<string>("Name");
@@ -167,30 +149,6 @@ namespace DAL.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Companies");
-                });
-
-            modelBuilder.Entity("DAL.Entities.CompanyManagers", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AuthById");
-
-                    b.Property<string>("CompanyCode");
-
-                    b.Property<DateTime?>("Create");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthById");
-
-                    b.HasIndex("CompanyCode");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CompanyManagers");
                 });
 
             modelBuilder.Entity("DAL.Entities.Duties", b =>
@@ -303,11 +261,9 @@ namespace DAL.Migrations
 
                     b.Property<string>("About");
 
-                    b.Property<Guid?>("ApplicationSettingId");
-
                     b.Property<string>("AuthKey");
 
-                    b.Property<DateTime?>("Create");
+                    b.Property<DateTime>("Create");
 
                     b.Property<string>("Email");
 
@@ -317,23 +273,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationSettingId");
-
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("AppUserApplicationInfos");
-                });
-
-            modelBuilder.Entity("DAL.Entities.UserInfo.UserApplicationSetting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("LastSubmitApplyTime");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppUserApplicationSettings");
+                    b.ToTable("UserApplicationInfo");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.UserBaseInfo", b =>
@@ -342,8 +284,6 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Avatar");
-
-                    b.Property<string>("Cid");
 
                     b.Property<int>("Gender");
 
@@ -371,7 +311,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("DutiesCode");
 
-                    b.ToTable("AppUserCompanyInfos");
+                    b.ToTable("UserCompanyInfo");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.UserSocialInfo", b =>
@@ -391,24 +331,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("AddressCode");
 
-                    b.ToTable("AppUserSocialInfos");
-                });
-
-            modelBuilder.Entity("DAL.Entities.VocationDescription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Length");
-
-                    b.Property<string>("Name");
-
-                    b.Property<DateTime>("Start");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VocationDescriptions");
+                    b.ToTable("UserSocialInfo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -573,21 +496,6 @@ namespace DAL.Migrations
                         .HasForeignKey("CompanyCode");
                 });
 
-            modelBuilder.Entity("DAL.Entities.CompanyManagers", b =>
-                {
-                    b.HasOne("DAL.Entities.UserInfo.User", "AuthBy")
-                        .WithMany()
-                        .HasForeignKey("AuthById");
-
-                    b.HasOne("DAL.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyCode");
-
-                    b.HasOne("DAL.Entities.UserInfo.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("DAL.Entities.UserInfo.User", b =>
                 {
                     b.HasOne("DAL.Entities.UserInfo.UserApplicationInfo", "Application")
@@ -609,10 +517,6 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.UserInfo.UserApplicationInfo", b =>
                 {
-                    b.HasOne("DAL.Entities.UserInfo.UserApplicationSetting", "ApplicationSetting")
-                        .WithMany()
-                        .HasForeignKey("ApplicationSettingId");
-
                     b.HasOne("DAL.Entities.Permissions", "Permission")
                         .WithMany()
                         .HasForeignKey("PermissionId");

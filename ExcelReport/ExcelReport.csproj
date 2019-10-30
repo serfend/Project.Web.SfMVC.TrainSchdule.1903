@@ -22,4 +22,8 @@
     <None Remove="第二步.bat" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExcelReport.Driver\ExcelReport.Driver.csproj" />
+  </ItemGroup>
+
 </Project>

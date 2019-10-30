@@ -35,6 +35,7 @@ namespace TrainSchdule.Controllers
 		private readonly IVocationCheckServices _vocationCheckServices;
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
+		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
 
@@ -48,11 +49,12 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="usersService"></param>
 		/// <param name="companiesService"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices,  IApplyService applyService, IUsersService usersService, ICompaniesService companiesService)
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService, IUsersService usersService, ICompaniesService companiesService)
 		{
 			_verifyService = verifyService;
 			_context = context;
 			_vocationCheckServices = vocationCheckServices;
+			_hostingEnvironment = hostingEnvironment;
 			_applyService = applyService;
 			_usersService = usersService;
 			_companiesService = companiesService;
@@ -206,8 +208,9 @@ namespace TrainSchdule.Controllers
 		[Route("XlsExport")]
 		public IActionResult XlsExport( XlsExportViewModel form)
 		{
+			var sWebRootFolder = _hostingEnvironment.WebRootPath;
 			form.Templete = $"Templete\\{form.Templete}";
-			var tempFile = new FileInfo(form.Templete);
+			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, form.Templete));
 			if(!tempFile.Exists)return new JsonResult(ActionStatusMessage.Static.TempXlsNotExist);
 
 			byte[] fileContent = null;
