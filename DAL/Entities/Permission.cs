@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace DAL.Entities
 {
@@ -98,7 +98,7 @@ namespace DAL.Entities
 
 		public static IDictionary<string, PermissionRegion> ToRegionList(string raw)
 		{
-			return JsonSerializer.Deserialize<IDictionary<string, PermissionRegion>>(raw) ?? new Dictionary<string, PermissionRegion>();
+			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw) ?? new Dictionary<string, PermissionRegion>();
 		}
 		/// <summary>
 		/// 获取指定权限列表
@@ -146,7 +146,7 @@ namespace DAL.Entities
 				case Operation.Remove: dic.Remove=dic.Remove.Append(targetUserCompanyCode); break;
 				case Operation.Update: dic.Update=dic.Update.Append(targetUserCompanyCode); break;
 			}
-			Update(permissions,JsonSerializer.Serialize(dicList));
+			Update(permissions,JsonConvert.SerializeObject(dicList));
 		}
 
 		public static void Remove(this Permissions permissions, PermissionDescription key, Operation operation,
@@ -170,7 +170,7 @@ namespace DAL.Entities
 				case Operation.Remove: dic.Remove=dic.Remove.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
 				case Operation.Update: dic.Update=dic.Update.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
 			}
-			Update(permissions, JsonSerializer.Serialize(dicList));
+			Update(permissions, JsonConvert.SerializeObject(dicList));
 		}
 		public static bool Check(this Permissions permissions, PermissionDescription key,Operation operation,string targetUserCompanyCode)
 		{
