@@ -23,7 +23,8 @@ namespace BLL.Services.ApplyServices
 		{
 			_context = context;
 			_usersService = usersService;
-			Configurator.Put(".xlsx", new WorkbookLoader());
+			var w = new WorkbookLoader();
+			Configurator.Put(".xlsx", w);
 		}
 		
 
