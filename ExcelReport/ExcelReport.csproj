@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -20,10 +20,6 @@
     <None Remove="第一步.bat" />
     <None Remove="第三步.bat" />
     <None Remove="第二步.bat" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ExcelReport.Driver\ExcelReport.Driver.csproj" />
   </ItemGroup>
 
 </Project>
