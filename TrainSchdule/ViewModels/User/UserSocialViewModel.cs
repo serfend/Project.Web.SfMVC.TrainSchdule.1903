@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -23,15 +24,7 @@ namespace TrainSchdule.ViewModels.User
 		/// 联系方式
 		/// </summary>
 		public string Phone { get; set; }
-		/// <summary>
-		/// 不符合随军,
-		/// 符合随军未随军同地,
-		/// 符合随军未随军异地,
-		/// 已随军,
-		/// 双军人同地,
-		/// 双军人异地
-		/// </summary>
-		public SettleDownEnum Settle { get; set; }
+		public Settle Settle { get; set; }
 		/// <summary>
 		/// 家庭地址
 		/// </summary>

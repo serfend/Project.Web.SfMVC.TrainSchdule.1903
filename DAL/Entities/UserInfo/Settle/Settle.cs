@@ -12,15 +12,17 @@ namespace DAL.Entities.UserInfo.Settle
 		/// <summary>
 		/// 本人所在地
 		/// </summary>
-		public Moment Self { get; set; }
+		public virtual Moment Self { get; set; }
 		/// <summary>
 		/// 配偶所在地
 		/// </summary>
-		public Moment Lover { get; set; }
+		public virtual Moment Lover { get; set; }
 		/// <summary>
 		/// 父母所在地
 		/// </summary>
-		public Moment Parent { get; set; }
+		public virtual Moment Parent { get; set; }
+
+
 	}
 }
 

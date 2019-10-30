@@ -20,7 +20,7 @@ namespace DAL.Entities.UserInfo.Settle
 		/// <summary>
 		/// 居住地行政区划
 		/// </summary>
-		public AdminDivision Address { get; set; }
+		public virtual AdminDivision Address { get; set; }
 		/// <summary>
 		/// 居住地详细地址
 		/// </summary>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
@@ -86,7 +87,7 @@ namespace TrainSchdule.ViewModels.Account
 		/// 随军情况
 		/// </summary>
 
-		public SettleDownEnum Settle { get; set; }
+		public Settle Settle { get; set; }
 	}
 
 }
