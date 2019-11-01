@@ -26,8 +26,9 @@ namespace TrainSchdule.Extensions
 				Company = model.Company,
 				Duties = model.Duties,
 				From = usersService.Get(model.Id),
-				HomeAddress = model.HomeAddress,
-				HomeDetailAddress = model.HomeDetailAddress,
+				//TODO 【Future unnecessary】可能可以利用为休假去向
+				//VocationTargetAddress=model.VocationTargetAddress,
+				//VocationTargetAddressDetail=model.VocationTargetAddressDetail,
 				Phone = model.Phone,
 				RealName = model.RealName,
 				Settle = model.Settle,

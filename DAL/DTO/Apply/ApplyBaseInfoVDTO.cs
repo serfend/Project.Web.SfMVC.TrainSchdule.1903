@@ -9,9 +9,12 @@ namespace DAL.DTO.Apply
 		public string RealName { get; set; }
 		public string Company { get; set; }
 		public string Duties { get; set; }
-		public int HomeAddress { get; set; }
-		public string HomeDetailAddress { get; set; }
 		public string Phone { get; set; }
 		public Settle Settle { get; set; }
+		/// <summary>
+		/// 休假去向
+		/// </summary>
+		public int VocationTargetAddress { get; set; }
+		public string VocationTargetAddressDetail { get; set; }
 	}
 }

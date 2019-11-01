@@ -20,24 +20,24 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required]
 		public string RealName { get; set; }
 		/// <summary>
-		/// 
+		/// 单位代码
 		/// </summary>
 		[Required]
 		public string Company { get; set; }
 		/// <summary>
-		/// 
+		/// 职务名称
 		/// </summary>
 		[Required]
 		public string Duties { get; set; }
 		/// <summary>
-		/// 
+		/// 休假去向
 		/// </summary>
 		[Required]
-		public int HomeAddress { get; set; }
+		public int VocationTargetAddress{ get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
-		public string HomeDetailAddress { get; set; }
+		public string VocationTargetAddressDetail { get; set; }
 
 		/// <summary>
 		/// 

@@ -9,6 +9,7 @@ using DAL.Data;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Apply;
 using TrainSchdule.ViewModels.System;
@@ -73,7 +74,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
-					List = ApplyExtensions.StatusDic
+					List = BLL.Extensions.ApplyExtensions.StatusDic
 				}
 			});
 		}
@@ -90,11 +91,19 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			var info=await _applyService.SubmitBaseInfoAsync(Extensions.ApplyExtensions.ToVDTO(model,_usersService));
-			if(info.Company==null)ModelState.AddModelError("company",$"不存在编号为{model.Company}的单位");
-			if(info.Duties==null)ModelState.AddModelError("duties",$"不存在职务代码:{model.Duties}");
-			if(info.Social.Address==null)ModelState.AddModelError("home",$"不存在的行政区划{model.HomeAddress}");
-			if (!ModelState.IsValid)return new JsonResult(new ApiResponseModelStateErrorViewModel(info.Id, ModelState));
+			var userModel = new SubmitBaseInfoViewModel()
+			{//重写前端传回的数据
+				Id = model.Id,
+				Company = targetUser.CompanyInfo.Company.Code,
+				Duties= targetUser.CompanyInfo.Duties.Name,
+				Phone = model.Phone??targetUser.SocialInfo.Phone,
+				RealName=targetUser.BaseInfo.RealName,
+				Settle=targetUser.SocialInfo.Settle,
+				VocationTargetAddress=model.VocationTargetAddress,
+				VocationTargetAddressDetail=model.VocationTargetAddressDetail
+			};
+			var m = userModel.ToVDTO( _usersService);
+			var info = await _applyService.SubmitBaseInfoAsync(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
 
@@ -109,11 +118,17 @@ namespace TrainSchdule.Controllers.Apply
 		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+
+			var m = model.ToVDTO(_context, _vocationCheckServices);
+			if(m.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
+			if (!ModelState.IsValid) return new JsonResult(new ApiResponseModelStateErrorViewModel(Guid.Empty,ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var info =  _applyService.SubmitRequest(Extensions.ApplyExtensions.ToVDTO(model,_context, _vocationCheckServices));
-			if(info.VocationPlace==null) ModelState.AddModelError("home", $"不存在的行政区划{model.VocationPlace}");
-			if (!ModelState.IsValid) return new JsonResult(new ApiResponseModelStateErrorViewModel(info.Id,ModelState));
+			var vocationInfo = _usersService.VocationInfo(targetUser);
+			if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
+			if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new Status(ActionStatusMessage.Apply.Request.NoEnoughVocation.status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
+
+			var info = _applyService.SubmitRequest(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
 		}
 

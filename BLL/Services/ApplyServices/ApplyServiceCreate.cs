@@ -24,8 +24,8 @@ namespace BLL.Services.ApplyServices
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
-					Address = _context.AdminDivisions.Find(model.HomeAddress),
-					AddressDetail = model.HomeDetailAddress,
+					Address = _context.AdminDivisions.Find(model.VocationTargetAddress),
+					AddressDetail = model.VocationTargetAddressDetail,
 					Phone = model.Phone,
 					Settle = model.Settle
 				},
@@ -44,8 +44,8 @@ namespace BLL.Services.ApplyServices
 				From = model.From,
 				Social = new UserSocialInfo()
 				{
-					Address = await _context.AdminDivisions.FindAsync(model.HomeAddress),
-					AddressDetail = model.HomeDetailAddress,
+					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress),
+					AddressDetail = model.VocationTargetAddressDetail,
 					Phone = model.Phone,
 					Settle = model.Settle
 				},
@@ -93,7 +93,6 @@ namespace BLL.Services.ApplyServices
 				//不要编辑当前状态，默认就是未保存
 			};
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
-			//流程 找到人工智能第二公司层级
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
 
