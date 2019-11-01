@@ -24,6 +24,9 @@ namespace TrainSchdule.ViewModels.User
 		/// 联系方式
 		/// </summary>
 		public string Phone { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public Settle Settle { get; set; }
 		/// <summary>
 		/// 家庭地址

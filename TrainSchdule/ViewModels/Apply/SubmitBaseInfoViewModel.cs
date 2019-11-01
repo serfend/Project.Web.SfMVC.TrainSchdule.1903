@@ -43,6 +43,9 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 
 		/// </summary>
 		public string Phone { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
 		public Settle Settle { get; set; }
 	}
 

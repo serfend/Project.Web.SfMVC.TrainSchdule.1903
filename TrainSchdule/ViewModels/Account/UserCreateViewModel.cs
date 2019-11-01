@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
+using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
@@ -70,14 +71,6 @@ namespace TrainSchdule.ViewModels.Account
 		/// <summary>
 		/// 
 		/// </summary>
-		public int HomeAddress { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public string HomeDetailAddress { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
 		public string Duties { get; set; }
 		/// <summary>
 		/// 
@@ -87,7 +80,7 @@ namespace TrainSchdule.ViewModels.Account
 		/// 随军情况
 		/// </summary>
 
-		public Settle Settle { get; set; }
+		public SettleDataModel Settle { get; set; }
 	}
 
 }

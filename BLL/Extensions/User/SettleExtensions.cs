@@ -11,6 +11,7 @@ namespace BLL.Extensions
 {
 	public static class SettleExtensions
 	{
+
 		public static int GetYearlyVocation(this Settle settle, DbSet<AdminDivision> db)
 		{
 			var dis_lover = GetDistance(settle.Self.Address, settle.Lover.Address,db);
