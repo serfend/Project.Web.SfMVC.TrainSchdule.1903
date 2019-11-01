@@ -11,13 +11,28 @@ namespace BLL.Extensions
 {
 	public static class SettleExtensions
 	{
-
-		public static int GetYearlyVocation(this Settle settle, DbSet<AdminDivision> db)
+		/// <summary>
+		/// 获取全年总假期
+		/// </summary>
+		/// <param name="settle"></param>
+		/// <returns></returns>
+		public static int GetYearlyLength(this Settle settle,out int maxOnTripTime)
 		{
-			var dis_lover = GetDistance(settle.Self.Address, settle.Lover.Address,db);
-			var dis_parent = GetDistance(settle.Self.Address, settle.Parent.Address,db);
-			var dis_l_p = GetDistance(settle.Lover.Address, settle.Parent.Address, db);
-			return 0;//TODO 计算全年天数
+			maxOnTripTime = 1;
+			if (settle.Lover == null) return 30;
+			var dis_lover = IsAllopatry(settle.Self.Address, settle.Lover.Address);
+			var dis_parent = IsAllopatry(settle.Self.Address, settle.Parent.Address);
+			var dis_l_p = IsAllopatry(settle.Lover.Address, settle.Parent.Address);
+			if (!dis_lover) return 20;
+			maxOnTripTime = 3;
+			if (!dis_parent && !dis_l_p) return 45;
+			maxOnTripTime = 2;
+			return 40;
+		}
+		private static bool IsAllopatry(AdminDivision d1,AdminDivision d2)
+		{
+			if (d1 == null || d2 == null) return false;
+			return d1.Code / 100d != d2.Code / 100d; 
 		}
 		private static int GetDistance(AdminDivision d1,AdminDivision d2, DbSet<AdminDivision> db)
 		{
