@@ -12,7 +12,7 @@ namespace TrainSchdule.ViewModels.Verify
 		/// </summary>
 		/// <param name="_verifyService"></param>
 		/// <returns></returns>
-		public bool Verify(IVerifyService _verifyService) => _verifyService.Verify(Code);
+		public string Verify(IVerifyService _verifyService) => _verifyService.Verify(Code);
 		/// <summary>
 		/// X轴位置
 		/// </summary>

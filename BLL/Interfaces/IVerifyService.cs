@@ -24,7 +24,7 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		bool Verify(int code);
+		string Verify(int code);
 
 		string Status { get;  }
 		Point Pos { get; }

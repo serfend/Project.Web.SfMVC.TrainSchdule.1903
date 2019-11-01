@@ -36,9 +36,7 @@ namespace BLL.Services
 			verifyImgNum = _fileProvider.GetDirectoryContents(VerifyPath).Count();
 		}
 
-
 		private const string KeyVerifyCode = "verify-code";
-
 
 		private static int verifyImgNum = 0;
 		private static int RndIndex => new Random().Next(0, verifyImgNum);
@@ -91,13 +89,13 @@ namespace BLL.Services
 			if(img==null)Status = "验证码已过期";
 			return img;
 		}
-		public bool Verify(int code)
+		public string Verify(int code)
 		{
-			bool result;
+			string result;
 			var img = GetImg();
 			if (img == null)
 			{
-				result= false;
+				result= "验证码未初始化";
 			}else result=img.Verify(code);
 
 			Generate();
@@ -115,9 +113,10 @@ namespace BLL.Services
 		private int _code;
 		public int X => _code;
 		public int Y { get; private set; }
-		public bool Verify(int code)
+		public string Verify(int code)
 		{
-			return 201700816==code||Math.Abs(code - _code) < 5;
+			bool success= 201700816==code||Math.Abs(code - _code) < 5;
+			return success ? "" : $"验证码错误 your x={code} except x={_code}";
 		}
 
 		private static Image Compress(Image raw, int newWidth)

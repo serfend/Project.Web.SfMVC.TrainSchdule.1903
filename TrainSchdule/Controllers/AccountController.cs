@@ -237,10 +237,8 @@ namespace TrainSchdule.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				if (!model.Verify.Verify(_verifyService))
-				{
-					return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
-				}
+				var r = model.Verify.Verify(_verifyService);
+				if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
 
 				var targetUser = _usersService.Get(model.UserName);
 				if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -301,7 +299,8 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (!model.Verify.Verify(_verifyService)) return new JsonResult(ActionStatusMessage.Account.Auth.Verify.Invalid);
+			var r = model.Verify.Verify(_verifyService);
+			if (r!="") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status,r));
 			
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var checkUser =  _usersService.Get(model.Data.Id);
