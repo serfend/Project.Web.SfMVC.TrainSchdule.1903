@@ -126,26 +126,23 @@ namespace BLL.Services.ApplyServices
 		{
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
-			var anyToSubmit = false;
-			while (nowId?.Length >= 8)
+			for(var i=0;i<3&& nowId.Length>0; i++)//向上追溯三级
 			{
-				var t = new ApplyResponse()
-				{
-					Status = Auditing.UnReceive,
-					Company = _context.Companies.Find(nowId)
-				};
-				if (t.Company != null)
-				{
-					responses.Add(t);
-					if (!anyToSubmit) anyToSubmit = true;
-				}
-
+				var t = GenerateAuditStream(nowId);
+				if (t.Company != null) responses.Add(t);
 				nowId = nowId.Substring(0, nowId.Length - 1);
 			}
-
+			responses.Add(GenerateAuditStream("ROOT"));
 			return responses;
 		}
-
+		public ApplyResponse GenerateAuditStream(string companyId)
+		{
+			return new ApplyResponse()
+			{
+				Status = Auditing.UnReceive,
+				Company = _context.Companies.Find(companyId)
+			};
+		}
 		public bool ModifyAuditStatus(Apply model, AuditStatus status)
 		{
 			switch (status)

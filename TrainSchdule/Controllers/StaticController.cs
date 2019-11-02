@@ -137,7 +137,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Location(int code)
 		{
 			var location=_context.AdminDivisions.Find(code);
-			if(location==null)return new JsonResult(ActionStatusMessage.Fail);
+			if(location==null)return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			return new JsonResult(new LocationViewModel()
 			{
 				Data = new LocationDataModel()
@@ -162,7 +162,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult LocationChildren(int code)
 		{
 			var location = _context.AdminDivisions.Find(code);
-			if (location == null) return new JsonResult(ActionStatusMessage.Fail);
+			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
 			var list = _context.AdminDivisions.Where(a => a.ParentCode == code);
 			return new JsonResult(new LocationChildrenViewModel()
 			{

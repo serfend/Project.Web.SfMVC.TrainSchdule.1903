@@ -148,7 +148,11 @@
 		{
 			public static readonly Status TempXlsNotExist=new Status(50000,"未找到Excel模板");
 			public static readonly Status XlsNoData = new Status(51000,"生成的Excel文件无数据");
-
+			public static class AdminDivision
+			{
+				public static readonly Status NoSuchArea = new Status(52100, "无此地址");
+				public static readonly Status NoChildArea = new Status(52200, "此地址无下属行政区");
+			}
 			
 		}
 
