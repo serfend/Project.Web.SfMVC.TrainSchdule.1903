@@ -29,7 +29,7 @@ namespace TrainSchdule.Extensions
 				Date = model.Date,
 				Valid = model.Valid
 			};
-			if (tmp.Address == null || tmp.Date.Year < 1900) return null;
+			if (tmp.Address == null || tmp.Date.Year < 1900||tmp.AddressDetail=="") return null;
 			return tmp;
 		}
 	}
