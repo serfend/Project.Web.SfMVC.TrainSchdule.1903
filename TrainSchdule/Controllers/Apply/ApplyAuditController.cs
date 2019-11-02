@@ -77,7 +77,7 @@ namespace TrainSchdule.Controllers.Apply
 		}
 
 		/// <summary>
-		/// 审核申请
+		/// 审核申请(可使用登录状态直接授权，也可使用授权人）
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -88,7 +88,10 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var currentUserName = _currentUserService.HttpContextAccessor.HttpContext.User.Identity.Name;
+			if(model.Auth == null || !_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID))currentUserName=model.Auth.AuthByUserID ;
+			if (currentUserName == null) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			model.Auth.AuthByUserID = currentUserName;
 			try
 			{
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());
