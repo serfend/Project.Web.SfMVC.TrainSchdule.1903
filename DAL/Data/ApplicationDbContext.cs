@@ -1,6 +1,7 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using User = DAL.Entities.UserInfo.User;
@@ -20,6 +21,7 @@ namespace DAL.Data
 		public DbSet<UserApplicationInfo> AppUserApplicationInfos { get; set; }
 		public DbSet<UserApplicationSetting> AppUserApplicationSettings { get; set; }
 		public DbSet<UserSocialInfo> AppUserSocialInfos { get; set; }
+		public DbSet<Settle> Settles { get; set; }
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<CompanyManagers> CompanyManagers { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }

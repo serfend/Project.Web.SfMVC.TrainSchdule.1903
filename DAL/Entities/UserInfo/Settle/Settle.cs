@@ -21,8 +21,14 @@ namespace DAL.Entities.UserInfo.Settle
 		/// 父母所在地
 		/// </summary>
 		public virtual Moment Parent { get; set; }
-
-
+		/// <summary>
+		/// 本年原始休假天数
+		/// </summary>
+		public int PrevYearlyLength { get; set; }
+		/// <summary>
+		/// 最后一次修改全年天数日期
+		/// </summary>
+		//public DateTime LastModefyDate { get; set; }
 	}
 }
 

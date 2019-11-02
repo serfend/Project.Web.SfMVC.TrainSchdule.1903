@@ -38,7 +38,8 @@ namespace TrainSchdule.Extensions
 				{
 					Self=model.Settle.Self.ToMoment(db),
 					Lover=model.Settle.Lover.ToMoment(db),
-					Parent=model.Settle.Parent.ToMoment(db)
+					Parent=model.Settle.Parent.ToMoment(db),
+					PrevYearlyLength=model.Settle.PrevYearlyLength
 				}
 			};
 		}

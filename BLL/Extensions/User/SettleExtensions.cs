@@ -18,6 +18,21 @@ namespace BLL.Extensions
 		/// <returns></returns>
 		public static int GetYearlyLength(this Settle settle,out int maxOnTripTime)
 		{
+			var r = settle.GetYearlyLengthInner(out maxOnTripTime);
+			if (settle.PrevYearlyLength != r)
+			{
+				var modefyDate = settle.Lover.Date;
+				//如果是今年调整的，那么按比例计算
+				//TODO 可能有不是因为结婚导致的变化，需要提前考虑
+				if (modefyDate.Year == DateTime.Today.Year)
+				{
+					r = (12 - modefyDate.Month)*settle.PrevYearlyLength + modefyDate.Month * r;
+				}
+			}
+			return r;
+		}
+		private static int GetYearlyLengthInner(this Settle settle,out int maxOnTripTime)
+		{
 			maxOnTripTime = 1;
 			if (settle.Lover == null) return 30;
 			var dis_lover = IsAllopatry(settle.Self.Address, settle.Lover.Address);

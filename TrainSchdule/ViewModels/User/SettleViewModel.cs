@@ -23,6 +23,10 @@ namespace TrainSchdule.ViewModels.User
 		/// 
 		/// </summary>
 		public MomentDataModel Parent { get; set; }
+		/// <summary>
+		/// 原始全年假期数
+		/// </summary>
+		public int PrevYearlyLength { get; set; }
 	}
 	/// <summary>
 	/// 

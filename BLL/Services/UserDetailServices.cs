@@ -15,7 +15,11 @@ namespace BLL.Services
 			var list = _context.CompanyManagers.Where(m => m.User.Id == id).Select(m=>m.Company);
 			return list;
 		}
-		
+		/// <summary>
+		/// 获取全年休假天数同时，更新休假天数
+		/// </summary>
+		/// <param name="targetUser"></param>
+		/// <returns></returns>
 		public UserVocationInfoVDTO VocationInfo(User targetUser)
 		{
 			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept).ToList();
