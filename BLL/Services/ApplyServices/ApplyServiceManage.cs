@@ -123,8 +123,8 @@ namespace BLL.Services.ApplyServices
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
 				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList),
-				new ParameterRenderer("Audit_SelfCompanyName", currentCompany.CompanyTypeDesc),
-				new ParameterRenderer("Audit_HeadCompanyName", currentCompany.CompanyParentTypeDesc)
+				new ParameterRenderer("Audit_SelfCompanyName", "此处填写本级等级"),
+				new ParameterRenderer("Audit_HeadCompanyName","此处填写上级等级")
 			));
 		}
 	}

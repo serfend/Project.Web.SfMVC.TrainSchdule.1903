@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191030161016_isettle")]
-    partial class isettle
+    [Migration("20191102084723_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -158,9 +158,7 @@ namespace DAL.Migrations
                 {
                     b.Property<string>("Code");
 
-                    b.Property<string>("CompanyParentTypeDesc");
-
-                    b.Property<string>("CompanyTypeDesc");
+                    b.Property<string>("Description");
 
                     b.Property<bool>("IsPrivate");
 
@@ -200,6 +198,8 @@ namespace DAL.Migrations
                     b.Property<int>("Code")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsMajorManager");
 
                     b.Property<string>("Name");
 
@@ -302,6 +302,8 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("ParentId");
 
+                    b.Property<int>("PrevYearlyLength");
+
                     b.Property<Guid?>("SelfId");
 
                     b.HasKey("Id");
@@ -312,7 +314,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("SelfId");
 
-                    b.ToTable("Settle");
+                    b.ToTable("Settles");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.User", b =>

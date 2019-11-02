@@ -27,14 +27,16 @@ namespace BLL.Services
 	        _context.AppUsers
 		        .Find(_httpContextAccessor.HttpContext.User.Identity.Name);
 
-        #endregion
+		public IHttpContextAccessor HttpContextAccessor => _httpContextAccessor;
 
-        #region .ctors
+		#endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CurrentUserService"/>.
-        /// </summary>
-        public CurrentUserService( IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
+		#region .ctors
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CurrentUserService"/>.
+		/// </summary>
+		public CurrentUserService( IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;

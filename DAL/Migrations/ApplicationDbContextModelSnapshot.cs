@@ -156,9 +156,7 @@ namespace DAL.Migrations
                 {
                     b.Property<string>("Code");
 
-                    b.Property<string>("CompanyParentTypeDesc");
-
-                    b.Property<string>("CompanyTypeDesc");
+                    b.Property<string>("Description");
 
                     b.Property<bool>("IsPrivate");
 
@@ -198,6 +196,8 @@ namespace DAL.Migrations
                     b.Property<int>("Code")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsMajorManager");
 
                     b.Property<string>("Name");
 

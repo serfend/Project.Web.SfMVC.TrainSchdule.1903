@@ -12,5 +12,9 @@ namespace DAL.Entities
 		/// 职务的名称
 		/// </summary>
 		public string Name { get; set; }
+		/// <summary>
+		/// 是否是主官
+		/// </summary>
+		public bool IsMajorManager { get; set; }
 	}
 }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +13,9 @@ namespace DAL.Migrations
                 columns: table => new
                 {
                     Code = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    ParentCode = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    ShortName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -21,10 +23,23 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppUserApplicationSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    LastSubmitApplyTime = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserApplicationSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppUserBaseInfos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    Cid = table.Column<string>(nullable: true),
                     RealName = table.Column<string>(nullable: true),
                     Avatar = table.Column<string>(nullable: true),
                     Gender = table.Column<int>(nullable: false),
@@ -80,18 +95,12 @@ namespace DAL.Migrations
                 {
                     Code = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    ParentCode = table.Column<string>(nullable: true),
-                    IsPrivate = table.Column<bool>(nullable: false)
+                    IsPrivate = table.Column<bool>(nullable: false),
+                    Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.Code);
-                    table.ForeignKey(
-                        name: "FK_Companies_Companies_ParentCode",
-                        column: x => x.ParentCode,
-                        principalTable: "Companies",
-                        principalColumn: "Code",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,7 +109,8 @@ namespace DAL.Migrations
                 {
                     Code = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    IsMajorManager = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,17 +131,34 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VocationDescriptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Start = table.Column<DateTime>(nullable: false),
+                    Length = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VocationDescriptions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplyRequests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    StampLeave = table.Column<DateTime>(nullable: false),
-                    StampReturn = table.Column<DateTime>(nullable: false),
+                    StampLeave = table.Column<DateTime>(nullable: true),
+                    StampReturn = table.Column<DateTime>(nullable: true),
                     OnTripLength = table.Column<int>(nullable: false),
                     VocationLength = table.Column<int>(nullable: false),
                     VocationType = table.Column<string>(nullable: true),
                     VocationPlaceCode = table.Column<int>(nullable: true),
-                    Reason = table.Column<string>(nullable: true)
+                    Reason = table.Column<string>(nullable: true),
+                    CreateTime = table.Column<DateTime>(nullable: false),
+                    ByTransportation = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,20 +172,20 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserSocialInfo",
+                name: "Moment",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Phone = table.Column<string>(nullable: true),
-                    Settle = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Valid = table.Column<bool>(nullable: false),
                     AddressCode = table.Column<int>(nullable: true),
                     AddressDetail = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSocialInfo", x => x.Id);
+                    table.PrimaryKey("PK_Moment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserSocialInfo_AdminDivisions_AddressCode",
+                        name: "FK_Moment_AdminDivisions_AddressCode",
                         column: x => x.AddressCode,
                         principalTable: "AdminDivisions",
                         principalColumn: "Code",
@@ -272,7 +299,7 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserCompanyInfo",
+                name: "AppUserCompanyInfos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -281,15 +308,15 @@ namespace DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserCompanyInfo", x => x.Id);
+                    table.PrimaryKey("PK_AppUserCompanyInfos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserCompanyInfo_Companies_CompanyCode",
+                        name: "FK_AppUserCompanyInfos_Companies_CompanyCode",
                         column: x => x.CompanyCode,
                         principalTable: "Companies",
                         principalColumn: "Code",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserCompanyInfo_Duties_DutiesCode",
+                        name: "FK_AppUserCompanyInfos_Duties_DutiesCode",
                         column: x => x.DutiesCode,
                         principalTable: "Duties",
                         principalColumn: "Code",
@@ -297,24 +324,91 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserApplicationInfo",
+                name: "AppUserApplicationInfos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     InvitedBy = table.Column<string>(nullable: true),
                     PermissionId = table.Column<Guid>(nullable: true),
                     About = table.Column<string>(nullable: true),
-                    Create = table.Column<DateTime>(nullable: false),
+                    Create = table.Column<DateTime>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    AuthKey = table.Column<string>(nullable: true)
+                    AuthKey = table.Column<string>(nullable: true),
+                    ApplicationSettingId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserApplicationInfo", x => x.Id);
+                    table.PrimaryKey("PK_AppUserApplicationInfos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserApplicationInfo_Permissions_PermissionId",
+                        name: "FK_AppUserApplicationInfos_AppUserApplicationSettings_ApplicationSettingId",
+                        column: x => x.ApplicationSettingId,
+                        principalTable: "AppUserApplicationSettings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AppUserApplicationInfos_Permissions_PermissionId",
                         column: x => x.PermissionId,
                         principalTable: "Permissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Settles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    SelfId = table.Column<Guid>(nullable: true),
+                    LoverId = table.Column<Guid>(nullable: true),
+                    ParentId = table.Column<Guid>(nullable: true),
+                    PrevYearlyLength = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Settles_Moment_LoverId",
+                        column: x => x.LoverId,
+                        principalTable: "Moment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Settles_Moment_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Moment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Settles_Moment_SelfId",
+                        column: x => x.SelfId,
+                        principalTable: "Moment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserSocialInfos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Phone = table.Column<string>(nullable: true),
+                    SettleId = table.Column<Guid>(nullable: true),
+                    AddressCode = table.Column<int>(nullable: true),
+                    AddressDetail = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserSocialInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppUserSocialInfos_AdminDivisions_AddressCode",
+                        column: x => x.AddressCode,
+                        principalTable: "AdminDivisions",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AppUserSocialInfos_Settles_SettleId",
+                        column: x => x.SettleId,
+                        principalTable: "Settles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -333,9 +427,9 @@ namespace DAL.Migrations
                 {
                     table.PrimaryKey("PK_AppUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppUsers_UserApplicationInfo_ApplicationId",
+                        name: "FK_AppUsers_AppUserApplicationInfos_ApplicationId",
                         column: x => x.ApplicationId,
-                        principalTable: "UserApplicationInfo",
+                        principalTable: "AppUserApplicationInfos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -345,15 +439,15 @@ namespace DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AppUsers_UserCompanyInfo_CompanyInfoId",
+                        name: "FK_AppUsers_AppUserCompanyInfos_CompanyInfoId",
                         column: x => x.CompanyInfoId,
-                        principalTable: "UserCompanyInfo",
+                        principalTable: "AppUserCompanyInfos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AppUsers_UserSocialInfo_SocialInfoId",
+                        name: "FK_AppUsers_AppUserSocialInfos_SocialInfoId",
                         column: x => x.SocialInfoId,
-                        principalTable: "UserSocialInfo",
+                        principalTable: "AppUserSocialInfos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -364,10 +458,13 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     RealName = table.Column<string>(nullable: true),
+                    CompanyName = table.Column<string>(nullable: true),
+                    DutiesName = table.Column<string>(nullable: true),
                     FromId = table.Column<string>(nullable: true),
                     CompanyCode = table.Column<string>(nullable: true),
                     DutiesCode = table.Column<int>(nullable: true),
-                    SocialId = table.Column<Guid>(nullable: true)
+                    SocialId = table.Column<Guid>(nullable: true),
+                    CreateTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -391,9 +488,42 @@ namespace DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ApplyBaseInfos_UserSocialInfo_SocialId",
+                        name: "FK_ApplyBaseInfos_AppUserSocialInfos_SocialId",
                         column: x => x.SocialId,
-                        principalTable: "UserSocialInfo",
+                        principalTable: "AppUserSocialInfos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompanyManagers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    CompanyCode = table.Column<string>(nullable: true),
+                    AuthById = table.Column<string>(nullable: true),
+                    Create = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyManagers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyManagers_AppUsers_AuthById",
+                        column: x => x.AuthById,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompanyManagers_Companies_CompanyCode",
+                        column: x => x.CompanyCode,
+                        principalTable: "Companies",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompanyManagers_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -405,7 +535,8 @@ namespace DAL.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     BaseInfoId = table.Column<Guid>(nullable: true),
                     RequestInfoId = table.Column<Guid>(nullable: true),
-                    Create = table.Column<DateTime>(nullable: false),
+                    AuditLeader = table.Column<string>(nullable: true),
+                    Create = table.Column<DateTime>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     Hidden = table.Column<bool>(nullable: false)
                 },
@@ -434,7 +565,7 @@ namespace DAL.Migrations
                     AuditingById = table.Column<string>(nullable: true),
                     CompanyCode = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),
-                    HandleStamp = table.Column<DateTime>(nullable: false),
+                    HandleStamp = table.Column<DateTime>(nullable: true),
                     Remark = table.Column<string>(nullable: true),
                     ApplyId = table.Column<Guid>(nullable: true)
                 },
@@ -512,6 +643,26 @@ namespace DAL.Migrations
                 column: "CompanyCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AppUserApplicationInfos_ApplicationSettingId",
+                table: "AppUserApplicationInfos",
+                column: "ApplicationSettingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserApplicationInfos_PermissionId",
+                table: "AppUserApplicationInfos",
+                column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserCompanyInfos_CompanyCode",
+                table: "AppUserCompanyInfos",
+                column: "CompanyCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserCompanyInfos_DutiesCode",
+                table: "AppUserCompanyInfos",
+                column: "DutiesCode");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AppUsers_ApplicationId",
                 table: "AppUsers",
                 column: "ApplicationId");
@@ -530,6 +681,16 @@ namespace DAL.Migrations
                 name: "IX_AppUsers_SocialInfoId",
                 table: "AppUsers",
                 column: "SocialInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserSocialInfos_AddressCode",
+                table: "AppUserSocialInfos",
+                column: "AddressCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserSocialInfos_SettleId",
+                table: "AppUserSocialInfos",
+                column: "SettleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -571,29 +732,39 @@ namespace DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companies_ParentCode",
-                table: "Companies",
-                column: "ParentCode");
+                name: "IX_CompanyManagers_AuthById",
+                table: "CompanyManagers",
+                column: "AuthById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserApplicationInfo_PermissionId",
-                table: "UserApplicationInfo",
-                column: "PermissionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserCompanyInfo_CompanyCode",
-                table: "UserCompanyInfo",
+                name: "IX_CompanyManagers_CompanyCode",
+                table: "CompanyManagers",
                 column: "CompanyCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCompanyInfo_DutiesCode",
-                table: "UserCompanyInfo",
-                column: "DutiesCode");
+                name: "IX_CompanyManagers_UserId",
+                table: "CompanyManagers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSocialInfo_AddressCode",
-                table: "UserSocialInfo",
+                name: "IX_Moment_AddressCode",
+                table: "Moment",
                 column: "AddressCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settles_LoverId",
+                table: "Settles",
+                column: "LoverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settles_ParentId",
+                table: "Settles",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settles_SelfId",
+                table: "Settles",
+                column: "SelfId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -617,6 +788,12 @@ namespace DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CompanyManagers");
+
+            migrationBuilder.DropTable(
+                name: "VocationDescriptions");
+
+            migrationBuilder.DropTable(
                 name: "Applies");
 
             migrationBuilder.DropTable(
@@ -635,16 +812,19 @@ namespace DAL.Migrations
                 name: "AppUsers");
 
             migrationBuilder.DropTable(
-                name: "UserApplicationInfo");
+                name: "AppUserApplicationInfos");
 
             migrationBuilder.DropTable(
                 name: "AppUserBaseInfos");
 
             migrationBuilder.DropTable(
-                name: "UserCompanyInfo");
+                name: "AppUserCompanyInfos");
 
             migrationBuilder.DropTable(
-                name: "UserSocialInfo");
+                name: "AppUserSocialInfos");
+
+            migrationBuilder.DropTable(
+                name: "AppUserApplicationSettings");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
@@ -654,6 +834,12 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Duties");
+
+            migrationBuilder.DropTable(
+                name: "Settles");
+
+            migrationBuilder.DropTable(
+                name: "Moment");
 
             migrationBuilder.DropTable(
                 name: "AdminDivisions");

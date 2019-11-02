@@ -14,8 +14,7 @@ namespace BLL.Extensions
 				Managers = companiesService.GetCompanyManagers(company.Code).Select(u=>u.ToDto()),
 				Code = company.Code,
 				Name = company.Name,
-				CompanyParentTypeDesc =company.CompanyParentTypeDesc,
-				CompanyTypeDesc = company.CompanyTypeDesc
+				Description=company.Description
 			};
 			return b;
 		}

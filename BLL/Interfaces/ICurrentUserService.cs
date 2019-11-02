@@ -1,5 +1,6 @@
 ﻿using System;
 using DAL.Entities.UserInfo;
+using Microsoft.AspNetCore.Http;
 
 namespace BLL.Interfaces
 {
@@ -9,6 +10,6 @@ namespace BLL.Interfaces
     public interface ICurrentUserService 
     {
         User CurrentUser { get; }
-
-    }
+		IHttpContextAccessor HttpContextAccessor { get; }
+	}
 }
