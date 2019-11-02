@@ -36,10 +36,10 @@ namespace TrainSchdule.Extensions
 				Phone = model.Phone,
 				Settle = new DAL.Entities.UserInfo.Settle.Settle()
 				{
-					Self=model.Settle.Self.ToMoment(db),
-					Lover=model.Settle.Lover.ToMoment(db),
-					Parent=model.Settle.Parent.ToMoment(db),
-					PrevYearlyLength=model.Settle.PrevYearlyLength
+					Self=model.Settle?.Self.ToMoment(db),
+					Lover=model.Settle?.Lover.ToMoment(db),
+					Parent=model.Settle?.Parent.ToMoment(db),
+					PrevYearlyLength=model.Settle?.PrevYearlyLength??0
 				}
 			};
 		}
