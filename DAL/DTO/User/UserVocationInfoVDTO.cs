@@ -30,5 +30,9 @@ namespace DAL.DTO.User
 		/// 全年最多可用路途次数
 		/// </summary>
 		public int MaxTripTimes { get; set; }
+		/// <summary>
+		/// 全年假期描述
+		/// </summary>
+		public string Description { get; set; }
 	}
 }
