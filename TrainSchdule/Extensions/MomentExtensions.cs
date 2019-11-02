@@ -22,13 +22,15 @@ namespace TrainSchdule.Extensions
 		/// <returns></returns>
 		public static Moment ToMoment(this MomentDataModel model, DbSet<AdminDivision> db)
 		{
-			return new Moment()
+			var tmp= new Moment()
 			{
 				Address = db.Where<AdminDivision>(a => a.Code == model.Address).FirstOrDefault(),
 				AddressDetail = model.AddressDetail,
 				Date = model.Date,
 				Valid = model.Valid
 			};
+			if (tmp.Address == null || tmp.Date.Year < 1900) return null;
+			return tmp;
 		}
 	}
 }

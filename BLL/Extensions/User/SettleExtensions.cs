@@ -21,14 +21,15 @@ namespace BLL.Extensions
 			var r = settle.GetYearlyLengthInner(out maxOnTripTime,out description);
 			if (settle.PrevYearlyLength != r)
 			{
-				var modefyDate = settle.Lover.Date;
+				var modefyDate = settle?.Lover?.Date;
+
 				//如果是今年调整的，那么按比例计算
 				//TODO 可能有不是因为结婚导致的变化，需要提前考虑
-				if (modefyDate.Year == DateTime.Today.Year)
+				if (modefyDate?.Year == DateTime.Today.Year)
 				{
-					var newr = ((12 - modefyDate.Month) * r + modefyDate.Month * settle.PrevYearlyLength) / 12;
-					description += $"\n年初全年总假{settle.PrevYearlyLength}天，因{modefyDate.Month}月发生变化，按比例加权:(12-变化的月) * 变化后天数 + 变化的月 * 年初总假期=（{12 - modefyDate.Month} * {r } + { modefyDate.Month} * {settle.PrevYearlyLength}）/12={newr}。";
-					r = newr;
+					var newr = ((12 - modefyDate?.Month) * r + modefyDate?.Month * settle.PrevYearlyLength) / 12;
+					description += $"\n年初全年总假{settle.PrevYearlyLength}天，因{modefyDate?.Month}月发生变化，按比例加权:(12-变化的月) * 变化后天数 + 变化的月 * 年初总假期=（{12 - modefyDate?.Month} * {r } + { modefyDate?.Month} * {settle.PrevYearlyLength}）/12={newr}。";
+					r = newr??0;
 				}
 			}
 			return r;
