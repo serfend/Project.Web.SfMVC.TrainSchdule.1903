@@ -252,7 +252,7 @@ namespace TrainSchdule.Controllers
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
-			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName.ToUrlEncode());
+			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 		}
 	}
 }
