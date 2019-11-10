@@ -5,6 +5,8 @@ using BLL.Services;
 using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.Entities.UserInfo;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Swashbuckle.AspNetCore.Swagger;
+using TrainSchdule.Crontab;
 
 namespace TrainSchdule
 {
@@ -43,15 +46,11 @@ namespace TrainSchdule
             Configuration = configuration;
         }
 
-        #endregion
+		#endregion
 
-        #region Logic
+		#region Logic
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="services"></param>
-        public void AddApplicationServices(IServiceCollection services)
+		private void AddApplicationServices(IServiceCollection services)
         {
 			//每次调用均对应一个实例
             services.AddTransient<IEmailSender, EmailSender>();
@@ -71,7 +70,30 @@ namespace TrainSchdule
 	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
             
         }
+		private void AddHangfireServices(IServiceCollection services)
+		{
+			// Add Hangfire services.
+			services.AddHangfire(configuration => configuration
+				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+				.UseSimpleAssemblyNameTypeSerializer()
+				.UseRecommendedSerializerSettings()
+				.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
+				{
+					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+					QueuePollInterval = TimeSpan.Zero,
+					UseRecommendedIsolationLevel = true,
+					UsePageLocksOnDequeue = true,
+					DisableGlobalLocks = true
+				}));
 
+			// Add the processing server as IHostedService
+			services.AddHangfireServer();
+		}
+		private  void ConfigureHangfireServices()
+		{
+			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(),"*/10 * * * *");
+		}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -85,6 +107,7 @@ namespace TrainSchdule
 					   .UseSqlServer(connectionString);
 			});
 			services.AddTimedJob();
+			AddHangfireServices(services);
 			AddAllowCorsServices(services);
 			AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
@@ -188,6 +211,9 @@ namespace TrainSchdule
                
             }
             app.UseTimedJob();
+			app.UseHangfireDashboard();
+			ConfigureHangfireServices();
+
 			app.UseDeveloperExceptionPage();
 			app.UseDatabaseErrorPage();
 			app.UseWelcomePage(new WelcomePageOptions() {
