@@ -23,7 +23,7 @@ namespace BLL.Extensions
 		public static ApplyResponseDto SelfRankAuditStatus(this IEnumerable<ApplyResponseDto> model)
 		{
 			var list = model.ToList();
-			if (list?.Count() == 0) return null;
+			if (list?.Count == 0) return null;
 			var item = list.ElementAtOrDefault(0);
 			return item;
 		}
@@ -31,8 +31,8 @@ namespace BLL.Extensions
 		{
 			var list = model.ToList();
 
-			if (list?.Count() <2 ) return null;
-			var item = list.ElementAtOrDefault(list.Count()-2);
+			if (list?.Count<2 ) return null;
+			var item = list.ElementAtOrDefault(list.Count-2);
 			return item;
 		}
 
@@ -56,7 +56,7 @@ namespace BLL.Extensions
 		{
 			return new ApplyBaseInfoDto()
 			{
-				CompanyName=model.CompanyName,
+				CompanyName=model?.CompanyName,
 				DutiesName = model.DutiesName,
 				RealName = model.RealName
 			};
@@ -65,7 +65,7 @@ namespace BLL.Extensions
 		{
 			var b = new ApplyResponseDto()
 			{
-				AuditingUserRealName = model.AuditingBy?.BaseInfo?.RealName,
+				AuditingUserRealName = model?.AuditingBy?.BaseInfo?.RealName,
 				CompanyName = model.Company.Name,
 				HandleStamp = model.HandleStamp,
 				Remark = model.Remark,
@@ -77,7 +77,7 @@ namespace BLL.Extensions
 		{
 			var b=new ApplyDetailDto()
 			{
-				Base = model.BaseInfo.From.ToDto(),
+				Base = model?.BaseInfo.From.ToDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
@@ -97,7 +97,7 @@ namespace BLL.Extensions
 		{
 			var b=new ApplySummaryDto()
 			{
-				Create = model.Create,
+				Create = model?.Create,
 				Status = model.Status,
 				NowAuditCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
 				Base = model.BaseInfo.ToDto(),

@@ -30,7 +30,10 @@ namespace BLL.Services
 				ExpirationScanFrequency = TimeSpan.FromMinutes(30)
 			});
 		}
-
+		~VerifyService()
+		{
+			_cache.Dispose();
+		}
 		private void ReloadPath()
 		{
 			verifyImgNum = _fileProvider.GetDirectoryContents(VerifyPath).Count();

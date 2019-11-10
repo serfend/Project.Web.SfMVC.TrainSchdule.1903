@@ -11,10 +11,10 @@ namespace BLL.Extensions
 		{
 			var b=new CompanyDto()
 			{
-				Managers = companiesService.GetCompanyManagers(company.Code).Select(u=>u.ToDto()),
-				Code = company.Code,
-				Name = company.Name,
-				Description=company.Description
+				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToDto()),
+				Code = company?.Code,
+				Name = company?.Name,
+				Description=company?.Description
 			};
 			return b;
 		}

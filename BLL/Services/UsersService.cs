@@ -57,7 +57,7 @@ namespace BLL.Services
         /// </summary>
         public User Get(string id)
         {
-			if(id=="Root")return new User()
+			if(id.ToLower()=="root")return new User()
 			{
 				Id = "Root",
 				Application = new UserApplicationInfo()
@@ -119,9 +119,9 @@ namespace BLL.Services
 			if (identity == null) return null;
 			var appUser = CreateAppUser(user);
 			
-			await _context.Users.AddAsync(identity);
-			await _context.AppUsers.AddAsync(appUser);
-			await _context.SaveChangesAsync();
+			await _context.Users.AddAsync(identity).ConfigureAwait(false);
+			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return identity;
         }
 
@@ -140,7 +140,7 @@ namespace BLL.Services
 					},
 					InvitedBy = user.InvitedBy,
 					Create = DateTime.Now,
-					AuthKey = user.Id.GetHashCode().ToString(),
+					AuthKey = new Random().Next(1000, 9999).ToString().GetHashCode().ToString(),
 					ApplicationSetting = new UserApplicationSetting()
 					{
 						LastSubmitApplyTime = DateTime.Now
@@ -226,13 +226,13 @@ namespace BLL.Services
 		}
         public async Task<bool> RemoveAsync(string id)
         {
-	        var user = await _context.AppUsers.FindAsync(id);
+	        var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(false);
 	        if (user == null) return false;
 			//TODO 级联删除相关
 	        _context.AppUsers.Remove(user);
-	        var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName==id);
+	        var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName==id).ConfigureAwait(false);
 	        _context.Users.Remove(appUser);
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 	        return true;
         }
 		#endregion
