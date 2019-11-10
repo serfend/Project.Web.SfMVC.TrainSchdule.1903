@@ -10,7 +10,8 @@ namespace ExcelReport
 
         public static void Put(string suffix, IWorkbookLoader workbookLoader)
         {
-            if (CONFIG.ContainsKey(suffix))
+			var config = CONFIG.TryGetValue(suffix, out var value);
+            if (config)
             {
                 CONFIG[suffix] = workbookLoader;
             }
