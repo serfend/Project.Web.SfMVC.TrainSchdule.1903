@@ -1,4 +1,5 @@
-﻿using TrainSchdule.ViewModels.System;
+﻿using DAL.Entities.UserInfo;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Account
 {
@@ -8,5 +9,9 @@ namespace TrainSchdule.ViewModels.Account
 	public class UserRemoveViewModel: IdSubmitViewModel
 	{
 		
+	}
+	public class UserApplicationViewModel : IdSubmitViewModel
+	{
+		public ApplicationUser Data { get; set; }
 	}
 }

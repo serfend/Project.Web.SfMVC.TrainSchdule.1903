@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using TrainSchdule.ViewModels.User;
@@ -77,10 +78,22 @@ namespace TrainSchdule.ViewModels.Account
 		/// </summary>
 		public string Company { get; set; }
 		/// <summary>
-		/// 随军情况
+		/// 个人家庭情况
 		/// </summary>
 
 		public SettleDataModel Settle { get; set; }
+		/// <summary>
+		/// 工作/入伍时间
+		/// </summary>
+		public DateTime Time_Work { get; set; }
+		/// <summary>
+		/// 出生日期
+		/// </summary>
+		public DateTime Time_BirthDay { get; set; }
+		/// <summary>
+		/// 党团时间
+		/// </summary>
+		public DateTime Time_Party { get; set; }
 	}
 
 }

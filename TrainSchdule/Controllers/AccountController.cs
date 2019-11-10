@@ -117,7 +117,6 @@ namespace TrainSchdule.Controllers
 			}
 			var user = await _userManager.FindByIdAsync(userId) ??
 			           throw new ApplicationException($"无法加载当前用户信息 '{userId}'.");
-
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -288,6 +287,25 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status),0)]
+		public async Task<IActionResult> Application([FromBody]UserApplicationViewModel model)
+		{
+			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			var targetUser = _usersService.Get(model.Data.Id);
+			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			_context.Users.Update(model.Data);
+			await _context.SaveChangesAsync();
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
 		/// 注册新用户
 		/// </summary>
 		/// <param name="model"></param>
@@ -303,8 +321,10 @@ namespace TrainSchdule.Controllers
 			if (r!="") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status,r));
 			
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var checkUser =  _usersService.Get(model.Data.Id);
-			if(checkUser!=null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
+			var authByUser =  _usersService.Get(model.Data.Id);
+			if(authByUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
+			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID,_context.AdminDivisions));
 			if (user == null)
 			{

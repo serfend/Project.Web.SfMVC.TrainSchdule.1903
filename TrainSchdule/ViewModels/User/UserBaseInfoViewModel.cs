@@ -1,4 +1,5 @@
 ﻿using DAL.Entities.UserInfo;
+using System;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -34,6 +35,18 @@ namespace TrainSchdule.ViewModels.User
 		/// 
 		/// </summary>
 		public GenderEnum Gender { get; set; }
+		/// <summary>
+		/// 工作/入伍时间
+		/// </summary>
+		public DateTime Time_Work { get; set; }
+		/// <summary>
+		/// 出生日期
+		/// </summary>
+		public DateTime Time_BirthDay { get; set; }
+		/// <summary>
+		/// 党团时间		
+		/// </summary>
+		public DateTime Time_Party { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
