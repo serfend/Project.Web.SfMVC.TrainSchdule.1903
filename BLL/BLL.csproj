@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.7" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.7" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Pomelo.AspNetCore.TimedJob" Version="2.0.0-rtm-10046" />
     <PackageReference Include="QRCoder" Version="1.3.6" />

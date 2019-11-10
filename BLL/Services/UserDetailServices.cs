@@ -26,7 +26,7 @@ namespace BLL.Services
 			int nowLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;
-			int yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(out var maxOnTripTime,out var description);
+			int yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser,out var maxOnTripTime,out var description);
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a => {
 				nowLength += a.RequestInfo.VocationLength;
 				if (a.RequestInfo.OnTripLength > 0) onTripTime++;

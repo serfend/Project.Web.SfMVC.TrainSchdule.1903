@@ -6,6 +6,8 @@ using System.Globalization;
 using System.Linq;
 using DAL.Data;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
+using BLL.Extensions;
 
 namespace BLL.Services
 {
@@ -16,7 +18,20 @@ namespace BLL.Services
 		{
 			_context = context;
 		}
-
+		/// <summary>
+		/// 当时间为年初（1月1日0时0分0秒）时执行一次
+		/// 重置所有人全年假期，并初始化年初假期
+		/// </summary>
+		public void ReloadNewYearVocation()
+		{
+			var allUsers = _context.AppUsers.ToList<User>();
+			foreach(var u in allUsers)
+			{
+				if (u.Application.ApplicationSetting.LastVocationUpdateTime?.Year == DateTime.Today.Year) continue;
+				u.SocialInfo.Settle.PrevYearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var i, out var j);
+				u.Application.ApplicationSetting.LastVocationUpdateTime = DateTime.Today;
+			}
+		}
 
 		public void AddDescription(VocationDescription model)
 		{
