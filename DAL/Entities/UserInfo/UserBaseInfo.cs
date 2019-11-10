@@ -1,4 +1,6 @@
-﻿namespace DAL.Entities.UserInfo
+﻿using System;
+
+namespace DAL.Entities.UserInfo
 {
 	public class UserBaseInfo : BaseEntity
 	{
@@ -9,7 +11,20 @@
 		public string RealName { get; set; }
 		public string Avatar { get; set; }
 		public GenderEnum Gender { get; set; }
+		/// <summary>
+		/// 工作/入伍时间
+		/// </summary>
+		public DateTime Time_Work { get; set; }
+		/// <summary>
+		/// 出生日期
+		/// </summary>
+		public DateTime Time_BirthDay { get; set; }
+		/// <summary>
+		/// 党团时间
+		/// </summary>
+		public DateTime Time_Party { get; set; }
 		public bool PrivateAccount { get; set; }
+
 	}
 	public enum GenderEnum
 	{

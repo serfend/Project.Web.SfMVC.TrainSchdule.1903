@@ -1,4 +1,6 @@
-﻿namespace DAL.Entities.UserInfo
+﻿using System;
+
+namespace DAL.Entities.UserInfo
 {
 	public class UserCompanyInfo : BaseEntity
 	{

@@ -9,7 +9,7 @@
 		public virtual UserBaseInfo BaseInfo { get; set; }
 		public virtual UserCompanyInfo CompanyInfo { get; set; }
 		public virtual UserSocialInfo SocialInfo { get; set; }
-		
+		public virtual UserTrainInfo TrainInfo { get; set; }
 		
         #endregion
 
