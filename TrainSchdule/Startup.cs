@@ -93,6 +93,10 @@ namespace TrainSchdule
 		private  void ConfigureHangfireServices()
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(),"*/10 * * * *");
+			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), "* * * 1 *");
+			RecurringJob.AddOrUpdate<WeeklyVocationStatstics>((u) => u.Run(), "* * * * 6");
+			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), "* * 1 * *");
+			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "* * 1 * *");
 		}
 		/// <summary>
 		/// 
