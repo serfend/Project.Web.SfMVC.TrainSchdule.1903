@@ -93,12 +93,13 @@ namespace TrainSchdule
 		private  void ConfigureHangfireServices()
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(),"*/10 * * * *");
-			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), "* * * 1 *");
-			RecurringJob.AddOrUpdate<WeeklyVocationStatstics>((u) => u.Run(), "* * * * 6");
-			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), "* * 1 * *");
-			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "* * 1 * *");
+			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1,1,0,0));
+			RecurringJob.AddOrUpdate<WeeklyVocationStatstics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday,0,0));
+			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1,0,0));
+			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
 		}
 		/// <summary>
+
 		/// 
 		/// </summary>
 		/// <param name="services"></param>
@@ -146,7 +147,7 @@ namespace TrainSchdule
 			//注册Swagger生成器，定义一个和多个Swagger 文档
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
+				c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
 				// 为 Swagger JSON and UI设置xml文档注释路径
 				var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
 				var xmlPath = Path.Combine(basePath, "TrainSchdule.xml");
