@@ -1,15 +1,17 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities.UserInfo
 {
 	public class UserBaseInfo : BaseEntity
 	{
+		[Required]
 		/// <summary>
 		/// 居民身份证
 		/// </summary>
 		public string Cid { get; set; }
 		public string RealName { get; set; }
-		public string Avatar { get; set; }
+		
 		public GenderEnum Gender { get; set; }
 		/// <summary>
 		/// 工作/入伍时间

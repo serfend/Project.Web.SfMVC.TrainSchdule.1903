@@ -4,6 +4,8 @@ using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.EntityFrameworkCore;
 using TrainSchdule.ViewModels.Account;
+using TrainSchdule.Extensions;
+using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.Extensions
 {
@@ -19,27 +21,30 @@ namespace TrainSchdule.Extensions
 		/// <param name="invitedBy"></param>
 		/// <param name="db"></param>
 		/// <returns></returns>
-		public static UserCreateVdto ToDTO(this UserCreateDataModel model,string invitedBy,DbSet<AdminDivision> db)
+		public static User ToDTO(this UserCreateDataModel model, string invitedBy, DbSet<AdminDivision> db)
 		{
 			if (model == null) return null;
-			return new UserCreateVdto()
+			var settle = model.Social.Settle;
+			return new User()
 			{
-				Company = model.Company,
-				Duties = model.Duties,
-				Email = model.Email,
-				Gender = model.Cid?.Length==18?Convert.ToInt32(model.Cid.Substring(16, 1))%2==1?GenderEnum.Male:GenderEnum.Female:GenderEnum.Unknown,
-				Id = model.Id,
-				Cid=model.Cid,
-				InvitedBy = invitedBy,
-				Password = model.Password,
-				RealName = model.RealName,
-				Phone = model.Phone,
-				Settle = new DAL.Entities.UserInfo.Settle.Settle()
+				CompanyInfo = new UserCompanyInfo()
 				{
-					Self=model.Settle?.Self.ToMoment(db),
-					Lover=model.Settle?.Lover.ToMoment(db),
-					Parent=model.Settle?.Parent.ToMoment(db),
-					PrevYearlyLength=model.Settle?.PrevYearlyLength??0
+					Company = new Company()
+					{
+						Code = model.Company.Company.Code
+					},
+					Duties = new Duties()
+					{
+						Name = model.Company.Duties.Name
+					}
+				},
+				Application = model.Application.ToModel(),
+				BaseInfo =model.Base,
+				SocialInfo = model.Social.ToModel(),
+				TrainInfo = new UserTrainInfo(),
+				DiyInfo=new UserDiyInfo()
+				{
+				
 				}
 			};
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.System;
 
@@ -19,6 +20,10 @@ namespace TrainSchdule.ViewModels.User
 	/// </summary>
 	public class UserApplicationDataModel
 	{
+		/// <summary>
+		/// 用户id
+		/// </summary>
+		public string Id { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
@@ -46,14 +51,22 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static UserApplicationDataModel ToModel(this UserApplicationInfo model)
+		public static UserApplicationDataModel ToModel(this UserApplicationInfo model,DAL.Entities.UserInfo.User user)
 		{
 			return new UserApplicationDataModel()
 			{
-				About = model.About,
+				Id=user.Id,
 				Create = model.Create,
 				Email = model.Email,
 				InvitedBy = model.InvitedBy
+			};
+		}
+		public static UserApplicationInfo ToModel(this UserApplicationDataModel model)
+		{
+			return new UserApplicationInfo()
+			{
+				Email = model.Email,
+				InvitedBy=model.InvitedBy,
 			};
 		}
 	}

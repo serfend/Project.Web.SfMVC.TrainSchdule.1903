@@ -10,10 +10,10 @@
 		public virtual UserCompanyInfo CompanyInfo { get; set; }
 		public virtual UserSocialInfo SocialInfo { get; set; }
 		public virtual UserTrainInfo TrainInfo { get; set; }
-		
-        #endregion
+		public virtual UserDiyInfo DiyInfo { get; set; }
+		#endregion
 
-    }
+	}
 
 
 }

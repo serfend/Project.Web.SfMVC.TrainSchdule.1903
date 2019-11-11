@@ -107,15 +107,15 @@ namespace BLL.Services
         /// <summary>
         /// Creates user.
         /// </summary>
-        public ApplicationUser Create(UserCreateVdto user) =>
-	        CreateAsync(user).Result;
+        public ApplicationUser Create(User user,string password) =>
+	        CreateAsync(user,password).Result;
 
 		/// <summary>
 		/// Async creates user.
 		/// </summary>
-		public async Task<ApplicationUser> CreateAsync(UserCreateVdto user)
+		public async Task<ApplicationUser> CreateAsync(User user,string password)
 		{
-			var identity = CreateUser(user);
+			var identity = CreateUser(user, password);
 			if (identity == null) return null;
 			var appUser = CreateAppUser(user);
 			
@@ -125,60 +125,36 @@ namespace BLL.Services
 			return identity;
         }
 
-		private User CreateAppUser(UserCreateVdto user)
+		private User CreateAppUser(User user)
 		{
-			var u = new User()
+					
+			user.Application.Create = DateTime.Now;
+			user.Application.AuthKey = new Random().Next(1000, 9999).ToString().GetHashCode().ToString();
+			user.Application.ApplicationSetting = new UserApplicationSetting()
 			{
-				Id = user.Id,
-				Application = new UserApplicationInfo()
-				{
-					Email = user.Email,
-					Permission = new Permissions()
-					{
-						Regions = "",
-						Role = "User"
-					},
-					InvitedBy = user.InvitedBy,
-					Create = DateTime.Now,
-					AuthKey = new Random().Next(1000, 9999).ToString().GetHashCode().ToString(),
-					ApplicationSetting = new UserApplicationSetting()
-					{
-						LastSubmitApplyTime = DateTime.Now
-					}
-				},
-				BaseInfo = new UserBaseInfo()
-				{
-					Gender = user.Gender,
-					RealName = user.RealName,
-					Cid = user.Cid
-				},
-				CompanyInfo = new UserCompanyInfo()
-				{
-					Company = _context.Companies.Find(user.Company),
-					Duties = _context.Duties.FirstOrDefault(d=>d.Name==user.Duties)
-				},
-				SocialInfo = new UserSocialInfo()
-				{
-					Address = _context.AdminDivisions.Find(user.HomeAddress),
-					AddressDetail = user.HomeDetailAddress,
-					Phone = user.Phone,
-					Settle = user.Settle
-				}
+				LastSubmitApplyTime = DateTime.Now
 			};
-			
-			return u;
+			user.Application.Permission = new Permissions()
+			{
+				Regions = "",
+				Role = "User"
+			};
+			user.CompanyInfo.Company = _context.Companies.Find(user.CompanyInfo.Company.Code);
+			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
+			user.SocialInfo.Address = _context.AdminDivisions.Find(user.SocialInfo.Address.Code);
+			return user;
 		}
-		private ApplicationUser CreateUser(UserCreateVdto user)
+		private ApplicationUser CreateUser(User user,string password)
 		{
 			if (_context.AppUsers.Find(user.Id) != null) return null;
-
+			
 			var identity = new ApplicationUser
 			{
 				UserName = user.Id,
-				Email = user.Email,
+				Email = user.Application.Email,
 				PhoneNumberConfirmed = false,
 				EmailConfirmed = false,
-				NormalizedEmail = user.Email.ToUpper(),
+				NormalizedEmail = user.Application.Email.ToUpper(),
 				NormalizedUserName = user.Id.ToUpper(),
 				LockoutEnabled = true,
 				TwoFactorEnabled = false,
@@ -186,7 +162,7 @@ namespace BLL.Services
 			};
 
 			var passwordHasher = new PasswordHasher<ApplicationUser>();
-			identity.PasswordHash = passwordHasher.HashPassword(identity, user.Password);
+			identity.PasswordHash = passwordHasher.HashPassword(identity, password);
 
 
 			return identity;

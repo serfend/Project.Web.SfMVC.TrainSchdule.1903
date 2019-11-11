@@ -321,11 +321,11 @@ namespace TrainSchdule.Controllers
 			if (r!="") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status,r));
 			
 			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser =  _usersService.Get(model.Data.Id);
+			var authByUser =  _usersService.Get(model.Auth.AuthByUserID);
 			if(authByUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID,_context.AdminDivisions));
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID,_context.AdminDivisions),model.Data.ConfirmPassword);
 			if (user == null)
 			{
 				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
@@ -342,7 +342,7 @@ namespace TrainSchdule.Controllers
 			{
 				await _context.Duties.AddAsync(new Duties()
 				{
-					Name = model.Data.Duties
+					Name = model.Data.Company.Duties.Name
 				});
 				ModelState.AddModelError("duties", "职务不存在");
 			}

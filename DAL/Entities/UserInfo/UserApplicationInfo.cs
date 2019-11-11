@@ -10,7 +10,6 @@ namespace DAL.Entities.UserInfo
 		public string InvitedBy { get; set; }
 
 		public virtual Permissions Permission { get; set; }
-		public string About { get; set; }
 		public DateTime?Create { get; set; }
 		public string Email { get; set; }
 		public string AuthKey { get; set; }

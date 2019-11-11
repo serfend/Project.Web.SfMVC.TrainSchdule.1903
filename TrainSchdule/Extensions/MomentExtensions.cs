@@ -20,11 +20,11 @@ namespace TrainSchdule.Extensions
 		/// <param name="model"></param>
 		/// <param name="db"></param>
 		/// <returns></returns>
-		public static Moment ToMoment(this MomentDataModel model, DbSet<AdminDivision> db)
+		public static Moment ToMoment(this Moment model, DbSet<AdminDivision> db)
 		{
 			var tmp= new Moment()
 			{
-				Address = db.Where<AdminDivision>(a => a.Code == model.Address).FirstOrDefault(),
+				Address = db.Where<AdminDivision>(a => a.Code == model.Address.Code).FirstOrDefault(),
 				AddressDetail = model.AddressDetail,
 				Date = model.Date,
 				Valid = model.Valid

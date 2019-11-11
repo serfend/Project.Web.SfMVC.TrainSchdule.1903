@@ -1,6 +1,7 @@
 ﻿using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
+using System.ComponentModel;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -24,6 +25,7 @@ namespace TrainSchdule.ViewModels.User
 		/// 联系方式
 		/// </summary>
 		public string Phone { get; set; }
+		
 		/// <summary>
 		/// 
 		/// </summary>
@@ -37,6 +39,10 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		public string AddressDetail { get; set; }
 	}
+	public class UserSettleDataModel : Settle
+	{
+		public new string Id { get; set; }
+	}
 	/// <summary>
 	/// 
 	/// </summary>
@@ -47,9 +53,20 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static UserSocialDataModel ToModel(this UserSocialInfo model)
+		public static UserSocialDataModel ToDataModel(this UserSocialInfo model)
 		{
 			return new UserSocialDataModel()
+			{
+				Address = model.Address,
+				AddressDetail = model.AddressDetail,
+				Phone = model.Phone,
+				Settle = model.Settle
+			};
+		}
+
+		public static UserSocialInfo ToModel(this UserSocialDataModel model)
+		{
+			return new UserSocialInfo()
 			{
 				Address = model.Address,
 				AddressDetail = model.AddressDetail,

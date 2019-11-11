@@ -3,6 +3,7 @@ using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.User;
@@ -14,19 +15,19 @@ namespace TrainSchdule.Controllers
 	/// </summary>
 	[Authorize]
 	[Route("[controller]/[action]")]
-    public partial class UsersController : Controller
-    {
-        #region Fields
+	public partial class UsersController : Controller
+	{
+		#region Fields
 
-        private readonly IUsersService _usersService;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly ICompaniesService _companiesService;
-        private readonly IApplyService _applyService;
-        private readonly IGoogleAuthService _authService;
+		private readonly IUsersService _usersService;
+		private readonly ICurrentUserService _currentUserService;
+		private readonly ICompaniesService _companiesService;
+		private readonly IApplyService _applyService;
+		private readonly IGoogleAuthService _authService;
 
-        #endregion
+		#endregion
 
-        #region .ctors
+		#region .ctors
 		/// <summary>
 		/// 用户管理
 		/// </summary>
@@ -36,38 +37,64 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="authService"></param>
 		/// <param name="companyManagerServices"></param>
-        public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices)
-        {
-            _usersService = usersService;
-            _currentUserService = currentUserService;
-            _companiesService = companiesService;
-            _applyService = applyService;
-            _authService = authService;
-            _companyManagerServices = companyManagerServices;
-        }
+		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices)
+		{
+			_usersService = usersService;
+			_currentUserService = currentUserService;
+			_companiesService = companiesService;
+			_applyService = applyService;
+			_authService = authService;
+			_companyManagerServices = companyManagerServices;
+		}
 
 		#endregion
 
 		#region Logic
-
+		public User GetCurrentQueryUser(string id, out JsonResult result)
+		{
+			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
+			if (id == null)
+			{
+				result = new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+				return null;
+			}
+			var targetUser = _usersService.Get(id);
+			if (targetUser == null)
+			{
+				result= new JsonResult(ActionStatusMessage.User.NotExist);
+				return null;
+			}
+			result = null;
+			return targetUser;
+		}
 		/// <summary>
 		/// 系统信息
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserApplicationInfoViewModel), 0)]
 
 		public IActionResult Application(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
 			return new JsonResult(new UserApplicationInfoViewModel()
 			{
-				Data = targetUser.Application.ToModel()
+				Data = targetUser.Application.ToModel(targetUser)
+			});
+		}
+
+		[HttpGet]
+		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
+
+		public IActionResult DiyInfo(string id)
+		{
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
+			return new JsonResult(new UserDiyInfoViewModel()
+			{
+				Data = targetUser.DiyInfo?.ToViewModel(targetUser)
 			});
 		}
 		/// <summary>
@@ -76,52 +103,30 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
 
 		public IActionResult Social(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
 			return new JsonResult(new UserSocialViewModel()
 			{
-				Data = targetUser.SocialInfo.ToModel()
+				Data = targetUser.SocialInfo.ToDataModel()
 			});
 		}
-		/// <summary>
-		/// 获取用户休假情况
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public IActionResult Vocation(string id)
-		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var vocationInfo = _usersService.VocationInfo(targetUser);
-			return new JsonResult(new UserVocationInfoViewModel()
-			{
-				Data = vocationInfo
-			}) ; 
-		}
+		
 		/// <summary>
 		/// 职务信息
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
 
 		public IActionResult Duties(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
 			return new JsonResult(new UserDutiesViewModel()
 			{
 				Data = targetUser.CompanyInfo.ToDutiesModel()
@@ -133,15 +138,12 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
 
 		public IActionResult Company(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
 			return new JsonResult(new UserCompanyInfoViewModel()
 			{
 				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
@@ -153,46 +155,58 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
 
 		public IActionResult Base(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			return  new JsonResult(new UserBaseInfoViewModel()
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
+			return new JsonResult(new UserBaseInfoViewModel()
 			{
-				Data = targetUser.BaseInfo.ToModel(id)
+				Data = targetUser.BaseInfo
 			});
 		}
+
+
 		/// <summary>
-		/// 此用户提交申请的审批流
+		/// 此用户提交申请后，将生成的审批流
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
 
 		public IActionResult AuditStream(string id)
 		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
 			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company);
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					List = list.Select(c=>c.Company.ToDto(_companiesService))
+					List = list.Select(c => c.Company.ToDto(_companiesService))
 				}
 			});
 		}
-		
+		/// <summary>
+		/// 获取用户休假情况
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[HttpGet]
+		public IActionResult Vocation(string id)
+		{
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
+			var vocationInfo = _usersService.VocationInfo(targetUser);
+			return new JsonResult(new UserVocationInfoViewModel()
+			{
+				Data = vocationInfo
+			});
+		}
 		#endregion
 
-    }
+	}
 }
