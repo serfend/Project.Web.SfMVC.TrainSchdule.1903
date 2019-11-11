@@ -10,7 +10,7 @@ namespace ExcelReport
         public static byte[] ExportToBuffer(string templateFile, params SheetRenderer[] sheetRenderers)
         {
             var str = Path.GetExtension(templateFile);
-            IWorkbookLoader workbookLoader = Configurator.Get(str);
+            IWorkbookLoader workbookLoader =new Configurator()[str];
             IWorkbook workbook = workbookLoader.Load(templateFile);
             var workbookContext = new WorkbookContext(workbook);
             foreach (SheetRenderer sheetRenderer in sheetRenderers)
