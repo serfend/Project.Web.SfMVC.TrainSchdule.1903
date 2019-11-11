@@ -3,10 +3,12 @@ using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.User;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers
 {
@@ -50,7 +52,8 @@ namespace TrainSchdule.Controllers
 		#endregion
 
 		#region Logic
-		public User GetCurrentQueryUser(string id, out JsonResult result)
+
+		private User GetCurrentQueryUser(string id, out JsonResult result)
 		{
 			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
 			if (id == null)
@@ -84,10 +87,13 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.Application.ToModel(targetUser)
 			});
 		}
-
+		/// <summary>
+		/// 用户自定义信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
-
 		public IActionResult DiyInfo(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -96,6 +102,25 @@ namespace TrainSchdule.Controllers
 			{
 				Data = targetUser.DiyInfo?.ToViewModel(targetUser)
 			});
+		}
+		/// <summary>
+		/// 用户自定义信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
+		public IActionResult DiyInfo(string id,[FromBody] UserDiyInfoModefyModel model)
+		{
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (targetUser == null) return result;
+			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authByUser = _usersService.Get(model.AuthByUserID);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo.Id);
+			_usersService.Edit(targetUser);
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
 		/// 社会信息

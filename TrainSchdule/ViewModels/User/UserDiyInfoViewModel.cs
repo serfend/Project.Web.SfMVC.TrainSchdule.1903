@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.User
 {
@@ -11,11 +12,16 @@ namespace TrainSchdule.ViewModels.User
 	{
 		public UserDiyInfoDataModel Data { get; set; }
 	}
-	public class UserDiyInfoDataModel
+public class UserDiyInfoModefyModel:GoogleAuthViewModel
+	{
+		public UserDiyInfoDataModel Data { get; set; }
+	}	
+ public class UserDiyInfoDataModel
 	{
 		public string Abount { get; set; }
 		public string Avatar { get; set; }
 	}
+
 	public static class UserDiyInfoExtension
 	{
 		/// <summary>
@@ -44,6 +50,15 @@ namespace TrainSchdule.ViewModels.User
 				(user.BaseInfo.Gender == GenderEnum.Male ? avatar_male: 
 				(user.BaseInfo.Gender == GenderEnum.Female ? avatar_female : 
 				avatar_unknown))
+			};
+		}
+		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model,Guid modelId)
+		{
+			return new UserDiyInfo()
+			{
+				Id = modelId,
+				About=model.Abount,
+				Avatar=model.Avatar
 			};
 		}
 	}

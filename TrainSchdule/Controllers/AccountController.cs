@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers
 {
@@ -145,7 +146,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Permission([FromBody]QueryPermissionsViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (model.Auth==null||!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var permission = targetUser.Application.Permission;
@@ -183,7 +184,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application,Operation.Update,targetUser))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);

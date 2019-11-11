@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.User;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers
 {
@@ -47,7 +48,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (model.Auth==null||!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -69,7 +70,8 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model,string mdzz)
 		{
-			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);

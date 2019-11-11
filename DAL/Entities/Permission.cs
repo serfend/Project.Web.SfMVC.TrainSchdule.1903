@@ -29,6 +29,10 @@ namespace DAL.Entities
 			public static PermissionDescription Application=new PermissionDescription("User.Application","密码、安全码等敏感信息");
 			public static PermissionDescription BaseInfo=new PermissionDescription("User.BaseInfo","基本信息");
 		}
+		public static class Apply
+		{
+			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的编辑权限");
+		}
 	}
 
 	public class PermissionDescription

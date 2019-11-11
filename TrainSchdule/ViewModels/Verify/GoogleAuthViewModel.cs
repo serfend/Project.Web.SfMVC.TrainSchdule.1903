@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BLL.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainSchdule.ViewModels.Verify
 {
@@ -17,5 +18,9 @@ namespace TrainSchdule.ViewModels.Verify
 		/// </summary>
 		[Required]
 		public int Code { get; set; }
+	}
+	public static class GoogleAuthExtension
+	{
+		public static bool Verify(this GoogleAuthViewModel model, IGoogleAuthService authService) => authService.Verify(model.Code,model.AuthByUserID);
 	}
 }

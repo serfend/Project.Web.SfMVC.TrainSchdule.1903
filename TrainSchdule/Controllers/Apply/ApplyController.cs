@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Apply;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -167,7 +169,10 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!_authService.Verify(model.Auth.Code,model.Auth.AuthByUserID))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (model.Auth==null||!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if(authByUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default,Operation.Update,authByUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.Get(id);
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
