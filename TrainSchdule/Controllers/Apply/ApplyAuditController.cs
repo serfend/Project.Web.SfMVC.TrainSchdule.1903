@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Apply;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -89,9 +90,9 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var currentUserName = _currentUserService.HttpContextAccessor.HttpContext.User.Identity.Name;
-			if(model.Auth == null || !_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID))currentUserName=model.Auth.AuthByUserID ;
+			if( !model.Verify(_authService))currentUserName=model.AuthByUserID ;
 			if (currentUserName == null) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			model.Auth.AuthByUserID = currentUserName;
+			model.AuthByUserID = currentUserName;
 			try
 			{
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());

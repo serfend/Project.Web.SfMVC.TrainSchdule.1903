@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.DTO.Apply;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
@@ -10,16 +11,13 @@ namespace TrainSchdule.ViewModels.Apply
 	/// <summary>
 	/// 
 	/// </summary>
-	public class AuditApplyViewModel
+	public class AuditApplyViewModel: GoogleAuthViewModel
 	{
 		/// <summary>
 		/// 
 		/// </summary>
 		public AuditApplyDataModel Data { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public GoogleAuthViewModel Auth { get; set; }
+
 	}
 	
 	/// <summary>

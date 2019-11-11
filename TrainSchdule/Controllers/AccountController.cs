@@ -162,10 +162,10 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult Permission([FromBody]ModifyPermissionsViewModel model)
 		{
-			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var authUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authUser = _usersService.Get(model.AuthByUserID);
 			if(authUser==null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			_usersService.Edit(targetUser);
@@ -278,8 +278,8 @@ namespace TrainSchdule.Controllers
 
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
-			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.AuthByUserID);
 			if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetUser = _usersService.Get(model.Id);
 			if(targetUser==null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -297,8 +297,8 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(Status),0)]
 		public async Task<IActionResult> Application([FromBody]UserApplicationViewModel model)
 		{
-			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.AuthByUserID);
 			var targetUser = _usersService.Get(model.Data.Id);
 			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -321,7 +321,7 @@ namespace TrainSchdule.Controllers
 			var r = model.Verify.Verify(_verifyService);
 			if (r!="") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status,r));
 			
-			if (!_authService.Verify(model.Auth.Code, model.Auth.AuthByUserID)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser =  _usersService.Get(model.Auth.AuthByUserID);
 			if(authByUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
