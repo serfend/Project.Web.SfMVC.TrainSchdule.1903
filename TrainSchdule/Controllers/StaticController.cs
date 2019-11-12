@@ -36,6 +36,7 @@ namespace TrainSchdule.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
 		private readonly IHostingEnvironment _hostingEnvironment;
+		private readonly ICurrentUserService _currentUserService;
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
 
@@ -49,7 +50,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="usersService"></param>
 		/// <param name="companiesService"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService, IUsersService usersService, ICompaniesService companiesService)
+		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService, IUsersService usersService, ICompaniesService companiesService, ICurrentUserService currentUserService)
 		{
 			_verifyService = verifyService;
 			_context = context;
@@ -58,6 +59,7 @@ namespace TrainSchdule.Controllers
 			_applyService = applyService;
 			_usersService = usersService;
 			_companiesService = companiesService;
+			_currentUserService = currentUserService;
 		}
 
 		/// <summary>
@@ -202,12 +204,12 @@ namespace TrainSchdule.Controllers
 		/// <param name="form"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(string),0)]
 
 		[Route("XlsExport")]
 		public IActionResult XlsExport( XlsExportViewModel form)
 		{
+			//var currentUser = _currentUserService.CurrentUser;
 			var sWebRootFolder = _hostingEnvironment.WebRootPath;
 			form.Templete = $"Templete\\{form.Templete}";
 			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, form.Templete));
@@ -218,10 +220,12 @@ namespace TrainSchdule.Controllers
 			if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
 			{
 				Guid.TryParse(form.Apply, out var guid);
-				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
+				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.GuidFail );
 				var apply = _applyService.Get(guid)?.ToDetaiDto();
-				if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
-				fileContent=_applyService.ExportExcel(tempFile.FullName, apply);
+				if (apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				//TODO 需要校验权限
+				//if (!currentUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Update, apply.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				fileContent = _applyService.ExportExcel(tempFile.FullName, apply);
 				fileName = $"{apply.Base.RealName}的{apply.RequestInfo.VocationTotalLength()}天休假申请导出到{form.Templete}";
 			}
 			else

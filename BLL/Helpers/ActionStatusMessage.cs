@@ -99,10 +99,6 @@
 					public static readonly Status Began = new Status(43320, "申请已处于审核状态中");
 					public static readonly Status NoRequestInfo =new Status(43330,"申请的请求信息无效");
 					public static readonly Status NoBaseInfo = new Status(43340, "申请的基础信息无效");
-	
-
-
-
 				}
 				public static class ToCompany
 				{
@@ -116,7 +112,6 @@
 					public static readonly Status AllReadyPublish = new Status(43510, "当前申请处于发布状态");
 				}
 				
-
 				public static class Audit
 				{
 					public static readonly Status BeenAudit = new Status(43610, "审核已提交过，请勿重复审核");
@@ -142,6 +137,8 @@
 				public static readonly Status TripTimesExceed = new Status(44300, "剩余可休路途次数不足");
 
 			}
+			public static readonly Status GuidFail = new Status(45000, "申请的ID无效");
+
 		}
 
 		public static class Static
