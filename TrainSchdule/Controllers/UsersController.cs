@@ -92,6 +92,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
 		public IActionResult DiyInfo(string id)
@@ -109,6 +110,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpPost]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
 		public IActionResult DiyInfo(string id,[FromBody] UserDiyInfoModefyModel model)
@@ -127,6 +129,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
 		public IActionResult Social(string id)
@@ -144,6 +147,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
 		public IActionResult Duties(string id)
@@ -160,6 +164,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
 		public IActionResult Company(string id)
@@ -176,6 +181,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
 		public IActionResult Base(string id)
@@ -194,6 +200,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+	[AllowAnonymous]	
 		[HttpGet]
 		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
 		public IActionResult AuditStream(string id)
@@ -215,7 +222,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
-		[HttpGet]
+	[AllowAnonymous]	
+  [HttpGet]
 		public IActionResult Vocation(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
