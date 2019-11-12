@@ -52,14 +52,12 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 				avatar_unknown))
 			};
 		}
-		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model,Guid modelId)
+		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model,UserDiyInfo raw)
 		{
-			return new UserDiyInfo()
-			{
-				Id = modelId,
-				About=model.Abount,
-				Avatar=model.Avatar
-			};
+			if (raw == null) raw = new UserDiyInfo();
+			raw.About = model?.Abount;
+			raw.Avatar = model?.Avatar;
+			return raw;
 		}
 	}
 }

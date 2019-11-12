@@ -76,8 +76,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserApplicationInfoViewModel), 0)]
-
 		public IActionResult Application(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -118,7 +118,7 @@ namespace TrainSchdule.Controllers
 			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.AuthByUserID);
 			if (id!=targetUser.Id&&!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo.Id);
+			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo);
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -129,7 +129,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
-
 		public IActionResult Social(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -147,7 +146,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
-
 		public IActionResult Duties(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -164,7 +162,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
-
 		public IActionResult Company(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -181,7 +178,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
-
 		public IActionResult Base(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -200,7 +196,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
-
 		public IActionResult AuditStream(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);

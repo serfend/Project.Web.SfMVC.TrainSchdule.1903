@@ -172,6 +172,7 @@ namespace BLL.Services
         /// </summary>
         public bool Edit(User newUser)
         {
+			
 			_context.AppUsers.Update(newUser);
 			_context.SaveChanges();
 			return true;
