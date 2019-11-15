@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Swashbuckle.AspNetCore.Swagger;
 using TrainSchdule.Crontab;
+using TrainSchdule.System;
 
 namespace TrainSchdule
 {
@@ -24,52 +25,52 @@ namespace TrainSchdule
 	/// 
 	/// </summary>
 	public class Startup
-    {
-        #region Properties
-        /// <summary>
-        /// 
-        /// </summary>
-        public IConfiguration Configuration { get; set; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+	{
+		#region Properties
+		/// <summary>
+		/// 
+		/// </summary>
+		public IConfiguration Configuration { get; set; }
+		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        #endregion
+		#endregion
 
-        #region .ctors
+		#region .ctors
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="configuration"></param>
-        public Startup(IConfiguration configuration)
-        {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="configuration"></param>
+		public Startup(IConfiguration configuration)
+		{
 			//注入Configuration服务
-            Configuration = configuration;
-        }
+			Configuration = configuration;
+		}
 
 		#endregion
 
 		#region Logic
 
 		private void AddApplicationServices(IServiceCollection services)
-        {
+		{
 			//每次调用均对应一个实例
-            services.AddTransient<IEmailSender, EmailSender>();
+			services.AddTransient<IEmailSender, EmailSender>();
 
 			//每个http请求对应一个实例
-            services.AddScoped<IUsersService, UsersService>();
+			services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
-			services.AddScoped<ICompaniesService, CompaniesService > ();
-			services.AddScoped<IApplyService,ApplyService>();
-			services.AddScoped< IGoogleAuthService, GoogleAuthService>();
-			services.AddScoped< ICompanyManagerServices, CompanyManagerServices>();
+			services.AddScoped<ICompaniesService, CompaniesService>();
+			services.AddScoped<IApplyService, ApplyService>();
+			services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+			services.AddScoped<ICompanyManagerServices, CompanyManagerServices>();
 			services.AddScoped<IVocationCheckServices, VocationCheckServices>();
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IVerifyService,VerifyService>();
-            services.AddSingleton<IFileProvider>(
-	            new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-            
-        }
+			services.AddSingleton<IVerifyService, VerifyService>();
+			services.AddSingleton<IFileProvider>(
+				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+
+		}
 		private void AddHangfireServices(IServiceCollection services)
 		{
 			// Add Hangfire services.
@@ -90,13 +91,15 @@ namespace TrainSchdule
 			// Add the processing server as IHostedService
 			services.AddHangfireServer();
 		}
-		private  void ConfigureHangfireServices()
+		private void ConfigureHangfireServices()
 		{
-			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(),"*/10 * * * *");
-			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1,1,0,0));
-			RecurringJob.AddOrUpdate<WeeklyVocationStatstics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday,0,0));
-			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1,0,0));
+			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), "*/10 * * * *");
+			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1, 1, 0, 0));
+			RecurringJob.AddOrUpdate<WeeklyVocationStatstics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday, 0, 0));
+			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
 			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
+			var arg = "system load";
+			BackgroundJob.Schedule(() => Console.WriteLine(arg), TimeSpan.FromSeconds(10));
 		}
 		/// <summary>
 
@@ -104,9 +107,10 @@ namespace TrainSchdule
 		/// </summary>
 		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
-        {
+		{
 
-			services.AddDbContext<ApplicationDbContext>(options=>{
+			services.AddDbContext<ApplicationDbContext>(options =>
+			{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
@@ -116,28 +120,28 @@ namespace TrainSchdule
 			AddAllowCorsServices(services);
 			AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 4;
+			{
+				// Password settings
+				options.Password.RequireDigit = true;
+				options.Password.RequiredLength = 8;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireUppercase = true;
+				options.Password.RequireLowercase = false;
+				options.Password.RequiredUniqueChars = 4;
 
-                // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 10;
-                options.Lockout.AllowedForNewUsers = true;
+				// Lockout settings
+				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+				options.Lockout.MaxFailedAccessAttempts = 10;
+				options.Lockout.AllowedForNewUsers = true;
 
-                // User settings
-                options.User.RequireUniqueEmail = true;
-            });
+				// User settings
+				options.User.RequireUniqueEmail = true;
+			});
 
-  
-            AddApplicationServices(services);
-            
-          
+
+			AddApplicationServices(services);
+
+
 			services.AddMvc();
 
 		}
@@ -205,39 +209,46 @@ namespace TrainSchdule
 		/// <param name="app"></param>
 		/// <param name="env"></param>
 		/// <param name="services"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services) 
-        {
-            if (env.IsDevelopment())
-            {
-                
-            }
-            else if(env.IsProduction())
-            {
-               
-            }
-            app.UseTimedJob();
-			app.UseHangfireDashboard();
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services)
+		{
+			if (env.IsDevelopment())
+			{
+
+			}
+			else if (env.IsProduction())
+			{
+
+			}
+			app.UseTimedJob();
+			app.UseHangfireServer();
+			app.UseHangfireDashboard("/schdule", new DashboardOptions()
+			{
+				Authorization = new[] { new HangfireAuthorizeFilter() },
+				DashboardTitle = "sf task manager",
+				DisplayStorageConnectionString = true
+			});
 			ConfigureHangfireServices();
 
 			app.UseDeveloperExceptionPage();
 			app.UseDatabaseErrorPage();
-			app.UseWelcomePage(new WelcomePageOptions() {
-				Path="/welcome"
+			app.UseWelcomePage(new WelcomePageOptions()
+			{
+				Path = "/welcome"
 			});
 			DefaultFilesOptions options = new DefaultFilesOptions();
 			options.DefaultFileNames.Add("index.html");    //将index.html改为需要默认起始页的文件名.
 			app.UseDefaultFiles(options);
 			//中间件方法
 			app.UseStaticFiles();
-            app.UseSession();
+			app.UseSession();
 
-            //启用中间件服务生成Swagger作为JSON终结点
-            app.UseSwagger();
-            //启用中间件服务对swagger-ui，指定Swagger JSON终结点
-            app.UseSwaggerUI(c =>
-            {
-	            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+			//启用中间件服务生成Swagger作为JSON终结点
+			app.UseSwagger();
+			//启用中间件服务对swagger-ui，指定Swagger JSON终结点
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+			});
 
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions
@@ -249,18 +260,18 @@ namespace TrainSchdule
 
 			//默认路由
 			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
+			{
+				routes.MapRoute(
+					name: "default",
 					//controller/action/param
-                    template: "{controller=Home}/{action=Cover}/{Id?}");
-            });
+					template: "{controller=Home}/{action=Cover}/{Id?}");
+			});
 
-            //seeder.Seed().Wait();
-            //seeder.CreateUserRoles(services).Wait();
+			//seeder.Seed().Wait();
+			//seeder.CreateUserRoles(services).Wait();
 
-        }
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }
