@@ -31,6 +31,7 @@ namespace TrainSchdule.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+		private readonly ICurrentUserService currentUserService;
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
@@ -39,9 +40,9 @@ namespace TrainSchdule.Controllers
         private readonly IGoogleAuthService _authService;
 
 
-        #endregion
+		#endregion
 
-        #region .ctors
+		#region .ctors
 		/// <summary>
 		/// 账号管理
 		/// </summary>
@@ -53,24 +54,25 @@ namespace TrainSchdule.Controllers
 		/// <param name="verifyService"></param>
 		/// <param name="authService"></param>
 		/// <param name="context"></param>
-        public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
-            ILogger<AccountController> logger,
-            IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context) 
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailSender = emailSender;
-            _logger = logger;
-            _usersService = usersService;
-            _verifyService = verifyService;
-            _authService = authService;
-            _context = context;
-        }
+		public AccountController(
+			UserManager<ApplicationUser> userManager,
+			SignInManager<ApplicationUser> signInManager,
+			IEmailSender emailSender,
+			ILogger<AccountController> logger,
+			IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context, ICurrentUserService currentUserService)
+		{
+			_userManager = userManager;
+			_signInManager = signInManager;
+			_emailSender = emailSender;
+			_logger = logger;
+			_usersService = usersService;
+			_verifyService = verifyService;
+			_authService = authService;
+			_context = context;
+			this.currentUserService = currentUserService;
+		}
 
-        #endregion
+		#endregion
 
 
 
@@ -143,11 +145,11 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(IDictionary<string, PermissionRegion>), 0)]
 
-		public IActionResult Permission([FromBody]QueryPermissionsViewModel model)
+		public IActionResult Permission(string id)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var targetUser = _usersService.Get(model.Id);
+			var currentId = id ?? currentUserService.CurrentUser.Id;
+			if (currentId == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			var targetUser = _usersService.Get(currentId);
 			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
 			var permission = targetUser.Application.Permission;
 			return new JsonResult(new QueryPermissionsOutViewModel(){Data =permission.GetRegionList() });
@@ -321,12 +323,12 @@ namespace TrainSchdule.Controllers
 			var r = model.Verify.Verify(_verifyService);
 			if (r!="") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status,r));
 			
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser =  _usersService.Get(model.Auth.AuthByUserID);
+			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser =  _usersService.Get(model.AuthByUserID);
 			if(authByUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID,_context.AdminDivisions),model.Data.ConfirmPassword);
+			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.AuthByUserID,_context.AdminDivisions),model.Data.ConfirmPassword);
 			if (user == null)
 			{
 				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
