@@ -6,6 +6,7 @@ namespace DAL.Entities
 {
 	public class Permissions:BaseEntity
 	{
+		//TODO 之后可能加上角色控制
 		public string Regions { get; set; }
 		/// <summary>
 		/// 用户角色，当角色为System时拥有所有权限，当角色为Admin时拥有所有再说吧
@@ -26,12 +27,16 @@ namespace DAL.Entities
 	{
 		public static class User
 		{
-			public static PermissionDescription Application=new PermissionDescription("User.Application","密码、安全码等敏感信息");
-			public static PermissionDescription BaseInfo=new PermissionDescription("User.BaseInfo","基本信息");
+			public static PermissionDescription Application=new PermissionDescription("User.Application","用户的密码、安全码等敏感信息");
+			public static PermissionDescription BaseInfo=new PermissionDescription("User.BaseInfo","用户的基本信息");
 		}
 		public static class Apply
 		{
 			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的编辑权限");
+		}
+		public static class Grade
+		{
+			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject","科目标准的编辑权限");
 		}
 	}
 
@@ -69,10 +74,10 @@ namespace DAL.Entities
 					var keyItem = new PermissionDescription(key, "");
 					var grantPermission = GetRegion(grantList, keyItem);
 					var nowPermission = GetRegion(dicList, keyItem);
-					if (!CheckIfHavePermission(grantPermission.Update.Union(nowPermission.Update), value.Update)) return true;
-					if (!CheckIfHavePermission(grantPermission.Create.Union(nowPermission.Create), value.Create)) return true;
-					if (!CheckIfHavePermission(grantPermission.Query.Union(nowPermission.Query), value.Query)) return true;
-					if (!CheckIfHavePermission(grantPermission.Remove.Union(nowPermission.Remove), value.Remove)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Update?.Union(nowPermission?.Update), value?.Update)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Create?.Union(nowPermission?.Create), value?.Create)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Query?.Union(nowPermission?.Query), value?.Query)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Remove?.Union(nowPermission?.Remove), value?.Remove)) return true;
 					return false;
 				})) return false;
 			}
@@ -83,6 +88,8 @@ namespace DAL.Entities
 
 		private static bool CheckIfHavePermission(IEnumerable<string> granter, IEnumerable<string> expectTo)
 		{
+			if (granter == null) return false;
+			if (expectTo == null) return false;
 			return expectTo.All(p => granter.Any(p.StartsWith));
 		}
 		private static void Update(this Permissions permissions, string newSerializeRaw) =>
@@ -102,7 +109,7 @@ namespace DAL.Entities
 
 		public static IDictionary<string, PermissionRegion> ToRegionList(string raw)
 		{
-			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw) ?? new Dictionary<string, PermissionRegion>();
+			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw??"{}") ?? new Dictionary<string, PermissionRegion>();
 		}
 		/// <summary>
 		/// 获取指定权限列表
@@ -190,7 +197,7 @@ namespace DAL.Entities
 				case Operation.Update: list = dic.Update; break;
 				default: return false;
 			}
-
+			if (targetUserCompanyCode == null) return list.Count() > 0;
 			return list.Any(targetUserCompanyCode.StartsWith);
 		}
 
