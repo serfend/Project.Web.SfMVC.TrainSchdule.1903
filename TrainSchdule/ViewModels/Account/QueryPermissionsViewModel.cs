@@ -8,20 +8,6 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 
 	/// </summary>
-	public class QueryPermissionsViewModel
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public GoogleAuthViewModel Auth { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public string Id;
-	}
-	/// <summary>
-	/// 
-	/// </summary>
 	public class QueryPermissionsOutViewModel:ApiDataModel
 	{
 		/// <summary>
