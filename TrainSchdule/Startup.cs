@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using BLL.Interfaces;
+using BLL.Interfaces.ZX;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.ZX;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using Hangfire;
@@ -54,7 +56,7 @@ namespace TrainSchdule
 		private void AddApplicationServices(IServiceCollection services)
 		{
 			//每次调用均对应一个实例
-			services.AddTransient<IEmailSender, EmailSender>();
+			//services.AddTransient<IEmailSender, EmailSender>();
 
 			//每个http请求对应一个实例
 			services.AddScoped<IUsersService, UsersService>();
@@ -64,11 +66,16 @@ namespace TrainSchdule
 			services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 			services.AddScoped<ICompanyManagerServices, CompanyManagerServices>();
 			services.AddScoped<IVocationCheckServices, VocationCheckServices>();
+			services.AddScoped<IEmailSender, EmailSender>();
+			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
+
+
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();
 			services.AddSingleton<IFileProvider>(
 				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			
 
 		}
 		private void AddHangfireServices(IServiceCollection services)

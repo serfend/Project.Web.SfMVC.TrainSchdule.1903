@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191116113816_ZX_Grade")]
+    partial class ZX_Grade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -544,18 +546,34 @@ namespace DAL.Migrations
                     b.ToTable("VocationDescriptions");
                 });
 
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.SingleGradePair", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Key");
+
+                    b.Property<Guid?>("StandardId");
+
+                    b.Property<int>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StandardId");
+
+                    b.ToTable("SingleGradePair");
+                });
+
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BaseStandard");
+                    b.Property<Guid?>("BelongToId");
 
                     b.Property<string>("ExpressionWhenFullGrade");
 
-                    b.Property<string>("GradePairs");
-
-                    b.Property<Guid?>("SubjectId");
+                    b.Property<int>("FullGrade");
 
                     b.Property<int>("gender");
 
@@ -565,17 +583,15 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("BelongToId");
 
-                    b.ToTable("Standards");
+                    b.ToTable("Standard");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("CountDown");
 
                     b.Property<string>("Name");
 
@@ -860,11 +876,18 @@ namespace DAL.Migrations
                         .HasForeignKey("SettleId");
                 });
 
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.SingleGradePair", b =>
+                {
+                    b.HasOne("DAL.Entities.ZX.Phy.Standard")
+                        .WithMany("GradePairs")
+                        .HasForeignKey("StandardId");
+                });
+
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
-                    b.HasOne("DAL.Entities.ZX.Phy.Subject")
+                    b.HasOne("DAL.Entities.ZX.Phy.Subject", "BelongTo")
                         .WithMany("Standards")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("BelongToId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

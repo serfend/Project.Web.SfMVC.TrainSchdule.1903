@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191116170828_fixbug_phy_grade")]
+    partial class fixbug_phy_grade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -549,13 +551,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BaseStandard");
+                    b.Property<Guid?>("BelongToId");
 
                     b.Property<string>("ExpressionWhenFullGrade");
 
-                    b.Property<string>("GradePairs");
+                    b.Property<int>("FullGrade");
 
-                    b.Property<Guid?>("SubjectId");
+                    b.Property<string>("GradePairs");
 
                     b.Property<int>("gender");
 
@@ -565,17 +567,15 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("BelongToId");
 
-                    b.ToTable("Standards");
+                    b.ToTable("Standard");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("CountDown");
 
                     b.Property<string>("Name");
 
@@ -862,9 +862,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
-                    b.HasOne("DAL.Entities.ZX.Phy.Subject")
+                    b.HasOne("DAL.Entities.ZX.Phy.Subject", "BelongTo")
                         .WithMany("Standards")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("BelongToId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

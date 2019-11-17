@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191116172514_fixbug_phy_grade2")]
+    partial class fixbug_phy_grade2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -549,9 +551,9 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BaseStandard");
-
                     b.Property<string>("ExpressionWhenFullGrade");
+
+                    b.Property<int>("FullGrade");
 
                     b.Property<string>("GradePairs");
 
@@ -567,15 +569,13 @@ namespace DAL.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Standards");
+                    b.ToTable("Standard");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("CountDown");
 
                     b.Property<string>("Name");
 

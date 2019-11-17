@@ -153,7 +153,13 @@
 			
 		}
 
-
+		public static class Grade
+		{
+			public static class Subject
+			{
+				public static readonly Status NotExist = new Status(61100,"无此科目");
+			}
+		}
 
 	}
 
