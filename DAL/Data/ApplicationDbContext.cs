@@ -2,6 +2,7 @@
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
+using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using User = DAL.Entities.UserInfo.User;
@@ -34,6 +35,9 @@ namespace DAL.Data
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 
 		public DbSet<VocationDescription> VocationDescriptions { get; set; }
+
+		public DbSet<Subject> Subjects { get; set; }
+		public DbSet<Standard> Standards { get; set; }
 
 		#endregion
 
