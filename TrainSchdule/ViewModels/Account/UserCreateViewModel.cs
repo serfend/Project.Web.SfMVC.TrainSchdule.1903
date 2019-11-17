@@ -10,16 +10,12 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserCreateViewModel
+	public class UserCreateViewModel: GoogleAuthViewModel
 	{
 		/// <summary>
 		/// 
 		/// </summary>
 		public ScrollerVerifyViewModel Verify { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public GoogleAuthViewModel Auth { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
