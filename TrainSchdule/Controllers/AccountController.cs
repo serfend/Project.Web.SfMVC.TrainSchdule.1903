@@ -325,7 +325,9 @@ namespace TrainSchdule.Controllers
 			
 			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser =  _usersService.Get(model.AuthByUserID);
-			if(authByUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
+			if (model.Data?.Application?.UserName == null) return new JsonResult(ActionStatusMessage.User.NoId);
+			var regUser = _usersService.Get(model.Data.Application.UserName);
+			if(regUser != null)return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.AuthByUserID,_context.AdminDivisions),model.Data.ConfirmPassword);

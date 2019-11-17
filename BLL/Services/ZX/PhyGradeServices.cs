@@ -61,8 +61,11 @@ namespace BLL.Services.ZX
 			foreach(var sn in subjectN)
 			{
 				var r = _context.Subjects.Where(s => s.Name == sn && s.Standards.Any(d => d.minAge <= userAge && d.maxAge >= userAge && d.gender == userBase.Gender)).FirstOrDefault();
-				if (r != null) r.Standards = r.Standards;
-				return r;
+				if (r != null)
+				{
+					r.Standards = r.Standards;
+					return r;
+				}
 			}
 			return null;
 		}

@@ -23,7 +23,7 @@ namespace TrainSchdule.ViewModels.User
 		/// <summary>
 		/// 用户id
 		/// </summary>
-		public string Id { get; set; }
+		public string UserName { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
@@ -55,7 +55,7 @@ namespace TrainSchdule.ViewModels.User
 		{
 			return new UserApplicationDataModel()
 			{
-				Id=user.Id,
+				UserName=user.Id,
 				Create = model.Create,
 				Email = model.Email,
 				InvitedBy = model.InvitedBy

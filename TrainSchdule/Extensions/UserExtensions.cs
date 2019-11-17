@@ -27,6 +27,7 @@ namespace TrainSchdule.Extensions
 			var settle = model.Social.Settle;
 			return new User()
 			{
+				Id=model.Application.UserName,
 				CompanyInfo = new UserCompanyInfo()
 				{
 					Company = new Company()
