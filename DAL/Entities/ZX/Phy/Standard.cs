@@ -79,7 +79,7 @@ namespace DAL.Entities.ZX.Phy
 		}
 		public static string ToRawValue(this Standard standard,int expectGrade=0)
 		{
-			if (standard == null) return "无此科目";
+			if (standard == null) return "无此标准";
 			int value = 0;
 			if (expectGrade == 0) expectGrade = standard.BaseStandard;
 			bool anyMatch = false;

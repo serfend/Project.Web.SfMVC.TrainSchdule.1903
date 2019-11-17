@@ -109,7 +109,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			if (baseUser == null) return (ActionStatusMessage.User.NotExist);
 			foreach (var subject in model.Subjects)
 			{
-				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject);
+				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject,baseUser);
 				if (subjectItem == null)
 				{
 					subject.Grade = -1;

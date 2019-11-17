@@ -53,11 +53,18 @@ namespace BLL.Services.ZX
 			return null;
 		}
 
-		public Subject GetSubjectByName(string subjectName)
+		public Subject GetSubjectByName(string subjectName,UserBaseInfo userBase)
 		{
-			var r = _context.Subjects.Where(s => s.Name == subjectName).FirstOrDefault();
-			if (r != null) r.Standards = r.Standards;
-			return r;
+			if (userBase == null) return null;
+			var userAge = userBase.Time_BirthDay.Age();
+			var subjectN = subjectName.Split('|');
+			foreach(var sn in subjectN)
+			{
+				var r = _context.Subjects.Where(s => s.Name == sn && s.Standards.Any(d => d.minAge <= userAge && d.maxAge >= userAge && d.gender == userBase.Gender)).FirstOrDefault();
+				if (r != null) r.Standards = r.Standards;
+				return r;
+			}
+			return null;
 		}
 
 		public void AddSubject(Subject model)
@@ -75,7 +82,7 @@ namespace BLL.Services.ZX
 		public Subject FindSubject(string name)
 		{
 			var r= _context.Subjects.Where(s => s.Name == name).FirstOrDefault();
-			r.Standards=r.Standards;
+			
 			if (r == null)
 			{
 				var names = name.Split(' ');
@@ -86,8 +93,10 @@ namespace BLL.Services.ZX
 					results = results.Where(s => s.Name.Contains(n));
 					if ((results.Count() > 1)) prev = results; else break;
 				}
-				return prev?.FirstOrDefault();
+				r= prev?.FirstOrDefault();
 			}
+			if (r == null) return null;
+			r.Standards = r.Standards;
 			return r ;
 		}
 	}
