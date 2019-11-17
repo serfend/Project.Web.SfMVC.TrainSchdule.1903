@@ -12,11 +12,13 @@ namespace ExcelReport
 			get => CONFIG[suffix];
 			set
 			{
-				if (CONFIG.ContainsKey(suffix))
-					CONFIG[suffix] = value;
-				else CONFIG.Add(suffix, value);
+				lock (CONFIG)
+				{
+					if (CONFIG.ContainsKey(suffix))
+						CONFIG[suffix] = value;
+					else CONFIG.Add(suffix, value);
+				}
 			}
 		}
-
 	}
 }
