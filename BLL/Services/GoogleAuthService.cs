@@ -14,7 +14,7 @@ namespace BLL.Services
 		public string Issuer { get; set; }
 		private User currentUser => _user ?? (_user = CurrentUserService.CurrentUser);
 
-		public GoogleAuthService(ICurrentUserService currentUserService)
+		public GoogleAuthService(ICurrentUserService currentUserService=null)
 		{
 			CurrentUserService = currentUserService;
 			Issuer = "XXTX2U";

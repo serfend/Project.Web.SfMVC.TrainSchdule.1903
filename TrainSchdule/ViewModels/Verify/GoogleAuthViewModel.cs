@@ -21,6 +21,6 @@ namespace TrainSchdule.ViewModels.Verify
 	}
 	public static class GoogleAuthExtension
 	{
-		public static bool Verify(this GoogleAuthViewModel model, IGoogleAuthService authService) => authService.Verify(model.Code,model.AuthByUserID);
+		public static bool Verify(this GoogleAuthViewModel model, IGoogleAuthService authService) => authService.Verify(model.Code,model?.AuthByUserID);
 	}
 }
