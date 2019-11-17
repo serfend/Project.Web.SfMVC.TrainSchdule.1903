@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BLL.Helpers;
+using Newtonsoft.Json;
 
 namespace TrainSchdule.ViewModels.System
 {
@@ -18,6 +19,14 @@ namespace TrainSchdule.ViewModels.System
 		/// </summary>
 		[JsonProperty("message")]
 		public string Message { get; set; }
+		public ApiDataModel() { }
+
+		public ApiDataModel(int code, string message)
+		{
+			Code = code;
+			Message = message;
+		}
+		public ApiDataModel(Status status) : this(status.status,status.message) { }
 	}
 
 }
