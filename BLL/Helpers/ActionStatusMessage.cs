@@ -132,10 +132,12 @@
 
 			public static class Request
 			{
+				public static readonly Status Default = new Status(44000, "无效的休假申请");
 				public static readonly Status OutOfDate = new Status(44100, "申请的离队时间不可早于当前时间");
 				public static readonly Status NoEnoughVocation = new Status(44200, "剩余休假天数不足");
 				public static readonly Status TripTimesExceed = new Status(44300, "剩余可休路途次数不足");
-
+				public static readonly Status VocationLengthTooShort = new Status(44400, "休假长度不可少于5天");
+				
 			}
 			public static readonly Status GuidFail = new Status(45000, "申请的ID无效");
 
