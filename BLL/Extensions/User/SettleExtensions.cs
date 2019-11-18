@@ -41,9 +41,9 @@ namespace BLL.Extensions
 			if (DateTime.Today.Year - targetUser?.BaseInfo.Time_Work.Year + 1 >= 20) return 30;
             description="未婚，正常驻地假30天。";
 			if (settle?.Lover == null) return 30;
-			var dis_lover = IsAllopatry(settle.Self.Address, settle.Lover.Address);//与配偶不在一地
-			var dis_parent = IsAllopatry(settle.Self.Address, settle.Parent.Address);//与自己的家长不在一地
-			var dis_l_p = IsAllopatry(settle.Lover.Address, settle.Parent.Address)||IsAllopatry(settle.LoversParent.Address,settle.Lover.Address);//配偶与任意一方家长不在一地
+			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
+			var dis_parent = IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
+			var dis_l_p = IsAllopatry(settle.Lover?.Address, settle.Parent?.Address)||IsAllopatry(settle.LoversParent?.Address,settle.Lover?.Address);//配偶与任意一方家长不在一地
 			description = "已婚且与妻子同地，探父母假20天。";
 			if (!dis_lover)return 20;
 			
