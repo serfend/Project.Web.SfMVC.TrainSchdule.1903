@@ -12,6 +12,6 @@ namespace TrainSchdule.ViewModels.Account
 	}
 	public class UserApplicationViewModel : IdSubmitViewModel
 	{
-		public ApplicationUser Data { get; set; }
+		public UserApplicationInfo Data { get; set; }
 	}
 }

@@ -92,12 +92,10 @@ namespace TrainSchdule.Controllers
 			if(cid.Length!=18)return new JsonResult(ActionStatusMessage.User.NotCorrectId);
 			var user = _context.AppUsers.FirstOrDefault(u => u.BaseInfo.Cid == cid);
 			if(user==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			return new JsonResult(new UserIdByCidViewModel()
+			return new JsonResult(new UserApplicationViewModel()
 			{
-				Data = new UserIdByCidDataModel()
-				{
-					Id = user.Id
-				}
+				Id=user.Id,
+				Data=user.Application
 			});
 		}
 		/// <summary>
@@ -301,10 +299,10 @@ namespace TrainSchdule.Controllers
 		{
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			var targetUser = _usersService.Get(model.Data.Id);
+			var targetUser = _usersService.Get(model.Id);
 			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			_context.Users.Update(model.Data);
+			_context.AppUserApplicationInfos.Update(model.Data);
 			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
