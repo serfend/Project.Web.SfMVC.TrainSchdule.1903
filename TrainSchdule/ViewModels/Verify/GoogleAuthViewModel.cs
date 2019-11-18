@@ -8,6 +8,11 @@ namespace TrainSchdule.ViewModels.Verify
 	/// </summary>
 	public class GoogleAuthViewModel
 	{
+		[Required]
+		public GoogleAuthDataModel Auth { get; set; }
+	}
+	public class GoogleAuthDataModel
+	{
 		/// <summary>
 		/// 授权权限来源
 		/// </summary>
@@ -21,6 +26,6 @@ namespace TrainSchdule.ViewModels.Verify
 	}
 	public static class GoogleAuthExtension
 	{
-		public static bool Verify(this GoogleAuthViewModel model, IGoogleAuthService authService) => authService.Verify(model.Code,model?.AuthByUserID);
+		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService) => authService.Verify(model.Code, model?.AuthByUserID);
 	}
 }

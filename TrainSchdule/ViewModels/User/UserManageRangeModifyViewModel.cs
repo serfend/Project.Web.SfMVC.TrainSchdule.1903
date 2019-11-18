@@ -6,13 +6,8 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserManageRangeModifyViewModel
+	public class UserManageRangeModifyViewModel: GoogleAuthViewModel
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		[Required]
-		public GoogleAuthViewModel Auth { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>

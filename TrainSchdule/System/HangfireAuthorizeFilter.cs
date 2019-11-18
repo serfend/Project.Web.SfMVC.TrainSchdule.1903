@@ -23,7 +23,7 @@ namespace TrainSchdule.System
 		{
 			var httpcontext = context.GetHttpContext();
 			var auth = httpcontext.Request.Cookies?["Auth"];
-			if (auth != null) return new GoogleAuthViewModel()
+			if (auth != null) return new GoogleAuthDataModel()
 			{
 				AuthByUserID="root",
 				Code=Convert.ToInt32(auth)

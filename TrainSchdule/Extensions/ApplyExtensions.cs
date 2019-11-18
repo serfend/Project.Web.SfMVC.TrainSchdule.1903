@@ -84,7 +84,7 @@ namespace TrainSchdule.Extensions
 		/// <returns></returns>
 		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
 		{
-			var user = usersService.Get(model.AuthByUserID);
+			var user = usersService.Get(model.Auth.AuthByUserID);
 			var b = new ApplyAuditVdto()
 			{
 				AuditUser = user,

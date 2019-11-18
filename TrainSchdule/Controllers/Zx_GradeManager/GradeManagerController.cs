@@ -40,8 +40,8 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		[HttpPost]
 		public IActionResult Subject([FromBody]PhySubjectDataModel model)
 		{
-			if (!model.Verify(googleAuthService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var actionUser = usersService.Get(model.AuthByUserID);
+			if (!model.Auth.Verify(googleAuthService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var actionUser = usersService.Get(model.Auth.AuthByUserID);
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Grade.Subject, Operation.Update, new Company())) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			phyGradeServices.AddSubject(model.Subject);

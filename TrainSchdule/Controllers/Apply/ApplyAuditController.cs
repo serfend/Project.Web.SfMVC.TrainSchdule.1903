@@ -90,9 +90,9 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var currentUserName = _currentUserService.HttpContextAccessor.HttpContext.User.Identity.Name;
-			if( !model.Verify(_authService))currentUserName=model.AuthByUserID ;
+			if( !model.Auth.Verify(_authService))currentUserName=model.Auth.AuthByUserID;
 			if (currentUserName == null) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			model.AuthByUserID = currentUserName;
+			model.Auth.AuthByUserID = currentUserName;
 			try
 			{
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());

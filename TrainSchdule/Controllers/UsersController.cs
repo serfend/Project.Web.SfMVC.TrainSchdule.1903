@@ -117,8 +117,8 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			if (!model.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var authByUser = _usersService.Get(model.AuthByUserID);
+			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (id!=targetUser.Id&&!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo);
 			_usersService.Edit(targetUser);

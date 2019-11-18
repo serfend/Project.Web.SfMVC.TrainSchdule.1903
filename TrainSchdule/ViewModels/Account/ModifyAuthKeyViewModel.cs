@@ -5,12 +5,8 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 
 	/// </summary>
-	public class ModifyAuthKeyViewModel
+	public class ModifyAuthKeyViewModel:GoogleAuthViewModel
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public GoogleAuthViewModel Auth { get; set; }
 		/// <summary>
 		/// 
 		/// </summary>
