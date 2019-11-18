@@ -141,7 +141,12 @@ namespace BLL.Services
 			};
 			user.CompanyInfo.Company = _context.Companies.Find(user.CompanyInfo.Company.Code);
 			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
-			user.SocialInfo.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
+			var social = user.SocialInfo;
+			social.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
+			if (social.Settle?.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
+			if (social.Settle?.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
+			if(social.Settle?.LoversParent?.Address!=null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
+			if (social.Settle?.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
 			return user;
 		}
 		private ApplicationUser CreateUser(User user,string password)

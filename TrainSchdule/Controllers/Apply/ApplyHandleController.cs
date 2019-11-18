@@ -75,7 +75,9 @@ namespace TrainSchdule.Controllers.Apply
 
 		public IActionResult FromCompany(string code,int page,int pageSize)
 		{
-			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			var currentUserCompany = _currentUserService.CurrentUser?.CompanyInfo?.Company;
+			if (currentUserCompany == null) return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
+			code = code ?? currentUserCompany.Code;
 			if(code==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetCompany = _companiesService.Get(code);
 			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
