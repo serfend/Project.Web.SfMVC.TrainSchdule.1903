@@ -111,7 +111,10 @@
 
 				public static class StatusInvalid
 				{
-					public static readonly Status AllReadyBeenPublish = new Status(43510, "当前申请处于发布状态");
+					public static readonly Status NotOnPublishable = new Status(43510, "当前申请不处于可发布的状态");
+
+					public static readonly Status NotOnAuditingStatus = new Status(43520, "当前申请不处于审核中状态");
+					public static readonly Status NotOnNotSaveStatus = new Status(43530, "当前申请不处于未保存状态");
 				}
 				
 				public static class Audit

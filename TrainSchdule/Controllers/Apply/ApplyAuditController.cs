@@ -90,6 +90,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
+			callBack.Invoke(apply);
 		}
 
 		/// <summary>

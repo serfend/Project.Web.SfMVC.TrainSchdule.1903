@@ -176,7 +176,7 @@ namespace BLL.Services.ApplyServices
 							}
 							_context.Applies.Update(model);
 						}
-						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.AllReadyBeenPublish);
+						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnPublishable);
 
 						break;//发布
 					}
