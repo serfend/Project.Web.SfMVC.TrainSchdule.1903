@@ -18,6 +18,7 @@ using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.User;
+using BLL.Extensions;
 
 namespace TrainSchdule.Controllers
 {
@@ -333,10 +334,6 @@ namespace TrainSchdule.Controllers
 			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID, _context.AdminDivisions), model.Data.ConfirmPassword);
-			if (user == null)
-			{
-				return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
-			}
 
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 
@@ -345,14 +342,9 @@ namespace TrainSchdule.Controllers
 			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
 			var currentUser = _usersService.Get(user.UserName);
 			if (currentUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
-			if (currentUser.CompanyInfo.Duties == null)
-			{
-				await _context.Duties.AddAsync(new Duties()
-				{
-					Name = model.Data.Company.Duties.Name
-				});
-				ModelState.AddModelError("duties", "职务不存在");
-			}
+			if (currentUser.CompanyInfo.Duties == null)ModelState.AddModelError("duties", "职务不存在");
+			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
+			if (anyCodeInvalid!=null) ModelState.AddModelError("settle",$"无效的行政区划:{anyCodeInvalid}");
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			//await _signInManager.SignInAsync(user, isPersistent: false);
 			return new JsonResult(ActionStatusMessage.Success);
