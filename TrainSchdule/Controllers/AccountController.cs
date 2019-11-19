@@ -342,11 +342,19 @@ namespace TrainSchdule.Controllers
 			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
 			var currentUser = _usersService.Get(user.UserName);
 			if (currentUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
-			if (currentUser.CompanyInfo.Duties == null)ModelState.AddModelError("duties", "职务不存在");
+			if (currentUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
 			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
-			if (anyCodeInvalid!=null) ModelState.AddModelError("settle",$"无效的行政区划:{anyCodeInvalid}");
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			//await _signInManager.SignInAsync(user, isPersistent: false);
+			if (anyCodeInvalid != null) ModelState.AddModelError("settle", $"无效的行政区划:{anyCodeInvalid}");
+
+			if (!ModelState.IsValid)
+			{
+				await Remove(new UserRemoveViewModel()
+				{
+					Auth = GoogleAuthDataModel.Root,
+					Id = model.Data.Application.UserName
+				});
+				return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			}   //await _signInManager.SignInAsync(user, isPersistent: false);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

@@ -12,8 +12,12 @@ namespace BLL.Extensions
 	public static class SettleExtensions
 	{
 		public static string CheckValid(this AdminDivision division, string alertName) => division == null ? $"{alertName}无效" : null;
-		public static string CheckValid(this Moment moment,string alertName) => moment.Address.CheckValid($"{alertName}地址");
-		public static string AnyCodeInvalid(this Settle settle)=> $"{settle.Self.CheckValid("本人")}{settle.Lover.CheckValid("配偶")}{settle.Parent.CheckValid("父母")}{settle.LoversParent.CheckValid("岳父岳母")}";
+		public static string CheckValid(this Moment moment,string alertName) => moment?.Address.CheckValid($"{alertName}地址");
+		public static string AnyCodeInvalid(this Settle settle)
+		{
+			var result= settle == null ? "未设置家庭信息" : $"{settle.Self?.CheckValid("本人")}{settle.Lover?.CheckValid("配偶")}{settle.Parent?.CheckValid("父母")}{settle.LoversParent.CheckValid("岳父岳母")}";
+			return result.Length == 0 ? null : result;
+		}
 		
 		/// <summary>
 		/// 获取全年总假期

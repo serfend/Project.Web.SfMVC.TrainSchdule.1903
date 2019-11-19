@@ -15,8 +15,6 @@ namespace GoogleAuth
 	public class Auth :IAuth
 	{
 		private readonly GoogleAuthMain _auth=new GoogleAuthMain();
-
-
 		public string UserName
 		{
 			get => _auth.UserName;

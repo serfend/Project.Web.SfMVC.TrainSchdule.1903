@@ -17,7 +17,7 @@ namespace BLL.Services
 		#region Fileds
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IFileProvider _fileProvider;
-
+		public static readonly int StaticVerify = 201700816;
 		#endregion
 
 		public VerifyService( IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
@@ -118,7 +118,7 @@ namespace BLL.Services
 		public int Y { get; private set; }
 		public string Verify(int code)
 		{
-			bool success= 201700816==code||Math.Abs(code - _code) < 5;
+			bool success= VerifyService.StaticVerify == code||Math.Abs(code - _code) < 5;
 			return success ? "" : $"验证码错误 your x={code} except x={_code}";
 		}
 
