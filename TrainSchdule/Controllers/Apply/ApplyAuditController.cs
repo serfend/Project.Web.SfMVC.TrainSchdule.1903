@@ -24,9 +24,15 @@ namespace TrainSchdule.Controllers.Apply
 
 		public IActionResult Save(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
-			if (modelCheck.Code == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Save.AllReadySave);
-			return new JsonResult(modelCheck);
+			try
+			{
+				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
+			}
+			catch (ActionStatusMessageException e)
+			{
+				return new JsonResult(e.Status);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
 		/// 发布申请
@@ -40,9 +46,15 @@ namespace TrainSchdule.Controllers.Apply
 
 		public IActionResult Publish(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
-			if (modelCheck.Code == ActionStatusMessage.Fail.status) return new JsonResult(ActionStatusMessage.Apply.Operation.Publish.AllReadyPublish);
-			return new JsonResult(modelCheck);
+			try
+			{
+				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
+			}
+			catch (ActionStatusMessageException e)
+			{
+				return new JsonResult(e.Status);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
 		/// 撤回申请
@@ -56,25 +68,28 @@ namespace TrainSchdule.Controllers.Apply
 
 		public IActionResult Withdrew(string id)
 		{
-			var modelCheck = CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
-			if(modelCheck.Code==ActionStatusMessage.Fail.status)return new JsonResult(ActionStatusMessage.Apply.Operation.Withdrew.AllReadyWithdrew);
-			return new JsonResult(modelCheck);
+			try
+			{
+				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
+			}
+			catch (ActionStatusMessageException e)
+			{
+				return new JsonResult(e.Status);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		
-		private ApplyActionResponseViewModel CheckApplyModelAndDoTask(string id,Func<DAL.Entities.ApplyInfo.Apply,bool>callBack)
+		private void CheckApplyModelAndDoTask(string id,Action<DAL.Entities.ApplyInfo.Apply>callBack)
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.Get(gid);
-			if (apply == null) return new ApplyActionResponseViewModel(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
 			var userid = _currentUserService.CurrentUser?.Id;
-			if (userid == null) return new ApplyActionResponseViewModel(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			if (userid == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (apply.BaseInfo.From.Id != userid)
 			{
-				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) return new ApplyActionResponseViewModel(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-
-			if (callBack.Invoke(apply))return new ApplyActionResponseViewModel(ActionStatusMessage.Success){Data = new ApplyActionResponseDataModel(){Status = apply.Status}};
-			return new ApplyActionResponseViewModel(ActionStatusMessage.Fail);
 		}
 
 		/// <summary>

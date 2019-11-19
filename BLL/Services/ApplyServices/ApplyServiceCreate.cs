@@ -90,7 +90,7 @@ namespace BLL.Services.ApplyServices
 				Create = DateTime.Now,
 				Hidden = false,
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
-				//不要编辑当前状态，默认就是未保存
+				Status=AuditStatus.NotSave
 			};
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;
@@ -126,13 +126,13 @@ namespace BLL.Services.ApplyServices
 		{
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
-			for(var i=0;i<3&& nowId.Length>0; i++)//向上追溯三级
+			for(var i=0;i<2&& nowId.Length>0; i++)//本级 上级
 			{
 				var t = GenerateAuditStream(nowId);
 				if (t.Company != null) responses.Add(t);
 				nowId = nowId.Substring(0, nowId.Length - 1);
 			}
-			responses.Add(GenerateAuditStream("ROOT"));
+			responses.Add(GenerateAuditStream("ROOT"));//人力
 			return responses;
 		}
 		public ApplyResponse GenerateAuditStream(string companyId)
@@ -143,7 +143,7 @@ namespace BLL.Services.ApplyServices
 				Company = _context.Companies.Find(companyId)
 			};
 		}
-		public bool ModifyAuditStatus(Apply model, AuditStatus status)
+		public void ModifyAuditStatus(Apply model, AuditStatus status)
 		{
 			switch (status)
 			{
@@ -153,7 +153,7 @@ namespace BLL.Services.ApplyServices
 						{
 							_context.Applies.Update(model);
 						}
-						else return false;
+						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnAuditingStatus);
 						break;//撤回
 					}
 				case AuditStatus.NotPublish:
@@ -162,7 +162,7 @@ namespace BLL.Services.ApplyServices
 						{
 							_context.Applies.Update(model);
 						}
-						else return false;
+						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnNotSaveStatus);
 						break;//保存
 					}
 				case AuditStatus.Auditing:
@@ -176,16 +176,15 @@ namespace BLL.Services.ApplyServices
 							}
 							_context.Applies.Update(model);
 						}
-						else return false;
+						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.AllReadyBeenPublish);
 
 						break;//发布
 					}
-				default: return false;//不支持其他
+				default: throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Invalid); ;//不支持其他
 			}
 
 			model.Status = status;
 			_context.SaveChanges();
-			return true;
 		}
 
 		public IEnumerable<Status> Audit(ApplyAuditVdto model)

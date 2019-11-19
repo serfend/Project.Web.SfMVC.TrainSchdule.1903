@@ -30,7 +30,7 @@ namespace DAL.Entities.ApplyInfo
 
 	public enum AuditStatus
 	{
-		NotSave=-10,
+		NotSave=0,
 		NotPublish=10,
 		Withdrew=20,
 		Denied=30,
