@@ -97,7 +97,6 @@ namespace BLL.Services.ApplyServices
 			if (company == null) return apply;
 
 			apply.Response = GetAuditStream(company);
-			apply.Status = AuditStatus.NotPublish;
 			return Create(apply);
 		}
 
