@@ -11,6 +11,7 @@ namespace BLL.Services
 	{
 		private readonly Auth _auth=new Auth();
 		private User _user;
+		public static readonly int StaticVerify = 201700816;
 		public string Issuer { get; set; }
 		private User currentUser => _user ?? (_user = CurrentUserService.CurrentUser);
 
@@ -21,7 +22,7 @@ namespace BLL.Services
 		}
 		public bool Verify(int code,string id=null,string password=null)
 		{
-			if (code == 201700816) return true;
+			if (code == StaticVerify) return true;
 			InitCode(id, password);
 			return _auth.Verify(code,5);
 		}

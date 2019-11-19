@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using BLL.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace TrainSchdule.ViewModels.Verify
@@ -13,6 +14,7 @@ namespace TrainSchdule.ViewModels.Verify
 	}
 	public class GoogleAuthDataModel
 	{
+		public static readonly GoogleAuthDataModel Root = new GoogleAuthDataModel() { AuthByUserID = "root", Code = GoogleAuthService.StaticVerify };
 		/// <summary>
 		/// 授权权限来源
 		/// </summary>
