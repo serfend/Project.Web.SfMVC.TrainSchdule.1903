@@ -34,45 +34,9 @@ namespace BLL.Services.ApplyServices
 
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
 		{
-			var sheetRenderers=new SheetRenderer[]
+			var sheetRenderers = new SheetRenderer[]
 			{
-				new SheetRenderer("Sheet1",
-					new ParameterRenderer("RequestInfo_VocationTotalLength",
-					model.RequestInfo.VocationTotalLength()),
-				new ParameterRenderer("RequestInfo_VocationDescription",
-					model.RequestInfo.VocationDescription()),
-				new ParameterRenderer("RequestInfo_OnTripLength", model.RequestInfo?.OnTripLength),
-				new ParameterRenderer("RequestInfo_StampLeave", model.RequestInfo?.StampLeave),
-				new ParameterRenderer("RequestInfo_StampReturn", model.RequestInfo?.StampReturn),
-				new ParameterRenderer("RequestInfo_VocationLength", model.RequestInfo?.VocationLength),
-				new ParameterRenderer("RequestInfo_VocationType", model.RequestInfo?.VocationType),
-				new ParameterRenderer("RequestInfo_ByTransportation",
-					model.RequestInfo?.ByTransportation),
-				new ParameterRenderer("RequestInfo_CreateTime", model.RequestInfo?.CreateTime),
-				new ParameterRenderer("RequestInfo_Reason", model.RequestInfo?.Reason),
-				new ParameterRenderer("RequestInfo_Id", model.RequestInfo?.Id),
-				new ParameterRenderer("RequestInfo_VocationPlace", model.RequestInfo?.VocationPlace.Name),
-				new ParameterRenderer("Base_Company", model.Base?.Company),
-				new ParameterRenderer("Base_Duties", model.Base?.Duties),
-				new ParameterRenderer("Base_RealName", model.Base?.RealName),
-				new ParameterRenderer("Base_Id", model.Base?.Id),
-				new ParameterRenderer("Company_Name", model.Company?.Name),
-				new ParameterRenderer("Company_Code", model.Company?.Code),
-				new ParameterRenderer("Status", model.Status),
-				new ParameterRenderer("Create", model.Create),
-				new ParameterRenderer("Duties_Name", model.Duties?.Name),
-				new ParameterRenderer("Social_Phone", model.Social?.Phone),
-				new ParameterRenderer("Social_Address.Name", model.Social?.Address?.Name),
-				new ParameterRenderer("Social_Address.Code", model.Social?.Address?.Code),
-				new ParameterRenderer("Social_Address.ShortName", model.Social?.Address?.ShortName),
-				new ParameterRenderer("Social_AddressDetail", model.Social?.AddressDetail),
-				new ParameterRenderer("Social_Settle", model.Social?.Settle),
-				new ParameterRenderer("Social_Id", model.Social?.Id),
-				new ParameterRenderer("Id", model.Id),
-				new ParameterRenderer("Response_SelfRankAudit", model.Response?.SelfRankAuditStatus().AuditResult()),
-				new ParameterRenderer("Response_LastRankAudit", model.Response?.LastRankAuditStatus().AuditResult()),
-				new ParameterRenderer("AuditLeader", model.AuditLeader)
-					),
+				new SheetRenderer("Sheet1",SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model).ToArray())
 			};
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
@@ -123,8 +87,8 @@ namespace BLL.Services.ApplyServices
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
 				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList),
-				new ParameterRenderer("Audit_SelfCompanyName", "此处填写本级等级"),
-				new ParameterRenderer("Audit_HeadCompanyName","此处填写上级等级")
+				new ParameterRenderer("Audit_SelfCompanyName", "科/室"),
+				new ParameterRenderer("Audit_HeadCompanyName","部")
 			));
 		}
 	}

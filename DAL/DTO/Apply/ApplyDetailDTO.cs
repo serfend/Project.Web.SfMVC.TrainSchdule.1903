@@ -18,15 +18,15 @@ namespace DAL.DTO.Apply
 		/// </summary>
 		public UserSummaryDto Base { get; set; }
 		/// <summary>
-		/// 用户填写的单位信息
+		/// 用户填写申请时的单位信息
 		/// </summary>
 		public Entities.Company Company { get; set; }
 		/// <summary>
-		/// 用户填写的职务信息
+		/// 用户填写申请时的职务信息
 		/// </summary>
 		public Duties Duties { get; set; }
 		/// <summary>
-		/// 用户填写的社会情况信息
+		/// 用户填写申请时的社会情况信息
 		/// </summary>
 		public UserSocialInfo Social { get; set; }
 		/// <summary>
