@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
@@ -56,7 +57,10 @@ namespace TrainSchdule.Extensions
 				ByTransportation = model.ByTransportation
 			};
 			if (b.StampLeave != null)
+			{
 				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength);
+				b.VocationDescriptions = vocationCheckServices.VocationDesc.ToDescription(); 
+			}
 			return b;
 		}
 

@@ -149,7 +149,7 @@ namespace TrainSchdule
 			AddApplicationServices(services);
 
 
-			services.AddMvc();
+			services.AddMvc().AddJsonOptions(opt=>opt.SerializerSettings.DateFormatString="yyyy-MM-dd HH:mm:ss");
 
 		}
 

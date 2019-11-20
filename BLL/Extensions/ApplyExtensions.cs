@@ -103,10 +103,7 @@ namespace BLL.Extensions
 				Base = model.BaseInfo.ToDto(),
 				UserBase = model.BaseInfo.From.ToDto(),
 				Id = model.Id,
-				StampLeave = model.RequestInfo?.StampLeave,
-				StampReturn = model.RequestInfo?.StampReturn,
-				VocationPlace = model.RequestInfo?.VocationPlace?.Name,
-				HomePlace=model.BaseInfo?.Social?.Address?.Name,
+				Request=model.RequestInfo,
 				AuditAvailable = model.Response?.FirstOrDefault(r=>r.Status==Auditing.Received)?.Company.Code== auditFrom
 			};
 			return b;

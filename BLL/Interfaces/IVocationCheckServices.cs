@@ -30,5 +30,6 @@ namespace BLL.Interfaces
 		/// <returns></returns>
 		IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start,int length);
 		DateTime EndDate { get; }
+		IEnumerable<VocationDescription> VocationDesc { get; set; }
 	}
 }

@@ -53,17 +53,7 @@ namespace BLL.Services
 		}
 		public DateTime CrossVocation(DateTime start, int length)
 		{
-			var list=new List<VocationDescription>();
-			var end = start.AddDays(length);
-			int vocationDay = 0;
-			foreach (var description in GetVocationDates(start,length))
-			{
-				description.Length = GetCrossDay(start, end, description.Start, description.Start.AddDays(description.Length));
-				list.Add(description);
-				vocationDay += description.Length;
-			}
-
-			EndDate = end.AddDays(vocationDay);
+			VocationDesc = GetVocationDescriptions(start, length);
 			return EndDate;
 		}
 
@@ -79,10 +69,11 @@ namespace BLL.Services
 				vocationDay += description.Length;
 			}
 			EndDate = end.AddDays(vocationDay);
-
+			VocationDesc = list;
 			return list;
 		}
 
 		public DateTime EndDate { get; private set; }
+		public IEnumerable<VocationDescription> VocationDesc { get; set; }
 	}
 }
