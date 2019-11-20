@@ -188,9 +188,14 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			return new JsonResult(new UserBaseInfoViewModel()
+
+			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
-				Data = targetUser.BaseInfo
+				Data =new UserBaseInfoWithIdDataModel()
+				{
+					Base= targetUser.BaseInfo,
+					Id=targetUser.Id
+				}
 			});
 		}
 

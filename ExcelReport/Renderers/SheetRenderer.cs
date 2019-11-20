@@ -12,7 +12,12 @@ namespace ExcelReport.Renderers
 	public class SheetRenderer : Named
 	{
 		public static IList<IElementRenderer>ExtractModelToRender<T>(object model)=> new List<IElementRenderer>(ExtractModel(model).Select(k=>new ParameterRenderer(k.Key,k.Value)));
-
+		public static IList<KeyValuePair<string,Func<T,string>>> ExtractIEmbeddedModel<T>(object model) where T:class
+		{
+			var info = model.GetType();
+			info.GetProperties()[0].GetValue(model);
+			return new List<KeyValuePair<string, Func<T, string>>>();
+		}
 
 		/// <summary>
 		/// 解析单个模型

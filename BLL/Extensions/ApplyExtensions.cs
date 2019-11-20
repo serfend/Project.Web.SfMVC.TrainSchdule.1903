@@ -135,7 +135,7 @@ namespace BLL.Extensions
 				{(int)AuditStatus.NotPublish, "未发布"},
 				{(int)AuditStatus.Auditing, "审核中"},
 				{(int)AuditStatus.Withdrew, "已撤回"},
-				{(int)AuditStatus.AcceptAndWaitAdmin, "通过,待管理员审核"},
+				{(int)AuditStatus.AcceptAndWaitAdmin, "人力审核"},
 				{(int)AuditStatus.Accept, "已通过"},
 				{(int)AuditStatus.Denied, "已驳回"},
 				{(int)AuditStatus.NotSave,"未保存" }

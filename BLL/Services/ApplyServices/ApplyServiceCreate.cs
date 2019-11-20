@@ -209,11 +209,7 @@ namespace BLL.Services.ApplyServices
 			var nowAudit = new List<ApplyResponse>();
 			foreach (var r in model.Apply.Response)
 			{
-				if (myManages.Any(c => c.Code == r.Company.Code))
-				{
-					nowAudit.Add(r);
-					break;
-				}
+				if (myManages.Any(c => c.Code == r.Company.Code))nowAudit.Add(r);
 			}
 			if (nowAudit.Count == 0) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
 			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
