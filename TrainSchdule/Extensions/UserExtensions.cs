@@ -42,11 +42,8 @@ namespace TrainSchdule.Extensions
 				Application = model.Application.ToModel(),
 				BaseInfo =model.Base,
 				SocialInfo = model.Social.ToModel(),
-				TrainInfo = new UserTrainInfo(),
-				DiyInfo=new UserDiyInfo()
-				{
-				
-				}
+				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
+				DiyInfo=model.Diy.ToModel(new UserDiyInfo())
 			};
 		}
 	}

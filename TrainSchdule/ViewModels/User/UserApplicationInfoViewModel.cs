@@ -31,10 +31,6 @@ namespace TrainSchdule.ViewModels.User
 		/// <summary>
 		/// 
 		/// </summary>
-		public string About { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
 		public DateTime?Create { get; set; }
 		/// <summary>
 		/// 

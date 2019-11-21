@@ -18,7 +18,7 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 	}	
  public class UserDiyInfoDataModel
 	{
-		public string Abount { get; set; }
+		public string About { get; set; }
 		public string Avatar { get; set; }
 	}
 
@@ -40,12 +40,17 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 		/// 未知默认头像
 		/// </summary>
 		public static readonly string avatar_unknown =$"{avatar}/unknown.png";
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="user">需要传入用户本身</param>
+		/// <returns></returns>
 		public static UserDiyInfoDataModel ToViewModel (this UserDiyInfo model,DAL.Entities.UserInfo.User user)
 		{
 			return new UserDiyInfoDataModel()
 			{
-				Abount = model.About,
+				About = model.About,
 				Avatar = model.Avatar!=null?model.Avatar:
 				(user.BaseInfo.Gender == GenderEnum.Male ? avatar_male: 
 				(user.BaseInfo.Gender == GenderEnum.Female ? avatar_female : 
@@ -55,7 +60,7 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model,UserDiyInfo raw)
 		{
 			if (raw == null) raw = new UserDiyInfo();
-			raw.About = model?.Abount;
+			raw.About = model?.About;
 			raw.Avatar = model?.Avatar;
 			return raw;
 		}

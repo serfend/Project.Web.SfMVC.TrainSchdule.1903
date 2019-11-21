@@ -32,6 +32,7 @@ namespace TrainSchdule.ViewModels.Account
 		public UserSocialDataModel Social{ get; set; }
 		public UserCompanyInfo Company { get; set; }
 		public UserApplicationDataModel Application { get; set; }
+		public UserDiyInfoDataModel Diy { get; set; }
 
 		/// <summary>
 		/// 输入密码

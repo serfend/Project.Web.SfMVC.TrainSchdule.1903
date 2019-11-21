@@ -1,5 +1,8 @@
 ﻿namespace DAL.DTO.User
 {
+	/// <summary>
+	/// 仅提供基本信息
+	/// </summary>
 	public class UserSummaryDto
 	{
 		public string Id { get; set; }

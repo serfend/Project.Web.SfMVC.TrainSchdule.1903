@@ -64,7 +64,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null)
 			{
-				result= new JsonResult(ActionStatusMessage.User.NotExist);
+				result = new JsonResult(ActionStatusMessage.User.NotExist);
 				return null;
 			}
 			result = null;
@@ -92,7 +92,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
 		public IActionResult DiyInfo(string id)
@@ -110,16 +110,16 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpPost]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
-		public IActionResult DiyInfo(string id,[FromBody] UserDiyInfoModefyModel model)
+		public IActionResult DiyInfo(string id, [FromBody] UserDiyInfoModefyModel model)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (id!=targetUser.Id&&!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (id != targetUser.Id && !authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo);
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -129,7 +129,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
 		public IActionResult Social(string id)
@@ -141,13 +141,13 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.SocialInfo.ToDataModel()
 			});
 		}
-		
+
 		/// <summary>
 		/// 职务信息
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
 		public IActionResult Duties(string id)
@@ -164,7 +164,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
 		public IActionResult Company(string id)
@@ -177,24 +177,50 @@ namespace TrainSchdule.Controllers
 			});
 		}
 		/// <summary>
+		/// 获取用户简要信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[AllowAnonymous]
+		[HttpGet]
+		[ProducesResponseType(typeof(UserSummaryViewModel), 0)]
+
+		public IActionResult Summary(string id)
+		{
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (result != null) return new JsonResult(result);
+			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
+			return new JsonResult(new UserSummaryViewModel()
+			{
+				Data = new UserSummaryDataModel()
+				{
+					About=diy.About,
+					Avatar=diy.Avatar,
+					Gender=targetUser.BaseInfo.Gender,
+					RealName=targetUser.BaseInfo.RealName,
+					Id=targetUser.Id
+				}
+			});
+		}
+		/// <summary>
 		/// 基础信息
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
 		public IActionResult Base(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-
+			if (id != null && id != _currentUserService.CurrentUser?.Id) targetUser.BaseInfo.Cid = "***";
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
-				Data =new UserBaseInfoWithIdDataModel()
+				Data = new UserBaseInfoWithIdDataModel()
 				{
-					Base= targetUser.BaseInfo,
-					Id=targetUser.Id
+					Base = targetUser.BaseInfo,
+					Id = targetUser.Id
 				}
 			});
 		}
@@ -205,7 +231,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-	[AllowAnonymous]	
+		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
 		public IActionResult AuditStream(string id)
@@ -227,8 +253,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
-	[AllowAnonymous]	
-  [HttpGet]
+		[AllowAnonymous]
+		[HttpGet]
 		public IActionResult Vocation(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
