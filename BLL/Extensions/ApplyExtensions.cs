@@ -77,7 +77,7 @@ namespace BLL.Extensions
 		{
 			var b=new ApplyDetailDto()
 			{
-				Base = model?.BaseInfo.From.ToDto(),
+				Base = model?.BaseInfo.From.ToSummaryDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
@@ -101,7 +101,7 @@ namespace BLL.Extensions
 				Status = model.Status,
 				NowAuditCompany = model.Response.FirstOrDefault(r=>r.Status==Auditing.Received||r.Status==Auditing.Denied)?.Company.Name,
 				Base = model.BaseInfo.ToDto(),
-				UserBase = model.BaseInfo.From.ToDto(),
+				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request=model.RequestInfo,
 				AuditAvailable = model.Response?.FirstOrDefault(r=>r.Status==Auditing.Received)?.Company.Code== auditFrom

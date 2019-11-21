@@ -27,7 +27,7 @@ namespace BLL.Extensions
 		{
 			var b=new CompanyDto()
 			{
-				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToDto()),
+				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToSummaryDto()),
 				Code = company?.Code,
 				Name = company?.Name,
 				Description=company?.Description
