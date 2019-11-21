@@ -11,6 +11,7 @@ using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.StaticFiles;
@@ -103,8 +104,8 @@ namespace TrainSchdule.Controllers
 				Code = -1,
 				Message = _verifyService.Status
 			});
-			HttpContext.Response.Cookies.Append("posY",_verifyService.Pos.Y.ToString());
-			return new FileContentResult(img,"image/jpg");
+			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
+			return new FileContentResult(img, "image/jpg");
 		}
 
 		/// <summary>
@@ -138,8 +139,8 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult Location(int code)
 		{
-			var location=_context.AdminDivisions.Find(code);
-			if(location==null)return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
+			var location = _context.AdminDivisions.Find(code);
+			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			return new JsonResult(new LocationViewModel()
 			{
 				Data = new LocationDataModel()
@@ -170,7 +171,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new LocationChildrenDataModel()
 				{
-					List = list.Select(t=>t.ToDataModel())
+					List = list.Select(t => t.ToDataModel())
 				}
 			});
 		}
@@ -191,7 +192,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new VocationDescriptionDataModel()
 				{
-					Descriptions	= list,
+					Descriptions = list,
 					EndDate = _vocationCheckServices.EndDate,
 					StartDate = start,
 					VocationDays = _vocationCheckServices.EndDate.Subtract(start).Days
@@ -204,24 +205,24 @@ namespace TrainSchdule.Controllers
 		/// <param name="form"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[ProducesResponseType(typeof(string),0)]
+		[ProducesResponseType(typeof(string), 0)]
 		[Route("XlsExport")]
-		public IActionResult XlsExport( XlsExportViewModel form)
+		public IActionResult XlsExport(XlsExportViewModel form)
 		{
 			//var currentUser = _currentUserService.CurrentUser;
 			var sWebRootFolder = _hostingEnvironment.WebRootPath;
 			form.Templete = $"Templete\\{form.Templete}";
 			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, form.Templete));
-			if(!tempFile.Exists)return new JsonResult(ActionStatusMessage.Static.TempXlsNotExist);
+			if (!tempFile.Exists) return new JsonResult(ActionStatusMessage.Static.TempXlsNotExist);
 
 			byte[] fileContent = null;
 			string fileName = DateTime.Now.ToString("yyyy年mm月dd日导出.xlsx");
 			if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
 			{
 				Guid.TryParse(form.Apply, out var guid);
-				if(guid==Guid.Empty)return new JsonResult(ActionStatusMessage.Apply.GuidFail );
+				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
 				var apply = _applyService.Get(guid)?.ToDetaiDto();
-				if (apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				//TODO 需要校验权限
 				//if (!currentUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Update, apply.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 				fileContent = _applyService.ExportExcel(tempFile.FullName, apply);
@@ -229,33 +230,41 @@ namespace TrainSchdule.Controllers
 			}
 			else
 			{
-				IEnumerable<DAL.Entities.ApplyInfo.Apply> list=null;
+				IEnumerable<DAL.Entities.ApplyInfo.Apply> list = null;
 				string fromName = string.Empty;
-				Company targetCompany= null;
+				Company targetCompany = null;
 				if (form.User != null)
 				{
-					list = _applyService.GetApplyBySubmitUser(form.User,0,0);
+					list = _applyService.GetApplyBySubmitUser(form.User, 0, 0);
 					var targetUser = _usersService.Get(form.User);
 					fromName = targetUser?.BaseInfo.RealName ?? form.User;
 					targetCompany = targetUser?.CompanyInfo?.Company;
 				}
 				else if (form.Company != null)
 				{
-					list = _applyService.GetApplyByToAuditCompany(form.Company,0,0);
+					list = _applyService.GetApplyByToAuditCompany(form.Company, 0, 0);
 					targetCompany = _companiesService.Get(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);
-				if (list==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+				if (list == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				list = list.Where(a =>
 					a.Status != AuditStatus.NotPublish && a.Status != AuditStatus.NotSave &&
 					a.Status != AuditStatus.Withdrew).ToList();
-				fileContent =_applyService.ExportExcel(tempFile.FullName, list.Select(a=>a.ToDetaiDto()), targetCompany?.ToDto(_companiesService));
-				if(fileContent==null)return new JsonResult(ActionStatusMessage.Static.XlsNoData);
+				fileContent = _applyService.ExportExcel(tempFile.FullName, list.Select(a => a.ToDetaiDto()), targetCompany?.ToDto(_companiesService));
+				if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
 			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+		}
+		[AllowAnonymous]
+		[HttpPost]
+		[ProducesResponseType(typeof(string), 0)]
+		[Route("file")]
+		public IActionResult File(IEnumerable<IFormFile> file)
+		{
+			return new JsonResult(new { file});
 		}
 	}
 }
