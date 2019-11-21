@@ -59,6 +59,7 @@ namespace BLL.Services
 
 		public IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start, int length)
 		{
+			if (length > 500) return null;
 			var list = new List<VocationDescription>();
 			var end = start.AddDays(length);
 			int vocationDay = 0;

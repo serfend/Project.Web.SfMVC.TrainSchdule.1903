@@ -43,5 +43,21 @@ namespace TrainSchdule.ViewModels.User
 		/// 头像文件地址
 		/// </summary>
 		public string Avatar { get; set; }
+		/// <summary>
+		/// 单位代码
+		/// </summary>
+		public string CompanyCode { get; set; }
+		/// <summary>
+		/// 职务代码
+		/// </summary>
+		public int? DutiesCode { get; set; }
+		/// <summary>
+		/// 单位名称
+		/// </summary>
+		public string CompanyName { get; set; }
+		/// <summary>
+		/// 职务名
+		/// </summary>
+		public string DutiesName { get; set; }
 	}
 }

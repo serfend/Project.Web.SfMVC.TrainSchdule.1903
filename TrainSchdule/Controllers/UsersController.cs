@@ -196,6 +196,10 @@ namespace TrainSchdule.Controllers
 				{
 					About=diy.About,
 					Avatar=diy.Avatar,
+					CompanyCode=targetUser.CompanyInfo?.Company?.Code,
+					DutiesCode=targetUser.CompanyInfo?.Duties?.Code,
+					CompanyName=targetUser.CompanyInfo?.Company?.Name,
+					DutiesName=targetUser.CompanyInfo?.Duties?.Name,
 					Gender=targetUser.BaseInfo.Gender,
 					RealName=targetUser.BaseInfo.RealName,
 					Id=targetUser.Id
