@@ -71,7 +71,8 @@ namespace BLL.Services.ApplyServices
 				VocationPlace = model.VocationPlace,
 				VocationType = model.VocationType,
 				CreateTime = DateTime.Now,
-				ByTransportation = model.ByTransportation
+				ByTransportation = model.ByTransportation,
+				AdditialVocations=model.VocationAdditionals
 			};
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();

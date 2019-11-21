@@ -20,9 +20,9 @@ namespace TrainSchdule.Extensions
 		/// <param name="model"></param>
 		/// <param name="usersService"></param>
 		/// <returns></returns>
-		public static ApplyBaseInfoVdto ToVDTO(this SubmitBaseInfoViewModel model,IUsersService usersService)
+		public static ApplyBaseInfoVdto ToVDTO(this SubmitBaseInfoViewModel model, IUsersService usersService)
 		{
-			var b=new ApplyBaseInfoVdto()
+			var b = new ApplyBaseInfoVdto()
 			{
 				Company = model.Company,
 				Duties = model.Duties,
@@ -44,9 +44,9 @@ namespace TrainSchdule.Extensions
 		/// <param name="context"></param>
 		/// <param name="vocationCheckServices"></param>
 		/// <returns></returns>
-		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model,ApplicationDbContext context,IVocationCheckServices vocationCheckServices)
+		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context, IVocationCheckServices vocationCheckServices)
 		{
-			var b=new ApplyRequestVdto()
+			var b = new ApplyRequestVdto()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
@@ -54,12 +54,15 @@ namespace TrainSchdule.Extensions
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
 				VocationType = model.VocationType,
-				ByTransportation = model.ByTransportation
+				ByTransportation = model.ByTransportation,
+				VocationAdditionals = model.VocationAdditionals
 			};
+			int additionalVocationDay = 0;
+			b.VocationAdditionals?.All(v => { additionalVocationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (b.StampLeave != null)
 			{
-				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength);
-				b.VocationDescriptions = vocationCheckServices.VocationDesc.ToDescription(); 
+				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength + additionalVocationDay);
+				b.VocationDescriptions = vocationCheckServices.VocationDesc.ToDescription();
 			}
 			return b;
 		}
@@ -71,9 +74,9 @@ namespace TrainSchdule.Extensions
 		/// <returns></returns>
 		public static ApplyVdto ToVDTO(this SubmitApplyViewModel model)
 		{
-			var b=new ApplyVdto()
+			var b = new ApplyVdto()
 			{
-				BaseInfoId = model.BaseId??Guid.Empty,
+				BaseInfoId = model.BaseId ?? Guid.Empty,
 				RequestInfoId = model.RequestId ?? Guid.Empty
 			};
 			return b;
@@ -86,7 +89,7 @@ namespace TrainSchdule.Extensions
 		/// <param name="usersService"></param>
 		/// <param name="applyService"></param>
 		/// <returns></returns>
-		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,IUsersService usersService,IApplyService applyService)
+		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model, IUsersService usersService, IApplyService applyService)
 		{
 			var user = usersService.Get(model.Auth.AuthByUserID);
 			var b = new ApplyAuditVdto()

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Vocations;
 
 namespace TrainSchdule.ViewModels.Apply
 {
@@ -50,5 +52,9 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		public string Reason { get; set; }
 
+		/// <summary>
+		/// 用户需要休的福利假列表
+		/// </summary>
+		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }
 	}
 }

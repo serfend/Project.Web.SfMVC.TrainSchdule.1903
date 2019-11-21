@@ -3,6 +3,7 @@ using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.Vocations;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace BLL.Services
 	{
 		public IEnumerable<Company> InMyManage(string id)
 		{
-			var list = _context.CompanyManagers.Where(m => m.User.Id == id).Select(m=>m.Company);
+			var list = _context.CompanyManagers.Where(m => m.User.Id == id).Select(m => m.Company);
 			return list;
 		}
 		/// <summary>
@@ -26,11 +27,14 @@ namespace BLL.Services
 			int nowLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;
-			int yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser,out var maxOnTripTime,out var description);
-			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a => {
+			int yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var maxOnTripTime, out var description);
+			var userAdditions = new List<VocationAdditional>();
+			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
+			{
 				nowLength += a.RequestInfo.VocationLength;
 				if (a.RequestInfo.OnTripLength > 0) onTripTime++;
 				nowTimes++;
+				userAdditions.AddRange(a.RequestInfo.AdditialVocations);
 				return true;
 			});
 			var vocationInfo = new UserVocationInfoVDTO()
@@ -40,7 +44,8 @@ namespace BLL.Services
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
 				YearlyLength = yearlyLength,
-				Description= description
+				Description = description,
+				Additionals=userAdditions
 			};
 			return vocationInfo;
 		}

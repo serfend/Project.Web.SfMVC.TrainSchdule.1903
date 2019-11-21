@@ -2,6 +2,7 @@
 using System;
 using DAL.Entities.ApplyInfo;
 using System.Collections.Generic;
+using DAL.Entities.Vocations;
 
 namespace DAL.DTO.Apply
 {
@@ -19,5 +20,6 @@ namespace DAL.DTO.Apply
 		public AdminDivision VocationPlace { get; set; }
 		public string Reason { get; set; }
 		public Transportation ByTransportation { get; set; }
+		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }
 	}
 }

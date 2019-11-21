@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.Vocations;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,5 +35,6 @@ namespace DAL.DTO.User
 		/// 全年假期描述
 		/// </summary>
 		public string Description { get; set; }
+		public IEnumerable<VocationAdditional> Additionals { get; set; }
 	}
 }
