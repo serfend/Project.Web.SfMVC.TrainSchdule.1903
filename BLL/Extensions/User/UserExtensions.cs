@@ -11,8 +11,8 @@ namespace BLL.Extensions
 			if (user == null) return null;
 			var b=new UserSummaryDto()
 			{
-				Company = user.CompanyInfo.Company?.Name??"无单位",
-				Duties = user.CompanyInfo.Duties?.Name??"无职务",
+				CompanyName = user.CompanyInfo.Company?.Name??"无单位",
+				DutiesName = user.CompanyInfo.Duties?.Name??"无职务",
 				Id = user.Id,
 				RealName = user.BaseInfo.RealName??"无姓名"
 			};

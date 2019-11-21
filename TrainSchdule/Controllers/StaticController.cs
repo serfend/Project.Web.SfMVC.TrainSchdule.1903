@@ -205,7 +205,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(string),0)]
-
 		[Route("XlsExport")]
 		public IActionResult XlsExport( XlsExportViewModel form)
 		{

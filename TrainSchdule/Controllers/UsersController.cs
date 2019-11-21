@@ -192,7 +192,7 @@ namespace TrainSchdule.Controllers
 			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
 			return new JsonResult(new UserSummaryViewModel()
 			{
-				Data = new UserSummaryDataModel()
+				Data = new DAL.DTO.User.UserSummaryDto()
 				{
 					About=diy.About,
 					Avatar=diy.Avatar,
