@@ -695,27 +695,6 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RecallOrders",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Reason = table.Column<string>(nullable: true),
-                    RecallById = table.Column<string>(nullable: true),
-                    Create = table.Column<DateTime>(nullable: false),
-                    ReturnStramp = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RecallOrders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RecallOrders_AppUsers_RecallById",
-                        column: x => x.RecallById,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Applies",
                 columns: table => new
                 {
@@ -725,7 +704,7 @@ namespace DAL.Migrations
                     AuditLeader = table.Column<string>(nullable: true),
                     Create = table.Column<DateTime>(nullable: true),
                     Status = table.Column<int>(nullable: false),
-                    RecallOrderId = table.Column<Guid>(nullable: false),
+                    RecallId = table.Column<Guid>(nullable: false),
                     Hidden = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -737,12 +716,6 @@ namespace DAL.Migrations
                         principalTable: "ApplyBaseInfos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Applies_RecallOrders_RecallOrderId",
-                        column: x => x.RecallOrderId,
-                        principalTable: "RecallOrders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Applies_ApplyRequests_RequestInfoId",
                         column: x => x.RequestInfoId,
@@ -786,16 +759,38 @@ namespace DAL.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RecallOrders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Reason = table.Column<string>(nullable: true),
+                    RecallById = table.Column<string>(nullable: true),
+                    Create = table.Column<DateTime>(nullable: false),
+                    ReturnStramp = table.Column<DateTime>(nullable: false),
+                    ApplyId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecallOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RecallOrders_Applies_ApplyId",
+                        column: x => x.ApplyId,
+                        principalTable: "Applies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RecallOrders_AppUsers_RecallById",
+                        column: x => x.RecallById,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Applies_BaseInfoId",
                 table: "Applies",
                 column: "BaseInfoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applies_RecallOrderId",
-                table: "Applies",
-                column: "RecallOrderId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applies_RequestInfoId",
@@ -962,6 +957,11 @@ namespace DAL.Migrations
                 column: "AddressCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RecallOrders_ApplyId",
+                table: "RecallOrders",
+                column: "ApplyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RecallOrders_RecallById",
                 table: "RecallOrders",
                 column: "RecallById");
@@ -1036,6 +1036,9 @@ namespace DAL.Migrations
                 name: "CompanyManagers");
 
             migrationBuilder.DropTable(
+                name: "RecallOrders");
+
+            migrationBuilder.DropTable(
                 name: "Standards");
 
             migrationBuilder.DropTable(
@@ -1048,13 +1051,13 @@ namespace DAL.Migrations
                 name: "VocationDescriptions");
 
             migrationBuilder.DropTable(
-                name: "Applies");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Applies");
 
             migrationBuilder.DropTable(
                 name: "Subjects");
@@ -1067,9 +1070,6 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "ApplyBaseInfos");
-
-            migrationBuilder.DropTable(
-                name: "RecallOrders");
 
             migrationBuilder.DropTable(
                 name: "ApplyRequests");

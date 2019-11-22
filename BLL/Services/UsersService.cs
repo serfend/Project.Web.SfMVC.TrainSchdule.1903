@@ -57,6 +57,7 @@ namespace BLL.Services
         /// </summary>
         public User Get(string id)
         {
+			if (id == null) return null;
 			if(id.ToLower()=="root")return new User()
 			{
 				Id = "Root",

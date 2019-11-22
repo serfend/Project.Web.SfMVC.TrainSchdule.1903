@@ -47,7 +47,7 @@ namespace DAL.Migrations
 
                     b.Property<bool>("Hidden");
 
-                    b.Property<Guid>("RecallOrderId");
+                    b.Property<Guid>("RecallId");
 
                     b.Property<Guid?>("RequestInfoId");
 
@@ -56,9 +56,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseInfoId");
-
-                    b.HasIndex("RecallOrderId")
-                        .IsUnique();
 
                     b.HasIndex("RequestInfoId");
 
@@ -230,6 +227,8 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid?>("ApplyId");
+
                     b.Property<DateTime>("Create");
 
                     b.Property<string>("Reason");
@@ -239,6 +238,8 @@ namespace DAL.Migrations
                     b.Property<DateTime>("ReturnStramp");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplyId");
 
                     b.HasIndex("RecallById");
 
@@ -753,11 +754,6 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("BaseInfoId");
 
-                    b.HasOne("DAL.Entities.RecallOrder")
-                        .WithOne("Apply")
-                        .HasForeignKey("DAL.Entities.ApplyInfo.Apply", "RecallOrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest", "RequestInfo")
                         .WithMany()
                         .HasForeignKey("RequestInfoId");
@@ -821,6 +817,10 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.RecallOrder", b =>
                 {
+                    b.HasOne("DAL.Entities.ApplyInfo.Apply", "Apply")
+                        .WithMany()
+                        .HasForeignKey("ApplyId");
+
                     b.HasOne("DAL.Entities.UserInfo.User", "RecallBy")
                         .WithMany()
                         .HasForeignKey("RecallById");

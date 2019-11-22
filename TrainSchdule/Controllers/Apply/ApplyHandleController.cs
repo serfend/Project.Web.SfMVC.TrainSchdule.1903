@@ -12,6 +12,8 @@ using TrainSchdule.ViewModels.System;
 using DAL.Entities;
 using BLL.Extensions.ApplyExtensions;
 using TrainSchdule.ViewModels.Verify;
+using Newtonsoft.Json;
+using TrainSchdule.Extensions;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -151,11 +153,12 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RecallOrder([FromBody]RecallCreateViewModel model)
 		{
+			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try
 			{
-				result=recallOrderServices.Create(model.Data);
+				result=recallOrderServices.Create(model.Data.ToVDto());
 			}
 			catch (ActionStatusMessageException ex)
 			{

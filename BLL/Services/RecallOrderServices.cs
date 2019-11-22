@@ -15,6 +15,12 @@ namespace BLL.Services
 	{
 
 		private readonly ApplicationDbContext _context;
+
+		public RecallOrderServices(ApplicationDbContext context)
+		{
+			_context = context;
+		}
+
 		public RecallOrder Create( RecallOrderVDto recallOrder)
 		{
 			var order = new RecallOrder()
@@ -26,10 +32,11 @@ namespace BLL.Services
 				RecallBy=_context.AppUsers.Find(recallOrder.RecallBy.Id)
 			};
 			if (order.Apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
+			if (order.Apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.Crash);
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			if (order.Apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
 			_context.RecallOrders.Add(order);
-			order.Apply.RecallOrderId = order.Id;
+			order.Apply.RecallId = order.Id;
 			_context.SaveChanges();
 			return order;
 		}

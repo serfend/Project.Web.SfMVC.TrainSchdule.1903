@@ -149,6 +149,7 @@
 			{
 				public static readonly Status NotExist = new Status(46100, "召回信息不存在");
 				public static readonly Status RecallByNotSame = new Status(46200, "召回人和终审人不一致");
+				public static readonly Status Crash = new Status(46300, "休假已存在召回记录");
 			}
 		}
 
