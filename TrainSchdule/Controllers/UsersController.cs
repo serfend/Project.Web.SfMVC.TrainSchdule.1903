@@ -188,7 +188,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Summary(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (result != null) return new JsonResult(result);
+			if (result != null) return result;
 			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
 			return new JsonResult(new UserSummaryViewModel()
 			{

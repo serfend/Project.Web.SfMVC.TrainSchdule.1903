@@ -35,7 +35,8 @@ namespace BLL.Services
 			if (order.Apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.Crash);
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			if (order.Apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
-			_context.RecallOrders.Add(order);
+			if (order.Apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeLateThenVocation);		
+   _context.RecallOrders.Add(order);
 			order.Apply.RecallId = order.Id;
 			_context.SaveChanges();
 			return order;
