@@ -6,6 +6,7 @@ using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BLL.Services
@@ -26,6 +27,7 @@ namespace BLL.Services
 			};
 			if (order.Apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
+			if (order.Apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
 			_context.RecallOrders.Add(order);
 			order.Apply.RecallOrderId = order.Id;
 			_context.SaveChanges();

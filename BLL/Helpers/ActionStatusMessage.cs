@@ -148,7 +148,7 @@
 			public static class Recall
 			{
 				public static readonly Status NotExist = new Status(46100, "召回信息不存在");
-
+				public static readonly Status RecallByNotSame = new Status(46200, "召回人和终审人不一致");
 			}
 		}
 

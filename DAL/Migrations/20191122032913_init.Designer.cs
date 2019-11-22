@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191110124824_VocationStatistics")]
-    partial class VocationStatistics
+    [Migration("20191122032913_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,6 +49,8 @@ namespace DAL.Migrations
 
                     b.Property<bool>("Hidden");
 
+                    b.Property<Guid>("RecallOrderId");
+
                     b.Property<Guid?>("RequestInfoId");
 
                     b.Property<int>("Status");
@@ -56,6 +58,9 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseInfoId");
+
+                    b.HasIndex("RecallOrderId")
+                        .IsUnique();
 
                     b.HasIndex("RequestInfoId");
 
@@ -222,6 +227,26 @@ namespace DAL.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("DAL.Entities.RecallOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Create");
+
+                    b.Property<string>("Reason");
+
+                    b.Property<string>("RecallById");
+
+                    b.Property<DateTime>("ReturnStramp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecallById");
+
+                    b.ToTable("RecallOrders");
+                });
+
             modelBuilder.Entity("DAL.Entities.UserInfo.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -300,6 +325,8 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("LoverId");
 
+                    b.Property<Guid?>("LoversParentId");
+
                     b.Property<Guid?>("ParentId");
 
                     b.Property<int>("PrevYearlyLength");
@@ -309,6 +336,8 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LoverId");
+
+                    b.HasIndex("LoversParentId");
 
                     b.HasIndex("ParentId");
 
@@ -377,6 +406,8 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("CompanyInfoId");
 
+                    b.Property<Guid?>("DiyInfoId");
+
                     b.Property<Guid?>("SocialInfoId");
 
                     b.Property<Guid?>("TrainInfoId");
@@ -389,6 +420,8 @@ namespace DAL.Migrations
 
                     b.HasIndex("CompanyInfoId");
 
+                    b.HasIndex("DiyInfoId");
+
                     b.HasIndex("SocialInfoId");
 
                     b.HasIndex("TrainInfoId");
@@ -400,8 +433,6 @@ namespace DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("About");
 
                     b.Property<Guid?>("ApplicationSettingId");
 
@@ -443,9 +474,8 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Avatar");
-
-                    b.Property<string>("Cid");
+                    b.Property<string>("Cid")
+                        .IsRequired();
 
                     b.Property<int>("Gender");
 
@@ -480,6 +510,20 @@ namespace DAL.Migrations
                     b.HasIndex("DutiesCode");
 
                     b.ToTable("AppUserCompanyInfos");
+                });
+
+            modelBuilder.Entity("DAL.Entities.UserInfo.UserDiyInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("About");
+
+                    b.Property<string>("Avatar");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDiyInfo");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.UserSocialInfo", b =>
@@ -529,6 +573,70 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VocationDescriptions");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Vocations.VocationAdditional", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ApplyRequestId");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("Length");
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("Start");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyRequestId");
+
+                    b.ToTable("VocationAdditionals");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BaseStandard");
+
+                    b.Property<string>("ExpressionWhenFullGrade");
+
+                    b.Property<string>("GradePairs");
+
+                    b.Property<Guid?>("SubjectId");
+
+                    b.Property<int>("gender");
+
+                    b.Property<int>("maxAge");
+
+                    b.Property<int>("minAge");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Standards");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Subject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("CountDown");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("ValueFormat");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -647,6 +755,11 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("BaseInfoId");
 
+                    b.HasOne("DAL.Entities.RecallOrder")
+                        .WithOne("Apply")
+                        .HasForeignKey("DAL.Entities.ApplyInfo.Apply", "RecallOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest", "RequestInfo")
                         .WithMany()
                         .HasForeignKey("RequestInfoId");
@@ -708,6 +821,13 @@ namespace DAL.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("DAL.Entities.RecallOrder", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.User", "RecallBy")
+                        .WithMany()
+                        .HasForeignKey("RecallById");
+                });
+
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>
                 {
                     b.HasOne("DAL.Entities.AdminDivision", "Address")
@@ -720,6 +840,10 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.Settle.Moment", "Lover")
                         .WithMany()
                         .HasForeignKey("LoverId");
+
+                    b.HasOne("DAL.Entities.UserInfo.Settle.Moment", "LoversParent")
+                        .WithMany()
+                        .HasForeignKey("LoversParentId");
 
                     b.HasOne("DAL.Entities.UserInfo.Settle.Moment", "Parent")
                         .WithMany()
@@ -758,6 +882,10 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.UserCompanyInfo", "CompanyInfo")
                         .WithMany()
                         .HasForeignKey("CompanyInfoId");
+
+                    b.HasOne("DAL.Entities.UserInfo.UserDiyInfo", "DiyInfo")
+                        .WithMany()
+                        .HasForeignKey("DiyInfoId");
 
                     b.HasOne("DAL.Entities.UserInfo.UserSocialInfo", "SocialInfo")
                         .WithMany()
@@ -799,6 +927,20 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.Settle.Settle", "Settle")
                         .WithMany()
                         .HasForeignKey("SettleId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Vocations.VocationAdditional", b =>
+                {
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest")
+                        .WithMany("AdditialVocations")
+                        .HasForeignKey("ApplyRequestId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
+                {
+                    b.HasOne("DAL.Entities.ZX.Phy.Subject")
+                        .WithMany("Standards")
+                        .HasForeignKey("SubjectId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

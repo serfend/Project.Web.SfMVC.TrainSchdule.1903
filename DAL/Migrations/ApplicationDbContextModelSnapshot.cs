@@ -47,6 +47,8 @@ namespace DAL.Migrations
 
                     b.Property<bool>("Hidden");
 
+                    b.Property<Guid>("RecallOrderId");
+
                     b.Property<Guid?>("RequestInfoId");
 
                     b.Property<int>("Status");
@@ -54,6 +56,9 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseInfoId");
+
+                    b.HasIndex("RecallOrderId")
+                        .IsUnique();
 
                     b.HasIndex("RequestInfoId");
 
@@ -218,6 +223,26 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("DAL.Entities.RecallOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Create");
+
+                    b.Property<string>("Reason");
+
+                    b.Property<string>("RecallById");
+
+                    b.Property<DateTime>("ReturnStramp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecallById");
+
+                    b.ToTable("RecallOrders");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.ApplicationUser", b =>
@@ -728,6 +753,11 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("BaseInfoId");
 
+                    b.HasOne("DAL.Entities.RecallOrder")
+                        .WithOne("Apply")
+                        .HasForeignKey("DAL.Entities.ApplyInfo.Apply", "RecallOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest", "RequestInfo")
                         .WithMany()
                         .HasForeignKey("RequestInfoId");
@@ -787,6 +817,13 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.RecallOrder", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.User", "RecallBy")
+                        .WithMany()
+                        .HasForeignKey("RecallById");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>

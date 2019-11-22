@@ -11,6 +11,7 @@ using DAL.DTO.Recall;
 using TrainSchdule.ViewModels.System;
 using DAL.Entities;
 using BLL.Extensions.ApplyExtensions;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -141,14 +142,20 @@ namespace TrainSchdule.Controllers.Apply
 				Data = apply.ToDetaiDto()
 			});
 		}
+		/// <summary>
+		/// 召回休假
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		public IActionResult RecallOrder(RecallOrderVDto model)
+		public IActionResult RecallOrder([FromBody]RecallCreateViewModel model)
 		{
+			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try
 			{
-				result=recallOrderServices.Create(model);
+				result=recallOrderServices.Create(model.Data);
 			}
 			catch (ActionStatusMessageException ex)
 			{

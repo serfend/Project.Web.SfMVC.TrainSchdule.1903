@@ -63,6 +63,7 @@ namespace TrainSchdule
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<ICompaniesService, CompaniesService>();
 			services.AddScoped<IApplyService, ApplyService>();
+			services.AddScoped<IRecallOrderServices, RecallOrderServices>();
 			services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 			services.AddScoped<ICompanyManagerServices, CompanyManagerServices>();
 			services.AddScoped<IVocationCheckServices, VocationCheckServices>();
