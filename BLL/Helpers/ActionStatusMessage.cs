@@ -150,6 +150,8 @@
 				public static readonly Status NotExist = new Status(46100, "召回信息不存在");
 				public static readonly Status RecallByNotSame = new Status(46200, "召回人和终审人不一致");
 				public static readonly Status Crash = new Status(46300, "休假已存在召回记录");
+				public static readonly Status IdRecordButNoData = new Status(46400, "用户休假申请的召回id存在，但无此召回的详细信息");
+				public static readonly Status RecallTimeLateThenVocation = new Status(46500, "召回时间不可晚于（等于）休假结束时间");
 			}
 		}
 

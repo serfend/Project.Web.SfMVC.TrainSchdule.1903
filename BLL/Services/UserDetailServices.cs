@@ -1,9 +1,11 @@
 ﻿using BLL.Extensions;
+using BLL.Helpers;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vocations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +25,7 @@ namespace BLL.Services
 		/// <returns></returns>
 		public UserVocationInfoVDTO VocationInfo(User targetUser)
 		{
-			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept).ToList();
+			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept&&a.Create.Value.Year==DateTime.Now.Year).ToList();
 			int nowLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;
@@ -35,6 +37,13 @@ namespace BLL.Services
 				if (a.RequestInfo.OnTripLength > 0) onTripTime++;
 				nowTimes++;
 				userAdditions.AddRange(a.RequestInfo.AdditialVocations);
+				if (a.RecallId != null)
+				{
+					if (a.RequestInfo.OnTripLength > 0) onTripTime--;
+					var order = _context.RecallOrders.Find(a.RecallId);
+					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.IdRecordButNoData);
+					nowLength -= a.RequestInfo.StampReturn.Value.Subtract(order.ReturnStramp).Days;
+				}
 				return true;
 			});
 			var vocationInfo = new UserVocationInfoVDTO()

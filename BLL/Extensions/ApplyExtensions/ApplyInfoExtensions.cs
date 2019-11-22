@@ -23,7 +23,8 @@ namespace BLL.Extensions.ApplyExtensions
 				Id = model.Id,
 				Social = model.BaseInfo.Social,
 				Status = model.Status,
-				AuditLeader = model.AuditLeader
+				AuditLeader = model.AuditLeader,
+				RecallId=model.RecallId
 			};
 			return b;
 		}
@@ -39,7 +40,8 @@ namespace BLL.Extensions.ApplyExtensions
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = model.RequestInfo,
-				AuditAvailable = model.Response?.FirstOrDefault(r => r.Status == Auditing.Received)?.Company.Code == auditFrom
+				AuditAvailable = model.Response?.FirstOrDefault(r => r.Status == Auditing.Received)?.Company.Code == auditFrom,
+				RecallId=model.RecallId
 			};
 			return b;
 		}

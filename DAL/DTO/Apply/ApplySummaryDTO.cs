@@ -28,7 +28,7 @@ namespace DAL.DTO.Apply
 		/// </summary>
 		
 		public AuditStatus Status { get; set; }
-
+		public Guid? RecallId { get; set; }
 		/// <summary>
 		/// 当前用户/单位是否正在可审核中状态
 		/// </summary>

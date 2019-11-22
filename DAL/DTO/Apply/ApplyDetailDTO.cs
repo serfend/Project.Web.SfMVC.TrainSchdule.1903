@@ -36,6 +36,7 @@ namespace DAL.DTO.Apply
 		public DateTime?Create { get; set; }
 		public IEnumerable<ApplyResponseDto> Response { get; set; }
 		public AuditStatus Status { get; set; }
+		public Guid? RecallId { get; set; }
 		public bool Hidden { get; set; }
 	}
 }
