@@ -2,7 +2,6 @@
 using DAL.Entities.ApplyInfo;
 using System;
 using DAL.DTO.User;
-
 namespace DAL.DTO.Apply
 {
 	public class ApplySummaryDto : BaseEntity
@@ -36,4 +35,5 @@ namespace DAL.DTO.Apply
 		public bool AuditAvailable { get; set; }
 
 	}
+	
 }

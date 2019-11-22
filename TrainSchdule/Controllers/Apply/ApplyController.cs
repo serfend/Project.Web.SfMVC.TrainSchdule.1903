@@ -34,7 +34,7 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly ICompaniesService _companiesService;
 		private readonly IVerifyService _verifyService;
 		private readonly IGoogleAuthService _authService;
-
+		private readonly IRecallOrderServices recallOrderServices;
 
 		/// <summary>
 		/// 
@@ -47,7 +47,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="context"></param>
 		/// <param name="authService"></param>
 		/// <param name="vocationCheckServices"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices)
+		/// <param name="recallOrderServices"></param>
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -57,6 +58,7 @@ namespace TrainSchdule.Controllers.Apply
 			_context = context;
 			_authService = authService;
 			_vocationCheckServices = vocationCheckServices;
+			this.recallOrderServices = recallOrderServices;
 		}
 
 		#endregion
@@ -76,9 +78,9 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
-					List = BLL.Extensions.ApplyExtensions.StatusDic
+					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic
 				}
-			});
+			}) ;
 		}
 		/// <summary>
 		/// 提交申请的基础信息

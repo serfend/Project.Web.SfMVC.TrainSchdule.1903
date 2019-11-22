@@ -19,12 +19,13 @@ namespace BLL.Services.ZX
 		{
 			_context = context;
 		}
-		private int GetExpressionGrade(int value, string expression)
+		private int GetExpressionGrade(int value,int prevValue, string expression)
 		{
 			using (var d = new DataTable())
 			{
 				if (expression == null) return 0;
-				var result = Convert.ToInt32(d.Compute(expression.Replace("x", value.ToString()), ""));
+				var replaceStr= expression.ToLower().Replace("x", value.ToString()).Replace("y",prevValue.ToString());
+				var result = Convert.ToInt32(d.Compute(replaceStr, ""));
 				return result;
 			}
 		}
@@ -38,7 +39,7 @@ namespace BLL.Services.ZX
 				if (i.Key > value) return prev.Value;
 				prev = i;
 			}
-			return GetExpressionGrade(value, standard.ExpressionWhenFullGrade);
+			return GetExpressionGrade(value,prev.Value, standard.ExpressionWhenFullGrade);
 		}
 
 		public Standard GetStandard(Subject subject, UserBaseInfo userBaseInfo)

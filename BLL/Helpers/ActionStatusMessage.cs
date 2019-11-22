@@ -145,7 +145,11 @@
 				
 			}
 			public static readonly Status GuidFail = new Status(45000, "申请的ID无效");
+			public static class Recall
+			{
+				public static readonly Status NotExist = new Status(46100, "召回信息不存在");
 
+			}
 		}
 
 		public static class Static

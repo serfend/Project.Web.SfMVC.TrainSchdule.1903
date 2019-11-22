@@ -7,6 +7,10 @@ using System.Linq;
 using DAL.DTO.Apply;
 using Microsoft.AspNetCore.Authorization;
 using TrainSchdule.ViewModels.Apply;
+using DAL.DTO.Recall;
+using TrainSchdule.ViewModels.System;
+using DAL.Entities;
+using BLL.Extensions.ApplyExtensions;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -137,6 +141,31 @@ namespace TrainSchdule.Controllers.Apply
 				Data = apply.ToDetaiDto()
 			});
 		}
-
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult RecallOrder(RecallOrderVDto model)
+		{
+			RecallOrder result;
+			try
+			{
+				result=recallOrderServices.Create(model);
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}
+			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
+		}
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult RecallOrder(Guid id)
+		{
+			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
+			if (recall == null) return new JsonResult(ActionStatusMessage.Apply.Recall.NotExist);
+			return new JsonResult(new RecallViewModel()
+			{
+				Data = recall.ToVDto()
+			});
+		}
 	}
 }

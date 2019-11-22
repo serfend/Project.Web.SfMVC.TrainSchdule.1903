@@ -29,6 +29,7 @@ namespace DAL.Data
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions>Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
+		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
 		
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
@@ -40,7 +41,7 @@ namespace DAL.Data
 
 		public DbSet<Subject> Subjects { get; set; }
 		public DbSet<Standard> Standards { get; set; }
-
+		
 		#endregion
 
 		#region .ctors

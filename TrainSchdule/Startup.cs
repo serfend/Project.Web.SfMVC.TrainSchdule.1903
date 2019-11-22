@@ -144,13 +144,8 @@ namespace TrainSchdule
 				// User settings
 				options.User.RequireUniqueEmail = true;
 			});
-
-
 			AddApplicationServices(services);
-
-
 			services.AddMvc().AddJsonOptions(opt=>opt.SerializerSettings.DateFormatString="yyyy-MM-dd HH:mm:ss");
-
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)
@@ -158,7 +153,7 @@ namespace TrainSchdule
 			//注册Swagger生成器，定义一个和多个Swagger 文档
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
 				// 为 Swagger JSON and UI设置xml文档注释路径
 				var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
 				var xmlPath = Path.Combine(basePath, "TrainSchdule.xml");
@@ -196,7 +191,6 @@ namespace TrainSchdule
 				{
 					options.Cookie.SameSite = SameSiteMode.None;
 				});
-
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();

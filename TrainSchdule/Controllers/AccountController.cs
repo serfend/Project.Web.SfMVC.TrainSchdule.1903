@@ -240,11 +240,9 @@ namespace TrainSchdule.Controllers
 
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
-			if (ModelState.IsValid)
-			{
+			if (ModelState.IsValid){
 				var r = model.Verify.Verify(_verifyService);
 				if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
-
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -253,24 +251,15 @@ namespace TrainSchdule.Controllers
 					_logger.LogInformation($"用户登录:{model.UserName}");
 					return new JsonResult(ActionStatusMessage.Success);
 				}
-				else if (result.RequiresTwoFactor)
-				{
-					return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
-				}
+				else if (result.RequiresTwoFactor)return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
 				else if (result.IsLockedOut)
 				{
 					_logger.LogWarning("账号异常");
 					return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
 				}
-				else
-				{
-					return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-				}
+				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			}
-			else
-			{
-				return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
-			}
+			else return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 		}
 		/// <summary>
 		/// 移除用户

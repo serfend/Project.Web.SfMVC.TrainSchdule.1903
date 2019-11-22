@@ -1,4 +1,4 @@
-﻿using BLL.Extensions;
+﻿
 using DAL.DTO.Apply;
 using DAL.Entities.ApplyInfo;
 using ExcelReport;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DAL.DTO.Company;
+using BLL.Extensions.ApplyExtensions;
 
 namespace BLL.Services.ApplyServices
 {
