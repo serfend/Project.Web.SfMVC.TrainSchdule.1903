@@ -5,7 +5,10 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels
 {
-	
+	public static class ModelStateExtensions
+	{
+		public static ModelStateExceptionViewModel ToModel(this ModelStateDictionary model) => new ModelStateExceptionViewModel(model);
+	}
 	
 	/// <summary>
 	/// 

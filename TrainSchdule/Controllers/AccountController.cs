@@ -165,7 +165,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(Status), 0)]
 
-		public IActionResult Permission([FromBody]ModifyPermissionsViewModel model)
+		public IActionResult Permission([FromBody]ModefyPermissionsViewModel model)
 		{
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
@@ -174,6 +174,29 @@ namespace TrainSchdule.Controllers
 			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			_usersService.Edit(targetUser);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
+		/// 修改密码
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[ProducesResponseType(typeof(Status), 0)]
+
+		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
+		{
+			var currentUser = currentUserService.CurrentUser;
+			var targetUser = _usersService.Get(model?.Id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (model.Id != currentUser?.Id&&currentUser.Application.Permission.Check(DictionaryAllPermission.User.Application,Operation.Update ,targetUser)==false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
+			var appUser = _context.Users.Where(u=>u.UserName== model.Id).FirstOrDefault();
+			var sign=await _signInManager.PasswordSignInAsync(appUser, model.OldPassword,false,false);
+			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			appUser.PasswordHash= new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
+			_context.Users.Update(appUser);
+			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
