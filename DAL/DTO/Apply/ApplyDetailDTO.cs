@@ -36,6 +36,10 @@ namespace DAL.DTO.Apply
 		public DateTime?Create { get; set; }
 		public IEnumerable<ApplyResponseDto> Response { get; set; }
 		public AuditStatus Status { get; set; }
+		/// <summary>
+		/// 当前用户是否可以审核此申请
+		/// </summary>
+		public bool AuditAvailable { get; set; }
 		public Guid? RecallId { get; set; }
 		public bool Hidden { get; set; }
 	}
