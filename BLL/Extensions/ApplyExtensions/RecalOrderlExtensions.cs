@@ -15,7 +15,7 @@ namespace BLL.Extensions.ApplyExtensions
 			{
 				ReturnStamp = model.ReturnStramp,
 				Create = model.Create,
-				Apply = model.Apply.ToSummaryDto(model.RecallBy.Id)
+				Apply = model.Apply.ToSummaryDto(false)
 			};
 		}
 	}

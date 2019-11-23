@@ -1,4 +1,5 @@
 ﻿using DAL.DTO.Apply;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,10 @@ namespace BLL.Extensions.ApplyExtensions
 			var item = list.ElementAtOrDefault(list.Count - 2);
 			return item;
 		}
-
+		public static Company NowAuditCompany(this IEnumerable<ApplyResponse> model)
+		{
+			return model.Where(a => a.Status == Auditing.Received).FirstOrDefault()?.Company;
+		}
 		public static string AuditResult(this ApplyResponseDto model)
 		{
 			if (model == null) return "无审批结果";

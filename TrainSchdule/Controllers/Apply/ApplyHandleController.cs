@@ -41,7 +41,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a=>a.ToSummaryDto(targetUser.CompanyInfo.Company.Code))
+					List = list.Select(a=>a.ToSummaryDto(false))
 				}
 			});
 		}
@@ -63,10 +63,14 @@ namespace TrainSchdule.Controllers.Apply
 			if(id==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var currentUser = _currentUserService.CurrentUser;
+			if (currentUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var companyManages = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
+			var canAuditNot = companyManages.Any<Company>(c => c.Code == currentUser.CompanyInfo.Company.Code);
 			var targetCompany = _companiesService.Get(code);
 			if(targetCompany==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
 			if(!_companiesService.CheckManagers(code, id))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default) ;
-			return GetCompanyApply(code,page,pageSize);
+			return GetCompanyApply(code,canAuditNot,page,pageSize);
 		}
 
 		/// <summary>
@@ -92,7 +96,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.GetApplyBySubmitCompany(code,page,pageSize).Select(a=>a.ToSummaryDto(code))
+					List = _applyService.GetApplyBySubmitCompany(code,page,pageSize).Select(a=>a.ToSummaryDto(false))
 				}
 			});
 		}
@@ -113,16 +117,20 @@ namespace TrainSchdule.Controllers.Apply
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			var targetCompany = _companiesService.Get(code);
 			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			return GetCompanyApply(targetCompany.Code,page,pageSize);
+			var currentUser = _currentUserService.CurrentUser;
+			if (currentUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var companyManages = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
+			var canAuditNow = companyManages.Any<Company>(c=>c.Code==currentUser.CompanyInfo.Company.Code);
+			return GetCompanyApply(targetCompany.Code,canAuditNow,page,pageSize);
 		}
-		private IActionResult GetCompanyApply(string code,int page,int pageSize)
+		private IActionResult GetCompanyApply(string code,bool canAuditNow, int page,int pageSize)
 		{
 			var list = _applyService.GetApplyByToAuditCompany(code, page, pageSize);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Select(a => a.ToSummaryDto(code))
+					List = list.Select(a => a.ToSummaryDto(canAuditNow))
 				}
 			});
 		}
@@ -139,9 +147,11 @@ namespace TrainSchdule.Controllers.Apply
 			Guid.TryParse(id, out var aId);
 			var apply = _applyService.Get(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			var managedCompany = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
+			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany().Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto()
+				Data = apply.ToDetaiDto(userPermitCompany)
 			});
 		}
 		/// <summary>

@@ -9,7 +9,7 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model)
+		public static ApplyDetailDto ToDetaiDto(this Apply model,bool AuditAvailable)
 		{
 			var b = new ApplyDetailDto()
 			{
@@ -24,11 +24,12 @@ namespace BLL.Extensions.ApplyExtensions
 				Social = model.BaseInfo.Social,
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
-				RecallId=model.RecallId
+				AuditAvailable = AuditAvailable,
+				RecallId =model.RecallId
 			};
 			return b;
 		}
-		public static ApplySummaryDto ToSummaryDto(this Apply model, string auditFrom)
+		public static ApplySummaryDto ToSummaryDto(this Apply model, bool AuditAvailable)
 		{
 
 			var b = new ApplySummaryDto()
@@ -40,7 +41,7 @@ namespace BLL.Extensions.ApplyExtensions
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = model.RequestInfo,
-				AuditAvailable = model.Response?.FirstOrDefault(r => r.Status == Auditing.Received)?.Company.Code == auditFrom,
+				AuditAvailable = AuditAvailable,
 				RecallId=model.RecallId
 			};
 			return b;
