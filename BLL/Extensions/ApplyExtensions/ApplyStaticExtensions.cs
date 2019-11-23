@@ -54,7 +54,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Auditing, new List<string>(){"Withdrew","Delete"}},
 				{(int)AuditStatus.Withdrew, new List<string>(){"Delete"}},
 				{(int)AuditStatus.AcceptAndWaitAdmin, new List<string>(){"Withdrew","Delete"}},
-				{(int)AuditStatus.Accept, new List<string>(){""}},
+				{(int)AuditStatus.Accept, new List<string>(){"Recall"}},
 				{(int)AuditStatus.Denied, new List<string>(){"Delete"}},
 				{(int)AuditStatus.NotSave,new List<string>(){"Delete","Save","Publish"} }
 			};
