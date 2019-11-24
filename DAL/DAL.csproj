@@ -5,9 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magicodes.IE.Core" Version="1.4.11" />
-    <PackageReference Include="Magicodes.IE.Excel" Version="1.4.11" />
-    <PackageReference Include="Magicodes.IE.Pdf" Version="1.4.11" />
+    <Compile Remove="Migrations\20191124143839_vocationStatistics4.cs" />
+    <Compile Remove="Migrations\20191124143839_vocationStatistics4.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />

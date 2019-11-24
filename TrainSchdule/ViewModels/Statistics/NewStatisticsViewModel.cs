@@ -7,24 +7,20 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Statistics
 {
+	public class DeleteStatisticsViewModel : GoogleAuthViewModel
+	{
+		public DeleteStatisticsDataModel Data { get; set; }
+	}
 	/// <summary>
 	/// 创建新的查询
 	/// </summary>
-	public class NewStatisticsViewModel:GoogleAuthViewModel
+	public class NewStatisticsViewModel : GoogleAuthViewModel
 	{
-		public NewStatisticsDataModel Data { get; set; }
+			public NewStatisticsDataModel Data { get; set; }
 	}
-	public class NewStatisticsDataModel
+	public class NewStatisticsDataModel: DeleteStatisticsDataModel
 	{
-		/// <summary>
-		/// 统计的单位，默认为根节点单位
-		/// </summary>
-		public string CompanyCode { get; set; }
-		/// <summary>
-		/// 统计的id，用于后续查询使用
-		/// </summary>
-		[Required]
-		public string StatisticsId { get; set; }
+		public string Description { get; set; }
 		/// <summary>
 		/// 统计开始时间
 		/// </summary>
@@ -37,5 +33,18 @@ namespace TrainSchdule.ViewModels.Statistics
 		[Required]
 
 		public DateTime End { get; set; }
+	}
+	public class DeleteStatisticsDataModel
+	{
+		/// <summary>
+		/// 统计的单位，默认为根节点单位
+		/// </summary>
+		public string CompanyCode { get; set; }
+		/// <summary>
+		/// 统计的id，用于后续查询使用
+		/// </summary>
+		[Required]
+		public string StatisticsId { get; set; }
+		
 	}
 }

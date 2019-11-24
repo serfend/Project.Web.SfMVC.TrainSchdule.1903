@@ -177,7 +177,8 @@
 		public static class Statistics
 		{
 			public static readonly Status NotExist = new Status(71100, "无此id的统计数据");
-
+			public static readonly Status AllreadyExist = new Status(71200, "此id的统计数据已存在");
+			
 		}
 	}
 

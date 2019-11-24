@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
+using DAL.Entities;
 using DAL.Entities.Vocations;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +24,13 @@ namespace TrainSchdule.Controllers.Statistics
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IGoogleAuthService authService;
+		private readonly IUsersService usersService;
 
-		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService)
+		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService)
 		{
 			this.context = context;
 			this.authService = authService;
+			this.usersService = usersService;
 		}
 
 		/// <summary>
@@ -53,7 +55,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="companyCode"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[ProducesResponseType(typeof(VocationStatisticsViewModel),0)]
+		[ProducesResponseType(typeof(VocationStatisticsViewModel), 0)]
 
 		public IActionResult Detail(string statisticsId, string companyCode)
 		{
@@ -61,7 +63,7 @@ namespace TrainSchdule.Controllers.Statistics
 			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			var statistics = context.VocationStatistics.Find(statisticsId);
 			if (statistics == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
-			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.StatisticsId == statisticsId&&v.Company.Code==companyCode).FirstOrDefault();
+			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.StatisticsId == statisticsId && v.Company.Code == companyCode).FirstOrDefault();
 			return new JsonResult(new VocationStatisticsViewModel()
 			{
 				Data = targetCompanyStatistics
@@ -77,9 +79,16 @@ namespace TrainSchdule.Controllers.Statistics
 		public async Task<IActionResult> Detail([FromBody]NewStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var actionUser = usersService.Get(model.Auth.AuthByUserID);
+			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
+			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Query, targetCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
+			{
+				CompanyCode = model.Data.CompanyCode??"A",
+				Description = model.Data.Description??"用户创建的未知原因查询"
+			};
 
-			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId);
-			baseQuery.CompanyCode = model.Data.CompanyCode;
 			try
 			{
 				await baseQuery.RunAsync();
@@ -87,11 +96,54 @@ namespace TrainSchdule.Controllers.Statistics
 			catch (ActionStatusMessageException ex)
 			{
 				return new JsonResult(ex.Status);
-			}catch(Exception ex)
+			}
+			catch (Exception ex)
 			{
 				return new JsonResult(new Status(-1, ex.Message));
 			}
 			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
+		/// 删除指定单位的指定统计
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		[ProducesResponseType(typeof(Status), 0)]
+		public async Task<IActionResult> Detail([FromBody]DeleteStatisticsViewModel model)
+		{
+			if (!model.Auth.Verify(authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var actionUser = usersService.Get(model.Auth.AuthByUserID);
+			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
+			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Remove, targetCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var parent = context.VocationStatistics.Find(model.Data.StatisticsId);
+			if (parent == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
+
+			var entity = context.VocationStatisticsDescriptions.Where(v => v.StatisticsId == model.Data.StatisticsId && v.Company.Code == model.Data.CompanyCode).FirstOrDefault();
+			RemoveStatisticsDescription(entity);
+			var leftCount = context.VocationStatisticsDescriptions.Count(v => v.StatisticsId == model.Data.StatisticsId);
+			if (leftCount == 0) context.VocationStatistics.Remove(parent);
+			await context.SaveChangesAsync();
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		private void RemoveStatisticsDescription(VocationStatisticsDescription entity)
+		{
+			if (entity == null) return;
+			foreach (var item in entity.Childs) RemoveStatisticsDescription(item);
+			var i = entity.IncludeChildLevelStatistics;
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
+			context.VocationStatisticsDatas.Remove(i);
+
+			i = entity.CurrentLevelStatistics;
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
+			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
+			context.VocationStatisticsDatas.Remove(i);
+
+			context.VocationStatisticsDescriptions.Remove(entity);
 		}
 		/// <summary>
 		/// 单位统计记录
@@ -104,11 +156,26 @@ namespace TrainSchdule.Controllers.Statistics
 			var cmp = context.Companies.Find(companyCode);
 			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.Company.Code == companyCode).ToList();
+			bool anyChange = false;
+			foreach (var item in targetCompanyStatistics) if (item.StatisticsId == null)
+				{
+					anyChange = true;
+					RemoveStatisticsDescription(item);
+				}
+			if (anyChange)
+			{
+				foreach (var vs in context.VocationStatistics)
+				{
+					var leftCount = context.VocationStatisticsDescriptions.Count(v => v.StatisticsId == vs.Id);
+					if (leftCount == 0) context.VocationStatistics.Remove(vs);
+				}
+				context.SaveChanges();
+			}
 			return new JsonResult(new NewStatisticsListViewModel()
 			{
 				Data = new NewStatisticsListDataModel()
 				{
-					List= targetCompanyStatistics.Select(v=>v.ToMode(context.VocationStatistics.Find(v.StatisticsId)))
+					List = targetCompanyStatistics.Select(v => v.ToMode(context.VocationStatistics.Find(v.StatisticsId)))
 				}
 			});
 		}

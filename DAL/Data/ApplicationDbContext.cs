@@ -14,10 +14,10 @@ namespace DAL.Data
 	/// Main DB context in the application.
 	/// </summary>
 	public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        #region Properties
+	{
+		#region Properties
 
-        public DbSet<User> AppUsers { get; set; }
+		public DbSet<User> AppUsers { get; set; }
 		public DbSet<UserBaseInfo> AppUserBaseInfos { get; set; }
 		public DbSet<UserCompanyInfo> AppUserCompanyInfos { get; set; }
 		public DbSet<UserApplicationInfo> AppUserApplicationInfos { get; set; }
@@ -27,16 +27,24 @@ namespace DAL.Data
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<CompanyManagers> CompanyManagers { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
-		public DbSet<Permissions>Permissions { get; set; }
+		public DbSet<Permissions> Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
-		
+
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<VocationStatistics> VocationStatistics { get; set; }
 		public DbSet<VocationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
+		/// <summary>
+		/// 统计数据值
+		/// </summary>
+		public DbSet<VocationStatisticsData> VocationStatisticsDatas { get; set; }
+		/// <summary>
+		/// 统计数据值的具体值
+		/// </summary>
+		public DbSet<VocationStatisticsDescriptionDataStatusCount>VocationStatisticsDescriptionDataStatusCounts{get;set;}
 		public DbSet<VocationDescription> VocationDescriptions { get; set; }
 		public DbSet<VocationAdditional> VocationAdditionals { get; set; }
 

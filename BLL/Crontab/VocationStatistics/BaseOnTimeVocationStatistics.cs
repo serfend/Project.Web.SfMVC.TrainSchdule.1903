@@ -32,6 +32,10 @@ namespace TrainSchdule.Crontab
 		private DateTime Start { get; set; }
 		private DateTime End { get; set; }
 		/// <summary>
+		/// 统计的原因
+		/// </summary>
+		public string Description { get; set; } = "系统定时生成的统计";
+		/// <summary>
 		/// 统计的单位
 		/// </summary>
 		public string CompanyCode { get; set; } = "A";
@@ -49,14 +53,14 @@ namespace TrainSchdule.Crontab
 				End=End,
 				CurrentYear=Start.Year,
 				Id=StatisticsId,
-				Description="系统定时生成的统计",
+				Description=Description,
 				RootCompanyStatistics=GenerateStatistics(rootCompany)
 			};
+			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
+			if (dbStatistics != null) throw new ActionStatusMessageException(ActionStatusMessage.Statistics.AllreadyExist);
 			VocationStatisticsDescription tmp = statistics.RootCompanyStatistics;
 			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context,statistics.CurrentYear,StatisticsId);
 			statistics.RootCompanyStatistics = tmp;
-			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
-			if (dbStatistics != null) _context.VocationStatistics.Remove(dbStatistics);
 			_context.VocationStatistics.Add(statistics);
 			_context.SaveChanges();
 		}
