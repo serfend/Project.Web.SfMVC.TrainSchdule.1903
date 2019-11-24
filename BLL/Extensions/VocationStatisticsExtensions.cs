@@ -27,7 +27,7 @@ namespace BLL.Extensions
 			}
 			model.Childs = tmpList;
 			CaculateCurrentLevel(ref model, context, currentYear);
-			CaculateChildLevel(ref model, context, currentYear);
+			CaculateChildLevel(ref model);
 
 		}
 		private static void CaculateCurrentLevel(ref VocationStatisticsDescription model, ApplicationDbContext context,int currentYear)
@@ -80,7 +80,7 @@ namespace BLL.Extensions
 			InputStatisticsData(ref tmp,ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVocationCount, MembersVocationDayLessThanP60, CompleteVocationExpectDayCount, CompleteVocationRealDayCount);
 			model.CurrentLevelStatistics = tmp;
 		}
-		private static void CaculateChildLevel(ref VocationStatisticsDescription model, ApplicationDbContext context, int currentYear)
+		private static void CaculateChildLevel(ref VocationStatisticsDescription model)
 		{
 			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
 			ApplyCountAccess = model.CurrentLevelStatistics.ApplyCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
