@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191124032148_vocationStatistics")]
+    partial class vocationStatistics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,11 +55,15 @@ namespace DAL.Migrations
 
                     b.Property<int>("Status");
 
+                    b.Property<Guid?>("VocationStatisticsDescriptionId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BaseInfoId");
 
                     b.HasIndex("RequestInfoId");
+
+                    b.HasIndex("VocationStatisticsDescriptionId");
 
                     b.ToTable("Applies");
                 });
@@ -662,8 +668,6 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("IncludeChildLevelStatisticsId");
 
-                    b.Property<string>("StatisticsId");
-
                     b.Property<Guid?>("VocationStatisticsDescriptionId");
 
                     b.HasKey("Id");
@@ -676,7 +680,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("VocationStatisticsDescriptionId");
 
-                    b.ToTable("VocationStatisticsDescriptions");
+                    b.ToTable("VocationStatisticsDescription");
                 });
 
             modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsDescriptionDataStatusCount", b =>
@@ -856,6 +860,10 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest", "RequestInfo")
                         .WithMany()
                         .HasForeignKey("RequestInfoId");
+
+                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescription")
+                        .WithMany("Applies")
+                        .HasForeignKey("VocationStatisticsDescriptionId");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyBaseInfo", b =>

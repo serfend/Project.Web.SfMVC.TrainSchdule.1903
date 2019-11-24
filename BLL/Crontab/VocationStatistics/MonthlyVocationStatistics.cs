@@ -13,7 +13,7 @@ namespace TrainSchdule.Crontab
 	{
 		public static DateTime Start = DateTime.Today.AddMonths(-1);
 		public static DateTime End = DateTime.Today;
-		public MonthlyVocationStatstics(ApplicationDbContext context) : base(context, Start, End,$"{Start.Year}_{Start.Month}")
+		public MonthlyVocationStatstics(ApplicationDbContext context) : base(context, Start, End,$"{Start.Year}_Month{Start.Month}")
 		{
 		}
 	}

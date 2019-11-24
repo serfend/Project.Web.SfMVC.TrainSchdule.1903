@@ -35,7 +35,8 @@ namespace DAL.Data
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
-
+		public DbSet<VocationStatistics> VocationStatistics { get; set; }
+		public DbSet<VocationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
 		public DbSet<VocationDescription> VocationDescriptions { get; set; }
 		public DbSet<VocationAdditional> VocationAdditionals { get; set; }
 

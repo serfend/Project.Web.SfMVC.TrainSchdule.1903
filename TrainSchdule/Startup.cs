@@ -105,6 +105,7 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1, 1, 0, 0));
 			RecurringJob.AddOrUpdate<WeeklyVocationStatistics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday, 0, 0));
 			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
+			RecurringJob.AddOrUpdate<YearlyVocationStatistics>((u) => u.Run(), Cron.Yearly(1, 1, 0));
 			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
 			var arg = "system load";
 			BackgroundJob.Schedule(() => Console.WriteLine(arg), TimeSpan.FromSeconds(10));

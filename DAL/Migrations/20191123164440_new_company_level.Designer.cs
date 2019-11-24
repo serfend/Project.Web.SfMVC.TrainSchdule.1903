@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191123164440_new_company_level")]
+    partial class new_company_level
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -598,103 +600,6 @@ namespace DAL.Migrations
                     b.ToTable("VocationAdditionals");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatistics", b =>
-                {
-                    b.Property<string>("Id");
-
-                    b.Property<int>("CurrentYear");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("End");
-
-                    b.Property<Guid?>("RootCompanyStatisticsId");
-
-                    b.Property<DateTime>("Start");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RootCompanyStatisticsId");
-
-                    b.ToTable("VocationStatistics");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid?>("ApplyCountId");
-
-                    b.Property<Guid?>("ApplyMembersCountId");
-
-                    b.Property<Guid?>("ApplySumDayCountId");
-
-                    b.Property<int>("CompleteVocationExpectDayCount");
-
-                    b.Property<int>("CompleteVocationRealDayCount");
-
-                    b.Property<int>("CompleteYearlyVocationCount");
-
-                    b.Property<int>("MembersCount");
-
-                    b.Property<int>("MembersVocationDayLessThanP60");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplyCountId");
-
-                    b.HasIndex("ApplyMembersCountId");
-
-                    b.HasIndex("ApplySumDayCountId");
-
-                    b.ToTable("VocationStatisticsData");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsDescription", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CompanyCode");
-
-                    b.Property<Guid?>("CurrentLevelStatisticsId");
-
-                    b.Property<Guid?>("IncludeChildLevelStatisticsId");
-
-                    b.Property<string>("StatisticsId");
-
-                    b.Property<Guid?>("VocationStatisticsDescriptionId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyCode");
-
-                    b.HasIndex("CurrentLevelStatisticsId");
-
-                    b.HasIndex("IncludeChildLevelStatisticsId");
-
-                    b.HasIndex("VocationStatisticsDescriptionId");
-
-                    b.ToTable("VocationStatisticsDescriptions");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsDescriptionDataStatusCount", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Access");
-
-                    b.Property<int>("Auditing");
-
-                    b.Property<int>("Deny");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VocationStatisticsDescriptionDataStatusCount");
-                });
-
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1031,47 +936,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyRequest")
                         .WithMany("AdditialVocations")
                         .HasForeignKey("ApplyRequestId");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatistics", b =>
-                {
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescription", "RootCompanyStatistics")
-                        .WithMany()
-                        .HasForeignKey("RootCompanyStatisticsId");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsData", b =>
-                {
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescriptionDataStatusCount", "ApplyCount")
-                        .WithMany()
-                        .HasForeignKey("ApplyCountId");
-
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescriptionDataStatusCount", "ApplyMembersCount")
-                        .WithMany()
-                        .HasForeignKey("ApplyMembersCountId");
-
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescriptionDataStatusCount", "ApplySumDayCount")
-                        .WithMany()
-                        .HasForeignKey("ApplySumDayCountId");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vocations.VocationStatisticsDescription", b =>
-                {
-                    b.HasOne("DAL.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyCode");
-
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsData", "CurrentLevelStatistics")
-                        .WithMany()
-                        .HasForeignKey("CurrentLevelStatisticsId");
-
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsData", "IncludeChildLevelStatistics")
-                        .WithMany()
-                        .HasForeignKey("IncludeChildLevelStatisticsId");
-
-                    b.HasOne("DAL.Entities.Vocations.VocationStatisticsDescription")
-                        .WithMany("Childs")
-                        .HasForeignKey("VocationStatisticsDescriptionId");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>

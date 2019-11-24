@@ -13,7 +13,7 @@ namespace TrainSchdule.Crontab
 	{
 		public static DateTime Start = DateTime.Today.AddMonths(-3);
 		public static DateTime End = DateTime.Today;
-		public SeasonlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_{(char)((int)'A' + (Start.Month - 1) / 3d)}")
+		public SeasonlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_Season{(int)(1 + ( Start.Month - 1) / 3d)}")
 		{
 		}
 	}

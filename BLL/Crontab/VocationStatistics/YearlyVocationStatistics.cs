@@ -16,7 +16,7 @@ namespace TrainSchdule.Crontab
 
 		public static DateTime Start = DateTime.Today.AddYears(-1);
 		public static DateTime End = DateTime.Today;
-		public YearlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_{new GregorianCalendar().GetWeekOfYear(Start, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday) + 1}")
+		public YearlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"Year{Start.Year}")
 		{
 			_context = context;
 		}

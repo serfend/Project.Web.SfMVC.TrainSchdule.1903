@@ -1,4 +1,8 @@
-﻿using DAL.Data;
+﻿using BLL.Extensions;
+using DAL.Data;
+using DAL.Entities;
+using DAL.Entities.ApplyInfo;
+using DAL.Entities.Vocations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +30,48 @@ namespace TrainSchdule.Crontab
 		public string StatisticsId { get;  }
 		private DateTime Start { get; set; }
 		private DateTime End { get; set; }
+		/// <summary>
+		/// 统计的单位
+		/// </summary>
+		public string CompanyCode { get; set; } = "A";
 
 		public void Run()
 		{
-			//TODO 统计指定时间范围的休假情况
+			var rootCompany = _context.Companies.Find(CompanyCode);
+			if (rootCompany == null) throw new Exception("根节点单位未找到");
+			var statistics = new VocationStatistics()
+			{
+				Start=Start,
+				End=End,
+				CurrentYear=Start.Year,
+				Id=StatisticsId,
+				Description="系统定时生成的统计",
+				RootCompanyStatistics=GenerateStatistics(rootCompany)
+			};
+			VocationStatisticsDescription tmp = statistics.RootCompanyStatistics;
+			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context,statistics.CurrentYear,StatisticsId);
+			statistics.RootCompanyStatistics = tmp;
+			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
+			if (dbStatistics != null) _context.VocationStatistics.Remove(dbStatistics);
+			_context.VocationStatistics.Add(statistics);
+			_context.SaveChanges();
 		}
+		private VocationStatisticsDescription GenerateStatistics(Company company)
+		{
+			if (company == null) return null;
+			var statistics = new VocationStatisticsDescription();
+			statistics.Applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company .Code&& a.Create.Value>=Start&& a.Create.Value <=End);
+			statistics.Company = company;
+			var companies = _context.Companies.Where<Company>(c=> ParentCode(c.Code)==company.Code);
+			var list = new List<VocationStatisticsDescription>();
+			foreach(var childCompany in companies)
+			{
+				var s = GenerateStatistics(childCompany);
+				if(s!=null)list.Add(s);
+			}
+			statistics.Childs = list;
+			return statistics;
+		}
+		private string ParentCode(string code)=>(code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
 	}
 }

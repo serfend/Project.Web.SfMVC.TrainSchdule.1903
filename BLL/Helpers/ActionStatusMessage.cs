@@ -174,7 +174,11 @@
 				public static readonly Status NotExist = new Status(61100,"无此科目");
 			}
 		}
+		public static class Statistics
+		{
+			public static readonly Status NotExist = new Status(71100, "无此id的统计数据");
 
+		}
 	}
 
 	public class Status
