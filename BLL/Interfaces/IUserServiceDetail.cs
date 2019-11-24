@@ -18,6 +18,6 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <returns></returns>
-		UserVocationInfoVDTO VocationInfo(User targetUser);
+		UserVocationInfoVDto VocationInfo(User targetUser);
 	}
 }

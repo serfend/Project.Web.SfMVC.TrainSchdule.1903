@@ -23,7 +23,7 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <returns></returns>
-		public UserVocationInfoVDTO VocationInfo(User targetUser)
+		public UserVocationInfoVDto VocationInfo(User targetUser)
 		{
 			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept&&a.Create.Value.Year==DateTime.Now.Year).ToList();
 			int nowLength = 0;
@@ -46,7 +46,7 @@ namespace BLL.Services
 				}
 				return true;
 			});
-			var vocationInfo = new UserVocationInfoVDTO()
+			var vocationInfo = new UserVocationInfoVDto()
 			{
 				LeftLength = yearlyLength - nowLength,
 				MaxTripTimes = maxOnTripTime,

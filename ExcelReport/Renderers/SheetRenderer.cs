@@ -11,7 +11,14 @@ namespace ExcelReport.Renderers
 {
 	public class SheetRenderer : Named
 	{
-		public static IList<IElementRenderer>ExtractModelToRender<T>(object model)=> new List<IElementRenderer>(ExtractModel(model).Select(k=>new ParameterRenderer(k.Key,k.Value)));
+		/// <summary>
+		/// 将对象进行匹配
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="model"></param>
+		/// <param name="Filter">匹配当key，value决定时，如何修改value</param>
+		/// <returns></returns>
+		public static IList<IElementRenderer>ExtractModelToRender<T>(object model,Func<string,string,string>Filter=null)=> new List<IElementRenderer>(ExtractModel(model).Select(k=>new ParameterRenderer(k.Key, Filter!=null?Filter.Invoke(k.Key,k.Value):k.Value)));
 		public static IList<KeyValuePair<string,Func<T,string>>> ExtractIEmbeddedModel<T>(object model) where T:class
 		{
 			var info = model.GetType();

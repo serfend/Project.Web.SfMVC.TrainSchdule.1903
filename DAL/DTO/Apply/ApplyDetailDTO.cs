@@ -42,5 +42,9 @@ namespace DAL.DTO.Apply
 		public bool AuditAvailable { get; set; }
 		public Guid? RecallId { get; set; }
 		public bool Hidden { get; set; }
+		/// <summary>
+		/// 用户全年假期描述
+		/// </summary>
+		public UserVocationInfoVDto UserVocationDescription { get; set; }
 	}
 }

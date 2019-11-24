@@ -27,7 +27,9 @@ namespace ExcelReport.Extends
             {
                 return Guid.Parse(value.ToString());
             }
-            return Convert.ChangeType(value, targetType);
+			if (value is IConvertible)
+				return Convert.ChangeType(value, targetType);
+			else return null;
         }
 
         public static T CastTo<T>(this object value)

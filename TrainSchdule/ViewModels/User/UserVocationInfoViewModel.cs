@@ -15,7 +15,7 @@ namespace TrainSchdule.ViewModels.User
 		/// <summary>
 		/// 
 		/// </summary>
-		public UserVocationInfoVDTO Data{get;set;}
+		public UserVocationInfoVDto Data{get;set;}
 	}
 	
 

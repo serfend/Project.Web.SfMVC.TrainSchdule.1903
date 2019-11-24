@@ -226,7 +226,8 @@ namespace TrainSchdule.Controllers
 			{
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
-				var apply = _applyService.Get(guid)?.ToDetaiDto(false);
+				var a = _applyService.Get(guid);
+				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From),false);
 				if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				//TODO 需要校验权限
 				//if (!currentUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Update, apply.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -256,7 +257,7 @@ namespace TrainSchdule.Controllers
 				list = list.Where(a =>
 					a.Status != AuditStatus.NotPublish && a.Status != AuditStatus.NotSave &&
 					a.Status != AuditStatus.Withdrew).ToList();
-				fileContent = _applyService.ExportExcel(tempFile.FullName, list.Select(a => a.ToDetaiDto(false)), targetCompany?.ToDto(_companiesService));
+				fileContent = _applyService.ExportExcel(tempFile.FullName, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false)), targetCompany?.ToDto(_companiesService));
 				if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}

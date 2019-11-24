@@ -151,7 +151,7 @@ namespace TrainSchdule.Controllers.Apply
 			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany().Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(userPermitCompany)
+				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From),userPermitCompany)
 			});
 		}
 		/// <summary>

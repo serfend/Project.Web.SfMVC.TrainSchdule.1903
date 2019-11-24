@@ -62,7 +62,7 @@ namespace TrainSchdule.Extensions
 			if (b.StampLeave != null)
 			{
 				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength + additionalVocationDay);
-				b.VocationDescriptions = vocationCheckServices.VocationDesc.ToDescription();
+				b.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription();
 			}
 			return b;
 		}

@@ -1,4 +1,5 @@
-﻿using DAL.DTO.User;
+﻿using BLL.Interfaces;
+using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using Remotion.Linq.Parsing.ExpressionVisitors.MemberBindings;
 
@@ -6,6 +7,7 @@ namespace BLL.Extensions
 {
 	public static class UserExtensions
 	{
+	
 		public static UserSummaryDto ToSummaryDto(this User user)
 		{
 			if (user == null) return null;

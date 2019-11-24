@@ -1,4 +1,5 @@
 ﻿using DAL.DTO.Apply;
+using DAL.DTO.User;
 using DAL.Entities.ApplyInfo;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model,bool AuditAvailable)
+		public static ApplyDetailDto ToDetaiDto(this Apply model,UserVocationInfoVDto info, bool AuditAvailable)
 		{
 			var b = new ApplyDetailDto()
 			{
@@ -25,7 +26,8 @@ namespace BLL.Extensions.ApplyExtensions
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
 				AuditAvailable = AuditAvailable,
-				RecallId =model.RecallId
+				RecallId = model.RecallId,
+				UserVocationDescription = info
 			};
 			return b;
 		}

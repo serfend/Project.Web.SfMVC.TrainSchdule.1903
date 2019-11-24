@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DAL.DTO.Company;
 using BLL.Extensions.ApplyExtensions;
+using BLL.Extensions;
 
 namespace BLL.Services.ApplyServices
 {
@@ -17,7 +18,7 @@ namespace BLL.Services.ApplyServices
 		{
 			var list = _context.Applies
 				.Where(a => a.Status == AuditStatus.NotSave)
-				.Where(a=>a.Create.HasValue && a.Create.Value.AddDays(1).CompareTo(DateTime.Now)<0).ToList();
+				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).CompareTo(DateTime.Now) < 0).ToList();
 			if (list.Count == 0) return;
 			foreach (var apply in list)
 			{
@@ -35,23 +36,46 @@ namespace BLL.Services.ApplyServices
 
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
 		{
-			var sheetRenderers = new SheetRenderer[]
+			var list = SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model, (key, value) =>
 			{
-				new SheetRenderer("Sheet1",SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model).ToArray())
-			};
+				switch (key)
+				{
+					case "RequestInfo_ByTransportation": return Enum.GetName(model.RequestInfo.ByTransportation.GetType(), Convert.ToInt32(value));
+					default: return value;
+				}
+			}).ToList();
+			list.Add(new ParameterRenderer("RequestInfo_VocationDescription", model.RequestInfo.RequestInfoVocationDescription()));
+			list.Add(new ParameterRenderer("RequestInfo_VocationTotalLength", model.RequestInfo.VocationTotalLength()));
+			list.Add(new ParameterRenderer("UserVocationInfo_DetailDescription", model.UserVocationDescription.VocationDescription()));
+
+
+			var sheetRenderers = new SheetRenderer[]
+				{
+				new SheetRenderer("Sheet1",list.ToArray())
+				};
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
 
-		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model,CompanyDto currentCompany)
+		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany)
 		{
 			var list = model.ToList();
 			int index = 1;
 			if (list.Count == 0) return null;
-			IEmbeddedRenderer<ApplyDetailDto>[] parmList = {
+			var mapList = new List<ParameterRenderer<ApplyDetailDto>>()
+			{
+				
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_LeftLength", t => t.UserVocationDescription?.LeftLength),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_MaxTripTimes", t => t.UserVocationDescription?.MaxTripTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_NowTimes", t => t.UserVocationDescription?.NowTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_OnTripTimes", t => t.UserVocationDescription?.OnTripTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_YearlyLength", t => t.UserVocationDescription?.YearlyLength),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_Description", t => t.UserVocationDescription?.Description),
+				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_VocationDescription", t => t.UserVocationDescription?.VocationDescription()),
+
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationTotalLength",
 					t => t.RequestInfo.VocationTotalLength()),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationDescription",
-					t => t.RequestInfo.VocationDescription()),
+					t => t.RequestInfo.RequestInfoVocationDescription()),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_OnTripLength", t => t.RequestInfo?.OnTripLength),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampLeave", t => t.RequestInfo?.StampLeave),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampReturn", t => t.RequestInfo?.StampReturn),
@@ -73,23 +97,19 @@ namespace BLL.Services.ApplyServices
 				new ParameterRenderer<ApplyDetailDto>("Create", t => t.Create),
 				new ParameterRenderer<ApplyDetailDto>("Duties_Name", t => t.Duties?.Name),
 				new ParameterRenderer<ApplyDetailDto>("Social_Phone", t => t.Social?.Phone),
-				new ParameterRenderer<ApplyDetailDto>("Social_Address.Name", t => t.Social?.Address?.Name),
-				new ParameterRenderer<ApplyDetailDto>("Social_Address.Code", t => t.Social?.Address?.Code),
-				new ParameterRenderer<ApplyDetailDto>("Social_Address.ShortName", t => t.Social?.Address?.ShortName),
-				new ParameterRenderer<ApplyDetailDto>("Social_AddressDetail", t => t.Social?.AddressDetail),
-				new ParameterRenderer<ApplyDetailDto>("Social_Settle", t => t.Social?.Settle),
+				new ParameterRenderer<ApplyDetailDto>("Social_Settle_Self_AddressDetail]", t => t.Social?.Settle?.Self?.AddressDetail),
+				new ParameterRenderer<ApplyDetailDto>("Social_Settle_Self_Address_Name]", t => t.Social?.Settle?.Self?.Address?.Name),
 				new ParameterRenderer<ApplyDetailDto>("Social_Id", t => t.Social?.Id),
 				new ParameterRenderer<ApplyDetailDto>("Id", t => t.Id),
 				new ParameterRenderer<ApplyDetailDto>("Response_SelfRankAudit", t => t.Response?.SelfRankAuditStatus().AuditResult()),
 				new ParameterRenderer<ApplyDetailDto>("Response_LastRankAudit", t => t.Response?.LastRankAuditStatus().AuditResult()),
 				new ParameterRenderer<ApplyDetailDto>("AuditLeader", t => t.AuditLeader),
 				new ParameterRenderer<ApplyDetailDto>("Index", t => index++)
-
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
-				new RepeaterRenderer<ApplyDetailDto>("Roster", list, parmList),
+				new RepeaterRenderer<ApplyDetailDto>("Roster", list, mapList.ToArray()),
 				new ParameterRenderer("Audit_SelfCompanyName", "科/室"),
-				new ParameterRenderer("Audit_HeadCompanyName","部")
+				new ParameterRenderer("Audit_HeadCompanyName", "部")
 			));
 		}
 	}

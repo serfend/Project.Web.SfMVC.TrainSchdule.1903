@@ -9,7 +9,7 @@ namespace DAL.DTO.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserVocationInfoVDTO
+	public class UserVocationInfoVDto
 	{
 		/// <summary>
 		/// 全年总天数
