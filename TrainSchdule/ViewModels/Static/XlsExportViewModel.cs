@@ -27,6 +27,10 @@ namespace TrainSchdule.ViewModels.Static
 		/// 获取某个申请的信息
 		/// </summary>
 		public string Apply { get; set; }
+		/// <summary>
+		/// 当同时设置了此值和单位值时，则为导出本单位的统计记录
+		/// </summary>
+		public string StatisticsId { get; set; }
 
 	}
 

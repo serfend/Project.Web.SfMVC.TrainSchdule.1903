@@ -218,7 +218,11 @@ namespace TrainSchdule.Controllers
 
 			byte[] fileContent = null;
 			string fileName = DateTime.Now.ToString("yyyy年mm月dd日导出.xlsx");
-			if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
+			if (form.StatisticsId != null && form.Company != null)
+			{
+				//TODO 后续导出报告使用
+			}
+			else if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
 			{
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
