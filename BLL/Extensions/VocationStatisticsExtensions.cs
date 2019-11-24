@@ -83,7 +83,7 @@ namespace BLL.Extensions
 		private static void CaculateChildLevel(ref VocationStatisticsDescription model, ApplicationDbContext context, int currentYear)
 		{
 			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
-			ApplyCountAccess = model.CurrentLevelStatistics.MembersCount + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
+			ApplyCountAccess = model.CurrentLevelStatistics.ApplyCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
 			ApplyCountAuditing = model.CurrentLevelStatistics.ApplyCount.Auditing + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Auditing);
 			ApplyCountDeny = model.CurrentLevelStatistics.ApplyCount.Deny + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Deny);
 			ApplyMembersCountAccess = model.CurrentLevelStatistics.ApplyMembersCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Access);
