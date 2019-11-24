@@ -16,6 +16,10 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Statistics
 {
+	/// <summary>
+	/// 休假情况统计
+	/// </summary>
+	[Route("[controller]/[action]")]
 	public class VocationStatisticsController : Controller
 	{
 		private readonly ApplicationDbContext context;
@@ -51,7 +55,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[HttpGet]
 		[ProducesResponseType(typeof(VocationStatisticsViewModel),0)]
 
-		public IActionResult FromCompany(string statisticsId, string companyCode)
+		public IActionResult Detail(string statisticsId, string companyCode)
 		{
 			var cmp = context.Companies.Find(companyCode);
 			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
@@ -70,14 +74,43 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(Status), 0)]
-		public IActionResult NewStatistics([FromBody]NewStatisticsViewModel model)
+		public async Task<IActionResult> Detail([FromBody]NewStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId);
 			baseQuery.CompanyCode = model.Data.CompanyCode;
-			BackgroundJob.Enqueue(() =>baseQuery.Run());
+			try
+			{
+				await baseQuery.RunAsync();
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}catch(Exception ex)
+			{
+				return new JsonResult(new Status(-1, ex.Message));
+			}
 			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
+		/// 单位统计记录
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult Summary(string companyCode)
+		{
+			var cmp = context.Companies.Find(companyCode);
+			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.Company.Code == companyCode).ToList();
+			return new JsonResult(new NewStatisticsListViewModel()
+			{
+				Data = new NewStatisticsListDataModel()
+				{
+					List= targetCompanyStatistics.Select(v=>v.ToMode(context.VocationStatistics.Find(v.StatisticsId)))
+				}
+			});
 		}
 	}
 }

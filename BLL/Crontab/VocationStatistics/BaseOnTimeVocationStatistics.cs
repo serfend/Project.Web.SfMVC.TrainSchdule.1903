@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions;
+using BLL.Helpers;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -34,11 +35,14 @@ namespace TrainSchdule.Crontab
 		/// 统计的单位
 		/// </summary>
 		public string CompanyCode { get; set; } = "A";
-
+		public async Task RunAsync()
+		{
+			await Task.Run(Run).ConfigureAwait(true);
+		}
 		public void Run()
 		{
 			var rootCompany = _context.Companies.Find(CompanyCode);
-			if (rootCompany == null) throw new Exception("根节点单位未找到");
+			if (rootCompany == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			var statistics = new VocationStatistics()
 			{
 				Start=Start,
