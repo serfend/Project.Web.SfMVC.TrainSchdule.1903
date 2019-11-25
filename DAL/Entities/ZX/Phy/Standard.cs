@@ -71,7 +71,7 @@ namespace DAL.Entities.ZX.Phy
 							t = t.Add(TimeSpan.FromMinutes(Convert.ToInt32(minute[0])));
 							raw = minute[1];
 						}
-						t = t.Add(TimeSpan.FromMilliseconds(Convert.ToInt32(Convert.ToDecimal(raw) * 1000)));
+						t = t.Add(TimeSpan.FromMilliseconds(Convert.ToInt32(Convert.ToDecimal(raw.Replace("\"",".")) * 1000)));
 						return (int)(t.TotalMilliseconds * (standard.BelongTo.CountDown ? -1 : 1));
 					}
 			}
@@ -83,7 +83,7 @@ namespace DAL.Entities.ZX.Phy
 			int value = 0;
 			if (expectGrade == 0) expectGrade = standard.BaseStandard;
 			bool anyMatch = false;
-			foreach (var v in standard.GradePairsInner) if (v.Value> expectGrade){ value = v.Key; anyMatch = true; break; }
+			foreach (var v in standard.GradePairsInner) if (v.Value>=expectGrade){ value = v.Key; anyMatch = true; break; }
 			if(!anyMatch)value=standard.GradePairsInner.Keys.Max();
 			value = Math.Abs(value);
 			switch (standard.BelongTo.ValueFormat)

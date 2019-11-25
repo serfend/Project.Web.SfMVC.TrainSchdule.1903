@@ -25,8 +25,8 @@ namespace BLL.Services.ZX
 			{
 				if (expression == null) return 0;
 				var replaceStr= expression.ToLower().Replace("x", value.ToString()).Replace("y",prevValue.ToString());
-				var result = Convert.ToInt32(d.Compute(replaceStr, ""));
-				return result;
+				var result = Math.Floor(Convert.ToDouble(d.Compute(replaceStr, "")));
+				return (int)result;
 			}
 		}
 		public int GetGrade(Standard standard, string rawValue)
@@ -39,7 +39,8 @@ namespace BLL.Services.ZX
 				if (i.Key > value) return prev.Value;
 				prev = i;
 			}
-			return GetExpressionGrade(value,prev.Value, standard.ExpressionWhenFullGrade);
+			if (prev.Key >= value) return prev.Value;
+			return GetExpressionGrade(value-prev.Key,prev.Value, standard.ExpressionWhenFullGrade);
 		}
 
 		public Standard GetStandard(Subject subject, UserBaseInfo userBaseInfo)
