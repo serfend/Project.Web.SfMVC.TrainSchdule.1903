@@ -42,6 +42,7 @@ namespace BLL.Services.ApplyServices
 				Company = await _context.Companies.FindAsync(model.Company),
 				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties),
 				From = model.From,
+				CreateBy=model.CreateBy,
 				Social = new UserSocialInfo()
 				{
 					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress),

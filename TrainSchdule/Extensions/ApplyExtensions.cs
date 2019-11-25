@@ -32,7 +32,8 @@ namespace TrainSchdule.Extensions
 				//VocationTargetAddressDetail=model.VocationTargetAddressDetail,
 				Phone = model.Phone,
 				RealName = model.RealName,
-				Settle = model.Settle,
+				Settle = model.Settle
+
 			};
 			return b;
 		}

@@ -18,12 +18,8 @@ namespace BLL.Services.ApplyServices
 		{
 			var list = _context.Applies
 				.Where(a => a.Status == AuditStatus.NotSave)
-				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).CompareTo(DateTime.Now) < 0).ToList();
-			if (list.Count == 0) return;
-			foreach (var apply in list)
-			{
-				_context.ApplyResponses.RemoveRange(apply.Response);
-			}
+				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now ).TotalDays< 0).ToList();
+			foreach (var apply in list)_context.ApplyResponses.RemoveRange(apply.Response);
 			_context.Applies.RemoveRange(list);
 			_context.SaveChanges();
 			var applies = _context.Applies;

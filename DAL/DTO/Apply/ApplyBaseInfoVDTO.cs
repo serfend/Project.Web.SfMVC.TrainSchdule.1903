@@ -6,6 +6,7 @@ namespace DAL.DTO.Apply
 	public class ApplyBaseInfoVdto
 	{
 		public Entities.UserInfo.User From { get; set; }
+		public Entities.UserInfo.User CreateBy { get; set; }
 		public string RealName { get; set; }
 		public string Company { get; set; }
 		public string Duties { get; set; }

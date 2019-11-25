@@ -88,7 +88,6 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
 		{
@@ -104,9 +103,10 @@ namespace TrainSchdule.Controllers.Apply
 				RealName=targetUser.BaseInfo.RealName,
 				Settle=targetUser.SocialInfo.Settle,
 				VocationTargetAddress=model.VocationTargetAddress,
-				VocationTargetAddressDetail=model.VocationTargetAddressDetail
+				VocationTargetAddressDetail=model.VocationTargetAddressDetail,
 			};
 			var m = userModel.ToVDTO( _usersService);
+			m.CreateBy = _currentUserService.CurrentUser;
 			var info = await _applyService.SubmitBaseInfoAsync(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
@@ -144,6 +144,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+
 		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
 
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
@@ -151,7 +152,8 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify.Verify(_verifyService);
 			if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
-			var apply = _applyService.Submit(model.ToVDTO());
+			var dto = model.ToVDTO();
+			var apply = _applyService.Submit(dto);
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoRequestInfo);
 			if(apply.BaseInfo==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoBaseInfo);
