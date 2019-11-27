@@ -14,123 +14,21 @@ using BLL.Extensions.ApplyExtensions;
 using TrainSchdule.ViewModels.Verify;
 using Newtonsoft.Json;
 using TrainSchdule.Extensions;
+using DAL.QueryModel;
 
 namespace TrainSchdule.Controllers.Apply
 {
 	public partial class ApplyController
 	{
-		/// <summary>
-		/// 来自此用户发布的
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="page"></param>
-		/// <param name="pageSize"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
-
-		public IActionResult FromUser(string id,int page,int pageSize)
+		[HttpPost]
+		public IActionResult List([FromBody]QueryApplyDataModel model)
 		{
-			id = id ?? _currentUserService.CurrentUser?.Id;
-			if(id==null)return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
-			var list = _applyService.GetApplyBySubmitUser(id, page,pageSize);
-			return new JsonResult(new ApplyListViewModel()
-			{
-				Data = new ApplyListDataModel()
-				{
-					List = list.Select(a=>a.ToSummaryDto(false))
-				}
-			});
-		}
-
-		/// <summary>
-		/// 交给此用户审批的（选定单位）
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="code"></param>
-		/// <param name="page"></param>
-		/// <param name="pageSize"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
-		public IActionResult ToUser(string id,string code,int page,int pageSize)
-		{
-			id = id ?? _currentUserService.CurrentUser?.Id;
-			if(id==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
-			if (currentUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var companyManages = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
-			var canAuditNot = companyManages.Any<Company>(c => c.Code == currentUser.CompanyInfo.Company.Code);
-			var targetCompany = _companiesService.Get(code);
-			if(targetCompany==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
-			if(!_companiesService.CheckManagers(code, id))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default) ;
-			return GetCompanyApply(code,canAuditNot,page,pageSize);
-		}
-
-		/// <summary>
-		/// 来自此单位的
-		/// </summary>
-		/// <param name="code"></param>
-		/// <param name="page"></param>
-		/// <param name="pageSize"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
-
-		public IActionResult FromCompany(string code,int page,int pageSize)
-		{
-			var currentUserCompany = _currentUserService.CurrentUser?.CompanyInfo?.Company;
-			if (currentUserCompany == null) return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
-			code = code ?? currentUserCompany.Code;
-			if(code==null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var targetCompany = _companiesService.Get(code);
-			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.GetApplyBySubmitCompany(code,page,pageSize).Select(a=>a.ToSummaryDto(false))
-				}
-			});
-		}
-
-		/// <summary>
-		/// 交给此单位审批的
-		/// </summary>
-		/// <param name="code"></param>
-		/// <param name="page"></param>
-		/// <param name="pageSize"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[ProducesDefaultResponseType(typeof(IEnumerable<ApplySummaryDto>))]
-
-		public IActionResult ToCompany(string code,int page,int pageSize)
-		{
-			code = code ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
-			var targetCompany = _companiesService.Get(code);
-			if (targetCompany == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			var currentUser = _currentUserService.CurrentUser;
-			if (currentUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var companyManages = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
-			var canAuditNow = companyManages.Any<Company>(c=>c.Code==currentUser.CompanyInfo.Company.Code);
-			return GetCompanyApply(targetCompany.Code,canAuditNow,page,pageSize);
-		}
-		private IActionResult GetCompanyApply(string code,bool canAuditNow, int page,int pageSize)
-		{
-			var list = _applyService.GetApplyByToAuditCompany(code, page, pageSize);
-			return new JsonResult(new ApplyListViewModel()
-			{
-				Data = new ApplyListDataModel()
-				{
-					List = list.Select(a => a.ToSummaryDto(canAuditNow))
+					List = _applyService.QueryApplies(model).Select(a => a.ToSummaryDto())
 				}
 			});
 		}
@@ -148,7 +46,7 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.Get(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var managedCompany = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
-			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany().Code);
+			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
 				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From),userPermitCompany)

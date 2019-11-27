@@ -13,8 +13,7 @@ namespace DAL.DTO.Recall
 		public UserSummaryDto RecallBy { get; set; }
 		public DateTime Create { get; set; }
 		public DateTime ReturnStamp { get; set; }
-		public ApplySummaryDto Apply{get;set;}
-
+		public Guid Apply { get; set; }
 	}
 
 

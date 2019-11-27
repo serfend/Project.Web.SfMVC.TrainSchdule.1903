@@ -18,6 +18,10 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public virtual IEnumerable<ApplyResponse> Response { get; set; }
 		/// <summary>
+		/// 终审单位
+		/// </summary>
+		public string FinnalAuditCompany { get; set; }
+		/// <summary>
 		/// 申请的状态
 		/// </summary>
 		public AuditStatus Status { get; set; }

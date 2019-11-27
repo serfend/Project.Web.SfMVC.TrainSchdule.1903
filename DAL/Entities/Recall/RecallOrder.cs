@@ -22,6 +22,5 @@ namespace DAL.Entities
 		/// 归队时间
 		/// </summary>
 		public DateTime ReturnStramp { get; set; }
-		public virtual Apply Apply { get; set; }
 	}
 }

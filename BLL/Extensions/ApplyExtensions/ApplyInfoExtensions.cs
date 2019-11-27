@@ -31,7 +31,7 @@ namespace BLL.Extensions.ApplyExtensions
 			};
 			return b;
 		}
-		public static ApplySummaryDto ToSummaryDto(this Apply model, bool AuditAvailable)
+		public static ApplySummaryDto ToSummaryDto(this Apply model)
 		{
 
 			var b = new ApplySummaryDto()
@@ -43,8 +43,8 @@ namespace BLL.Extensions.ApplyExtensions
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = model.RequestInfo,
-				AuditAvailable = AuditAvailable,
-				RecallId=model.RecallId
+				RecallId=model.RecallId,
+				FinnalAuditCompany=model.FinnalAuditCompany
 			};
 			return b;
 		}

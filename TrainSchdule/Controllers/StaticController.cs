@@ -227,7 +227,7 @@ namespace TrainSchdule.Controllers
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
 				var a = _applyService.Get(guid);
-				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From),false);
+				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false);
 				if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				//TODO 需要校验权限
 				//if (!currentUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Update, apply.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -241,14 +241,26 @@ namespace TrainSchdule.Controllers
 				Company targetCompany = null;
 				if (form.User != null)
 				{
-					list = _applyService.GetApplyBySubmitUser(form.User, 0, 0);
+					list = _applyService.QueryApplies(new DAL.QueryModel.QueryApplyDataModel()
+					{
+						CreateFor = new DAL.QueryModel.QueryByString()
+						{
+							Value = form.User
+						}
+					});
 					var targetUser = _usersService.Get(form.User);
 					fromName = targetUser?.BaseInfo.RealName ?? form.User;
-					   targetCompany = targetUser?.CompanyInfo?.Company;
+					targetCompany = targetUser?.CompanyInfo?.Company;
 				}
 				else if (form.Company != null)
 				{
-					list = _applyService.GetApplyByToAuditCompany(form.Company, 0, 0);
+					list = _applyService.QueryApplies(new DAL.QueryModel.QueryApplyDataModel()
+					{
+						CreateCompany = new DAL.QueryModel.QueryByString()
+						{
+							Value = form.Company
+						}
+					});
 					targetCompany = _companiesService.Get(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}
@@ -270,7 +282,7 @@ namespace TrainSchdule.Controllers
 		[Route("file")]
 		public IActionResult File(IEnumerable<IFormFile> file)
 		{
-			return new JsonResult(new { file});
+			return new JsonResult(new { file });
 		}
 	}
 }

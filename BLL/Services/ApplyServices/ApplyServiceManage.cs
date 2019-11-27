@@ -9,11 +9,27 @@ using System.Linq;
 using DAL.DTO.Company;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions;
+using DAL.QueryModel;
 
 namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model)
+		{
+			var list = _context.Applies.AsQueryable();
+			if (model == null) return null;
+			if(model.Status!=null) list= _context.Applies.Where(a => model.Status.Arrays.Contains((int)a.Status) || (model.Status.Start >= (int)a.Status && model.Status.Start <=(int)a.Status));
+			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
+			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
+			if (model.CreateBy != null) list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value);
+			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value);
+			if (model.Create != null) list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || model.Create.Dates.Any(d=>d.Date.Subtract(a.Create.Value).Days==0));
+			if (model.StampLeave != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0));
+			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0));
+			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
+			return list.ToList();
+		}
 		public void RemoveAllUnSaveApply()
 		{
 			var list = _context.Applies

@@ -20,5 +20,6 @@ namespace DAL.Entities.ApplyInfo
 		/// 申请由何人创建
 		/// </summary>
 		public virtual User CreateBy{get;set;}
+		public string FinnalAuditCompany { get; set; }
 	}
 }

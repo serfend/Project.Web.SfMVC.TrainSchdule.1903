@@ -102,27 +102,6 @@ namespace BLL.Services.ApplyServices
 			return Create(apply);
 		}
 
-		public IEnumerable<Apply> GetApplyByToAuditCompany(string code,int page,int pageSize)
-		{
-			IQueryable<Apply> list= _context.Applies.Where(a => a.Response.Any(r => r.Company.Code == code)).OrderByDescending(a => a.Status);
-			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
-			return list;
-		}
-
-		public IEnumerable<Apply> GetApplyBySubmitCompany(string code,int page,int pageSize)
-		{
-			IQueryable<Apply> list = _context.Applies.Where(a => a.BaseInfo.Company.Code == code).OrderByDescending(a => a.Status);
-			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
-			return list;
-		}
-
-		public IEnumerable<Apply> GetApplyBySubmitUser(string id,int page,int pageSize)
-		{
-			IQueryable<Apply> list = _context.Applies.Where(a => a.BaseInfo.From.Id == id).OrderByDescending(a => a.Status);
-			if (pageSize > 0) list = list.Skip(page * pageSize).Take(pageSize);
-			return list;
-		}
-
 
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
 		{
@@ -242,7 +221,11 @@ namespace BLL.Services.ApplyServices
 				case AuditResult.Accept:
 					response.Status = Auditing.Accept;
 					var next=target.Response.FirstOrDefault(r => r.Status == Auditing.UnReceive);
-					if(next!=null)next.Status = Auditing.Received;//=下一级变更为审核中
+					if (next != null)
+					{
+						next.Status = Auditing.Received;//=下一级变更为审核中
+						target.FinnalAuditCompany = next.Company.Code;
+					}
 					break;
 				case AuditResult.Deny:
 					response.Status = Auditing.Denied;

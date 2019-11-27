@@ -19,6 +19,7 @@ namespace TrainSchdule.ViewModels.Apply
 	}
 	public class RecallCreateDataModel
 	{
+
 		public string Reason { get; set; }
 		/// <summary>
 		/// 召回人id
@@ -26,6 +27,8 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required]
 		public string RecallBy { get; set; }
 		public DateTime Create { get; set; }
+		[Required]
+
 		public DateTime ReturnStamp { get; set; }
 		/// <summary>
 		/// 召回的申请的id
@@ -43,10 +46,7 @@ namespace TrainSchdule.ViewModels.Apply
 				Create = model.Create,
 				ReturnStamp = model.ReturnStamp,
 				Reason = model.Reason,
-				Apply = new DAL.DTO.Apply.ApplySummaryDto()
-				{
-					Id = model.Apply
-				},
+				Apply =model.Apply,
 				RecallBy=new DAL.DTO.User.UserSummaryDto()
 				{
 					Id=model.RecallBy

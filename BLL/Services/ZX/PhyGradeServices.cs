@@ -25,7 +25,7 @@ namespace BLL.Services.ZX
 			{
 				if (expression == null) return 0;
 				var replaceStr= expression.ToLower().Replace("x", value.ToString()).Replace("y",prevValue.ToString());
-				var result = Math.Floor(Convert.ToDouble(d.Compute(replaceStr, "")));
+				var result = Math.Floor(Convert.ToDouble(d.Compute(replaceStr, ""))+prevValue);
 				return (int)result;
 			}
 		}

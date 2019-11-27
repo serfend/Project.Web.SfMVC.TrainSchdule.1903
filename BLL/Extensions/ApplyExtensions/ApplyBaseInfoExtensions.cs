@@ -15,7 +15,7 @@ namespace BLL.Extensions.ApplyExtensions
 			{
 				CompanyName = model?.CompanyName,
 				DutiesName = model.DutiesName,
-				RealName = model.RealName
+				RealName = model.RealName,
 			};
 		}
 	}

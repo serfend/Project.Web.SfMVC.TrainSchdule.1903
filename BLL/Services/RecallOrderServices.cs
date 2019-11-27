@@ -25,19 +25,20 @@ namespace BLL.Services
 		{
 			var order = new RecallOrder()
 			{
-				Apply=_context.Applies.Find(recallOrder?.Apply.Id),
 				Create=DateTime.Now,
 				ReturnStramp=recallOrder.ReturnStamp,
 				Reason=recallOrder.Reason,
-				RecallBy=_context.AppUsers.Find(recallOrder.RecallBy.Id)
+				RecallBy=_context.AppUsers.Find(recallOrder.RecallBy.Id),
 			};
-			if (order.Apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
-			if (order.Apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.Crash);
+			var apply = _context.Applies.Find(recallOrder.Apply);
+			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
+			if (apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.Crash);
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
-			if (order.Apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
-			if (order.Apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeLateThenVocation);		
-   _context.RecallOrders.Add(order);
-			order.Apply.RecallId = order.Id;
+			if (apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
+			if (apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeLateThenVocation);		
+			 _context.RecallOrders.Add(order);
+			apply.RecallId = order.Id;
+			_context.Applies.Update(apply);
 			_context.SaveChanges();
 			return order;
 		}
