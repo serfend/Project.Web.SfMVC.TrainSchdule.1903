@@ -14,6 +14,7 @@ namespace DAL.QueryModel
 	/// </summary>
 	public class QueryApplyDataModel
 	{
+		public QueryByPage Pages { get; set; }
 		/// <summary>
 		/// 申请的状态
 		/// </summary>
