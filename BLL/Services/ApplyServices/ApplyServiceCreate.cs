@@ -62,6 +62,7 @@ namespace BLL.Services.ApplyServices
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
 		{
+			if (model == null) return null;
 			var r = new ApplyRequest()
 			{
 				OnTripLength = model.OnTripLength,
