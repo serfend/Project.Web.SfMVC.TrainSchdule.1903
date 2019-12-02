@@ -19,6 +19,7 @@ using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.User;
 using BLL.Extensions;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers
 {
@@ -189,12 +190,12 @@ namespace TrainSchdule.Controllers
 			var currentUser = currentUserService.CurrentUser;
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (model.Id != currentUser?.Id&&currentUser.Application.Permission.Check(DictionaryAllPermission.User.Application,Operation.Update ,targetUser)==false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (model.Id != currentUser?.Id && currentUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
-			var appUser = _context.Users.Where(u=>u.UserName== model.Id).FirstOrDefault();
-			var sign=await _signInManager.PasswordSignInAsync(appUser, model.OldPassword,false,false);
+			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
+			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
 			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			appUser.PasswordHash= new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
+			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
 			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
@@ -263,9 +264,11 @@ namespace TrainSchdule.Controllers
 
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
-			if (ModelState.IsValid){
+			if (ModelState.IsValid)
+			{
 				var r = model.Verify.Verify(_verifyService);
 				if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -274,7 +277,7 @@ namespace TrainSchdule.Controllers
 					_logger.LogInformation($"用户登录:{model.UserName}");
 					return new JsonResult(ActionStatusMessage.Success);
 				}
-				else if (result.RequiresTwoFactor)return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
+				else if (result.RequiresTwoFactor) return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
 				else if (result.IsLockedOut)
 				{
 					_logger.LogWarning("账号异常");
@@ -344,12 +347,69 @@ namespace TrainSchdule.Controllers
 
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (model.Data?.Application?.UserName == null) return new JsonResult(ActionStatusMessage.User.NoId);
-			var regUser = _usersService.Get(model.Data.Application.UserName);
-			if (regUser != null) return new JsonResult(ActionStatusMessage.Account.Register.UserExist);
-			if (model.Data.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Data.Company.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var user = await _usersService.CreateAsync(model.Data.ToDTO(model.Auth.AuthByUserID, _context.AdminDivisions), model.Data.ConfirmPassword);
+			try
+			{
+				RegisterSingle(model.Data, authByUser);
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}
+			catch (ModelStateException mse)
+			{
+				return new JsonResult(mse.Model);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 注册新用户
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(Status), 0)]
+
+		public async Task<IActionResult> RegisterMutil([FromBody]UsersCreateMutilViewModel model)
+		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var r = model.Verify.Verify(_verifyService);
+			if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+
+			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			var exStatus = new Dictionary<string, Status>();
+			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
+			foreach (var m in model.Data.List)
+				try
+				{
+					RegisterSingle(m, authByUser);
+				}
+				catch (ActionStatusMessageException ex)
+				{
+					exStatus.Add(m.Application?.UserName, ex.Status);
+				}
+				catch (ModelStateException mse)
+				{
+					exMSE.Add(m.Application?.UserName, mse.Model.Data);
+				}
+			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(exMSE.Count>0||exStatus.Count>0?ActionStatusMessage.Fail:ActionStatusMessage.Success)
+			{
+				ModelStateException=exMSE,
+				StatusException=exStatus
+			});
+		}
+		#endregion
+
+		private async void RegisterSingle(UserCreateDataModel model, User authByUser)
+		{
+			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
+			var regUser = _usersService.Get(model.Application.UserName);
+			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
+			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
+			if (!authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, model.Company.Company)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.ConfirmPassword);
 
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 
@@ -367,16 +427,10 @@ namespace TrainSchdule.Controllers
 				await Remove(new UserRemoveViewModel()
 				{
 					Auth = GoogleAuthDataModel.Root,
-					Id = model.Data.Application.UserName
+					Id = model.Application.UserName
 				});
-				return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}   //await _signInManager.SignInAsync(user, isPersistent: false);
-			return new JsonResult(ActionStatusMessage.Success);
 		}
-
-
-		#endregion
-
-
 	}
 }

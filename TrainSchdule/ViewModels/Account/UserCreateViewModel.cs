@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
@@ -8,7 +10,7 @@ using TrainSchdule.ViewModels.Verify;
 namespace TrainSchdule.ViewModels.Account
 {
 	/// <summary>
-	/// 
+	/// 注册单个账号
 	/// </summary>
 	public class UserCreateViewModel: GoogleAuthViewModel
 	{
@@ -21,7 +23,24 @@ namespace TrainSchdule.ViewModels.Account
 		/// </summary>
 		public UserCreateDataModel Data { get; set; }
 	}
-
+	public class UsersCreateMutilViewModel : GoogleAuthViewModel
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public ScrollerVerifyViewModel Verify { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public UserMutilCreateDataModel Data { get; set; }
+	}
+	public class UserMutilCreateDataModel
+	{
+		/// <summary>
+		/// 注册账号列表
+		/// </summary>
+		public  IEnumerable<UserCreateDataModel> List { get; set; }
+	}
 	/// <summary>
 	/// 
 	/// </summary>
