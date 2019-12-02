@@ -23,6 +23,8 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		public IActionResult List([FromBody]QueryApplyDataModel model)
 		{
+			if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
+
 			var currentUser = _currentUserService.CurrentUser;
 			return new JsonResult(new ApplyListViewModel()
 			{
