@@ -35,7 +35,7 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IVerifyService _verifyService;
 		private readonly IGoogleAuthService _authService;
 		private readonly IRecallOrderServices recallOrderServices;
-
+		private readonly IUserActionServices _userActionServices;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -48,7 +48,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="authService"></param>
 		/// <param name="vocationCheckServices"></param>
 		/// <param name="recallOrderServices"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -59,6 +59,7 @@ namespace TrainSchdule.Controllers.Apply
 			_authService = authService;
 			_vocationCheckServices = vocationCheckServices;
 			this.recallOrderServices = recallOrderServices;
+			_userActionServices = userActionServices;
 		}
 
 		#endregion
@@ -177,7 +178,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if(authByUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default,Operation.Update,authByUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(_userActionServices.Permission(authByUser.Application.Permission,DictionaryAllPermission.Apply.Default,Operation.Update,authByUser.Id,authByUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.Get(id);
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);

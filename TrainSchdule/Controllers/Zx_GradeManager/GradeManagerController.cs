@@ -26,11 +26,20 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		private readonly IPhyGradeServices phyGradeServices;
 		private readonly IUsersService usersService;
 		private readonly IGoogleAuthService googleAuthService;
-		public GradeManagerController(IPhyGradeServices phyGradeServices, IUsersService usersService, IGoogleAuthService googleAuthService)
+		private readonly IUserActionServices userActionServices;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="phyGradeServices"></param>
+		/// <param name="usersService"></param>
+		/// <param name="googleAuthService"></param>
+		/// <param name="userActionServices"></param>
+		public GradeManagerController(IPhyGradeServices phyGradeServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices)
 		{
 			this.phyGradeServices = phyGradeServices;
 			this.usersService = usersService;
 			this.googleAuthService = googleAuthService;
+			this.userActionServices = userActionServices;
 		}
 		/// <summary>
 		/// 添加一个科目
@@ -43,7 +52,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			if (!model.Auth.Verify(googleAuthService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Grade.Subject, Operation.Update, new Company())) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(actionUser.Application.Permission,DictionaryAllPermission.Grade.Subject, Operation.Update,actionUser.Id, "")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			phyGradeServices.AddSubject(model.Subject);
 			return new JsonResult(ActionStatusMessage.Success);
 		}

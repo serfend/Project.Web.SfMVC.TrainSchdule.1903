@@ -3,6 +3,7 @@ using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
+using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +27,8 @@ namespace TrainSchdule.Controllers
 		private readonly ICompaniesService _companiesService;
 		private readonly IApplyService _applyService;
 		private readonly IGoogleAuthService _authService;
-
+		private readonly ApplicationDbContext _context;
+		private readonly IUserActionServices _userActionServices;
 		#endregion
 
 		#region .ctors
@@ -39,7 +41,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="authService"></param>
 		/// <param name="companyManagerServices"></param>
-		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices)
+		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -47,6 +49,8 @@ namespace TrainSchdule.Controllers
 			_applyService = applyService;
 			_authService = authService;
 			_companyManagerServices = companyManagerServices;
+			_userActionServices = userActionServices;
+			_context = context;
 		}
 
 		#endregion
@@ -119,7 +123,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return result;
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (id != targetUser.Id && !authByUser.Application.Permission.Check(DictionaryAllPermission.User.Application, Operation.Update, targetUser)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (id != targetUser.Id && !_userActionServices.Permission(authByUser.Application.Permission,DictionaryAllPermission.User.Application, Operation.Update,authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo);
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -190,9 +194,11 @@ namespace TrainSchdule.Controllers
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
 			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
+			var data = targetUser.ToSummaryDto();
+			data.LastLogin = _context.UserActions.Where(u => u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
-				Data = targetUser.ToSummaryDto()
+				Data = data
 			});
 		}
 		/// <summary>

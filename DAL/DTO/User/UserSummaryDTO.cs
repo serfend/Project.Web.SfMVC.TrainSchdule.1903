@@ -44,5 +44,6 @@ namespace DAL.DTO.User
 		/// 职务名
 		/// </summary>
 		public string DutiesName { get; set; }
+		public UserAction LastLogin { get; set; }
 	}
 }

@@ -200,12 +200,6 @@ namespace DAL.Entities
 			if (targetUserCompanyCode == null) return list.Count() > 0;
 			return list.Any(targetUserCompanyCode.StartsWith);
 		}
-
-		
-		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation,
-			Company targetUserCompany) => Check(permissions, key, operation, targetUserCompany?.Code);
-		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation,
-			UserInfo.User user) => Check(permissions, key, operation, user.CompanyInfo.Company?.Code);
 	}
 
 

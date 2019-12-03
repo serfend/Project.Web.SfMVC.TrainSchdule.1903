@@ -25,12 +25,14 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly ApplicationDbContext context;
 		private readonly IGoogleAuthService authService;
 		private readonly IUsersService usersService;
+		private readonly IUserActionServices _userActionServices;
 
-		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService)
+		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices)
 		{
 			this.context = context;
 			this.authService = authService;
 			this.usersService = usersService;
+			_userActionServices = userActionServices;
 		}
 
 		/// <summary>
@@ -82,7 +84,7 @@ namespace TrainSchdule.Controllers.Statistics
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
-			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Query, targetCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(actionUser.Application.Permission,DictionaryAllPermission.Apply.Default, Operation.Query,actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
 			{
 				CompanyCode = model.Data.CompanyCode??"A",
@@ -116,7 +118,7 @@ namespace TrainSchdule.Controllers.Statistics
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
-			if (!actionUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Remove, targetCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(actionUser.Application.Permission,DictionaryAllPermission.Apply.Default, Operation.Remove,actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var parent = context.VocationStatistics.Find(model.Data.StatisticsId);
 			if (parent == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
 

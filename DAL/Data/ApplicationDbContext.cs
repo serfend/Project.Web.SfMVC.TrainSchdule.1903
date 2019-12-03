@@ -50,7 +50,7 @@ namespace DAL.Data
 
 		public DbSet<Subject> Subjects { get; set; }
 		public DbSet<Standard> Standards { get; set; }
-		
+		public DbSet<UserAction> UserActions { get; set; }
 		#endregion
 
 		#region .ctors
