@@ -171,7 +171,7 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Status> Audit(ApplyAuditVdto model)
 		{
-			var myManages = _usersService.InMyManage(model.AuditUser.Id)?.ToList();
+			var myManages = _usersService.InMyManage(model.AuditUser.Id,out var totalCount)?.ToList();
 			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 			var list =new List<Status>();

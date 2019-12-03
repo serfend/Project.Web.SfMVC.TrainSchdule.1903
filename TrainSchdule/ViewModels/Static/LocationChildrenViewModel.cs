@@ -23,6 +23,10 @@ namespace TrainSchdule.ViewModels.Static
 		/// 
 		/// </summary>
 		public IEnumerable<LocationChildNodeDataModel> List { get; set; }
+		/// <summary>
+		/// 总量
+		/// </summary>
+		public int TotalCount { get; set; }
 	}
 
 	/// <summary>

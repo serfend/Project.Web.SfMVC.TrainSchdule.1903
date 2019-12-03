@@ -10,7 +10,7 @@ namespace BLL.Interfaces
 {
 	public interface IApplyServiceManage
 	{
-		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model);
+		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,out int totalCount);
 		void RemoveAllUnSaveApply();
 		byte[] ExportExcel(string templete,  ApplyDetailDto model);
 		byte[] ExportExcel(string templete,  IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany);

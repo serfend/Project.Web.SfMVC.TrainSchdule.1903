@@ -27,5 +27,9 @@ namespace TrainSchdule.ViewModels.Company
 		/// 用户列表
 		/// </summary>
 		public IEnumerable<UserSummaryDto> List { get; set; }
+		/// <summary>
+		/// 总量
+		/// </summary>
+		public int TotalCount { get; set; }
 	}
 }

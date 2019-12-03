@@ -26,13 +26,15 @@ namespace TrainSchdule.Controllers.Apply
 			if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
 
 			var currentUser = _currentUserService.CurrentUser;
+			var list = _applyService.QueryApplies(model, out var totalCount).Select(a => a.ToSummaryDto());
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = _applyService.QueryApplies(model).Select(a => a.ToSummaryDto())
+					List =list,
+					TotalCount= totalCount
 				}
-			});
+			}); ;
 		}
 
 		/// <summary>
@@ -47,7 +49,7 @@ namespace TrainSchdule.Controllers.Apply
 			Guid.TryParse(id, out var aId);
 			var apply = _applyService.Get(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
-			var managedCompany = _usersService.InMyManage(_currentUserService.CurrentUser.Id);
+			var managedCompany = _usersService.InMyManage(_currentUserService.CurrentUser.Id,out var totalCount);
 			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{

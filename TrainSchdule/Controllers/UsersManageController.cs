@@ -28,11 +28,13 @@ namespace TrainSchdule.Controllers
 			id=id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			var list=_usersService.InMyManage(id,out var totalCount).Select(c => c.ToDto(_companiesService));
 			return new JsonResult(new UserManageRangeViewModel()
 			{
 				Data = new UserManageRangeDataModel()
 				{
-					List = _usersService.InMyManage(id).Select(c => c.ToDto(_companiesService))
+					List =list ,
+					TotalCount=totalCount
 				}
 			});
 		}

@@ -13,9 +13,10 @@ namespace BLL.Services
 {
 	public partial class UsersService
 	{
-		public IEnumerable<Company> InMyManage(string id)
+		public IEnumerable<Company> InMyManage(string id,out int totalCount)
 		{
 			var list = _context.CompanyManagers.Where(m => m.User.Id == id).Select(m => m.Company);
+			totalCount = list.Count();
 			return list;
 		}
 		/// <summary>

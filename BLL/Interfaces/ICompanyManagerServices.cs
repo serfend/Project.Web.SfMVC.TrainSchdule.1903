@@ -17,6 +17,6 @@ namespace BLL.Interfaces
 		int Delete(CompanyManagers model);
 		CompanyManagers GetManagerByUC(string userId, string companyCode);
 
-		IEnumerable<User> GetMembers(string code, int page, int pageSize);
+		IEnumerable<User> GetMembers(string code, int page, int pageSize,out int totalCount);
 	}
 }

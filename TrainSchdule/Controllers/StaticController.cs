@@ -168,11 +168,13 @@ namespace TrainSchdule.Controllers
 			var location = _context.AdminDivisions.Find(code);
 			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
 			var list = _context.AdminDivisions.Where(a => a.ParentCode == code);
+			var totalCount = list.Count();
 			return new JsonResult(new LocationChildrenViewModel()
 			{
 				Data = new LocationChildrenDataModel()
 				{
-					List = list.Select(t => t.ToDataModel())
+					List = list.Select(t => t.ToDataModel()),
+					TotalCount=totalCount
 				}
 			});
 		}
@@ -247,7 +249,7 @@ namespace TrainSchdule.Controllers
 						{
 							Value = form.User
 						}
-					});
+					},out var totalCount);
 					var targetUser = _usersService.Get(form.User);
 					fromName = targetUser?.BaseInfo.RealName ?? form.User;
 					targetCompany = targetUser?.CompanyInfo?.Company;
@@ -260,7 +262,7 @@ namespace TrainSchdule.Controllers
 						{
 							Value = form.Company
 						}
-					});
+					},out var totalCount);
 					targetCompany = _companiesService.Get(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}

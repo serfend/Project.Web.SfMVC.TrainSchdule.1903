@@ -23,5 +23,9 @@ namespace TrainSchdule.ViewModels.User
 		/// 
 		/// </summary>
 		public IEnumerable<CompanyDto> List { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public int TotalCount { get; set; }
 	}
 }

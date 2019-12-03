@@ -15,8 +15,9 @@ namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
-		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model)
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,out int totalCount)
 		{
+			totalCount = 0;
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
 			if(model.Status!=null) list= _context.Applies.Where(a =>(model.Status.Arrays!=null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >=(int)a.Status));
@@ -29,6 +30,7 @@ namespace BLL.Services.ApplyServices
 			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn!=null&&model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
+			totalCount = list.Count();
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
 			return list.ToList();
 		}

@@ -24,5 +24,9 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 
 		/// </summary>
 		public IEnumerable<ApplySummaryDto> List { get; set; }
+		/// <summary>
+		/// 查询的总量
+		/// </summary>
+		public int TotalCount { get; set; }
 	}
 }

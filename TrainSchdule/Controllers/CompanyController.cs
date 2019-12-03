@@ -40,7 +40,7 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult Child(string id)
 		{
-			id = id ?? _currentUserService.CurrentUser.CompanyInfo.Company.Code;
+			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			var company = _companiesService.FindAllChild(id);
 
 			return new JsonResult(new AllChildViewModel()
@@ -88,11 +88,12 @@ namespace TrainSchdule.Controllers
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
+			var list = _companyManagerServices.GetMembers(code, page, pageSize,out var totalCount).Select(u => u.ToSummaryDto());
 			return new JsonResult(new AllMembersViewModel()
 			{
 				Data = new AllMembersDataModel()
 				{
-					List = _companyManagerServices.GetMembers(code,page,pageSize).Select(u=>u.ToSummaryDto())
+					List = list,TotalCount= totalCount
 				}
 			});
 		}

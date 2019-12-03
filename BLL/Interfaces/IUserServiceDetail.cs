@@ -12,7 +12,7 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		IEnumerable<Company> InMyManage(string id);
+		IEnumerable<Company> InMyManage(string id,out int totalCount);
 		/// <summary>
 		/// 获取用户的休假概况
 		/// </summary>
