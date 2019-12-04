@@ -195,7 +195,7 @@ namespace TrainSchdule.Controllers
 			if (result != null) return result;
 			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
 			var data = targetUser.ToSummaryDto();
-			data.LastLogin = _context.UserActions.Where(u => u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
+			data.LastLogin = _context.UserActions.Where(u =>u.UserName==id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
 				Data = data
