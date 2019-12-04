@@ -21,8 +21,12 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 修改密码
 	/// </summary>
-	public class ModefyPasswordViewModel : ModefyPermissionsViewModel
+	public class ModefyPasswordViewModel : GoogleAuthViewModel
 	{
+		/// <summary>
+		/// 用户id
+		/// </summary>
+		public string Id { get; set; }
 		/// <summary>
 		/// 老密码
 		/// </summary>
