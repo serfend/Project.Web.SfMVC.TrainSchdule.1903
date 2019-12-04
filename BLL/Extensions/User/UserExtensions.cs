@@ -21,7 +21,8 @@ namespace BLL.Extensions
 				DutiesName = user.CompanyInfo?.Duties?.Name??"无职务",
 				Gender = user.BaseInfo.Gender,
 				RealName = user.BaseInfo?.RealName??"无姓名",
-				Id = user.Id
+				Id = user.Id,
+				IsInitPassword=user.BaseInfo.PasswordModefy
 			};
 			return b;
 		}

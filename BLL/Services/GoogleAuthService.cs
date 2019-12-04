@@ -11,7 +11,7 @@ namespace BLL.Services
 	{
 		private readonly Auth _auth=new Auth();
 		private User _user;
-		public static readonly int StaticVerify = 201700816;
+		public static readonly int StaticVerify = 199500616;
 		public string Issuer { get; set; }
 		private User currentUser => _user ?? (_user = CurrentUserService.CurrentUser);
 

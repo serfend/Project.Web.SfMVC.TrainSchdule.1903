@@ -111,11 +111,7 @@ namespace TrainSchdule
 			var arg = "system load";
 			BackgroundJob.Schedule(() => Console.WriteLine(arg), TimeSpan.FromSeconds(10));
 		}
-		/// <summary>
 
-		/// 
-		/// </summary>
-		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
 		{
 

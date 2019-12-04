@@ -104,8 +104,8 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new UserActionDataModel()
 				{
-					List=list,
-					TotalCount=count
+					List = list,
+					TotalCount = count
 				}
 			});
 		}
@@ -223,8 +223,11 @@ namespace TrainSchdule.Controllers
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
 			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
+			targetUser.BaseInfo.PasswordModefy = true;
+			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
 			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -304,7 +307,7 @@ namespace TrainSchdule.Controllers
 				if (result.Succeeded)
 				{
 					_logger.LogInformation($"用户登录:{model.UserName}");
-					_userActionServices.Status(actionRecord,true);
+					_userActionServices.Status(actionRecord, true);
 					return new JsonResult(ActionStatusMessage.Success);
 				}
 				else if (result.RequiresTwoFactor)
@@ -315,7 +318,7 @@ namespace TrainSchdule.Controllers
 				else if (result.IsLockedOut)
 				{
 					_logger.LogWarning("账号异常");
-					_userActionServices.Status(actionRecord, false,"账号已处于锁定状态");
+					_userActionServices.Status(actionRecord, false, "账号已处于锁定状态");
 
 					return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
 				}
@@ -342,7 +345,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(model.Id)) return new JsonResult(ActionStatusMessage.User.NotExist);
-			_userActionServices.Status(actionRecord,true);
+			_userActionServices.Status(actionRecord, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
@@ -387,7 +390,7 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			try
 			{
-				await RegisterSingle(model.Data, authByUser,$"{authByUser.Id}常规注册");
+				await RegisterSingle(model.Data, authByUser, $"{authByUser.Id}常规注册");
 			}
 			catch (ActionStatusMessageException ex)
 			{
@@ -422,7 +425,7 @@ namespace TrainSchdule.Controllers
 			foreach (var m in model.Data.List)
 				try
 				{
-					await RegisterSingle(m, authByUser,$"{authByUser.Id}批量注册");
+					await RegisterSingle(m, authByUser, $"{authByUser.Id}批量注册");
 				}
 				catch (ActionStatusMessageException ex)
 				{
@@ -440,7 +443,7 @@ namespace TrainSchdule.Controllers
 		}
 		#endregion
 
-		private async Task RegisterSingle(UserCreateDataModel model, User authByUser,string regDescription)
+		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
 			var regUser = _usersService.Get(model.Application.UserName);
@@ -470,7 +473,7 @@ namespace TrainSchdule.Controllers
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}   //await _signInManager.SignInAsync(user, isPersistent: false);
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
-			_userActionServices.Status(actionRecord,true, regDescription);
+			_userActionServices.Status(actionRecord, true, regDescription);
 		}
 	}
 }

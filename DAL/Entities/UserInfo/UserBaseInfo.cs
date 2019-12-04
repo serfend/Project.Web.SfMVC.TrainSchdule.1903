@@ -26,6 +26,10 @@ namespace DAL.Entities.UserInfo
 		/// </summary>
 		public DateTime Time_Party { get; set; }
 		public bool PrivateAccount { get; set; }
+		/// <summary>
+		/// 是否修改过密码
+		/// </summary>
+		public bool PasswordModefy { get; set; }
 
 	}
 	public enum GenderEnum

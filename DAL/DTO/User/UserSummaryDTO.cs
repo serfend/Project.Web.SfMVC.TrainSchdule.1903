@@ -45,5 +45,9 @@ namespace DAL.DTO.User
 		/// </summary>
 		public string DutiesName { get; set; }
 		public UserAction LastLogin { get; set; }
+		/// <summary>
+		/// 当前密码是否是初始密码
+		/// </summary>
+		public bool IsInitPassword { get; set; }
 	}
 }

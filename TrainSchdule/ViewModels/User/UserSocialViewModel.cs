@@ -39,6 +39,9 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		public string AddressDetail { get; set; }
 	}
+	/// <summary>
+	/// 
+	/// </summary>
 	public class UserSettleDataModel : Settle
 	{
 		public new string Id { get; set; }

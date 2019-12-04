@@ -14,6 +14,8 @@
 				public static readonly Status AuthException = new Status(11300, "异常登录");
 				public static readonly Status AuthBlock = new Status(11400, "账号存在危险,已阻止");
 				public static readonly Status AuthAccountOrPsw = new Status(11500, "账号或密码错误");
+				public static readonly Status PasswordIsSame = new Status(11600, "新的密码与旧密码相同");
+				
 			}
 			public static class Auth
 			{
