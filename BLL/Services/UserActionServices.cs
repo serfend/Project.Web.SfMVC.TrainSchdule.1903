@@ -44,15 +44,17 @@ namespace BLL.Services
 			var a=Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}");
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
-				Success(a);
+				Status(a,true,"授权成功");
 				return true;
 			}
 			return false;
 		}
 
-		public UserAction Success(UserAction action)
+		public UserAction Status(UserAction action,bool success,string description=null)
 		{
-			action.Success = true;
+			if (action == null) return null;
+			action.Success = success;
+			action.Description = description??action.Description;
 			_context.UserActions.Update(action);
 			_context.SaveChanges();
 			return action;

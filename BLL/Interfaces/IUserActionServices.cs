@@ -25,7 +25,13 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		UserAction Success(UserAction action);
+		UserAction Status(UserAction action, bool success, string description = null);
+		/// <summary>
+		/// 当需要追加信息时
+		/// </summary>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		UserAction Description(UserAction action);
 		/// <summary>
 		/// 授权记录
 		/// </summary>

@@ -304,13 +304,19 @@ namespace TrainSchdule.Controllers
 				if (result.Succeeded)
 				{
 					_logger.LogInformation($"用户登录:{model.UserName}");
-					_userActionServices.Success(actionRecord);
+					_userActionServices.Status(actionRecord,true);
 					return new JsonResult(ActionStatusMessage.Success);
 				}
-				else if (result.RequiresTwoFactor) return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
+				else if (result.RequiresTwoFactor)
+				{
+					_userActionServices.Status(actionRecord, false, "账号需要二次验证");
+					return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
+				}
 				else if (result.IsLockedOut)
 				{
 					_logger.LogWarning("账号异常");
+					_userActionServices.Status(actionRecord, false,"账号已处于锁定状态");
+
 					return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
 				}
 				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
@@ -336,7 +342,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(model.Id)) return new JsonResult(ActionStatusMessage.User.NotExist);
-			_userActionServices.Success(actionRecord);
+			_userActionServices.Status(actionRecord,true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
@@ -381,7 +387,7 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			try
 			{
-				await RegisterSingle(model.Data, authByUser);
+				await RegisterSingle(model.Data, authByUser,$"{authByUser.Id}常规注册");
 			}
 			catch (ActionStatusMessageException ex)
 			{
@@ -416,7 +422,7 @@ namespace TrainSchdule.Controllers
 			foreach (var m in model.Data.List)
 				try
 				{
-					await RegisterSingle(m, authByUser);
+					await RegisterSingle(m, authByUser,$"{authByUser.Id}批量注册");
 				}
 				catch (ActionStatusMessageException ex)
 				{
@@ -434,7 +440,7 @@ namespace TrainSchdule.Controllers
 		}
 		#endregion
 
-		private async Task RegisterSingle(UserCreateDataModel model, User authByUser)
+		private async Task RegisterSingle(UserCreateDataModel model, User authByUser,string regDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
 			var regUser = _usersService.Get(model.Application.UserName);
@@ -464,7 +470,7 @@ namespace TrainSchdule.Controllers
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}   //await _signInManager.SignInAsync(user, isPersistent: false);
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
-			_userActionServices.Success(actionRecord);
+			_userActionServices.Status(actionRecord,true, regDescription);
 		}
 	}
 }
