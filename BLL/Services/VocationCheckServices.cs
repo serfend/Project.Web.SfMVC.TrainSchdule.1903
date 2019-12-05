@@ -36,7 +36,7 @@ namespace BLL.Services
 		public void AddDescription(VocationDescription model)
 		{
 			_context.VocationDescriptions.Add(model);
-			_context.SaveChanges();
+			 
 		}
 
 		public IEnumerable<VocationDescription> GetVocationDates(DateTime date,int length)

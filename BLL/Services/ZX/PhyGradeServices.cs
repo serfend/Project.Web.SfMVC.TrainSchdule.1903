@@ -81,7 +81,7 @@ namespace BLL.Services.ZX
 				_context.Subjects.Remove(item);
 			}
 			_context.Subjects.Add(model);
-			_context.SaveChanges();
+			 
 		}
 
 		public Subject FindSubject(string name)

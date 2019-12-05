@@ -32,8 +32,7 @@ namespace BLL.Services
 		public int Edit(CompanyManagers model)
 		{
 			_context.CompanyManagers.Update(model);
-			
-			return _context.SaveChanges();
+			return 0;
 		}
 
 		public CompanyManagers CreateManagers(CompanyManagerVdto model)
@@ -52,15 +51,14 @@ namespace BLL.Services
 		{
 			model.Create=DateTime.Now;
 			_context.CompanyManagers.Add(model);
-			_context.SaveChanges();
+			 
 			return model;
 		}
 
 		public int Delete(CompanyManagers model)
 		{
 			_context.CompanyManagers.Remove(model);
-			
-			return _context.SaveChanges();
+			return 0;
 		}
 
 		public CompanyManagers GetManagerByUC(string userId, string companyCode)

@@ -62,7 +62,7 @@ namespace TrainSchdule.Crontab
 			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context,statistics.CurrentYear,StatisticsId);
 			statistics.RootCompanyStatistics = tmp;
 			_context.VocationStatistics.Add(statistics);
-			_context.SaveChanges();
+			 
 		}
 		private VocationStatisticsDescription GenerateStatistics(Company company)
 		{

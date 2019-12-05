@@ -122,7 +122,6 @@ namespace BLL.Services
 			
 			await _context.Users.AddAsync(identity).ConfigureAwait(false);
 			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return identity;
         }
 
@@ -180,7 +179,7 @@ namespace BLL.Services
         {
 			
 			_context.AppUsers.Update(newUser);
-			_context.SaveChanges();
+			 
 			return true;
 		}
 
@@ -190,7 +189,6 @@ namespace BLL.Services
         public async Task<bool> EditAsync(User newUser)
         {
 	        _context.AppUsers.Update(newUser);
-			await _context.SaveChangesAsync();
 			return true;
 		}
 
@@ -204,7 +202,7 @@ namespace BLL.Services
 			var appUser =  _context.Users.FirstOrDefault(u=>u.UserName==id);
 			if (appUser == null) return false;
 			_context.Users.Remove(appUser);
-			_context.SaveChanges();
+			 
 			return true;
 		}
         public async Task<bool> RemoveAsync(string id)
@@ -215,7 +213,6 @@ namespace BLL.Services
 	        _context.AppUsers.Remove(user);
 	        var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName==id).ConfigureAwait(false);
 	        _context.Users.Remove(appUser);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
 	        return true;
         }
 		#endregion

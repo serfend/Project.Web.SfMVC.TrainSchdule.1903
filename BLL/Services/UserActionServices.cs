@@ -35,7 +35,7 @@ namespace BLL.Services
 				Description= description
 			};
 			_context.UserActions.Add(ua);
-			_context.SaveChanges();
+			 
 			return ua;
 		}
 
@@ -56,7 +56,7 @@ namespace BLL.Services
 			action.Success = success;
 			action.Description = description??action.Description;
 			_context.UserActions.Update(action);
-			_context.SaveChanges();
+			 
 			return action;
 		}
 	}
