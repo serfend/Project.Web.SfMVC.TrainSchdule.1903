@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DAL.Entities.Duty;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
@@ -17,4 +19,5 @@ namespace DAL.Entities
 		/// </summary>
 		public bool IsMajorManager { get; set; }
 	}
+
 }

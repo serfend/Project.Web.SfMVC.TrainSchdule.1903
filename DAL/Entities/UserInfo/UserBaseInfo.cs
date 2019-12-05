@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.UserInfo
 {
@@ -30,7 +31,6 @@ namespace DAL.Entities.UserInfo
 		/// 是否修改过密码
 		/// </summary>
 		public bool PasswordModefy { get; set; }
-
 	}
 	public enum GenderEnum
 	{

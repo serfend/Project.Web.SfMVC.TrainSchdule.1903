@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191205235418_dutyType")]
+    partial class dutyType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -216,27 +218,6 @@ namespace DAL.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Duties");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Duty.DutyType", b =>
-                {
-                    b.Property<int>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AuditLevelNum");
-
-                    b.Property<int?>("DutiesCode");
-
-                    b.Property<int>("DutiesRawType");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Code");
-
-                    b.HasIndex("DutiesCode");
-
-                    b.ToTable("DutyTypes");
                 });
 
             modelBuilder.Entity("DAL.Entities.Permissions", b =>
@@ -971,13 +952,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Duty.DutyType", b =>
-                {
-                    b.HasOne("DAL.Entities.Duties", "Duties")
-                        .WithMany()
-                        .HasForeignKey("DutiesCode");
                 });
 
             modelBuilder.Entity("DAL.Entities.RecallOrder", b =>

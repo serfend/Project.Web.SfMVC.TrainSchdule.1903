@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vocations;
@@ -29,6 +30,7 @@ namespace DAL.Data
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions> Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
+		public DbSet<DutyType> DutyTypes { get; set; }
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
 
