@@ -32,7 +32,7 @@ namespace BLL.Services.ApplyServices
 				CreateTime = DateTime.Now
 			};
 			_context.Add(m);
-			 
+			_context.SaveChanges();
 			return m;
 		}
 		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
@@ -57,6 +57,7 @@ namespace BLL.Services.ApplyServices
 			};
 			if (m.Company != null) m.CompanyName = m.Company.Name;
 			await _context.ApplyBaseInfos.AddAsync(m);
+			await _context.SaveChangesAsync();
 			return m;
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
@@ -76,7 +77,7 @@ namespace BLL.Services.ApplyServices
 				AdditialVocations=model.VocationAdditionals
 			};
 			_context.ApplyRequests.Add(r);
-			 
+			_context.SaveChanges();
 			return r;
 		}
 		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
@@ -165,7 +166,7 @@ namespace BLL.Services.ApplyServices
 			}
 
 			model.Status = status;
-			 
+			_context.SaveChanges();
 		}
 
 		public IEnumerable<Status> Audit(ApplyAuditVdto model)
@@ -180,7 +181,7 @@ namespace BLL.Services.ApplyServices
 				list.Add(result);
 			}
 			
-			 
+			_context.SaveChanges();
 			return list;
 		}
 

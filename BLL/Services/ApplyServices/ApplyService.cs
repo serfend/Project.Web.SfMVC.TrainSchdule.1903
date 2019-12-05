@@ -58,13 +58,14 @@ namespace BLL.Services.ApplyServices
 				item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime = DateTime.Now;
 
 			_context.AppUsers.Update(item.BaseInfo.From);
-			 
+			_context.SaveChanges();
 			return item;
 		}
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
 			await _context.Applies.AddAsync(item);
+			await _context.SaveChangesAsync();
 			return item;
 		}
 
@@ -74,7 +75,7 @@ namespace BLL.Services.ApplyServices
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_context.Applies.Update(target);
-			 
+			_context.SaveChanges();
 			return true;
 		}
 
@@ -84,6 +85,7 @@ namespace BLL.Services.ApplyServices
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target));
 			_context.Applies.Update(target);
+			await _context.SaveChangesAsync();
 			return true;
 		}
 
@@ -94,7 +96,7 @@ namespace BLL.Services.ApplyServices
 				_context.ApplyResponses.Remove(applyResponse);
 			}
 			_context.Applies.Remove(item);
-			 
+			_context.SaveChanges();
 		}
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)

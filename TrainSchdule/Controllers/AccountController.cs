@@ -218,26 +218,17 @@ namespace TrainSchdule.Controllers
 			var currentUser = currentUserService.CurrentUser;
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var checkAuth = model.Auth.Verify(_authService);
-			if (model.Id != currentUser?.Id)
-			{
-				if (!checkAuth) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-				if (_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			}
+			if (model.Id != currentUser?.Id && _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
-			if (!sign.Succeeded)
-			{
-				if (!checkAuth) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-				if (model?.Auth?.AuthByUserID != targetUser.Id)
-					return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			}
+			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
 			targetUser.BaseInfo.PasswordModefy = true;
 			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
+			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
@@ -377,6 +368,7 @@ namespace TrainSchdule.Controllers
 			app.AuthKey = model.Data.AuthKey;
 			app.ApplicationSetting.LastSubmitApplyTime = model.Data.ApplicationSetting.LastSubmitApplyTime;
 			_context.AppUserApplicationInfos.Update(app);
+			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
