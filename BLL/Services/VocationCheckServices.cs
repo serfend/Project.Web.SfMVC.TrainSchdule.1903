@@ -29,6 +29,7 @@ namespace BLL.Services
 			{
 				if (u.Application.ApplicationSetting.LastVocationUpdateTime?.Year == DateTime.Today.Year) continue;
 				u.SocialInfo.Settle.PrevYearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var i, out var j);
+				u.SocialInfo.Settle.PrevYearlyComsumeLength = _context.Applies.Where(a => a.BaseInfo.From.Id == u.Id&&a.RequestInfo.StampLeave.Value.Year==DateTime.Today.Year-1&&a.RequestInfo.VocationType=="事假").Sum(a=>a.RequestInfo.VocationLength);//将去年休的事假记录
 				u.Application.ApplicationSetting.LastVocationUpdateTime = DateTime.Today;
 			}
 		}
@@ -61,9 +62,9 @@ namespace BLL.Services
 		{
 			if (length > 500) return null;
 			var list = new List<VocationDescription>();
-			var end = start.AddDays(length);
+			var end = start.AddDays(length-1);//此处定义休假1天为从当天早上到晚上，故实际天数-1
 			int vocationDay = 0;
-			foreach (var description in GetVocationDates(start, length))
+			foreach (var description in GetVocationDates(start, length-1))
 			{
 				description.Length = GetCrossDay(start, end, description.Start, description.Start.AddDays(description.Length));
 				list.Add(description);

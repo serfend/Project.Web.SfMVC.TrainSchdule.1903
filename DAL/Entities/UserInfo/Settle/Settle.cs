@@ -30,9 +30,9 @@ namespace DAL.Entities.UserInfo.Settle
 		/// </summary>
 		public int PrevYearlyLength { get; set; }
 		/// <summary>
-		/// 最后一次修改全年天数日期
+		/// 年初因上一年度休事假消耗的天数
 		/// </summary>
-		//public DateTime LastModefyDate { get; set; }
+		public int PrevYearlyComsumeLength { get; set; }
 	}
 }
 
