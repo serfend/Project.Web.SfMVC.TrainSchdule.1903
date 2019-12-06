@@ -31,6 +31,7 @@ namespace BLL.Services.ApplyServices
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
 			totalCount = list.Count();
+			if (model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) return null;
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
 			return list.ToList();
 		}

@@ -110,7 +110,7 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company,User ApplyUser)
 		{
 			var dutyType = _context.DutyTypes.Where(d => d.Duties.Code == ApplyUser.CompanyInfo.Duties.Code).FirstOrDefault();
-			var auditStreamLength = dutyType.AuditLevelNum == 0 ? (dutyType.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType.AuditLevelNum;
+			var auditStreamLength = dutyType?.AuditLevelNum == 0 ? (dutyType?.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType?.AuditLevelNum;
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
 			for(var i=0;i< auditStreamLength && nowId.Length>0; i++)//本级 上级
