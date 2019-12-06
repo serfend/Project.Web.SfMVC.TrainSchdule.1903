@@ -7,6 +7,7 @@ using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using Microsoft.EntityFrameworkCore;
 
@@ -98,13 +99,16 @@ namespace BLL.Services.ApplyServices
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
+			var user = apply.BaseInfo?.From;
 
-			apply.Response = GetAuditStream(company);
+			var dutyType = _context.DutyTypes.Where(d=>d.Duties.Code== user.CompanyInfo.Duties.Code).FirstOrDefault();
+			var auditStreamLength = dutyType.AuditLevelNum == 0 ? (dutyType.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType.AuditLevelNum;
+			apply.Response = GetAuditStream(company,auditStreamLength);
 			return Create(apply);
 		}
 
 
-		public IEnumerable<ApplyResponse> GetAuditStream(Company company)
+		public IEnumerable<ApplyResponse> GetAuditStream(Company company,int auditStreamNum)
 		{
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
