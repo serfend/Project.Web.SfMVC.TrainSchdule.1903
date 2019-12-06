@@ -44,8 +44,9 @@ namespace TrainSchdule.Extensions
 		/// <param name="model"></param>
 		/// <param name="context"></param>
 		/// <param name="vocationCheckServices"></param>
+		/// <param name="CaculateAdditionalAndTripLength"></param>
 		/// <returns></returns>
-		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context, IVocationCheckServices vocationCheckServices)
+		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context, IVocationCheckServices vocationCheckServices,bool CaculateAdditionalAndTripLength)
 		{
 			var b = new ApplyRequestVdto()
 			{
@@ -62,8 +63,8 @@ namespace TrainSchdule.Extensions
 			b.VocationAdditionals?.All(v => { additionalVocationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (b.StampLeave != null)
 			{
-				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.OnTripLength + b.VocationLength + additionalVocationDay);
-				b.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription();
+				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.VocationLength  + (CaculateAdditionalAndTripLength ? (b.OnTripLength + additionalVocationDay):0));
+				b.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription(CaculateAdditionalAndTripLength);
 			}
 			return b;
 		}

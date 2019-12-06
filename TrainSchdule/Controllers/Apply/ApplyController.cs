@@ -123,17 +123,33 @@ namespace TrainSchdule.Controllers.Apply
 		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var m = model.ToVDTO(_context, _vocationCheckServices);
 
+			var m = model.ToVDTO(_context, _vocationCheckServices,model.VocationType=="正休");
 			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var vocationInfo = _usersService.VocationInfo(targetUser);
-			if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
-			if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new Status(ActionStatusMessage.Apply.Request.NoEnoughVocation.status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
-			if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
-			if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
-			
+			switch (model.VocationType)
+			{
+				case "正休":
+					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
+					if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new Status(ActionStatusMessage.Apply.Request.NoEnoughVocation.status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
+					if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
+					if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
+					break;
+				case "事假":
+					m.VocationAdditionals = null;
+					m.OnTripLength = 0;
+					break;
+				case "病休":
+					m.VocationAdditionals = null;
+					m.OnTripLength = 0;
+					break;
+				default:
+					return new JsonResult(ActionStatusMessage.Apply.Request.InvalidVocationType);
+			}
+
+
 			var info = _applyService.SubmitRequest(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
 		}

@@ -144,7 +144,9 @@
 				public static readonly Status NoEnoughVocation = new Status(44200, "剩余休假天数不足");
 				public static readonly Status TripTimesExceed = new Status(44300, "剩余可休路途次数不足");
 				public static readonly Status VocationLengthTooShort = new Status(44400, "休假长度不可少于5天");
+				public static readonly Status InvalidVocationType = new Status(44500, "无效的休假类型");
 				
+
 			}
 			public static readonly Status GuidFail = new Status(45000, "申请的ID无效");
 			public static class Recall
