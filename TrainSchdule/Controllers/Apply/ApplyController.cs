@@ -8,6 +8,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
@@ -194,11 +195,16 @@ namespace TrainSchdule.Controllers.Apply
 			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if(_userActionServices.Permission(authByUser.Application.Permission,DictionaryAllPermission.Apply.Default,Operation.Update,authByUser.Id,authByUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.Get(id);
-			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if(!_userActionServices.Permission(apply.BaseInfo.From.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code))return new JsonResult(ActionStatusMessage.Account.Auth.Permission.Default);
+
+			var ua=_userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id,$"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请");
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave || apply.Status == AuditStatus.Withdrew)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);
+			
 			_applyService.Delete(apply);
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		

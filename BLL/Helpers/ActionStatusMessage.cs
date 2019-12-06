@@ -117,6 +117,9 @@
 
 					public static readonly Status NotOnAuditingStatus = new Status(43520, "当前申请不处于审核中状态");
 					public static readonly Status NotOnNotSaveStatus = new Status(43530, "当前申请不处于未保存状态");
+					public static readonly Status CanNotDelete = new Status(43540, "当前申请已受理，不可删除");
+
+					
 				}
 				
 				public static class Audit
