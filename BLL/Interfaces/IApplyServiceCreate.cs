@@ -4,6 +4,7 @@ using BLL.Helpers;
 using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.UserInfo;
 
 namespace BLL.Interfaces
 {
@@ -20,7 +21,7 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="company"></param>
 		/// <returns></returns>
-		IEnumerable<ApplyResponse> GetAuditStream(Company company,int auditStreamNum);
+		IEnumerable<ApplyResponse> GetAuditStream(Company company,User ApplyUser);
 
 		void ModifyAuditStatus(Apply model, AuditStatus status);
 		IEnumerable<Status> Audit(ApplyAuditVdto models);

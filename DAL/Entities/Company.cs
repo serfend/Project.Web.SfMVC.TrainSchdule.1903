@@ -13,7 +13,6 @@ namespace DAL.Entities
 		[Key]
 		public string Code { get; set; }
 		public string Name { get; set; }
-
 		public CompanyLevel Level { get; set; }
 		public bool IsPrivate { get; set; }
 		public string Description { get; set; }

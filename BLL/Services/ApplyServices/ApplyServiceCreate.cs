@@ -101,18 +101,19 @@ namespace BLL.Services.ApplyServices
 			if (company == null) return apply;
 			var user = apply.BaseInfo?.From;
 
-			var dutyType = _context.DutyTypes.Where(d=>d.Duties.Code== user.CompanyInfo.Duties.Code).FirstOrDefault();
-			var auditStreamLength = dutyType.AuditLevelNum == 0 ? (dutyType.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType.AuditLevelNum;
-			apply.Response = GetAuditStream(company,auditStreamLength);
+			
+			apply.Response = GetAuditStream(company,user);
 			return Create(apply);
 		}
 
 
-		public IEnumerable<ApplyResponse> GetAuditStream(Company company,int auditStreamNum)
+		public IEnumerable<ApplyResponse> GetAuditStream(Company company,User ApplyUser)
 		{
+			var dutyType = _context.DutyTypes.Where(d => d.Duties.Code == ApplyUser.CompanyInfo.Duties.Code).FirstOrDefault();
+			var auditStreamLength = dutyType.AuditLevelNum == 0 ? (dutyType.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType.AuditLevelNum;
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
-			for(var i=0;i<2&& nowId.Length>0; i++)//本级 上级
+			for(var i=0;i< auditStreamLength && nowId.Length>0; i++)//本级 上级
 			{
 				var t = GenerateAuditStream(nowId);
 				if (t.Company != null) responses.Add(t);

@@ -237,7 +237,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company);
+			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company,targetUser);
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
