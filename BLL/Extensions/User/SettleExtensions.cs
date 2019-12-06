@@ -35,8 +35,8 @@ namespace BLL.Extensions
 				//TODO 可能有不是因为结婚导致的变化，需要提前考虑
 				if (modefyDate?.Year == DateTime.Today.Year)
 				{
-					var newr = ((12 - modefyDate?.Month) * r + modefyDate?.Month * settle.PrevYearlyLength) / 12;
-					description += $"\n年初全年总假{settle.PrevYearlyLength}天，因{modefyDate?.Month}月发生变化，按比例加权:(12-变化的月) * 变化后天数 + 变化的月 * 年初总假期=（{12 - modefyDate?.Month} * {r } + { modefyDate?.Month} * {settle.PrevYearlyLength}）/12={newr}。";
+					var newr = ((12 - modefyDate?.Month) * r + modefyDate?.Month * settle.PrevYearlyLength) / 12 - settle?.PrevYearlyComsumeLength;
+					description += $"\n年初全年总假{settle.PrevYearlyLength}天，因{modefyDate?.Month}月发生变化，按比例加权:(12-变化的月) * 变化后天数 + 变化的月 * 年初总假期 - 去年休的事假=（{12 - modefyDate?.Month} * {r } + { modefyDate?.Month} * {settle.PrevYearlyLength}）/12 - {settle?.PrevYearlyComsumeLength} ={newr}。";
 					r = newr??0;
 				}
 			}
