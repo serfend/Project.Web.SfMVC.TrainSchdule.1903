@@ -22,7 +22,8 @@ namespace BLL.Extensions.ApplyExtensions
 		private static Dictionary<int, AuditStatusMessage> statusDic;
 		public static Dictionary<int, AuditStatusMessage> StatusDic
 		{
-			get {
+			get
+			{
 				if (statusDic == null) statusDic = InitStatusDic();
 				return statusDic;
 			}
@@ -33,7 +34,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Auditing, Color.Coral},
 				{(int)AuditStatus.Withdrew, Color.Gray},
 				{(int)AuditStatus.AcceptAndWaitAdmin, Color.DeepSkyBlue},
-				{(int)AuditStatus.Accept, Color.LawnGreen},
+				{(int)AuditStatus.Accept,Color.FromArgb(6799930)‬},//ele的成功色
 				{(int)AuditStatus.Denied, Color.Red},
 				{(int)AuditStatus.NotSave,Color.Black }
 			};
