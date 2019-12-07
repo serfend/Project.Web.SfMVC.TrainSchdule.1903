@@ -14,7 +14,7 @@ namespace BLL.Extensions.ApplyExtensions
 		public static int VocationTotalLength(this ApplyRequest model)
 		{
 			if (model?.StampReturn == null || !model.StampLeave.HasValue) return 0;
-			return model.StampReturn.Value.Subtract(model.StampLeave.Value).Days;
+			return model.StampReturn.Value.Subtract(model.StampLeave.Value).Days+1;
 		}
 		public static string RequestInfoVocationDescription(this ApplyRequest model)
 		{
