@@ -38,6 +38,7 @@ namespace BLL.Services
 
 		public CompanyManagers CreateManagers(CompanyManagerVdto model)
 		{
+			if (model == null) return null;
 			var manager=new CompanyManagers()
 			{
 				AuthBy = _context.AppUsers.Find(model.AuditById),
@@ -50,6 +51,7 @@ namespace BLL.Services
 
 		public CompanyManagers Create(CompanyManagers model)
 		{
+			if (model == null) return null;
 			model.Create=DateTime.Now;
 			_context.CompanyManagers.Add(model);
 			_context.SaveChanges();

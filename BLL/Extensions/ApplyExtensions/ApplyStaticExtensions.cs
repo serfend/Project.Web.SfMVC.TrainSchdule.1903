@@ -19,8 +19,14 @@ namespace BLL.Extensions.ApplyExtensions
 				default: return "null";
 			}
 		}
-	
-		public static Dictionary<int, AuditStatusMessage> StatusDic { get; } = InitStatusDic();
+		private static Dictionary<int, AuditStatusMessage> statusDic;
+		public static Dictionary<int, AuditStatusMessage> StatusDic
+		{
+			get {
+				if (statusDic == null) statusDic = InitStatusDic();
+				return statusDic;
+			}
+		}
 		public static readonly Dictionary<int, Color> StatusColors = new Dictionary<int, Color>
 			{
 				{(int)AuditStatus.NotPublish, Color.DarkGray},
@@ -31,7 +37,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Denied, Color.Red},
 				{(int)AuditStatus.NotSave,Color.Black }
 			};
-		public readonly static Dictionary<int,string> StatusDesc =new Dictionary<int, string>()
+		public readonly static Dictionary<int, string> StatusDesc = new Dictionary<int, string>()
 			{
 				{(int) AuditStatus.NotPublish, "未发布"},
 				{(int) AuditStatus.Auditing, "审核中"},
@@ -57,10 +63,10 @@ namespace BLL.Extensions.ApplyExtensions
 		{
 			var statusMessages = new Dictionary<int, AuditStatusMessage>();
 			var type = typeof(AuditStatus).GetFields();
-			for (var i=1;i<type.Length ;i++)
+			for (var i = 1; i < type.Length; i++)
 			{
 				var fieldInfo = type[i];
-				var key =(int)fieldInfo.GetRawConstantValue();
+				var key = (int)fieldInfo.GetRawConstantValue();
 				statusMessages.Add(key, new AuditStatusMessage()
 				{
 					Code = key,

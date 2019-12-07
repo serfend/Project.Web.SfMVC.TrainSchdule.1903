@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 namespace BLL.Services
 {
-	public class VerifyService:IVerifyService
+	public class VerifyService : IVerifyService
 	{
 		#region Fileds
 		private readonly IHttpContextAccessor _httpContextAccessor;
@@ -20,7 +20,7 @@ namespace BLL.Services
 		public static readonly int StaticVerify = 201700816;
 		#endregion
 
-		public VerifyService( IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
+		public VerifyService(IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_fileProvider = fileProvider;
@@ -61,7 +61,7 @@ namespace BLL.Services
 			var newCodeValue = Guid.NewGuid();
 			_httpContextAccessor.HttpContext.Session.Set(KeyVerifyCode, Encoding.UTF8.GetBytes(newCodeValue.ToString()));
 			var index = RndIndex;
-			var file=_fileProvider.GetDirectoryContents(VerifyPath).Skip(index)?.FirstOrDefault();
+			var file = _fileProvider.GetDirectoryContents(VerifyPath).Skip(index)?.FirstOrDefault();
 			if (file == null)
 			{
 				ReloadPath();
@@ -71,7 +71,7 @@ namespace BLL.Services
 				using (var sr = file.CreateReadStream())
 				{
 					var img = new VerifyImg(Image.FromStream(sr));
-					Pos=new Point(img.X,img.Y);
+					Pos = new Point(img.X, img.Y);
 					_cache.Set(newCodeValue.ToString(), img);
 				}
 			}
@@ -85,11 +85,11 @@ namespace BLL.Services
 			_httpContextAccessor.HttpContext.Session.TryGetValue(KeyVerifyCode, out var codeIndex);
 			if (codeIndex == null)
 			{
-				codeIndex=Encoding.UTF8.GetBytes(Generate().ToString());
+				codeIndex = Encoding.UTF8.GetBytes(Generate().ToString());
 			}
-			var obj=_cache.Get(Encoding.UTF8.GetString(codeIndex));
-			var img = (VerifyImg) obj;
-			if(img==null)Status = "验证码已过期";
+			var obj = _cache.Get(Encoding.UTF8.GetString(codeIndex));
+			var img = (VerifyImg)obj;
+			if (img == null) Status = "验证码已过期";
 			return img;
 		}
 		public string Verify(int code)
@@ -98,8 +98,9 @@ namespace BLL.Services
 			var img = GetImg();
 			if (img == null)
 			{
-				result= "验证码未初始化";
-			}else result=img.Verify(code);
+				result = "验证码未初始化";
+			}
+			else result = img.Verify(code);
 
 			Generate();
 			return result;
@@ -111,14 +112,17 @@ namespace BLL.Services
 
 	public class VerifyImg
 	{
-		public byte[] Front;
-		public byte[] Background;
+		private byte[] front;
+		private byte[] background;
 		private int _code;
 		public int X => _code;
 		public int Y { get; private set; }
+		public byte[] Front { get => front; set => front = value; }
+		public byte[] Background { get => background; set => background = value; }
+
 		public string Verify(int code)
 		{
-			bool success= VerifyService.StaticVerify == code||Math.Abs(code - _code) < 5;
+			bool success = VerifyService.StaticVerify == code || Math.Abs(code - _code) < 5;
 			return success ? "" : $"验证码错误 your x={code} except x={_code}";
 		}
 
@@ -136,7 +140,7 @@ namespace BLL.Services
 		/// <summary>
 		/// 对图片增加拼图的剪切路径
 		/// </summary>
-		private static void PatchMapPath(Graphics front,Graphics back,RectangleF src,Image srcImg)
+		private static void PatchMapPath(Graphics front, Graphics back, RectangleF src, Image srcImg)
 		{
 			var width = src.Width;
 			var height = src.Height;
@@ -156,53 +160,55 @@ namespace BLL.Services
 			*/
 
 			//A
-			gp.AddLine(left, top, left, (float)(top + width * 0.5- r));
+			gp.AddLine(left, top, left, (float)(top + width * 0.5 - r));
 
 			//B
-			gp.AddArc((float)(left - r),(float)(top +width * 0.5 - r),(float)(r * 2f),r*2f,-90f,180f);
+			gp.AddArc((float)(left - r), (float)(top + width * 0.5 - r), (float)(r * 2f), r * 2f, -90f, 180f);
 
 			//C
-			gp.AddLine(left, (float)(top + width * 0.5+r), left, (float)(top + width));
+			gp.AddLine(left, (float)(top + width * 0.5 + r), left, (float)(top + width));
 
 			//D
-			gp.AddLine(left, top + width, (float)(left + width * 0.5-r), top + width);
+			gp.AddLine(left, top + width, (float)(left + width * 0.5 - r), top + width);
 
 			//E
-			gp.AddArc((float)(left+width*0.5 - r), (float)(top + width - r), r * 2f, r * 2f, 0f, 180f);
+			gp.AddArc((float)(left + width * 0.5 - r), (float)(top + width - r), r * 2f, r * 2f, 0f, 180f);
 
 			//F
-			gp.AddLine((float)(left + width * 0.5+r), top + width, left + width, top + width);
+			gp.AddLine((float)(left + width * 0.5 + r), top + width, left + width, top + width);
 
 			//G
-			gp.AddLine(left+width,top+width,left+width,top);
+			gp.AddLine(left + width, top + width, left + width, top);
 
 			//H
-			gp.AddLine(left + width, top , left, top);
-			gp.CloseFigure() ;
+			gp.AddLine(left + width, top, left, top);
+			gp.CloseFigure();
 
 
-
-			back.FillPath(new SolidBrush(Color.FromArgb(200, 0, 0, 0)), gp);
-			back.FillPath(new PathGradientBrush(gp)
+			using (var sb = new SolidBrush(Color.FromArgb(200, 0, 0, 0)))
 			{
-				SurroundColors = new Color[] { Color.FromArgb(100, 0, 0, 0), Color.FromArgb(0, 0, 0, 0) },
-			}, gp);
+				using (var pg = new PathGradientBrush(gp)
+				{
+					SurroundColors = new Color[] { Color.FromArgb(100, 0, 0, 0), Color.FromArgb(0, 0, 0, 0) },
+				})
+				{
+					back.FillPath(sb, gp);
+					back.FillPath(pg, gp);
+					front.FillPath(new TextureBrush(srcImg), gp);
+				}
+			}
 
-			//var matrix = new Matrix();
-			//matrix.Translate(-left, -top);
-			//gp.Transform(matrix);
-			front.FillPath(new TextureBrush(srcImg), gp);
-			
+
 
 		}
 
-		private void InitCodeValue(int fullWidth,int targetWidth)
+		private void InitCodeValue(int fullWidth, int targetWidth)
 		{
 			_code = new Random().Next(50, fullWidth - targetWidth);
 		}
 		public VerifyImg(Image raw)
 		{
-			var imgBack = Compress(raw,260);
+			var imgBack = Compress(raw, 260);
 			var size = imgBack.Size;
 			var width = (int)(size.Height * 0.3);
 			InitCodeValue(size.Width, width);
@@ -210,12 +216,12 @@ namespace BLL.Services
 
 			var imgFront = new Bitmap(width, width);
 
-			 
-			var gBack =Graphics.FromImage(imgBack);
+
+			var gBack = Graphics.FromImage(imgBack);
 			var gFront = Graphics.FromImage(imgFront);
 			gBack.SmoothingMode = SmoothingMode.AntiAlias;
 			gFront.SmoothingMode = SmoothingMode.AntiAlias;
-			var top = (int) (size.Height * (0.6*new Random().NextDouble()+0.1));
+			var top = (int)(size.Height * (0.6 * new Random().NextDouble() + 0.1));
 			Y = top;
 			var left = (int)(_code);
 
@@ -224,9 +230,9 @@ namespace BLL.Services
 			var srcRect = new Rectangle(left, top, width, width);
 
 			gFront.DrawImage(imgBack, new RectangleF(0, 0, width, width), srcRect, GraphicsUnit.Pixel);
-			PatchMapPath(gFront, gBack, srcRect,imgBack);
+			PatchMapPath(gFront, gBack, srcRect, imgBack);
 
-			Front = ImageToBytes(imgFront) ;
+			Front = ImageToBytes(imgFront);
 			Background = ImageToBytes(imgBack);
 		}
 		/// <summary>
@@ -237,7 +243,7 @@ namespace BLL.Services
 		private static byte[] ImageToBytes(Image image)
 		{
 			var ms = new MemoryStream();
-			image.Save(ms,ImageFormat.Jpeg);
+			image.Save(ms, ImageFormat.Jpeg);
 			return ms.ToArray();
 		}
 	}
