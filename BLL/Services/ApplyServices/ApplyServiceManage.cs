@@ -37,16 +37,24 @@ namespace BLL.Services.ApplyServices
 		}
 		public void RemoveAllUnSaveApply()
 		{
+			//寻找所有找过1天未保存的申请
 			var list = _context.Applies
-				.Where(a => a.Status == AuditStatus.NotSave)
-				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+						 .Where(a => a.Status == AuditStatus.NotSave)
+						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(-1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+			//删除这些申请的审批流
 			foreach (var apply in list) _context.ApplyResponses.RemoveRange(apply.Response);
+			//删除这些申请
 			_context.Applies.RemoveRange(list);
-			_context.SaveChanges();
 			var applies = _context.Applies;
-			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
+			//寻找所有没有创建申请且不是今天创建的 请求信息
+			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day).ToList();
+			//删除这些请求信息的福利信息		
+			foreach (var add in request) _context.VocationAdditionals.RemoveRange(add.AdditialVocations);
+			//删除这些请求信息
 			_context.ApplyRequests.RemoveRange(request);
+			//寻找所有没有创建申请且不是今天创建的 基础信息
 			var baseInfos = _context.ApplyBaseInfos.Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
+			//删除这些基础信息		
 			_context.ApplyBaseInfos.RemoveRange(baseInfos);
 			_context.SaveChanges();
 		}

@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20191124143839_vocationStatistics4.Designer.cs" />
     <Compile Remove="Migrations\20191202164726_UserAction.cs" />
     <Compile Remove="Migrations\20191202164726_UserAction.Designer.cs" />
+    <Compile Remove="Migrations\20191207142931_AddNew1207.cs" />
+    <Compile Remove="Migrations\20191207142931_AddNew1207.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

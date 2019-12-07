@@ -57,6 +57,17 @@ namespace TrainSchdule.Controllers.Apply
 			});
 		}
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult RemoveAllUnSaveApply()
+		{
+			_applyService.RemoveAllUnSaveApply();
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
 		/// 召回休假
 		/// </summary>
 		/// <param name="model"></param>

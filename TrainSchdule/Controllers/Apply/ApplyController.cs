@@ -90,6 +90,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
 		{
