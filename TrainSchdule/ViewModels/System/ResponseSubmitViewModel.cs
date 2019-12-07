@@ -22,14 +22,14 @@ namespace TrainSchdule.ViewModels.System
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="message"></param>
-		public APIResponseIdViewModel(Guid id, Status message)
+		public APIResponseIdViewModel(Guid id, ApiResult message)
 		{
 			Data =new ApiResponseDataModel()
 			{
 				Id = id
 			};
-			Code = message.status;
-			Message = message.message;
+			Code = message.Status;
+			Message = message.Message;
 		}
 	}
 

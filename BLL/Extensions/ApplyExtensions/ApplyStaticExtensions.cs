@@ -21,14 +21,7 @@ namespace BLL.Extensions.ApplyExtensions
 		}
 	
 		public static Dictionary<int, AuditStatusMessage> StatusDic { get; } = InitStatusDic();
-		public static Dictionary<int,Color> StatusColors { get; set; }
-		public static Dictionary<int,string> StatusDesc { get; set; }
-		public static Dictionary<int, IEnumerable<string>> StatusAcessable { get; set; }
-
-
-		private static Dictionary<int, AuditStatusMessage> InitStatusDic()
-		{
-			StatusColors = new Dictionary<int, Color>
+		public static readonly Dictionary<int, Color> StatusColors = new Dictionary<int, Color>
 			{
 				{(int)AuditStatus.NotPublish, Color.DarkGray},
 				{(int)AuditStatus.Auditing, Color.Coral},
@@ -38,17 +31,17 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Denied, Color.Red},
 				{(int)AuditStatus.NotSave,Color.Black }
 			};
-			StatusDesc=new Dictionary<int, string>()
+		public readonly static Dictionary<int,string> StatusDesc =new Dictionary<int, string>()
 			{
-				{(int)AuditStatus.NotPublish, "未发布"},
-				{(int)AuditStatus.Auditing, "审核中"},
-				{(int)AuditStatus.Withdrew, "已撤回"},
-				{(int)AuditStatus.AcceptAndWaitAdmin, "人力审核"},
-				{(int)AuditStatus.Accept, "已通过"},
-				{(int)AuditStatus.Denied, "已驳回"},
-				{(int)AuditStatus.NotSave,"未保存" }
+				{(int) AuditStatus.NotPublish, "未发布"},
+				{(int) AuditStatus.Auditing, "审核中"},
+				{(int) AuditStatus.Withdrew, "已撤回"},
+				{(int) AuditStatus.AcceptAndWaitAdmin, "人力审核"},
+				{(int) AuditStatus.Accept, "已通过"},
+				{(int) AuditStatus.Denied, "已驳回"},
+				{(int) AuditStatus.NotSave,"未保存" }
 			};
-			StatusAcessable=new Dictionary<int, IEnumerable<string>>()
+		public static readonly Dictionary<int, IEnumerable<string>> StatusAcessable = new Dictionary<int, IEnumerable<string>>()
 			{
 				{(int)AuditStatus.NotPublish,new List<string>(){"Publish","Delete"}},
 				{(int)AuditStatus.Auditing, new List<string>(){"Withdrew","Delete"}},
@@ -58,6 +51,10 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Denied, new List<string>(){"Delete"}},
 				{(int)AuditStatus.NotSave,new List<string>(){"Delete","Save","Publish"} }
 			};
+
+
+		private static Dictionary<int, AuditStatusMessage> InitStatusDic()
+		{
 			var statusMessages = new Dictionary<int, AuditStatusMessage>();
 			var type = typeof(AuditStatus).GetFields();
 			for (var i=1;i<type.Length ;i++)

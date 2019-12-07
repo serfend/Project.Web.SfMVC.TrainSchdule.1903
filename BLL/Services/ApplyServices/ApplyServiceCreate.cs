@@ -18,6 +18,7 @@ namespace BLL.Services.ApplyServices
 		private readonly IUsersService _usersService;
 		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model)
 		{
+			if (model == null) return null;
 			var m = new ApplyBaseInfo()
 			{
 				Company = _context.Companies.Find(model.Company),
@@ -38,15 +39,16 @@ namespace BLL.Services.ApplyServices
 		}
 		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
 		{
+			if (model == null) return null;
 			var m = new ApplyBaseInfo()
 			{
-				Company = await _context.Companies.FindAsync(model.Company),
-				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties),
+				Company = await _context.Companies.FindAsync(model.Company).ConfigureAwait(false),
+				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties).ConfigureAwait(false),
 				From = model.From,
 				CreateBy=model.CreateBy,
 				Social = new UserSocialInfo()
 				{
-					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress),
+					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(false),
 					AddressDetail = model.VocationTargetAddressDetail,
 					Phone = model.Phone,
 					Settle = model.Settle
@@ -57,8 +59,8 @@ namespace BLL.Services.ApplyServices
 				CreateTime = DateTime.Now
 			};
 			if (m.Company != null) m.CompanyName = m.Company.Name;
-			await _context.ApplyBaseInfos.AddAsync(m);
-			await _context.SaveChangesAsync();
+			await _context.ApplyBaseInfos.AddAsync(m).ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return m;
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
@@ -83,11 +85,12 @@ namespace BLL.Services.ApplyServices
 		}
 		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
 		{
-			return await Task.Run(() => SubmitRequest(model));
+			return await Task.Run(() => SubmitRequest(model)).ConfigureAwait(false);
 		}
 
 		public Apply Submit(ApplyVdto model)
 		{
+			if (model == null) return null;
 			var apply = new Apply()
 			{
 				BaseInfo = _context.ApplyBaseInfos.Find(model.BaseInfoId),
@@ -132,6 +135,7 @@ namespace BLL.Services.ApplyServices
 		}
 		public void ModifyAuditStatus(Apply model, AuditStatus status)
 		{
+			if (model == null) return;
 			switch (status)
 			{
 				case AuditStatus.Withdrew:
@@ -174,12 +178,13 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 		}
 
-		public IEnumerable<Status> Audit(ApplyAuditVdto model)
+		public IEnumerable<ApiResult> Audit(ApplyAuditVdto model)
 		{
+			if (model == null) return null;
 			var myManages = _usersService.InMyManage(model.AuditUser.Id,out var totalCount)?.ToList();
 			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
-			var list =new List<Status>();
+			var list =new List<ApiResult>();
 			foreach (var apply in model.List)
 			{
 				var result = AuditSingle(apply, myManages, model.AuditUser);
@@ -190,7 +195,7 @@ namespace BLL.Services.ApplyServices
 			return list;
 		}
 
-		private Status AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages,User AuditUser)
+		private ApiResult AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages,User AuditUser)
 		{
 			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
 			var nowAudit = new List<ApplyResponse>();
@@ -204,7 +209,7 @@ namespace BLL.Services.ApplyServices
 			var result = AuditResponse(nowAudit, model.Apply, model.Action, model.Remark, AuditUser);
 			return result;
 		}
-		private Status AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
+		private ApiResult AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
 		{
 			foreach (var r in responses)
 			{
@@ -220,7 +225,7 @@ namespace BLL.Services.ApplyServices
 			return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 		}
 
-		private void AuditSingle(ApplyResponse response, Apply target, AuditResult action)
+		private static void AuditSingle(ApplyResponse response, Apply target, AuditResult action)
 		{
 			switch (action)
 			{

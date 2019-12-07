@@ -14,8 +14,12 @@ namespace TrainSchdule.Crontab
 	{
 		private readonly ApplicationDbContext _context;
 
-		public static DateTime Start = DateTime.Today.AddYears(-1);
-		public static DateTime End = DateTime.Today;
+		private static DateTime start = DateTime.Today.AddYears(-1);
+		private static DateTime end = DateTime.Today;
+
+		public static DateTime Start { get => start; set => start = value; }
+		public static DateTime End { get => end; set => end = value; }
+
 		public YearlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"Year{Start.Year}")
 		{
 			_context = context;

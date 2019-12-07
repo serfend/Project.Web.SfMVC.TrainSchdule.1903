@@ -116,6 +116,7 @@ namespace BLL.Services
 		/// </summary>
 		public async Task<ApplicationUser> CreateAsync(User user,string password)
 		{
+			if (user == null) return null;
 			var identity = CreateUser(user, password);
 			if (identity == null) return null;
 			var appUser = CreateAppUser(user);

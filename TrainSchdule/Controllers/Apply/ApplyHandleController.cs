@@ -47,7 +47,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Detail(string id)
 		{
 			Guid.TryParse(id, out var aId);
-			var apply = _applyService.Get(aId);
+			var apply = _applyService.GetById(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var managedCompany = _usersService.InMyManage(_currentUserService.CurrentUser.Id,out var totalCount);
 			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
@@ -65,7 +65,7 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RecallOrder([FromBody]RecallCreateViewModel model)
 		{
-			if(!ModelState.IsValid) return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if(!ModelState.IsValid) return new JsonResult(new ApiResult(ActionStatusMessage.Fail.Status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try

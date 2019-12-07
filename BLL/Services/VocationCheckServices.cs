@@ -46,12 +46,27 @@ namespace BLL.Services
 			return _context.VocationDescriptions.Where(v => v.Start <= endDate)
 				.Where(v => v.Start.AddDays(v.Length) >= date).ToList();
 		}
-
-		private int GetCrossDay(DateTime a1, DateTime a2, DateTime b1, DateTime b2)
+		/// <summary>
+		/// 判断两个日期之间交叉的天数
+		/// </summary>
+		/// <param name="d1Start"></param>
+		/// <param name="d1End"></param>
+		/// <param name="d2Start"></param>
+		/// <param name="d2End"></param>
+		/// <returns></returns>
+		private int GetCrossDay(DateTime d1Start, DateTime d1End, DateTime d2Start, DateTime d2End)
 		{
-			var later = a1 > b1 ? a1 : b1;
-			return b2.Subtract(later).Days;
+			var later = d1Start > d2Start ? d1Start : d2Start;
+			var early = d1End > d2End ? d2End : d1End;
+			var result= early.Subtract(later).Days;
+			return result < 0 ? 0 : result;
 		}
+		/// <summary>
+		/// 判断日期经过一定天数后到达的日期
+		/// </summary>
+		/// <param name="start"></param>
+		/// <param name="length"></param>
+		/// <returns></returns>
 		public DateTime CrossVocation(DateTime start, int length)
 		{
 			VocationDesc = GetVocationDescriptions(start, length);

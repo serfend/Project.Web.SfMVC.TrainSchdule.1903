@@ -87,7 +87,7 @@ namespace TrainSchdule.ViewModels.Apply
 	/// <summary>
 	/// 
 	/// </summary>
-	public class ApplyAuditResponseStatusDataModel:Status
+	public class ApplyAuditResponseStatusDataModel:ApiResult
 	{
 		/// <summary>
 		/// 
@@ -98,7 +98,7 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="status"></param>
-		public ApplyAuditResponseStatusDataModel(Guid id, Status status) : base(status.status, status.message)
+		public ApplyAuditResponseStatusDataModel(Guid id, ApiResult status) : base(status.Status, status.Message)
 		{
 			this.Id = id;
 		}

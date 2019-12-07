@@ -45,7 +45,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
@@ -68,7 +68,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model,string mdzz)
 		{

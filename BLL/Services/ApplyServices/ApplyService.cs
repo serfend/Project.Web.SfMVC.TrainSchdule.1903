@@ -28,7 +28,7 @@ namespace BLL.Services.ApplyServices
 		
 
 
-		public Apply Get(Guid id) => _context.Applies.Find(id);
+		public Apply GetById(Guid id) => _context.Applies.Find(id);
 		public IEnumerable<Apply> GetAll(int page, int pageSize)
 		{
 			return GetAll((item) => true,page,pageSize);
@@ -51,6 +51,7 @@ namespace BLL.Services.ApplyServices
 		}
 		public Apply Create(Apply item)
 		{
+			if (item == null) return null;
 			_context.Applies.Add(item);
 			if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
 			    DateTime.Now) return null;
@@ -64,13 +65,14 @@ namespace BLL.Services.ApplyServices
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
-			await _context.Applies.AddAsync(item);
-			await _context.SaveChangesAsync();
+			await _context.Applies.AddAsync(item).ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return item;
 		}
 
 		public bool Edit(string id, Action<Apply> editCallBack)
 		{
+			if (editCallBack == null) return false;
 			var target = _context.Applies.Find(id);
 			if (target == null) return false;
 			editCallBack.Invoke(target);
@@ -83,14 +85,15 @@ namespace BLL.Services.ApplyServices
 		{
 			var target = _context.Applies.Find(id);
 			if (target == null) return false;
-			await Task.Run(() => editCallBack.Invoke(target));
+			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(false);
 			_context.Applies.Update(target);
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return true;
 		}
 
 		public void Delete(Apply item)
 		{
+			if (item == null) return;
 			foreach (var applyResponse in item.Response)
 			{
 				_context.ApplyResponses.Remove(applyResponse);

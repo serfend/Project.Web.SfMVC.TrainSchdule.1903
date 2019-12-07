@@ -77,7 +77,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Detail([FromBody]NewStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -101,7 +101,7 @@ namespace TrainSchdule.Controllers.Statistics
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new Status(-1, ex.Message));
+				return new JsonResult(new ApiResult(-1, ex.Message));
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -111,7 +111,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpDelete]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Detail([FromBody]DeleteStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);

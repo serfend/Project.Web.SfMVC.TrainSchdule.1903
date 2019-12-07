@@ -100,7 +100,7 @@ namespace TrainSchdule.Extensions
 				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
 				{
 					Action = d.Action,
-					Apply = applyService.Get(d.Id),
+					Apply = applyService.GetById(d.Id),
 					Remark = d.Remark
 				})
 

@@ -134,7 +134,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				case "正休":
 					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
-					if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new Status(ActionStatusMessage.Apply.Request.NoEnoughVocation.status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
+					if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
 					if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
 					if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
 					break;
@@ -169,7 +169,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 			var dto = model.ToVDTO();
 			var apply = _applyService.Submit(dto);
 			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
@@ -196,7 +196,7 @@ namespace TrainSchdule.Controllers.Apply
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			Guid.TryParse(model.Id, out var id);
-			var apply = _applyService.Get(id);
+			var apply = _applyService.GetById(id);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			if(!_userActionServices.Permission(apply.BaseInfo.From.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code))return new JsonResult(ActionStatusMessage.Account.Auth.Permission.Default);
 

@@ -9,7 +9,7 @@ namespace BLL.Interfaces
 {
 	public interface ICompanyManagerServices
 	{
-		CompanyManagers Get(Guid id);
+		CompanyManagers GetById(Guid id);
 		IEnumerable<CompanyManagers> GetAll(Expression<Func<CompanyManagers, bool>> predicate, int page, int pageSize);
 		int Edit(CompanyManagers model);
 		CompanyManagers CreateManagers(CompanyManagerVdto model);

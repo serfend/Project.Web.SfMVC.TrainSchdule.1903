@@ -143,7 +143,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> ConfirmEmail(string userId, string code)
 		{
 			if (userId == null || code == null)
@@ -160,7 +160,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <returns>需要登录</returns>
 		[HttpPost]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> Logout()
 		{
@@ -192,7 +192,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Permission([FromBody]ModefyPermissionsViewModel model)
 		{
@@ -211,7 +211,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
 		{
@@ -238,7 +238,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
 		{
@@ -278,7 +278,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Login(string returnUrl)
 		{
@@ -291,7 +291,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
@@ -299,7 +299,7 @@ namespace TrainSchdule.Controllers
 			if (ModelState.IsValid)
 			{
 				var r = model.Verify.Verify(_verifyService);
-				if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+				if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -324,7 +324,7 @@ namespace TrainSchdule.Controllers
 				}
 				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			}
-			else return new JsonResult(new Status(ActionStatusMessage.Fail.status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			else return new JsonResult(new ApiResult(ActionStatusMessage.Fail.Status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
 		}
 		/// <summary>
 		/// 批量移除用户
@@ -333,13 +333,13 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> RemoveMutil([FromBody]UserRemoveMutiViewMode model)
 		{
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var statusME = new Dictionary<string, Status>();
+			var statusME = new Dictionary<string, ApiResult>();
 
 			foreach (var u in model.Data.Id)
 				try
@@ -364,7 +364,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
@@ -398,7 +398,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Application([FromBody]UserApplicationViewModel model)
 		{
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -421,13 +421,13 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
@@ -453,17 +453,17 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public async Task<IActionResult> RegisterMutil([FromBody]UsersCreateMutilViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, r));
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			var exStatus = new Dictionary<string, Status>();
+			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
 			foreach (var m in model.Data.List)
 				try

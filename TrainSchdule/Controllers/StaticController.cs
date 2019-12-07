@@ -78,7 +78,7 @@ namespace TrainSchdule.Controllers
 			{
 				var status = _verifyService.Status;
 				_verifyService.Generate();
-				return new JsonResult(new Status(ActionStatusMessage.Account.Auth.Verify.Invalid.status, status));
+				return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, status));
 			}
 
 			return new JsonResult(new ScrollerVerifyGeneratedViewModel()
@@ -228,7 +228,7 @@ namespace TrainSchdule.Controllers
 			{
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
-				var a = _applyService.Get(guid);
+				var a = _applyService.GetById(guid);
 				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false);
 				if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				//TODO 需要校验权限
@@ -263,7 +263,7 @@ namespace TrainSchdule.Controllers
 							Value = form.Company
 						}
 					},out var totalCount);
-					targetCompany = _companiesService.Get(form.Company);
+					targetCompany = _companiesService.GetById(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}
 				else return new JsonResult(ActionStatusMessage.Apply.Operation.Invalid);

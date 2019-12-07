@@ -19,7 +19,7 @@ namespace BLL.Services
 			_context = context;
 		}
 
-		public CompanyManagers Get(Guid id)
+		public CompanyManagers GetById(Guid id)
 		{
 			return _context.CompanyManagers.Find(id);
 		}

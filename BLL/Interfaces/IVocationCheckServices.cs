@@ -11,10 +11,10 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 获取范围内所有的节假日
 		/// </summary>
-		/// <param name="date"></param>
+		/// <param name="targetDate"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		IEnumerable<VocationDescription> GetVocationDates(DateTime date,int length);
+		IEnumerable<VocationDescription> GetVocationDates(DateTime targetDate,int length);
 		/// <summary>
 		/// 判断从指定日期开始，跳过法定节假日会到何时
 		/// </summary>

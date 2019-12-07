@@ -10,7 +10,7 @@ namespace BLL.Interfaces
 {
 	public interface IApplyService :IApplyServiceCreate, IApplyServiceManage
 	{
-		Apply Get(Guid id);
+		Apply GetById(Guid id);
 
 		/// <summary>
 		/// 加载所有申请

@@ -32,7 +32,7 @@ namespace BLL.Services
 			return list;
 		}
 
-		public Company Get(string code)
+		public Company GetById(string code)
 		{
 			var company = _context.Companies.Find(code);
 			return company;

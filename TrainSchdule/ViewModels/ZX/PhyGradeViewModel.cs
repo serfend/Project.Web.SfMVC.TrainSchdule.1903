@@ -12,7 +12,7 @@ namespace TrainSchdule.ViewModels.ZX
 	public class PhySingleGradeViewModel: ApiDataModel
 	{
 		public PhySingleGradeDataModel Data { get; set; }
-		public  PhySingleGradeViewModel(Status message) : base(message){ }
+		public  PhySingleGradeViewModel(ApiResult message) : base(message){ }
 	}
 	public class PhyGradesViewModel : ApiDataModel
 	{

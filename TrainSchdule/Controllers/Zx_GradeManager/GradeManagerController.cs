@@ -92,12 +92,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		{
 			var list = new List<PhySingleGradeDataModel>(model.Queries);
 			var resultList = new List<PhySingleGradeDataModel>();
-			var finalResult = new Status(0,"");
+			var finalResult = new ApiResult(0,"");
 			for(int i =0;i<list.Count;i++)
 			{
 				var m = list[i];
 				var result = GetResult(ref m);
-				if (result.status != 0) finalResult = result;
+				if (result.Status != 0) finalResult = result;
 				resultList.Add(m);
 			}
 			return new JsonResult(new PhyGradesViewModel()
@@ -110,7 +110,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		private Status GetResult(ref PhySingleGradeDataModel model)
+		private ApiResult GetResult(ref PhySingleGradeDataModel model)
 		{
 			if (model?.User == null) return ActionStatusMessage.User.NoId;
 

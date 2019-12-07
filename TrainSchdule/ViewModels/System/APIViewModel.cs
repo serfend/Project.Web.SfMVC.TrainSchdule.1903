@@ -27,18 +27,18 @@ namespace TrainSchdule.ViewModels.System
 			Code = code;
 			Message = message;
 		}
-		public ApiDataModel(Status status) : this(status.status,status.message) { }
+		public ApiDataModel(ApiResult status) : this(status.Status,status.Message) { }
 	}
 	/// <summary>
 	/// 批量请求情况回复
 	/// </summary>
 	public class ResponseStatusOrModelExceptionViweModel:ApiDataModel
 	{
-		public ResponseStatusOrModelExceptionViweModel(Status status) : base(status.status, status.message) { }
+		public ResponseStatusOrModelExceptionViweModel(ApiResult status) : base(status.Status, status.Message) { }
 		/// <summary>
 		/// 返回键对应的错误
 		/// </summary>
-		public Dictionary<string, Status> StatusException { get; set; }
+		public Dictionary<string, ApiResult> StatusException { get; set; }
 		/// <summary>
 		/// 键对应的格式错误
 		/// </summary>

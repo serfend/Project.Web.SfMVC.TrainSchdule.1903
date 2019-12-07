@@ -14,7 +14,7 @@ namespace BLL.Extensions
 		public static IEnumerable<User> CompanyWithChildCompanyMembers(this Company company,ICompaniesService companiesService,IUsersService usersService)
 		{
 			var list = new List<User>();
-			var r=companiesService.FindAllChild(company.Code).All<Company>(c=> {
+			var r=companiesService?.FindAllChild(company?.Code).All<Company>(c=> {
 				list.AddRange(c.CompanyWithChildCompanyMembers(companiesService, usersService));
 				return true;
    });
@@ -22,7 +22,7 @@ namespace BLL.Extensions
 			return list;
 			 
 		}
-		public static IEnumerable<User>CompanyMembers(this Company company,IUsersService usersService)=> usersService.Find(u => u.CompanyInfo.Company.Code == company.Code);
+		public static IEnumerable<User>CompanyMembers(this Company company,IUsersService usersService)=> usersService?.Find(u => u.CompanyInfo.Company.Code == company.Code);
 		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService)
 		{
 			var b=new CompanyDto()

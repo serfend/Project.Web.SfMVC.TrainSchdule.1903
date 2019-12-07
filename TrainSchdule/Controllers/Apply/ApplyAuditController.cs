@@ -20,7 +20,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status),0)]
+		[ProducesResponseType(typeof(ApiResult),0)]
 
 		public IActionResult Save(string id)
 		{
@@ -42,7 +42,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPut]
 		[AllowAnonymous]
 
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Publish(string id)
 		{
@@ -64,7 +64,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPut]
 		[AllowAnonymous]
 
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Withdrew(string id)
 		{
@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers.Apply
 		private void CheckApplyModelAndDoTask(string id,Action<DAL.Entities.ApplyInfo.Apply>callBack)
 		{
 			Guid.TryParse(id, out var gid);
-			var apply = _applyService.Get(gid);
+			var apply = _applyService.GetById(gid);
 			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
 			var userid = _currentUserService.CurrentUser?.Id;
 			if (userid == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -100,7 +100,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Status), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{

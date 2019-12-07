@@ -14,8 +14,12 @@ namespace TrainSchdule.Crontab
 	{
 		private readonly ApplicationDbContext _context;
 
-		public static DateTime Start = DateTime.Today.AddDays(-1);
-		public static DateTime End = DateTime.Today;
+		private static DateTime start = DateTime.Today.AddDays(-1);
+		private static DateTime end = DateTime.Today;
+
+		public static DateTime Start { get => start; set => start = value; }
+		public static DateTime End { get => end; set => end = value; }
+
 		public WeeklyVocationStatistics(ApplicationDbContext context):base(context,Start,End,$"{Start.Year}_Week{new GregorianCalendar().GetWeekOfYear(Start,CalendarWeekRule.FirstFullWeek,DayOfWeek.Monday) + 1}")
 		{
 			_context = context;

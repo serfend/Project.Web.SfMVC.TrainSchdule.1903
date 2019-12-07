@@ -25,7 +25,7 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 通过单位路径
 		/// </summary>
-		Company Get(string Code);
+		Company GetById(string Code);
 
 		Company FindParent(string Code);
 		/// <summary>

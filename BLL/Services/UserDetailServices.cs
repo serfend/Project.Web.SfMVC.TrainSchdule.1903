@@ -26,6 +26,7 @@ namespace BLL.Services
 		/// <returns></returns>
 		public UserVocationInfoVDto VocationInfo(User targetUser)
 		{
+			if (targetUser == null) return null;
 			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept&&a.Create.Value.Year==DateTime.Now.Year&&a.RequestInfo.VocationType=="正休").ToList();//仅正休计算天数
 			int nowLength = 0;
 			int nowTimes = 0;
