@@ -201,8 +201,7 @@ namespace TrainSchdule.Controllers.Apply
 			if(!_userActionServices.Permission(apply.BaseInfo.From.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code))return new JsonResult(ActionStatusMessage.Account.Auth.Permission.Default);
 
 			var ua=_userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id,$"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请");
-			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave || apply.Status == AuditStatus.Withdrew)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);
-			
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave || apply.Status == AuditStatus.Withdrew)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);			
 			_applyService.Delete(apply);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);

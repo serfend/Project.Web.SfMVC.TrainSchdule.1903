@@ -15,23 +15,23 @@ namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
-		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,out int totalCount)
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, out int totalCount)
 		{
 			totalCount = 0;
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
-			if(model.Status!=null) list= _context.Applies.Where(a =>(model.Status.Arrays!=null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >=(int)a.Status));
+			if (model.Status != null) list = _context.Applies.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 			if (model.CreateBy != null) list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value);
 			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value);
-			if (model.Create != null) list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates!=null && model.Create.Dates.Any(d=>d.Date.Subtract(a.Create.Value).Days==0)));
-			if (model.StampLeave != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End)  || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
-			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn!=null&&model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
+			if (model.Create != null) list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
+			if (model.StampLeave != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
+			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
 			totalCount = list.Count();
-			if (model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) return null;
+			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) return null;
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
 			return list.ToList();
 		}
@@ -39,8 +39,8 @@ namespace BLL.Services.ApplyServices
 		{
 			var list = _context.Applies
 				.Where(a => a.Status == AuditStatus.NotSave)
-				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now ).TotalDays< 0).ToList();
-			foreach (var apply in list)_context.ApplyResponses.RemoveRange(apply.Response);
+				.Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+			foreach (var apply in list) _context.ApplyResponses.RemoveRange(apply.Response);
 			_context.Applies.RemoveRange(list);
 			_context.SaveChanges();
 			var applies = _context.Applies;
@@ -80,7 +80,7 @@ namespace BLL.Services.ApplyServices
 			if (list.Count == 0) return null;
 			var mapList = new List<ParameterRenderer<ApplyDetailDto>>()
 			{
-				
+
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_LeftLength", t => t.UserVocationDescription?.LeftLength),
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_MaxTripTimes", t => t.UserVocationDescription?.MaxTripTimes),
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_NowTimes", t => t.UserVocationDescription?.NowTimes),
