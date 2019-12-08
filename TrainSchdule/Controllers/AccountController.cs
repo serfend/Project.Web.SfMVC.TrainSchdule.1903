@@ -311,6 +311,7 @@ namespace TrainSchdule.Controllers
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 				model.Password = _usersService.ConvertFromUserCiper(model.UserName, model.Password);
+				if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded)
 				{
