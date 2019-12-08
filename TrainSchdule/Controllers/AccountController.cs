@@ -216,16 +216,18 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
 		{
 			var currentUser = currentUserService.CurrentUser;
+			var cid = model.Id;
+			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (model.Id != currentUser?.Id && _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 
-			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(model.Id, model.ConfirmNewPassword);
-			model.NewPassword = _usersService.ConvertFromUserCiper(model.Id, model.NewPassword);
+			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(cid, model.ConfirmNewPassword);
+			model.NewPassword = _usersService.ConvertFromUserCiper(cid, model.NewPassword);
 			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(ActionStatusMessage.Account.Register.ConfirmPasswordNotSame);
-			model.OldPassword = _usersService.ConvertFromUserCiper(model.Id, model.OldPassword);
+			model.OldPassword = _usersService.ConvertFromUserCiper(cid, model.OldPassword);
 			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
 
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
