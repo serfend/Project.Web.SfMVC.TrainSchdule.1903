@@ -221,8 +221,12 @@ namespace TrainSchdule.Controllers
 			if (model.Id != currentUser?.Id && _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
+
 			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(model.Id, model.ConfirmNewPassword);
+			model.NewPassword = _usersService.ConvertFromUserCiper(model.Id, model.NewPassword);
+			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(ActionStatusMessage.Account.Register.ConfirmPasswordNotSame);
 			model.OldPassword = _usersService.ConvertFromUserCiper(model.Id, model.OldPassword);
+			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
 
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
 			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);

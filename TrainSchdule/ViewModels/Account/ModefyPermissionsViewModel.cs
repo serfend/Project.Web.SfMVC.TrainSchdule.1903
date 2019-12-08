@@ -37,14 +37,12 @@ namespace TrainSchdule.ViewModels.Account
 		/// 输入密码
 		/// </summary>
 		[Required]
-		[StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 8)]
 
 		public string NewPassword { get; set; }
 		/// <summary>
 		/// 二次输入密码
 		/// </summary>
 		[Required]
-		[Compare(nameof(NewPassword), ErrorMessage = "两次输入的密码不一致")]
 		public string ConfirmNewPassword { get; set; }
 	}
 }

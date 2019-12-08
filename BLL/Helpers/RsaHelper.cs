@@ -88,7 +88,18 @@ namespace BLL.Helpers
 			{
 				throw new Exception("_privateKeyRsaProvider is null");
 			}
-			return Encoding.UTF8.GetString(_privateKeyRsaProvider.Decrypt(Convert.FromBase64String(cipherText), RSAEncryptionPadding.Pkcs1));
+			string result;
+
+			try
+			{
+				var dec = _privateKeyRsaProvider.Decrypt(Convert.FromBase64String(cipherText), RSAEncryptionPadding.Pkcs1);
+				result= Encoding.UTF8.GetString(dec);
+			}
+			catch (Exception )
+			{
+				return null;
+			}
+			return result;
 		}
 
 		#endregion

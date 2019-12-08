@@ -59,13 +59,12 @@ namespace BLL.Services
 				string md5Str = rawMd5.Replace("-", "");
 				var rsa = new RsaHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
 				var decryptStr = rsa.Decrypt(rawPsw);
-				if (decryptStr.Length <= md5Str.Length || 
+				if (decryptStr==null||decryptStr.Length <= md5Str.Length || 
 					DateTime.Now.ToString("yyyyMMdd") != decryptStr.Substring(0, 8) || 
 					decryptStr.Substring(decryptStr.Length - md5Str.Length, md5Str.Length) != md5Str.ToLower()) return null;
 				return decryptStr.Substring(8, decryptStr.Length - 8 - md5Str.Length);
 
 			}
-			return null;
 		}
 		/// <summary>
 		/// Loads all users with paggination, returns collection of user DTOs.
