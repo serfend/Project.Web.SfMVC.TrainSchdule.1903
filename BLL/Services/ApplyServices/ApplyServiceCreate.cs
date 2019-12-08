@@ -113,7 +113,8 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<ApplyResponse> GetAuditStream(Company company, User ApplyUser)
 		{
 			var dutyType = _context.DutyTypes.Where(d => d.Duties.Code == ApplyUser.CompanyInfo.Duties.Code).FirstOrDefault();
-			var auditStreamLength = dutyType?.AuditLevelNum == 0 ? (dutyType?.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType?.AuditLevelNum;
+			int auditStreamLength = 0;
+			auditStreamLength = dutyType == null ? 3 : dutyType.AuditLevelNum;//当没有职务类别时，默认需要三个层级进行审批
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
 			for (var i = 0; i < auditStreamLength && nowId.Length > 0; i++)//本级 上级
@@ -208,7 +209,7 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
 			var nowAudit = new List<ApplyResponse>();//获取所有可能审批的流程
-			foreach (var r in model.Apply.Response)if (myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
+			foreach (var r in model.Apply.Response) if (myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
 			if (nowAudit.Count == 0) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
 
 			// 当审批的申请为未发布的申请时，将其发布
