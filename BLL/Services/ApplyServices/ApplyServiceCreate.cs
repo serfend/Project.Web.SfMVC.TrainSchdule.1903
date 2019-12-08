@@ -45,7 +45,7 @@ namespace BLL.Services.ApplyServices
 				Company = await _context.Companies.FindAsync(model.Company).ConfigureAwait(false),
 				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties).ConfigureAwait(false),
 				From = model.From,
-				CreateBy=model.CreateBy,
+				CreateBy = model.CreateBy,
 				Social = new UserSocialInfo()
 				{
 					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(false),
@@ -77,7 +77,7 @@ namespace BLL.Services.ApplyServices
 				VocationType = model.VocationType,
 				CreateTime = DateTime.Now,
 				ByTransportation = model.ByTransportation,
-				AdditialVocations=model.VocationAdditionals
+				AdditialVocations = model.VocationAdditionals
 			};
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();
@@ -97,26 +97,26 @@ namespace BLL.Services.ApplyServices
 				Create = DateTime.Now,
 				Hidden = false,
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
-				Status=AuditStatus.NotSave
+				Status = AuditStatus.NotSave
 			};
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
 			var user = apply.BaseInfo?.From;
 
-			
-			apply.Response = GetAuditStream(company,user);
+
+			apply.Response = GetAuditStream(company, user);
 			return Create(apply);
 		}
 
 
-		public IEnumerable<ApplyResponse> GetAuditStream(Company company,User ApplyUser)
+		public IEnumerable<ApplyResponse> GetAuditStream(Company company, User ApplyUser)
 		{
 			var dutyType = _context.DutyTypes.Where(d => d.Duties.Code == ApplyUser.CompanyInfo.Duties.Code).FirstOrDefault();
 			var auditStreamLength = dutyType?.AuditLevelNum == 0 ? (dutyType?.DutiesRawType == DutiesRawType.gb ? 3 : 2) : dutyType?.AuditLevelNum;
 			var responses = new List<ApplyResponse>();
 			var nowId = company?.Code;
-			for(var i=0;i< auditStreamLength && nowId.Length>0; i++)//本级 上级
+			for (var i = 0; i < auditStreamLength && nowId.Length > 0; i++)//本级 上级
 			{
 				var t = GenerateAuditStream(nowId);
 				if (t.Company != null) responses.Add(t);
@@ -158,7 +158,7 @@ namespace BLL.Services.ApplyServices
 					}
 				case AuditStatus.Auditing:
 					{
-						if (model.Status == AuditStatus.NotPublish||model.Status==AuditStatus.NotSave)
+						if (model.Status == AuditStatus.NotPublish || model.Status == AuditStatus.NotSave)
 						{
 							foreach (var r in model.Response)
 							{
@@ -181,60 +181,84 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<ApiResult> Audit(ApplyAuditVdto model)
 		{
 			if (model == null) return null;
-			var myManages = _usersService.InMyManage(model.AuditUser.Id,out var totalCount)?.ToList();
+			// 获取授权用户的所有管辖单位
+			var myManages = _usersService.InMyManage(model.AuditUser.Id, out var totalCount)?.ToList();
+			// 所在单位的主管拥有此单位的管理权
+			if (model.AuditUser.CompanyInfo.Duties.IsMajorManager && myManages.All(c => c.Code != model.AuditUser.CompanyInfo.Company.Code)) myManages.Add(model.AuditUser.CompanyInfo.Company);
 			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
-			var list =new List<ApiResult>();
+			var list = new List<ApiResult>();
 			foreach (var apply in model.List)
 			{
 				var result = AuditSingle(apply, myManages, model.AuditUser);
 				list.Add(result);
 			}
-			
+
 			_context.SaveChanges();
 			return list;
 		}
-
-		private ApiResult AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages,User AuditUser)
+		/// <summary>
+		/// 用户对指定申请进行审批
+		/// </summary>
+		/// <param name="model">目标申请</param>
+		/// <param name="myManages">用户所管辖的单位列表</param>
+		/// <param name="AuditUser">审批人</param>
+		/// <returns></returns>
+		private ApiResult AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages, User AuditUser)
 		{
 			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
-			var nowAudit = new List<ApplyResponse>();
-			foreach (var r in model.Apply.Response)
-			{
-				if (myManages.Any(c => c.Code == r.Company.Code))nowAudit.Add(r);
-			}
+			var nowAudit = new List<ApplyResponse>();//获取所有可能审批的流程
+			foreach (var r in model.Apply.Response)if (myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
 			if (nowAudit.Count == 0) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
+
+			// 当审批的申请为未发布的申请时，将其发布
 			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+
 			var result = AuditResponse(nowAudit, model.Apply, model.Action, model.Remark, AuditUser);
 			return result;
 		}
-		private ApiResult AuditResponse(IEnumerable<ApplyResponse> responses,Apply target,AuditResult action,string remark,User auditBy)
+		/// <summary>
+		/// 对一个审批流程进行审批
+		/// </summary>
+		/// <param name="responses">目标审批流程</param>
+		/// <param name="target">目标申请</param>
+		/// <param name="action">审批操作</param>
+		/// <param name="remark">备注</param>
+		/// <param name="auditBy">审批人</param>
+		/// <returns></returns>
+		private ApiResult AuditResponse(IEnumerable<ApplyResponse> responses, Apply target, AuditResult action, string remark, User auditBy)
 		{
 			foreach (var r in responses)
 			{
+				// 审批流程中第一个正在审批中的流程
 				if (r.Status == Auditing.Received)
 				{
 					r.Remark = remark;
 					r.AuditingBy = auditBy;
-					r.HandleStamp=DateTime.Now;
-					AuditSingle(r,target,action);
+					r.HandleStamp = DateTime.Now;
+					AuditSingle(r, target, action);
 					return ActionStatusMessage.Success;
 				}
 			}
 			return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 		}
-
+		/// <summary>
+		/// 对单个流程进行审批
+		/// </summary>
+		/// <param name="response">目标审批流程</param>
+		/// <param name="target">目标申请</param>
+		/// <param name="action">审批操作</param>
 		private static void AuditSingle(ApplyResponse response, Apply target, AuditResult action)
 		{
 			switch (action)
 			{
 				case AuditResult.Accept:
 					response.Status = Auditing.Accept;
-					var next=target.Response.FirstOrDefault(r => r.Status == Auditing.UnReceive);
+					var next = target.Response.FirstOrDefault(r => r.Status == Auditing.UnReceive);
 					if (next != null)
 					{
-						next.Status = Auditing.Received;//=下一级变更为审核中
+						next.Status = Auditing.Received;// 下一级变更为审核中
 						target.FinnalAuditCompany = next.Company.Code;
 					}
 					break;
