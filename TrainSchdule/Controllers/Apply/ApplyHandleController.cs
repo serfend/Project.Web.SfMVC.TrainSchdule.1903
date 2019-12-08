@@ -20,6 +20,11 @@ namespace TrainSchdule.Controllers.Apply
 {
 	public partial class ApplyController
 	{
+		/// <summary>
+		/// 条件查询申请
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public IActionResult List([FromBody]QueryApplyDataModel model)
 		{
@@ -89,6 +94,11 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
 		}
+		/// <summary>
+		/// 通过召回id获取召回信息
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult RecallOrder(Guid id)

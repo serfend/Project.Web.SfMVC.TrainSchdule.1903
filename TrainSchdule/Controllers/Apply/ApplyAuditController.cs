@@ -63,7 +63,6 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[AllowAnonymous]
-
 		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Withdrew(string id)
