@@ -235,8 +235,15 @@ namespace BLL.Services
 		{
 			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(false);
 			if (user == null) return false;
-			//TODO 级联删除相关
+			//TODO 级联删除相关(休假申请）
 			_context.AppUsers.Remove(user);
+			if(user.BaseInfo!=null)_context.AppUserBaseInfos.Remove(user.BaseInfo);
+			if (user.Application!=null)_context.AppUserApplicationInfos.Remove(user.Application);
+			if(user.Application?.ApplicationSetting!=null)_context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
+			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);
+			if (user.CompanyInfo?.Company != null) _context.Companies.Remove(user.CompanyInfo.Company);
+			if (user.CompanyInfo?.Duties != null) _context.Duties.Remove(user.CompanyInfo.Duties);
+
 			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == id).ConfigureAwait(false);
 			_context.Users.Remove(appUser);
 			await _context.SaveChangesAsync().ConfigureAwait(false);

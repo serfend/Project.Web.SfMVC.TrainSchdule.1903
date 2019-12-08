@@ -400,7 +400,7 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Remove,id, "");
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null)  throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			_userActionServices.Status(actionRecord, true);
 		}
@@ -490,6 +490,7 @@ namespace TrainSchdule.Controllers
 				catch (ModelStateException mse)
 				{
 					exMSE.Add(m.Application?.UserName, mse.Model.Data);
+					ModelState.Clear();
 				}
 				finally { }
 			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(exMSE.Count > 0 || exStatus.Count > 0 ? ActionStatusMessage.Fail : ActionStatusMessage.Success)
