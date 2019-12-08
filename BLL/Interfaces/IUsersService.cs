@@ -17,10 +17,11 @@ namespace BLL.Interfaces
 	/// </remarks>
 	public interface IUsersService :  IUserServiceDetail
 	{
-        /// <summary>
-        /// 加载所有用户的信息
-        /// </summary>
-        IEnumerable<User> GetAll(int page, int pageSize);
+		string ConvertFromUserCiper(string username, string password);
+		/// <summary>
+		/// 加载所有用户的信息
+		/// </summary>
+		IEnumerable<User> GetAll(int page, int pageSize);
 
         User Get(string Id);
 

@@ -22,7 +22,6 @@ namespace TrainSchdule.ViewModels.Account
 		/// 
 		/// </summary>
 		[Required]
-		[StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 8)]
 		public string Password { get; set; }
 		/// <summary>
 		/// 

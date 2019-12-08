@@ -34,7 +34,7 @@
 				
 			}
 			public static class Register { 
-				public static readonly ApiResult Default = new ApiResult(13000, "用户已存在");
+				public static readonly ApiResult Default = new ApiResult(13000, "未知的注册错误");
 				public static readonly ApiResult UserExist = new ApiResult(13100, "用户已存在");
 			}
 		}

@@ -221,6 +221,9 @@ namespace TrainSchdule.Controllers
 			if (model.Id != currentUser?.Id && _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
+			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(model.Id, model.ConfirmNewPassword);
+			model.OldPassword = _usersService.ConvertFromUserCiper(model.Id, model.OldPassword);
+
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
 			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
@@ -303,6 +306,7 @@ namespace TrainSchdule.Controllers
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+				model.Password = _usersService.ConvertFromUserCiper(model.UserName, model.Password);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded)
 				{
