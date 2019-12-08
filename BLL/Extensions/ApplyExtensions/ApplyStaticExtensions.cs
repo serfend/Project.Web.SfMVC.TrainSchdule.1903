@@ -34,7 +34,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Auditing, Color.Coral},
 				{(int)AuditStatus.Withdrew, Color.Gray},
 				{(int)AuditStatus.AcceptAndWaitAdmin, Color.DeepSkyBlue},
-				{(int)AuditStatus.Accept,Color.FromArgb(6799930)‬},//ele的成功色
+				{(int)AuditStatus.Accept,Color.MediumSpringGreen},
 				{(int)AuditStatus.Denied, Color.Red},
 				{(int)AuditStatus.NotSave,Color.Black }
 			};

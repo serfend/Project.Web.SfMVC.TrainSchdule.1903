@@ -336,12 +336,13 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> RemoveMutil([FromBody]UserRemoveMutiViewMode model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var statusME = new Dictionary<string, ApiResult>();
 
-			foreach (var u in model.Data.Id)
+			foreach (var u in model.Data?.Id)
 				try
 				{
 					await RemoveSingle(u, authByUser);
@@ -496,7 +497,7 @@ namespace TrainSchdule.Controllers
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.ConfirmPassword);
-
+			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
