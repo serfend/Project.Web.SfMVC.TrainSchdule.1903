@@ -181,16 +181,17 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 获取法定节假日情况
 		/// </summary>
-		/// <param name="start"></param>
-		/// <param name="length"></param>
+		/// <param name="start">开始日期</param>
+		/// <param name="length">长度</param>
+		/// <param name="caculateLawVocation">是否计算法定节假日</param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
 		[Route("VocationDate")]
-		public IActionResult VocationDate(DateTime start, int length)
+		public IActionResult VocationDate(DateTime start, int length,bool caculateLawVocation)
 		{
-			var list = _vocationCheckServices.GetVocationDescriptions(start, length);
+			var list = _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation);
 			return new JsonResult(new VocationDescriptionViewModel()
 			{
 				Data = new VocationDescriptionDataModel()

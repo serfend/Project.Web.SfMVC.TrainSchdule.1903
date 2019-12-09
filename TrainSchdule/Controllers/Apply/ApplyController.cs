@@ -150,8 +150,6 @@ namespace TrainSchdule.Controllers.Apply
 				default:
 					return new JsonResult(ActionStatusMessage.Apply.Request.InvalidVocationType);
 			}
-
-
 			var info = _applyService.SubmitRequest(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
 		}

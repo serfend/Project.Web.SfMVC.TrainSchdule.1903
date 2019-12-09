@@ -5,6 +5,7 @@ using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities.Vocations;
 using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Extensions
@@ -39,14 +40,14 @@ namespace TrainSchdule.Extensions
 		}
 
 		/// <summary>
-		/// 
+		///  转换并计算用户的申请
 		/// </summary>
-		/// <param name="model"></param>
-		/// <param name="context"></param>
-		/// <param name="vocationCheckServices"></param>
-		/// <param name="CaculateAdditionalAndTripLength"></param>
+		/// <param name="model">原始申请</param>
+		/// <param name="context">数据库</param>
+		/// <param name="vocationCheckServices">假期计算服务</param>
+		/// <param name="CaculateAdditionalAndTripLength">是否计算福利假和路途</param>
 		/// <returns></returns>
-		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context, IVocationCheckServices vocationCheckServices,bool CaculateAdditionalAndTripLength)
+		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, bool CaculateAdditionalAndTripLength)
 		{
 			var b = new ApplyRequestVdto()
 			{
@@ -63,7 +64,23 @@ namespace TrainSchdule.Extensions
 			b.VocationAdditionals?.All(v => { additionalVocationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (b.StampLeave != null)
 			{
-				b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, b.VocationLength  + (CaculateAdditionalAndTripLength ? (b.OnTripLength + additionalVocationDay):0));
+				var vocationLength = b.VocationLength + (CaculateAdditionalAndTripLength ? (b.OnTripLength + additionalVocationDay) : 0);
+				if (CaculateAdditionalAndTripLength)
+				{
+					b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, vocationLength, CaculateAdditionalAndTripLength);
+					List<VocationAdditional> lawVocations = vocationCheckServices.VocationDesc.Select(v => new VocationAdditional()
+					{
+						Name = v.Name,
+						Start = v.Start,
+						Length = v.Length,
+						Description = "法定节假日"
+					}).ToList();
+					lawVocations.AddRange(b.VocationAdditionals);
+					b.VocationAdditionals= lawVocations;//执行完crossVocation后已经处于加载完毕状态可直接使用
+				}
+				else b.StampReturn = b.StampLeave.Value.AddDays(vocationLength-1);
+
+
 				b.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription(CaculateAdditionalAndTripLength);
 			}
 			return b;

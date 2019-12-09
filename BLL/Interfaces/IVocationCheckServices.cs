@@ -21,14 +21,14 @@ namespace BLL.Interfaces
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		DateTime CrossVocation(DateTime start, int length);
+		DateTime CrossVocation(DateTime start, int length, bool caculateLawVocation);
 		/// <summary>
 		/// 获取从指定日期开始，跳过法定节假日包含的情况
 		/// </summary>
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start,int length);
+		IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start,int length,bool caculateLawVocation);
 		DateTime EndDate { get; }
 		IEnumerable<VocationDescription> VocationDesc { get; set; }
 	}

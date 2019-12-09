@@ -23,7 +23,11 @@ namespace DAL.Entities.ApplyInfo
 		/// 休假类别
 		/// </summary>
 		public string VocationType { get; set; }
+		/// <summary>
+		/// 福利假，包含法定节假日自动计算
+		/// </summary>
 		public virtual IEnumerable<VocationAdditional> AdditialVocations { get; set; }
+		
 		public virtual AdminDivision VocationPlace { get; set; }
 		public string Reason { get; set; }
 		public DateTime CreateTime { get; set; }

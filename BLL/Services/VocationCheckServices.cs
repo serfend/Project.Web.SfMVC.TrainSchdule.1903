@@ -11,7 +11,7 @@ using BLL.Extensions;
 
 namespace BLL.Services
 {
-	public class VocationCheckServices:IVocationCheckServices
+	public class VocationCheckServices : IVocationCheckServices
 	{
 		private readonly ApplicationDbContext _context;
 		public VocationCheckServices(ApplicationDbContext context)
@@ -25,11 +25,11 @@ namespace BLL.Services
 		public void ReloadNewYearVocation()
 		{
 			var allUsers = _context.AppUsers.ToList<User>();
-			foreach(var u in allUsers)
+			foreach (var u in allUsers)
 			{
 				if (u.Application.ApplicationSetting.LastVocationUpdateTime?.Year == DateTime.Today.Year) continue;
 				u.SocialInfo.Settle.PrevYearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var i, out var j);
-				u.SocialInfo.Settle.PrevYearlyComsumeLength = _context.Applies.Where(a => a.BaseInfo.From.Id == u.Id&&a.RequestInfo.StampLeave.Value.Year==DateTime.Today.Year-1&&a.RequestInfo.VocationType=="事假").Sum(a=>a.RequestInfo.VocationLength);//将去年休的事假记录
+				u.SocialInfo.Settle.PrevYearlyComsumeLength = _context.Applies.Where(a => a.BaseInfo.From.Id == u.Id && a.RequestInfo.StampLeave.Value.Year == DateTime.Today.Year - 1 && a.RequestInfo.VocationType == "事假").Sum(a => a.RequestInfo.VocationLength);//将去年休的事假记录
 				u.Application.ApplicationSetting.LastVocationUpdateTime = DateTime.Today;
 			}
 		}
@@ -40,26 +40,24 @@ namespace BLL.Services
 			_context.SaveChanges();
 		}
 
-		public IEnumerable<VocationDescription> GetVocationDates(DateTime date,int length)
+		public IEnumerable<VocationDescription> GetVocationDates(DateTime date, int length)
 		{
 			var endDate = date.AddDays(length);
 			return _context.VocationDescriptions.Where(v => v.Start <= endDate)
 				.Where(v => v.Start.AddDays(v.Length) >= date).ToList();
 		}
 		/// <summary>
-		/// 判断两个日期之间交叉的天数
+		/// 当用户本应休假日期进入了假期范围，则应添加整个范围
 		/// </summary>
-		/// <param name="d1Start"></param>
-		/// <param name="d1End"></param>
-		/// <param name="d2Start"></param>
-		/// <param name="d2End"></param>
+		/// <param name="userNormalDateStart"></param>
+		/// <param name="vocationStart"></param>
+		/// <param name="length"></param>
 		/// <returns></returns>
-		private int GetCrossDay(DateTime d1Start, DateTime d1End, DateTime d2Start, DateTime d2End)
+		private int GetCrossDay(DateTime userNormalDateStart, DateTime userNormalDateEnd, DateTime vocationStart, DateTime vocationEnd)
 		{
-			var later = d1Start > d2Start ? d1Start : d2Start;
-			var early = d1End > d2End ? d2End : d1End;
-			var result= early.Subtract(later).Days;
-			return result < 0 ? 0 : result;
+			if (userNormalDateStart <= vocationStart && userNormalDateEnd >= vocationStart) return vocationEnd.Subtract(vocationStart).Days;
+			if (userNormalDateStart > vocationStart && userNormalDateStart <= vocationEnd) return vocationEnd.Subtract(userNormalDateStart).Days;
+			return 0;
 		}
 		/// <summary>
 		/// 判断日期经过一定天数后到达的日期
@@ -67,24 +65,30 @@ namespace BLL.Services
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public DateTime CrossVocation(DateTime start, int length)
+		public DateTime CrossVocation(DateTime start, int length, bool caculateLawVocation)
 		{
-			VocationDesc = GetVocationDescriptions(start, length);
+			VocationDesc = GetVocationDescriptions(start, length, caculateLawVocation);
 			return EndDate;
 		}
 
-		public IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start, int length)
+		public IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation)
 		{
-			if (length > 500) return null;
-			var list = new List<VocationDescription>();
-			var end = start.AddDays(length-1);//此处定义休假1天为从当天早上到晚上，故实际天数-1
-			int vocationDay = 0;
-			foreach (var description in GetVocationDates(start, length-1))
+			length -= 1;// 【注意】此处因计算天数需要向前减一天
+			if (length > 500 || length < 0)
 			{
-				description.Length = GetCrossDay(start, end, description.Start, description.Start.AddDays(description.Length));
-				list.Add(description);
-				vocationDay += description.Length;
+				EndDate = start;
+				return null;
 			}
+			var list = new List<VocationDescription>();
+			var end = start.AddDays(length);
+			int vocationDay = 0;
+			if (caculateLawVocation)
+				foreach (var description in GetVocationDates(start, length))
+				{
+					description.Length = GetCrossDay(start, end, description.Start, description.Start.AddDays(description.Length));
+					list.Add(description);
+					vocationDay += description.Length;
+				}
 			EndDate = end.AddDays(vocationDay);
 			VocationDesc = list;
 			return list;

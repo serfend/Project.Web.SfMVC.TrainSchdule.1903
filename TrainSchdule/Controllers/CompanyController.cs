@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
@@ -18,20 +20,23 @@ namespace TrainSchdule.Controllers
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly ICompanyManagerServices _companyManagerServices;
+		private readonly IUserServiceDetail _usersService;
 
 		/// <summary>
-		/// 
+		/// 单位信息
 		/// </summary>
 		/// <param name="companiesService"></param>
 		/// <param name="currentUserService"></param>
-		/// <param name="usersService"></param>
 		/// <param name="companyManagerServices"></param>
-		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, IUsersService usersService, ICompanyManagerServices companyManagerServices)
+		/// <param name="usersService"></param>
+		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, ICompanyManagerServices companyManagerServices, IUserServiceDetail usersService)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
 			_companyManagerServices = companyManagerServices;
+			_usersService = usersService;
 		}
+
 		/// <summary>
 		/// 获取单位的子层级单位
 		/// </summary>
@@ -40,14 +45,20 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult Child(string id)
 		{
-			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
-			var company = _companiesService.FindAllChild(id);
-
+			var currentUser = _currentUserService.CurrentUser;
+			id = id ?? currentUser?.CompanyInfo?.Company?.Code;
+			List<Company> list ;
+			list=  _companiesService.FindAllChild(id).ToList();
+			if (currentUser != null)
+			{
+				var mymanage = _usersService.InMyManage(currentUser.Id, out var totalCount);
+				list.AddRange(mymanage);
+			}
 			return new JsonResult(new AllChildViewModel()
 			{
 				Data = new AllChildDataModel()
 				{
-					List = company.Select(c => c.ToCompanyModel())
+					List = list.Select(c => c.ToCompanyModel())
 				}
 			});
 		}
