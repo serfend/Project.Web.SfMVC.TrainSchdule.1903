@@ -23,8 +23,11 @@ namespace BLL.Services.ApplyServices
 			if (model.Status != null) list = _context.Applies.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
-			if (model.CreateBy != null) list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value);
-			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value);
+			if (model.CreateBy != null)
+			{
+				list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
+			}
+			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName .Contains(model.CreateFor.Value));
 			if (model.Create != null) list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
 			if (model.StampLeave != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
 			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
