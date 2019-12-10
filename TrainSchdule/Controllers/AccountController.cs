@@ -110,6 +110,31 @@ namespace TrainSchdule.Controllers
 			});
 		}
 		/// <summary>
+		/// 通过用户真实姓名查询身份号
+		/// </summary>
+		/// <param name="realName"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
+		public IActionResult GetUserIdByRealName(string realName)
+		{
+			if (realName == null) return new JsonResult(ActionStatusMessage.User.NoId);
+			var users = _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
+			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName) > 0).ToList();
+			return new JsonResult(new UsersBaseInfoWithIdViewModel()
+			{
+				Data = new UsersBaseInfoWithIdDataModel()
+				{
+					List = users.Select(u => new UserBaseInfoWithIdDataModel()
+					{
+						Base = u.BaseInfo,
+						Id = u.Id
+					})
+				}
+			});
+		}
+		/// <summary>
 		/// 通过身份证号查询身份号
 		/// </summary>
 		/// <param name="cid">身份证号</param>
@@ -385,7 +410,7 @@ namespace TrainSchdule.Controllers
 			try
 			{
 				var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-				if(authByUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+				if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 				await RemoveSingle(model.Id, authByUser);
 			}
 			catch (ActionStatusMessageException ex)
@@ -395,11 +420,11 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		private async Task RemoveSingle(string id,User authByUser)
+		private async Task RemoveSingle(string id, User authByUser)
 		{
-			var actionRecord = _userActionServices.Log(UserOperation.Remove,id, "");
+			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "");
 			var targetUser = _usersService.Get(id);
-			if (targetUser == null)  throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			_userActionServices.Status(actionRecord, true);

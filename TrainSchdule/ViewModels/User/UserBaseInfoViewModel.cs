@@ -1,5 +1,7 @@
 ﻿using DAL.Entities.UserInfo;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -26,5 +28,15 @@ namespace TrainSchdule.ViewModels.User
 		public UserBaseInfo Base { get; set; }
 		public string Id { get; set; }
 	}
-
+	public class UsersBaseInfoWithIdDataModel
+	{
+		public IEnumerable<UserBaseInfoWithIdDataModel> List { get; set; }
+	}
+	/// <summary>
+	/// 用户id列表
+	/// </summary>
+	public class UsersBaseInfoWithIdViewModel:ApiDataModel
+	{
+		public UsersBaseInfoWithIdDataModel Data { get; set; }
+	}
 }
