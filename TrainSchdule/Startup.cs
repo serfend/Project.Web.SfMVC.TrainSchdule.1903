@@ -60,6 +60,7 @@ namespace TrainSchdule
 
 			//每个http请求对应一个实例
 			services.AddScoped<IUsersService, UsersService>();
+			services.AddScoped<IUserServiceDetail, UsersService>();
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 			services.AddScoped<ICompaniesService, CompaniesService>();
 			services.AddScoped<IApplyService, ApplyService>();

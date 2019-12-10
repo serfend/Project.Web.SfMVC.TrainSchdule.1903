@@ -42,27 +42,19 @@ namespace TrainSchdule.Controllers
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="verifyService"></param>
-		/// <param name="context"></param>
-		/// <param name="vocationCheckServices"></param>
-		/// <param name="hostingEnvironment"></param>
-		/// <param name="applyService"></param>
-		/// <param name="usersService"></param>
-		/// <param name="companiesService"></param>
-		public StaticController(IVerifyService verifyService, ApplicationDbContext context, IVocationCheckServices vocationCheckServices, IHostingEnvironment hostingEnvironment, IApplyService applyService, IUsersService usersService, ICompaniesService companiesService, ICurrentUserService currentUserService)
+		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService)
 		{
 			_verifyService = verifyService;
-			_context = context;
 			_vocationCheckServices = vocationCheckServices;
-			_hostingEnvironment = hostingEnvironment;
+			_context = context;
 			_applyService = applyService;
+			_hostingEnvironment = hostingEnvironment;
+			_currentUserService = currentUserService;
 			_usersService = usersService;
 			_companiesService = companiesService;
-			_currentUserService = currentUserService;
 		}
+
+
 
 		/// <summary>
 		/// 
