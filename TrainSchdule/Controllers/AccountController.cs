@@ -245,7 +245,10 @@ namespace TrainSchdule.Controllers
 			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (model.Id != currentUser?.Id && _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authUser = _usersService.Get(model.Auth.AuthByUserID);
+			if (authUser != null)
+				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (model.Id != currentUser?.Id && _userActionServices.Permission((authUser??currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 

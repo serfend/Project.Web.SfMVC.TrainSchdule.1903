@@ -40,6 +40,7 @@ namespace BLL.Services
 
 		public IEnumerable<Company> FindAllChild(string code)
 		{
+			if (code.ToLower() == "root") code = "";
 			return _context.Companies.Where(x => ParentCode(x.Code) == code).ToList();
 		}
 
