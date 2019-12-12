@@ -28,14 +28,15 @@ namespace BLL.Services
 				Create=DateTime.Now,
 				ReturnStramp=recallOrder.ReturnStamp,
 				Reason=recallOrder.Reason,
-				RecallBy=_context.AppUsers.Find(recallOrder.RecallBy.Id),
+				RecallBy=_context.AppUsers.Find(recallOrder.RecallBy.Id)
 			};
 			var apply = _context.Applies.Find(recallOrder.Apply);
 			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
 			if (apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.Crash);
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			if (apply.Response.LastOrDefault()?.AuditingBy.Id != order.RecallBy.Id) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallByNotSame);
-			if (apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeLateThenVocation);		
+			if (apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeLateThanVocation);
+			if (order.ReturnStramp <= DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.RecallTimeEarlyThanNow);
 			 _context.RecallOrders.Add(order);
 			apply.RecallId = order.Id;
 			_context.Applies.Update(apply);

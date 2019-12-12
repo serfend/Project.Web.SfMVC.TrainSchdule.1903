@@ -246,9 +246,13 @@ namespace TrainSchdule.Controllers
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
+			bool authUserPermission=false;
 			if (authUser != null)
+			{
 				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			if (model.Id != currentUser?.Id && _userActionServices.Permission((authUser??currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code) == false) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				authUserPermission = _userActionServices.Permission((authUser ?? currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code);
+			}
+			if (model.Id != currentUser?.Id && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 
@@ -258,8 +262,8 @@ namespace TrainSchdule.Controllers
 			model.OldPassword = _usersService.ConvertFromUserCiper(cid, model.OldPassword);
 			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
 
-			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
-			if (!sign.Succeeded) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			var sign =  await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
+			if (!sign.Succeeded && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);

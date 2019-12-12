@@ -106,9 +106,10 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
 			if (recall == null) return new JsonResult(ActionStatusMessage.Apply.Recall.NotExist);
+			var apply = _context.Applies.Where(a => a.RecallId == id).FirstOrDefault();
 			return new JsonResult(new RecallViewModel()
 			{
-				Data = recall.ToVDto()
+				Data = recall.ToVDto(apply)
 			});
 		}
 	}
