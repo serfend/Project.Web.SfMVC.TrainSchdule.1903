@@ -123,7 +123,9 @@ namespace BLL.Services.ApplyServices
 				if (t.Company != null) responses.Add(t);
 				nowId = nowId.Substring(0, nowId.Length - 1);
 			}
-			responses.Add(GenerateAuditStream("ROOT"));//人力
+			//responses.Add(GenerateAuditStream("ROOT"));//人力
+			//无需人力终审，人力同时执行A层级
+			//type1人员 AAA层级和AA层级  type2人员AAAA、AAA、AA层级即可
 			return responses;
 		}
 		public ApplyResponse GenerateAuditStream(string companyId)
