@@ -10,7 +10,14 @@ namespace BLL.Interfaces
 {
 	public interface IApplyServiceManage
 	{
-		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,out int totalCount);
+		/// <summary>
+		/// 按筛选查询
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="getAllAppliesPermission">是否允许获取所有申请</param>
+		/// <param name="totalCount"></param>
+		/// <returns></returns>
+		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,bool getAllAppliesPermission, out int totalCount);
 		void RemoveAllUnSaveApply();
 		byte[] ExportExcel(string templete,  ApplyDetailDto model);
 		byte[] ExportExcel(string templete,  IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany);

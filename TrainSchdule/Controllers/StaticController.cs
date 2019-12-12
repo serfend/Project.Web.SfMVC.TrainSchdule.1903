@@ -242,7 +242,7 @@ namespace TrainSchdule.Controllers
 						{
 							Value = form.User
 						}
-					},out var totalCount);
+					},true,out var totalCount);
 					var targetUser = _usersService.Get(form.User);
 					fromName = targetUser?.BaseInfo.RealName ?? form.User;
 					targetCompany = targetUser?.CompanyInfo?.Company;
@@ -255,7 +255,7 @@ namespace TrainSchdule.Controllers
 						{
 							Value = form.Company
 						}
-					},out var totalCount);
+					},true,out var totalCount);
 					targetCompany = _companiesService.GetById(form.Company);
 					fromName = targetCompany?.Name ?? form.Company;
 				}

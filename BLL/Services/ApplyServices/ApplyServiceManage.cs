@@ -15,7 +15,7 @@ namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
-		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, out int totalCount)
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,bool getAllAppliesPermission, out int totalCount)
 		{
 			totalCount = 0;
 			var list = _context.Applies.AsQueryable();
@@ -27,10 +27,24 @@ namespace BLL.Services.ApplyServices
 			{
 				list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
 			}
-			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName .Contains(model.CreateFor.Value));
-			if (model.Create != null) list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
-			if (model.StampLeave != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
-			if (model.StampReturn != null) list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
+			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName.Contains(model.CreateFor.Value));
+			bool anyDateFilterIsLessThan30Days = false;
+			if (model.Create != null)
+			{
+				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
+				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
+			}
+			if (model.StampLeave != null)
+			{
+				list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
+				anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;
+			}
+			if (model.StampReturn != null)
+			{
+				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
+				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
+			}
+			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list=list.Where(a=>a.Create>DateTime.Now.AddDays(-360));
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
 			totalCount = list.Count();

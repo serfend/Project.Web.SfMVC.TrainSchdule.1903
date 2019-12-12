@@ -28,18 +28,25 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		public IActionResult List([FromBody]QueryApplyDataModel model)
 		{
-			if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
-
-			var currentUser = _currentUserService.CurrentUser;
-			var list = _applyService.QueryApplies(model, out var totalCount)?.Select(a => a.ToSummaryDto());
-			return new JsonResult(new ApplyListViewModel()
+			try
 			{
-				Data = new ApplyListDataModel()
+				if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
+
+				var currentUser = _currentUserService.CurrentUser;
+				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
+				return new JsonResult(new ApplyListViewModel()
 				{
-					List =list,
-					TotalCount= totalCount
-				}
-			}); ;
+					Data = new ApplyListDataModel()
+					{
+						List = list,
+						TotalCount = totalCount
+					}
+				}); ;
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new ApiResult(-1, ex.Message));
+			}
 		}
 
 		/// <summary>
