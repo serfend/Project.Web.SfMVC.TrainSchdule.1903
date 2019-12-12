@@ -5,6 +5,7 @@ using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities.UserInfo;
 using DAL.Entities.Vocations;
 using TrainSchdule.ViewModels.Apply;
 
@@ -105,15 +106,14 @@ namespace TrainSchdule.Extensions
 		/// 
 		/// </summary>
 		/// <param name="model"></param>
-		/// <param name="usersService"></param>
+		/// <param name="auditUser"></param>
 		/// <param name="applyService"></param>
 		/// <returns></returns>
-		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model, IUsersService usersService, IApplyService applyService)
+		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,User auditUser , IApplyService applyService)
 		{
-			var user = usersService.Get(model.Auth.AuthByUserID);
 			var b = new ApplyAuditVdto()
 			{
-				AuditUser = user,
+				AuditUser = auditUser
 				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
 				{
 					Action = d.Action,

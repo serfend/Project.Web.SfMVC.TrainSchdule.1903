@@ -145,6 +145,7 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.Auditing)
 						{
+							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
 							_context.Applies.Update(model);
 						}
 						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnAuditingStatus);

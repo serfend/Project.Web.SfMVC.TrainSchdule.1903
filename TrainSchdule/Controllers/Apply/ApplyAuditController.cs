@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using BLL.Helpers;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(ApiResult),0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 
 		public IActionResult Save(string id)
 		{
@@ -77,8 +78,8 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-		
-		private void CheckApplyModelAndDoTask(string id,Action<DAL.Entities.ApplyInfo.Apply>callBack)
+
+		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply> callBack)
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.GetById(gid);
@@ -86,7 +87,7 @@ namespace TrainSchdule.Controllers.Apply
 			var currentUser = _currentUserService.CurrentUser;
 			var userid = currentUser?.Id;
 			if (userid == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var action=_userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");
+			var action = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");
 			if (apply.BaseInfo.From.Id != userid)
 			{
 				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -107,18 +108,22 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var currentUserName = _currentUserService.HttpContextAccessor.HttpContext.User.Identity.Name;
-			if( !model.Auth.Verify(_authService))currentUserName=model.Auth.AuthByUserID;
-			if (currentUserName == null) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			model.Auth.AuthByUserID = currentUserName;
+			var auditUser = _currentUserService.CurrentUser;
+
+			if (model.Auth.Verify(_authService))
+				auditUser = _usersService.Get(model.Auth.AuthByUserID);
+			else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			try
 			{
+				var applyStrList = new StringBuilder();
+				foreach (var a in model.Data.List) applyStrList.Append(a.Id).Append(':').Append(a.Action).Append(',');
+				var ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.AuditApply, auditUser.Id, $"授权审批申请:{applyStrList}",true);
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());
-				var results = _applyService.Audit(model.ToAuditVDTO(_usersService, _applyService));
+				var results = _applyService.Audit(model.ToAuditVDTO(auditUser, _applyService));
 				int count = 0;
 				return new JsonResult(new ApplyAuditResponseStatusViewModel()
 				{
-					Data = results.Select(r=>new ApplyAuditResponseStatusDataModel(model.Data.List.ElementAt(count++).Id,r))
+					Data = results.Select(r => new ApplyAuditResponseStatusDataModel(model.Data.List.ElementAt(count++).Id, r))
 				});
 			}
 			catch (ActionStatusMessageException e)
