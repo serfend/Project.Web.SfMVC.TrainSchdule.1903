@@ -57,7 +57,7 @@ namespace BLL.Services.ApplyServices
 			//寻找所有找过1天未保存的申请
 			var list = _context.Applies
 						 .Where(a => a.Status == AuditStatus.NotSave)
-						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(-1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
 			//删除这些申请的审批流
 			foreach (var apply in list) _context.ApplyResponses.RemoveRange(apply.Response);
 			//删除这些申请

@@ -113,7 +113,7 @@ namespace TrainSchdule.Extensions
 		{
 			var b = new ApplyAuditVdto()
 			{
-				AuditUser = auditUser
+				AuditUser = auditUser,
 				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
 				{
 					Action = d.Action,
