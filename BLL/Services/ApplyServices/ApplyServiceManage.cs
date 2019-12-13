@@ -15,7 +15,7 @@ namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
-		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,bool getAllAppliesPermission, out int totalCount)
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
 		{
 			totalCount = 0;
 			var list = _context.Applies.AsQueryable();
@@ -44,11 +44,15 @@ namespace BLL.Services.ApplyServices
 				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
-			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list=list.Where(a=>a.Create>DateTime.Now.AddDays(-360));
+			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.Create > DateTime.Now.AddDays(-360));
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
 			totalCount = list.Count();
-			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) return null;
+			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
+			{
+				PageIndex = 0,
+				PageSize = 20
+			};
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
 			return list.ToList();
 		}

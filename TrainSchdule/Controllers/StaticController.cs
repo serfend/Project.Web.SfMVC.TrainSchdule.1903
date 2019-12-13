@@ -217,7 +217,7 @@ namespace TrainSchdule.Controllers
 			{
 				//TODO 后续导出报告使用
 			}
-			else if (!CollectionExtensions.IsNullOrEmpty(form.Apply))
+			else if (form.Apply!=null)
 			{
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
