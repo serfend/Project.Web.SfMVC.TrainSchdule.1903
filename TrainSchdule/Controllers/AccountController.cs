@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.DrawingCore;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Helpers;
@@ -20,6 +19,7 @@ using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.User;
 using BLL.Extensions;
 using TrainSchdule.ViewModels.System;
+using System.Drawing;
 
 namespace TrainSchdule.Controllers
 {

@@ -1,6 +1,7 @@
 ﻿using DAL.DTO.Apply;
 using DAL.DTO.User;
 using DAL.Entities.ApplyInfo;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model,UserVocationInfoVDto info, bool AuditAvailable)
+		public static ApplyDetailDto ToDetaiDto(this Apply model,UserVocationInfoVDto info,IHostingEnvironment env, bool AuditAvailable)
 		{
 			var b = new ApplyDetailDto()
 			{
-				Base = model?.BaseInfo.From.ToSummaryDto(),
+				Base = model?.BaseInfo.From.ToSummaryDto(env),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
@@ -31,7 +32,7 @@ namespace BLL.Extensions.ApplyExtensions
 			};
 			return b;
 		}
-		public static ApplySummaryDto ToSummaryDto(this Apply model)
+		public static ApplySummaryDto ToSummaryDto(this Apply model,IHostingEnvironment env)
 		{
 
 			var b = new ApplySummaryDto()
@@ -40,7 +41,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Status = model.Status,
 				NowAuditCompany = model.Response.FirstOrDefault(r => r.Status == Auditing.Received || r.Status == Auditing.Denied)?.Company.Name,
 				Base = model.BaseInfo.ToDto(),
-				UserBase = model.BaseInfo.From.ToSummaryDto(),
+				UserBase = model.BaseInfo.From.ToSummaryDto(env),
 				Id = model.Id,
 				Request = model.RequestInfo,
 				RecallId=model.RecallId,

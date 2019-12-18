@@ -25,6 +25,8 @@ namespace DAL.Data
 		public DbSet<UserApplicationSetting> AppUserApplicationSettings { get; set; }
 		public DbSet<UserSocialInfo> AppUserSocialInfos { get; set; }
 		public DbSet<Settle> Settles { get; set; }
+		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
+		public DbSet<Avatar> AppUserDiyAvatars { get; set; }
 		public DbSet<Company> Companies { get; set; }
 		public DbSet<CompanyManagers> CompanyManagers { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }

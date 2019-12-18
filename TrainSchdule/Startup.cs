@@ -122,7 +122,6 @@ namespace TrainSchdule
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
-			services.AddTimedJob();
 			AddHangfireServices(services);
 			AddAllowCorsServices(services);
 			AddSwaggerServices(services);
@@ -218,7 +217,6 @@ namespace TrainSchdule
 			{
 
 			}
-			app.UseTimedJob();
 			app.UseHangfireServer();
 			app.UseHangfireDashboard("/schdule", new DashboardOptions()
 			{

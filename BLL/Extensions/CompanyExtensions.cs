@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.DTO.Company;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BLL.Extensions
 {
@@ -23,11 +24,11 @@ namespace BLL.Extensions
 			 
 		}
 		public static IEnumerable<User>CompanyMembers(this Company company,IUsersService usersService)=> usersService?.Find(u => u.CompanyInfo.Company.Code == company.Code);
-		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService)
+		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService,IHostingEnvironment env)
 		{
 			var b=new CompanyDto()
 			{
-				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToSummaryDto()),
+				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToSummaryDto(env)),
 				Code = company?.Code,
 				Name = company?.Name,
 				Description=company?.Description

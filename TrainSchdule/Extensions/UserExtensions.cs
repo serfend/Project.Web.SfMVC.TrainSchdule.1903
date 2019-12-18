@@ -27,7 +27,7 @@ namespace TrainSchdule.Extensions
 			var settle = model.Social.Settle;
 			return new User()
 			{
-				Id=model.Application.UserName,
+				Id = model.Application.UserName,
 				CompanyInfo = new UserCompanyInfo()
 				{
 					Company = new Company()
@@ -40,11 +40,13 @@ namespace TrainSchdule.Extensions
 					}
 				},
 				Application = model.Application.ToModel(),
-				BaseInfo =model.Base,
+				BaseInfo = model.Base,
 				SocialInfo = model.Social.ToModel(),
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
-				DiyInfo=model.Diy.ToModel(new UserDiyInfo())
+				DiyInfo = model.Diy.ToModel()
 			};
 		}
 	}
+
+
 }

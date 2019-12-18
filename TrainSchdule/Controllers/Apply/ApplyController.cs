@@ -10,6 +10,7 @@ using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
@@ -37,6 +38,7 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IGoogleAuthService _authService;
 		private readonly IRecallOrderServices recallOrderServices;
 		private readonly IUserActionServices _userActionServices;
+		private readonly IHostingEnvironment _hostingEnvironment;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -49,7 +51,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="authService"></param>
 		/// <param name="vocationCheckServices"></param>
 		/// <param name="recallOrderServices"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -61,6 +63,7 @@ namespace TrainSchdule.Controllers.Apply
 			_vocationCheckServices = vocationCheckServices;
 			this.recallOrderServices = recallOrderServices;
 			_userActionServices = userActionServices;
+			_hostingEnvironment = hostingEnvironment;
 		}
 
 		#endregion

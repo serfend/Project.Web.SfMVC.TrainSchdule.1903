@@ -5,6 +5,7 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Company;
@@ -21,7 +22,7 @@ namespace TrainSchdule.Controllers
 		private readonly ICurrentUserService _currentUserService;
 		private readonly ICompanyManagerServices _companyManagerServices;
 		private readonly IUserServiceDetail _usersService;
-
+		private readonly IHostingEnvironment _hostingEnvironment;
 		/// <summary>
 		/// 单位信息
 		/// </summary>
@@ -29,12 +30,13 @@ namespace TrainSchdule.Controllers
 		/// <param name="currentUserService"></param>
 		/// <param name="companyManagerServices"></param>
 		/// <param name="usersService"></param>
-		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, ICompanyManagerServices companyManagerServices, IUserServiceDetail usersService)
+		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, ICompanyManagerServices companyManagerServices, IUserServiceDetail usersService, IHostingEnvironment hostingEnvironment)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
 			_companyManagerServices = companyManagerServices;
 			_usersService = usersService;
+			_hostingEnvironment = hostingEnvironment;
 		}
 
 		/// <summary>
@@ -81,7 +83,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new CompanyManagerDataModel()
 				{
-					List = list.Select(u => u.ToSummaryDto())
+					List = list.Select(u => u.ToSummaryDto(_hostingEnvironment))
 				}
 			});
 		}
@@ -99,7 +101,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
-			var list = _companyManagerServices.GetMembers(code, page, pageSize,out var totalCount).Select(u => u.ToSummaryDto());
+			var list = _companyManagerServices.GetMembers(code, page, pageSize,out var totalCount).Select(u => u.ToSummaryDto(_hostingEnvironment));
 			return new JsonResult(new AllMembersViewModel()
 			{
 				Data = new AllMembersDataModel()

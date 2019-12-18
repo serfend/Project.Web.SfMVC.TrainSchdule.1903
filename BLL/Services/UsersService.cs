@@ -1,9 +1,12 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +30,7 @@ namespace BLL.Services
 		#region Fields
 
 		private readonly ICurrentUserService _currentUserService;
+		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
 
 
@@ -37,35 +41,16 @@ namespace BLL.Services
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UsersService"/>.
 		/// </summary>
-		public UsersService(ICurrentUserService currentUserService, ApplicationDbContext context)
+		public UsersService(ICurrentUserService currentUserService, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
 			_currentUserService = currentUserService;
 			_context = context;
+			_hostingEnvironment = hostingEnvironment;
 		}
 
 		#endregion
 
 		#region Logic
-
-		private const string privateKey = "MIICXgIBAAKBgQCz3lBSqu05sK6r3SDCr2z0lT19j4LBbWbapEvv37paxbwmkvA5E/nr/VD9Hw2jueBt9NyEdnzWEgN+WmRF1GUYBQFL6YWneFkovgpLA8tgXHEojePAMfgMb+hoYHoV90MUQwANDbt0gg4nnlRxZB+WtZc5CUQT5x7ckCs5+iQNTwIDAQABAoGBAKSOgcH/6uTaxhMqTWyP/giN+SHEiAXaxzzFD0w3zVB6kzZfPDOcGQxURyIspNfjmHZAjPcLSA65kESrAg340Trs00k9i1JfzYp4hc/r85yBVTp5ljWp8kPWRpfJBK3yzBok4qvGbIpJHlLrENFnVUd0dkPXKaOXZs3+mZ1GWTIRAkEA5gFj/QkpGWa/PRLSJ55ptdiIVjxXDhdNVJsozs4UcbYr/CIEUiQA6OqYNOWr8shAdQM1g65PvDYWGFJQq42qvQJBAMgyVr5P1Vj2EwahnbDtD9Zzngchcv5sv9sVlI3NNhD4tkzxntc01ikOzzy9M+x3cP1tHavv8lxgNWnWAi6hnvsCQBprfnjKXJY2XzE8wDcc0ze4L7D4LWfI9XEKgZ1/volxS4wivCxTRmd6yxEIcL/qkLzgKX1+wFn2PIN+sRWDqGECQQCazbofvXHXMajypsReTGHDzXF0SBw4uvT8P0q4/+b/5qJpCyltdjDoXMhJSnC9OHsJrHeWPZvmbIrBBTh4wIdDAkEAirO5n1K88opa8chywQxfdnKqt0BJq/x+Xp2W9V4p61PucMKSDQQ3Ytf47JUfi/17WeQeTc5L6RBDxVF2Hqjk4Q==";
-		private const string publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCz3lBSqu05sK6r3SDCr2z0lT19j4LBbWbapEvv37paxbwmkvA5E/nr/VD9Hw2jueBt9NyEdnzWEgN+WmRF1GUYBQFL6YWneFkovgpLA8tgXHEojePAMfgMb+hoYHoV90MUQwANDbt0gg4nnlRxZB+WtZc5CUQT5x7ckCs5+iQNTwIDAQAB";
-
-		public string ConvertFromUserCiper(string username, string rawPsw)
-		{
-			using (var md5 = MD5.Create())
-			{
-				var result = md5.ComputeHash(Encoding.UTF8.GetBytes(username));
-				var rawMd5 = BitConverter.ToString(result);
-				string md5Str = rawMd5.Replace("-", "");
-				var rsa = new RsaHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
-				var decryptStr = rsa.Decrypt(rawPsw);
-				if (decryptStr==null||decryptStr.Length <= md5Str.Length || 
-					DateTime.Now.ToString("yyyyMMdd") != decryptStr.Substring(0, 8) || 
-					decryptStr.Substring(decryptStr.Length - md5Str.Length, md5Str.Length) != md5Str.ToLower()) return null;
-				return decryptStr.Substring(8, decryptStr.Length - 8 - md5Str.Length);
-
-			}
-		}
 		/// <summary>
 		/// Loads all users with paggination, returns collection of user DTOs.
 		/// </summary>
@@ -248,6 +233,31 @@ namespace BLL.Services
 			_context.Users.Remove(appUser);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return true;
+		}
+
+		public string ConvertFromUserCiper(string username, string password)
+		{
+			return password.FromCipperToString(username);
+		}
+
+		public async Task<Avatar> UpdateAvatar(User targetUser, string newAvatar)
+		{
+			var now = DateTime.Now;
+			var nowByte = Encoding.UTF8.GetBytes(now.ToString());
+			var avatar = new Avatar()
+			{
+				FilePath=Encoding.UTF8.GetString(MD5.Create().ComputeHash(nowByte)),
+				CreateTime=now
+			};
+			_context.AppUserDiyAvatars.Add(avatar);
+			await avatar.Update(_hostingEnvironment).ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
+			return avatar;
+		}
+
+		public async Task<Avatar> GetAvatar(User targetUser)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 

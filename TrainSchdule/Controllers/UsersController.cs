@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -7,6 +9,8 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
@@ -29,6 +33,8 @@ namespace TrainSchdule.Controllers
 		private readonly IGoogleAuthService _authService;
 		private readonly ApplicationDbContext _context;
 		private readonly IUserActionServices _userActionServices;
+		private readonly IHostingEnvironment _hostingEnvironment;
+
 		#endregion
 
 		#region .ctors
@@ -41,7 +47,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="authService"></param>
 		/// <param name="companyManagerServices"></param>
-		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
+		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -51,6 +57,7 @@ namespace TrainSchdule.Controllers
 			_companyManagerServices = companyManagerServices;
 			_userActionServices = userActionServices;
 			_context = context;
+			_hostingEnvironment = hostingEnvironment;
 		}
 
 		#endregion
@@ -105,7 +112,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return result;
 			return new JsonResult(new UserDiyInfoViewModel()
 			{
-				Data = targetUser.DiyInfo?.ToViewModel(targetUser)
+				Data = targetUser.DiyInfo?.ToViewModel(targetUser, _hostingEnvironment)
 			});
 		}
 		/// <summary>
@@ -124,7 +131,7 @@ namespace TrainSchdule.Controllers
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (id != targetUser.Id && !_userActionServices.Permission(authByUser.Application.Permission,DictionaryAllPermission.User.Application, Operation.Update,authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			targetUser.DiyInfo = model.Data.ToModel(targetUser.DiyInfo);
+			targetUser.DiyInfo = model.Data.ToModel();
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -193,8 +200,8 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
-			var diy = targetUser.DiyInfo.ToViewModel(targetUser);
-			var data = targetUser.ToSummaryDto();
+			var diy = targetUser.DiyInfo.ToViewModel(targetUser,_hostingEnvironment);
+			var data = targetUser.ToSummaryDto(_hostingEnvironment);
 			data.LastLogin = _context.UserActions.Where(u =>u.UserName==id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
@@ -242,7 +249,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					List = list.Select(c => c.Company.ToDto(_companiesService))
+					List = list.Select(c => c.Company.ToDto(_companiesService, _hostingEnvironment))
 				}
 			});
 		}
@@ -263,6 +270,52 @@ namespace TrainSchdule.Controllers
 			{
 				Data = vocationInfo
 			});
+		}
+		/// <summary>
+		/// 修改头像
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[HttpPost]
+		public IActionResult Avatar(string data)
+		{
+			var targetUser = GetCurrentQueryUser(null, out var result);
+			if (result != null) return result;
+			_usersService.UpdateAvatar(targetUser, data);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 获取头像
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="avatarId">如果传入了此字段则直接读取头像</param>
+		/// <returns></returns>
+		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[HttpGet]
+		public async Task<IActionResult> Avatar(string userId,string avatarId)
+		{
+			Avatar avatar = null;
+			var targetUser = GetCurrentQueryUser(userId, out var result);
+			if (avatarId == null)
+			{
+				if (result != null) return result;
+				avatar = targetUser.DiyInfo.Avatar;
+			}
+			else
+			{
+				avatar = _context.AppUserDiyAvatars.Where(a => a.Id.ToString() == avatarId).FirstOrDefault();
+			}
+			avatar = await avatar.Load(targetUser, _hostingEnvironment);
+			return new JsonResult(new AvatarViewModel()
+			{
+				Data = new AvatarDataModel()
+				{
+					Create = avatar.CreateTime,
+					Url= $"data:image/png;base64,{avatar.Img.ToBase64()}"
+				}
+			}) ;
 		}
 		#endregion
 
