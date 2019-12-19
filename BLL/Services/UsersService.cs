@@ -242,16 +242,22 @@ namespace BLL.Services
 
 		public async Task<Avatar> UpdateAvatar(User targetUser, string newAvatar)
 		{
+			if (targetUser == null) return null;
 			var now = DateTime.Now;
-			var nowByte = Encoding.UTF8.GetBytes(now.ToString());
 			var avatar = new Avatar()
 			{
-				FilePath=Encoding.UTF8.GetString(MD5.Create().ComputeHash(nowByte)),
-				CreateTime=now
+				FilePath= newAvatar==null?null:$"{Guid.NewGuid().ToString()}.png",
+				CreateTime =now,
+				Img = newAvatar.FromBase64ToBytes()
 			};
-			_context.AppUserDiyAvatars.Add(avatar);
-			await avatar.Update(_hostingEnvironment).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			if (newAvatar != null)
+			{
+				_context.AppUserDiyAvatars.Add(avatar);
+				await avatar.Update(_hostingEnvironment).ConfigureAwait(false);
+				targetUser.DiyInfo.Avatar = avatar;
+				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
+				await _context.SaveChangesAsync().ConfigureAwait(false);
+			}
 			return avatar;
 		}
 

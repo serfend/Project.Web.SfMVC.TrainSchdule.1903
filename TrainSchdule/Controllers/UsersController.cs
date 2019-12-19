@@ -200,7 +200,6 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
-			var diy = targetUser.DiyInfo.ToViewModel(targetUser,_hostingEnvironment);
 			var data = targetUser.ToSummaryDto(_hostingEnvironment);
 			data.LastLogin = _context.UserActions.Where(u =>u.UserName==id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
@@ -274,15 +273,15 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 修改头像
 		/// </summary>
-		/// <param name="data"></param>
+		/// <param name="model"></param>
 		/// <returns></returns>
-		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[ProducesResponseType(typeof(ApiResult), 0)]
 		[HttpPost]
-		public IActionResult Avatar(string data)
+		public IActionResult Avatar([FromBody]ResponseImgDataModel model)
 		{
 			var targetUser = GetCurrentQueryUser(null, out var result);
 			if (result != null) return result;
-			_usersService.UpdateAvatar(targetUser, data);
+			_usersService.UpdateAvatar(targetUser, model.Url);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -292,7 +291,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="userId"></param>
 		/// <param name="avatarId">如果传入了此字段则直接读取头像</param>
 		/// <returns></returns>
-		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[ProducesResponseType(typeof(AvatarViewModel), 0)]
 		[HttpGet]
 		public async Task<IActionResult> Avatar(string userId,string avatarId)
 		{
