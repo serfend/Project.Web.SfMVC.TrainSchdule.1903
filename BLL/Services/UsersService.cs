@@ -250,7 +250,7 @@ namespace BLL.Services
 				CreateTime =now,
 				Img = newAvatar.FromBase64ToBytes()
 			};
-			if (newAvatar != null)
+			if (newAvatar != null&&avatar.Img.Length<=1024*200)
 			{
 				_context.AppUserDiyAvatars.Add(avatar);
 				await avatar.Update(_hostingEnvironment).ConfigureAwait(false);

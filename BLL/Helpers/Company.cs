@@ -14,6 +14,11 @@
 				public static readonly ApiResult NotExist=new ApiResult(34100, "单位中不存在此主管");
 				public static readonly ApiResult Existed=new ApiResult(34200, "单位中已存在此主管");
 			}
+			public static class Duty
+			{
+				public static readonly ApiResult NotExist = new ApiResult(35100, "职务不存在");
+
+			}
 		}
 	}
 }
