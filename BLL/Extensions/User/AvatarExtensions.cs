@@ -34,7 +34,7 @@ namespace BLL.Extensions
 				await s.WriteAsync(avatar.Img);
 			}
 		}
-		public static async Task<Avatar> Load(this Avatar avatar, User user, IHostingEnvironment hostingEnvironment)
+		public static async Task<Avatar> Load(this Avatar avatar, User user, IHostingEnvironment hostingEnvironment,bool isFirstTimeLoad=true)
 		{
 			if (hostingEnvironment == null) return null;
 			if (avatar == null)
@@ -44,7 +44,7 @@ namespace BLL.Extensions
 			}
 
 			var filePath = System.IO.Path.Combine(hostingEnvironment.WebRootPath, AvatarRawPath, avatar.FilePath);
-			if (!File.Exists(filePath)) return null;
+			if (!File.Exists(filePath)) if (!isFirstTimeLoad) return null;else return await Load(null,user,hostingEnvironment,false).ConfigureAwait(false);
 			using (var s = new FileStream(filePath, FileMode.Open))
 			{
 				var buffer = new byte[s.Length];

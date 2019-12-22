@@ -57,7 +57,7 @@ namespace TrainSchdule.Crontab
 				RootCompanyStatistics = GenerateStatistics(rootCompany)
 			};
 			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
-			if (dbStatistics != null) throw new ActionStatusMessageException(ActionStatusMessage.Statistics.AllreadyExist);
+			if (dbStatistics != null) return;
 			VocationStatisticsDescription tmp = statistics.RootCompanyStatistics;
 			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context, statistics.CurrentYear, StatisticsId);
 			statistics.RootCompanyStatistics = tmp;

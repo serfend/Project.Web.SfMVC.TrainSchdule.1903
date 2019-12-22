@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Extensions;
@@ -130,7 +131,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return result;
 			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (id != targetUser.Id && !_userActionServices.Permission(authByUser.Application.Permission,DictionaryAllPermission.User.Application, Operation.Update,authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (id != targetUser.Id && !_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel();
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -201,7 +202,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
 			var data = targetUser.ToSummaryDto(_hostingEnvironment);
-			data.LastLogin = _context.UserActions.Where(u =>u.UserName==id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
+			data.LastLogin = _context.UserActions.Where(u => u.UserName == id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
 				Data = data
@@ -243,7 +244,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company,targetUser);
+			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company, targetUser);
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
@@ -293,7 +294,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[ProducesResponseType(typeof(AvatarViewModel), 0)]
 		[HttpGet]
-		public async Task<IActionResult> Avatar(string userId,string avatarId)
+		public async Task<IActionResult> Avatar(string userId, string avatarId)
 		{
 			Avatar avatar = null;
 			var targetUser = GetCurrentQueryUser(userId, out var result);
@@ -311,10 +312,10 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new AvatarDataModel()
 				{
-					Create = avatar.CreateTime,
-					Url= $"data:image/png;base64,{avatar.Img.ToBase64()}"
+					Create = avatar == null ? DateTime.Now : avatar.CreateTime,
+					Url = $"data:image/png;base64,{avatar?.Img?.ToBase64()}"
 				}
-			}) ;
+			});
 		}
 		#endregion
 

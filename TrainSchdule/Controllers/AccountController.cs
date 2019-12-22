@@ -280,9 +280,9 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult CheckAuthCode(GoogleAuthViewModel model)
+		public IActionResult CheckAuthCode([FromBody]GoogleAuthViewModel model)
 		{
-			var r = model.Auth?.Verify(_authService);
+			var r = model?.Auth?.Verify(_authService);
 			if (!r.HasValue) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Default);
 			if (r.Value) return new JsonResult(ActionStatusMessage.Success);
 			return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -448,7 +448,7 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "");
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			_userActionServices.Status(actionRecord, true);
 		}
@@ -487,10 +487,10 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
+			var r = model.Verify?.Verify(_verifyService);
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r??"验证码验证失败"));
 
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			//if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			try
 			{
@@ -522,7 +522,7 @@ namespace TrainSchdule.Controllers
 			var r = model.Verify.Verify(_verifyService);
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			//if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
@@ -556,7 +556,7 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			//if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.ConfirmPassword);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 
