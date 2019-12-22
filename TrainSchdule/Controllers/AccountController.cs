@@ -273,6 +273,22 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
+		/// 检查授权码是否正确
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), 0)]
+		public IActionResult CheckAuthCode(GoogleAuthViewModel model)
+		{
+			var r = model.Auth?.Verify(_authService);
+			if (!r.HasValue) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Default);
+			if (r.Value) return new JsonResult(ActionStatusMessage.Success);
+			return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+		}
+
+		/// <summary>
 		/// 修改安全码
 		/// </summary>
 		/// <param name="model"></param>
