@@ -30,6 +30,9 @@
 					public static readonly ApiResult Default = new ApiResult(12400, "授权异常");
 					public static readonly ApiResult Exist = new ApiResult(12410, "用户已具有此权限");
 					public static readonly ApiResult NotExist = new ApiResult(12420, "授权规则不存在");
+					public static readonly ApiResult SystemAllReadyValid = new ApiResult(12430, "此用户已被授权使用系统");
+					public static readonly ApiResult SystemInvalid = new ApiResult(12440, "此用户未被授权使用系统");
+
 				}
 				
 			}

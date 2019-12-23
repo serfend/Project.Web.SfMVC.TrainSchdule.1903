@@ -62,7 +62,7 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
-			var managedCompany = _usersService.InMyManage(currentUser?.Id,out var totalCount);
+			var managedCompany = _usersService.InMyManage(currentUser,out var totalCount);
 			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{

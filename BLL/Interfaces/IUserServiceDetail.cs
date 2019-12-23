@@ -12,9 +12,10 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 用户为主管的单位
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="user"></param>
+		/// <param name="totalCount"></param>
 		/// <returns></returns>
-		IEnumerable<Company> InMyManage(string id,out int totalCount);
+		IEnumerable<Company> InMyManage(User user,out int totalCount);
 		/// <summary>
 		/// 获取用户的休假概况
 		/// </summary>

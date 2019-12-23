@@ -103,7 +103,7 @@ namespace TrainSchdule.Controllers
 			list = _companiesService.FindAllChild(id).ToList();
 			if (currentUser != null)
 			{
-				var mymanage = _usersService.InMyManage(currentUser.Id, out var totalCount);
+				var mymanage = _usersService.InMyManage(currentUser, out var totalCount);
 				list.AddRange(mymanage);
 			}
 			return new JsonResult(new AllChildViewModel()

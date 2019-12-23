@@ -15,6 +15,12 @@ namespace BLL.Interfaces
 		CompanyManagers CreateManagers(CompanyManagerVdto model);
 		CompanyManagers Create(CompanyManagers model);
 		int Delete(CompanyManagers model);
+		/// <summary>
+		/// 通过用户名获取管理员
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="companyCode"></param>
+		/// <returns></returns>
 		CompanyManagers GetManagerByUC(string userId, string companyCode);
 
 		IEnumerable<User> GetMembers(string code, int page, int pageSize,out int totalCount);

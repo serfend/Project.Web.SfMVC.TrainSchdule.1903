@@ -34,7 +34,8 @@ namespace BLL.Extensions
 				await s.WriteAsync(avatar.Img);
 			}
 		}
-		public static async Task<Avatar> Load(this Avatar avatar, User user, IHostingEnvironment hostingEnvironment,bool isFirstTimeLoad=true)
+		private static readonly object fileLocker = new object();
+		public static async Task<Avatar> Load(this Avatar avatar, User user, IHostingEnvironment hostingEnvironment, bool isFirstTimeLoad = true)
 		{
 			if (hostingEnvironment == null) return null;
 			if (avatar == null)
@@ -44,14 +45,18 @@ namespace BLL.Extensions
 			}
 
 			var filePath = System.IO.Path.Combine(hostingEnvironment.WebRootPath, AvatarRawPath, avatar.FilePath);
-			if (!File.Exists(filePath)) if (!isFirstTimeLoad) return null;else return await Load(null,user,hostingEnvironment,false).ConfigureAwait(false);
-			using (var s = new FileStream(filePath, FileMode.Open))
+			if (!File.Exists(filePath)) if (!isFirstTimeLoad) return null; else return await Load(null, user, hostingEnvironment, false).ConfigureAwait(false);
+			lock (fileLocker)
 			{
-				var buffer = new byte[s.Length];
-				await s.ReadAsync(buffer);
-				avatar.Img = buffer;
-				return avatar;
+				using (var s = new FileStream(filePath, FileMode.Open))
+				{
+					var buffer = new byte[s.Length];
+					s.Read(buffer);
+					avatar.Img = buffer;
+					return avatar;
+				}
 			}
+
 		}
 		private static Avatar CreateTempAvatar(this User user, string rootPath)
 		{
@@ -66,7 +71,7 @@ namespace BLL.Extensions
 			if (!File.Exists(fullpath))
 			{
 				var bgPic = user.BaseInfo.Gender == GenderEnum.Male ? avatarMale : user.BaseInfo.Gender == GenderEnum.Female ? avatarFemale : avatarUnknown;
-				CreateDefaultAvatar(fullpath, System.IO.Path.Combine(rootPath, AvatarRawPath,bgPic), realName);
+				CreateDefaultAvatar(fullpath, System.IO.Path.Combine(rootPath, AvatarRawPath, bgPic), realName);
 			}
 			return a;
 		}
@@ -86,10 +91,10 @@ namespace BLL.Extensions
 					{
 						Txbrus.WrapMode = System.Drawing.Drawing2D.WrapMode.TileFlipXY;
 						g.FillRectangle(Txbrus, 0, 0, map.Width, map.Height);
-						using(var font =new Font(SystemFonts.DefaultFont.Name,144f))
+						using (var font = new Font(SystemFonts.DefaultFont.Name, 144f))
 						{
-							var size=g.MeasureString(frontPicContent, font);
-							g.DrawString(frontPicContent, font, Brushes.White,(float)((map.Width - size.Width) * 0.5),(float)((map.Height - size.Height) * 0.5));
+							var size = g.MeasureString(frontPicContent, font);
+							g.DrawString(frontPicContent, font, Brushes.White, (float)((map.Width - size.Width) * 0.5), (float)((map.Height - size.Height) * 0.5));
 							map.Save(fullPath);
 						}
 					}

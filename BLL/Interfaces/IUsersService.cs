@@ -37,8 +37,5 @@ namespace BLL.Interfaces
         Task<bool> EditAsync(User newUser);
         bool Remove(string id);
         Task<bool> RemoveAsync(string id);
-
-		
-
     }
 }

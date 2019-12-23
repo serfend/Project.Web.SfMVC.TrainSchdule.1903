@@ -13,9 +13,14 @@ namespace BLL.Services
 {
 	public partial class UsersService
 	{
-		public IEnumerable<Company> InMyManage(string id,out int totalCount)
+		public IEnumerable<Company> InMyManage(User user,out int totalCount)
 		{
-			var list = _context.CompanyManagers.Where(m => m.User.Id == id).Select(m => m.Company);
+			totalCount = 0;
+			if (user == null) return new List<Company>();
+			var list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company);
+			// 所在单位的主管拥有此单位的管理权
+			var companyCode = user.CompanyInfo.Company.Code;
+			if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode)) list.Append(user.CompanyInfo.Company);
 			totalCount = list.Count();
 			return list;
 		}

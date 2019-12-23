@@ -361,6 +361,7 @@ namespace TrainSchdule.Controllers
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+				if (targetUser.Application.InvitedBy == null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
 				model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
 				if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -489,9 +490,12 @@ namespace TrainSchdule.Controllers
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify?.Verify(_verifyService);
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r??"验证码验证失败"));
-
-			//if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
+			if (model.Auth?.AuthByUserID != null)
+			{
+				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			}
 			try
 			{
 				await RegisterSingle(model.Data, authByUser, $"{authByUser.Id}常规注册");
@@ -506,7 +510,30 @@ namespace TrainSchdule.Controllers
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-
+		/// <summary>
+		/// 对用户进行登录授权
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[ProducesResponseType(typeof(ApiResult), 0)]
+		public IActionResult AuthUserRegister([FromBody]AuthUserRegisterDataModel model)
+		{
+			var targetUser = _usersService.Get(model.UserName);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser.Application.InvitedBy!=null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
+			var currentUser = currentUserService.CurrentUser;
+			var myManages = _usersService.InMyManage(currentUser, out var totalCount);
+			var targetCompany = targetUser.CompanyInfo.Company.Code;
+			if (myManages.Any(m => m.Code == targetCompany))
+			{
+				targetUser.Application.InvitedBy = currentUser.Id;
+				_context.AppUserApplicationInfos.Update(targetUser.Application);
+				_context.SaveChanges();
+				return new JsonResult(ActionStatusMessage.Success);
+			}
+			else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+		}
 		/// <summary>
 		/// 注册新用户
 		/// </summary>
@@ -522,7 +549,7 @@ namespace TrainSchdule.Controllers
 			var r = model.Verify.Verify(_verifyService);
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 
-			//if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();

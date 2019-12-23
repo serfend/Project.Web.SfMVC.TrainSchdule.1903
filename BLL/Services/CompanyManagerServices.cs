@@ -65,6 +65,12 @@ namespace BLL.Services
 			return _context.SaveChanges();
 		}
 
+		/// <summary>
+		/// 通过用户名获取管理员
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="companyCode"></param>
+		/// <returns></returns>
 		public CompanyManagers GetManagerByUC(string userId, string companyCode)
 		{
 			return _context.CompanyManagers.Where(m => m.User.Id == userId).FirstOrDefault(m => m.Company.Code == companyCode);

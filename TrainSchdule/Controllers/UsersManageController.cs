@@ -28,7 +28,7 @@ namespace TrainSchdule.Controllers
 			id=id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var list=_usersService.InMyManage(id,out var totalCount).Select(c => c.ToDto(_companiesService, _hostingEnvironment));
+			var list=_usersService.InMyManage(targetUser,out var totalCount).Select(c => c.ToDto(_companiesService, _hostingEnvironment));
 			return new JsonResult(new UserManageRangeViewModel()
 			{
 				Data = new UserManageRangeDataModel()

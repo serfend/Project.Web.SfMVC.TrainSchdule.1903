@@ -186,9 +186,8 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model == null) return null;
 			// 获取授权用户的所有管辖单位
-			var myManages = _usersService.InMyManage(model.AuditUser.Id, out var totalCount)?.ToList();
-			// 所在单位的主管拥有此单位的管理权
-			if (model.AuditUser.CompanyInfo.Duties.IsMajorManager && myManages.All(c => c.Code != model.AuditUser.CompanyInfo.Company.Code)) myManages.Add(model.AuditUser.CompanyInfo.Company);
+			var myManages = _usersService.InMyManage(model.AuditUser, out var totalCount)?.ToList();
+
 			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 			var list = new List<ApiResult>();

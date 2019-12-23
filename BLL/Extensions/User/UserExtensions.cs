@@ -23,7 +23,8 @@ namespace BLL.Extensions
 				Gender = user.BaseInfo.Gender,
 				RealName = user.BaseInfo?.RealName??"无姓名",
 				Id = user.Id,
-				IsInitPassword=user.BaseInfo.PasswordModefy
+				IsInitPassword=user.BaseInfo.PasswordModefy,
+				InviteBy=user.Application?.InvitedBy
 			};
 			return b;
 		}
