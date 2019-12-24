@@ -132,9 +132,20 @@ namespace BLL.Services
 			await _context.Users.AddAsync(identity).ConfigureAwait(false);
 			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(false);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
+
 			return identity;
 		}
-
+		public async Task<User> ModefyAsync(User user,bool update)
+		{
+			if (user == null) return null;
+			var appUser = CreateAppUser(user);
+			if (update)
+			{
+				_context.AppUsers.Update(appUser);
+				await _context.SaveChangesAsync().ConfigureAwait(false);
+			}
+			return appUser;
+		}
 		private User CreateAppUser(User user)
 		{
 
@@ -199,7 +210,7 @@ namespace BLL.Services
 		public async Task<bool> EditAsync(User newUser)
 		{
 			_context.AppUsers.Update(newUser);
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return true;
 		}
 

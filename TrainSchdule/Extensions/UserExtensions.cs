@@ -21,7 +21,7 @@ namespace TrainSchdule.Extensions
 		/// <param name="invitedBy"></param>
 		/// <param name="db"></param>
 		/// <returns></returns>
-		public static User ToDTO(this UserCreateDataModel model, string invitedBy, DbSet<AdminDivision> db)
+		public static User ToDTO(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> db)
 		{
 			if (model == null) return null;
 			var settle = model.Social.Settle;

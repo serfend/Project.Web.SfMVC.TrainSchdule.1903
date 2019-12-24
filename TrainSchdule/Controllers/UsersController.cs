@@ -220,7 +220,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			if (id != null && id != _currentUserService.CurrentUser?.Id) targetUser.BaseInfo.Cid = "***";
+			//if (id != null && id != _currentUserService.CurrentUser?.Id) targetUser.BaseInfo.Cid = "***";
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
 				Data = new UserBaseInfoWithIdDataModel()

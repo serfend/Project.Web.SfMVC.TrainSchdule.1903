@@ -29,10 +29,22 @@ namespace BLL.Interfaces
 
         ApplicationUser ApplicaitonUser(string id);
         ApplicationUser Create(User user,string password);
-
+		/// <summary>
+		/// 创建一个新的用户
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="password"></param>
+		/// <returns></returns>
         Task<ApplicationUser> CreateAsync(User user,string password);
+		/// <summary>
+		/// 修改用户信息
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="update"></param>
+		/// <returns></returns>
+		Task<User> ModefyAsync(User user,bool update);
 
-        bool Edit(User newUser);
+		bool Edit(User newUser);
 
         Task<bool> EditAsync(User newUser);
         bool Remove(string id);

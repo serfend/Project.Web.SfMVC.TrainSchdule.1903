@@ -12,7 +12,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 注册单个账号
 	/// </summary>
-	public class UserCreateViewModel: GoogleAuthViewModel
+	public class UserCreateViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		/// 
@@ -22,6 +22,20 @@ namespace TrainSchdule.ViewModels.Account
 		/// 
 		/// </summary>
 		public UserCreateDataModel Data { get; set; }
+	}
+	/// <summary>
+	/// 修改单个账号
+	/// </summary>
+	public class UserModefyViewModel : GoogleAuthViewModel
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public ScrollerVerifyViewModel Verify { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public UserModefyDataModel Data { get; set; }
 	}
 	public class UsersCreateMutilViewModel : GoogleAuthViewModel
 	{
@@ -39,20 +53,10 @@ namespace TrainSchdule.ViewModels.Account
 		/// <summary>
 		/// 注册账号列表
 		/// </summary>
-		public  IEnumerable<UserCreateDataModel> List { get; set; }
+		public IEnumerable<UserCreateDataModel> List { get; set; }
 	}
-	/// <summary>
-	/// 
-	/// </summary>
-	public class UserCreateDataModel
+	public class UserCreateDataModel : UserModefyDataModel
 	{
-		[Required]
-		public UserBaseInfo Base { get; set; }
-		public UserSocialDataModel Social{ get; set; }
-		public UserCompanyInfo Company { get; set; }
-		public UserApplicationDataModel Application { get; set; }
-		public UserDiyInfoDataModel Diy { get; set; }
-
 		/// <summary>
 		/// 输入密码
 		/// </summary>
@@ -67,5 +71,17 @@ namespace TrainSchdule.ViewModels.Account
 		[Compare(nameof(Password), ErrorMessage = "两次输入的密码不一致")]
 		public string ConfirmPassword { get; set; }
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	public class UserModefyDataModel
+	{
+		[Required]
+		public UserBaseInfo Base { get; set; }
+		public UserSocialDataModel Social { get; set; }
+		public UserCompanyInfo Company { get; set; }
+		public UserApplicationDataModel Application { get; set; }
+		public UserDiyInfoDataModel Diy { get; set; }
 
+	}
 }

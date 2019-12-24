@@ -121,7 +121,7 @@ namespace TrainSchdule.Controllers
 		{
 			if (realName == null) return new JsonResult(ActionStatusMessage.User.NoId);
 			var users = _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
-			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName) ).ToList();
+			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName)).ToList();
 			return new JsonResult(new UsersBaseInfoWithIdViewModel()
 			{
 				Data = new UsersBaseInfoWithIdDataModel()
@@ -246,7 +246,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
-			bool authUserPermission=false;
+			bool authUserPermission = false;
 			if (authUser != null)
 			{
 				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -262,7 +262,7 @@ namespace TrainSchdule.Controllers
 			model.OldPassword = _usersService.ConvertFromUserCiper(cid, model.OldPassword);
 			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
 
-			var sign =  await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
+			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
 			if (!sign.Succeeded && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
@@ -477,6 +477,40 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
+		/// 修改用户信息
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), 0)]
+
+		public async Task<IActionResult> ModefyUser([FromBody]UserModefyViewModel model)
+		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var r = model.Verify?.Verify(_verifyService);
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r ?? "验证码验证失败"));
+			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
+			if (model.Auth?.AuthByUserID != null)
+			{
+				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			}
+			try
+			{
+				await ModefySingleUser(model.Data, authByUser, $"{authByUser.Id}修改用户信息");
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}
+			catch (ModelStateException mse)
+			{
+				return new JsonResult(mse.Model);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
 		/// 注册新用户
 		/// </summary>
 		/// <param name="model"></param>
@@ -489,7 +523,7 @@ namespace TrainSchdule.Controllers
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify?.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r??"验证码验证失败"));
+			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r ?? "验证码验证失败"));
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
 			{
@@ -521,7 +555,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = _usersService.Get(model.UserName);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (targetUser.Application.InvitedBy!=null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
+			if (targetUser.Application.InvitedBy != null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
 			var currentUser = currentUserService.CurrentUser;
 			var myManages = _usersService.InMyManage(currentUser, out var totalCount);
 			var targetCompany = targetUser.CompanyInfo.Company.Code;
@@ -575,7 +609,35 @@ namespace TrainSchdule.Controllers
 			});
 		}
 		#endregion
+		/// <summary>
+		/// 修改用户信息，只要当前登录的或者授权登录的为目标用户的上级，则可修改
+		/// </summary>
+		/// <param name="model">修改实体</param>
+		/// <param name="authByUser"></param>
+		/// <param name="modefyDescription"></param>
+		/// <returns></returns>
+		private async Task ModefySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
+		{
+			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
+			// 获取需要修改的目标用户
+			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
+			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
+			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
+			_context.Attach(modefyUser);
+			if (modefyUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
+			if (modefyUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
+			var anyCodeInvalid = modefyUser.SocialInfo.Settle.AnyCodeInvalid();
+			if (anyCodeInvalid != null) ModelState.AddModelError("settle", $"无效的行政区划:{anyCodeInvalid}");
 
+			if (!ModelState.IsValid)
+			{
+				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
+			}   //await _signInManager.SignInAsync(user, isPersistent: false);
+			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
+			_context.AppUsers.Update(modefyUser);
+			await _context.SaveChangesAsync();
+			_userActionServices.Status(actionRecord, true, modefyDescription);
+		}
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
@@ -584,7 +646,7 @@ namespace TrainSchdule.Controllers
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			//if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.ConfirmPassword);
+			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
