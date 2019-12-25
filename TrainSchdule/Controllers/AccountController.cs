@@ -20,6 +20,7 @@ using TrainSchdule.ViewModels.User;
 using BLL.Extensions;
 using TrainSchdule.ViewModels.System;
 using System.Drawing;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrainSchdule.Controllers
 {
@@ -619,11 +620,11 @@ namespace TrainSchdule.Controllers
 		private async Task ModefySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
+			var localUser = _usersService.Get(model.Application.UserName);
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
-			_context.Attach(modefyUser);
 			if (modefyUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
 			if (modefyUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
 			var anyCodeInvalid = modefyUser.SocialInfo.Settle.AnyCodeInvalid();
@@ -634,6 +635,7 @@ namespace TrainSchdule.Controllers
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}   //await _signInManager.SignInAsync(user, isPersistent: false);
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
+			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);
 			await _context.SaveChangesAsync();
 			_userActionServices.Status(actionRecord, true, modefyDescription);
