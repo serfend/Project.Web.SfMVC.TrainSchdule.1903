@@ -386,7 +386,8 @@ namespace TrainSchdule.Controllers
 				}
 				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			}
-			else return new JsonResult(new ApiResult(ActionStatusMessage.Fail.Status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			else  return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+
 		}
 		/// <summary>
 		/// 批量移除用户
@@ -621,10 +622,21 @@ namespace TrainSchdule.Controllers
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
+			var currentUser = currentUserService.CurrentUser;
+			var nowUserManageCompanies = _usersService.InMyManage(authByUser, out var authUserTotalCount).ToList();
+			List<Company> currentUserManageCompanies;
+			if (currentUser != null)
+			{
+				currentUserManageCompanies = _usersService.InMyManage(currentUser, out var currentUserTotalCount).ToList();
+				nowUserManageCompanies.AddRange(currentUserManageCompanies);
+			}
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
+			var modefyUserCompany = modefyUser.CompanyInfo.Company.Code;
+			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
+			if (!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= 1)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (modefyUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
 			if (modefyUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
 			var anyCodeInvalid = modefyUser.SocialInfo.Settle.AnyCodeInvalid();

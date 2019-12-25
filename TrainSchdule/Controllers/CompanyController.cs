@@ -101,7 +101,7 @@ namespace TrainSchdule.Controllers
 			List<Company> list;
 			if (id == null) id = "root";
 			list = _companiesService.FindAllChild(id).ToList();
-			if (currentUser != null)
+			if (currentUser != null && id =="root")
 			{
 				var mymanage = _usersService.InMyManage(currentUser, out var totalCount);
 				list.AddRange(mymanage);

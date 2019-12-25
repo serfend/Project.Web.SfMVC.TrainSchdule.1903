@@ -15,6 +15,7 @@ using TrainSchdule.ViewModels.Verify;
 using Newtonsoft.Json;
 using TrainSchdule.Extensions;
 using DAL.QueryModel;
+using TrainSchdule.ViewModels;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -89,7 +90,8 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RecallOrder([FromBody]RecallCreateViewModel model)
 		{
-			if(!ModelState.IsValid) return new JsonResult(new ApiResult(ActionStatusMessage.Fail.Status, JsonConvert.SerializeObject(ModelState.AllModelStateErrors())));
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+
 			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try

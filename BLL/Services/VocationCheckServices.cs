@@ -33,7 +33,6 @@ namespace BLL.Services
 				u.Application.ApplicationSetting.LastVocationUpdateTime = DateTime.Today;
 			}
 		}
-
 		public void AddDescription(VocationDescription model)
 		{
 			_context.VocationDescriptions.Add(model);
