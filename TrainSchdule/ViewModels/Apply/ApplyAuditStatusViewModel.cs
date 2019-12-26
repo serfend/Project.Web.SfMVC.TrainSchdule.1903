@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BLL.Helpers;
 using DAL.Entities.ApplyInfo;
 using TrainSchdule.ViewModels.System;
 
@@ -7,7 +8,7 @@ namespace TrainSchdule.ViewModels.Apply
 	/// <summary>
 	/// 
 	/// </summary>
-	public class ApplyAuditStatusViewModel:ApiDataModel
+	public class ApplyAuditStatusViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

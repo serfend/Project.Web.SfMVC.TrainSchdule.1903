@@ -10,7 +10,7 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class RecalOrderlExtensions
 	{
-		public static RecallOrderVDto ToVDto(this RecallOrder model,Apply apply,IHostingEnvironment env)
+		public static RecallOrderVDto ToVDto(this RecallOrder model,Apply apply)
 		{
 			if (model == null) return null;
 			return new RecallOrderVDto()
@@ -19,7 +19,7 @@ namespace BLL.Extensions.ApplyExtensions
 				ReturnStamp = model.ReturnStramp,
 				Create = model.Create,
 				Reason=model.Reason,
-				RecallBy=model.RecallBy.ToSummaryDto(env)
+				RecallBy=model.RecallBy.ToSummaryDto()
 			};
 		}
 	}

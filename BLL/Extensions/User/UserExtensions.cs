@@ -8,23 +8,24 @@ namespace BLL.Extensions
 {
 	public static class UserExtensions
 	{
-	
-		public static UserSummaryDto ToSummaryDto(this User user, IHostingEnvironment env)
+
+		public static UserSummaryDto ToSummaryDto(this User user)
 		{
 			if (user == null) return null;
-			var b=new UserSummaryDto()
+			var b = new UserSummaryDto()
 			{
-				About = user.DiyInfo?.About??"无简介",
+				About = user.DiyInfo?.About ?? "无简介",
 				Avatar = user.DiyInfo?.Avatar?.Id.ToString(),
 				CompanyCode = user.CompanyInfo?.Company?.Code,
 				DutiesCode = user.CompanyInfo?.Duties?.Code,
-				CompanyName = user.CompanyInfo?.Company?.Name?? "无单位",
-				DutiesName = user.CompanyInfo?.Duties?.Name??"无职务",
+				CompanyName = user.CompanyInfo?.Company?.Name ?? "无单位",
+				DutiesName = user.CompanyInfo?.Duties?.Name ?? "无职务",
+				DutiesRawType = user.CompanyInfo?.Duties?.DutiesRawType,
 				Gender = user.BaseInfo.Gender,
-				RealName = user.BaseInfo?.RealName??"无姓名",
+				RealName = user.BaseInfo?.RealName ?? "无姓名",
 				Id = user.Id,
-				IsInitPassword=user.BaseInfo.PasswordModefy,
-				InviteBy=user.Application?.InvitedBy
+				IsInitPassword = user.BaseInfo.PasswordModefy,
+				InviteBy = user.Application?.InvitedBy
 			};
 			return b;
 		}

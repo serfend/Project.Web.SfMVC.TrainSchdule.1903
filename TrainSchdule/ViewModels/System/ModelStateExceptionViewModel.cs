@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.System;
@@ -13,7 +14,7 @@ namespace TrainSchdule.ViewModels
 	/// <summary>
 	/// 
 	/// </summary>
-	public class ModelStateExceptionViewModel : ApiDataModel
+	public class ModelStateExceptionViewModel : ApiResult
 	{
 		/// <summary>
 		/// 
@@ -27,7 +28,7 @@ namespace TrainSchdule.ViewModels
 		public ModelStateExceptionViewModel(ModelStateDictionary state)
 		{
 			Data = new ModelStateExceptionDataModel { List = state.AllModelStateErrors() };
-			Code = -1;
+			Status = -1404;
 			Message = "数据格式错误";
 		}
 	}

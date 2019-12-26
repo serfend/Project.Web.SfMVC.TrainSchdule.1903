@@ -201,7 +201,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
-			var data = targetUser.ToSummaryDto(_hostingEnvironment);
+			var data = targetUser.ToSummaryDto();
 			data.LastLogin = _context.UserActions.Where(u => u.UserName == id && u.Operation == UserOperation.Login && u.Success == true).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
@@ -249,7 +249,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					List = list.Select(c => c.Company.ToDto(_companiesService, _hostingEnvironment))
+					List = list.Select(c => c.Company.ToDto(_companiesService))
 				}
 			});
 		}

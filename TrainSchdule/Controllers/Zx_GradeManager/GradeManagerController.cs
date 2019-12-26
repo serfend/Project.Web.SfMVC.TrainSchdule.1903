@@ -81,9 +81,11 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		public IActionResult SingleResult([FromBody]PhySingleGradeDataModel model)
 		{
 			 var result = GetResult(ref model);
-			return new JsonResult(new PhySingleGradeViewModel(result)
+			return new JsonResult(new PhySingleGradeViewModel()
 			{
-				Data = model
+				Data = model,
+				Status=result.Status,
+				Message=result.Message
 			});
 		}
 		[AllowAnonymous]

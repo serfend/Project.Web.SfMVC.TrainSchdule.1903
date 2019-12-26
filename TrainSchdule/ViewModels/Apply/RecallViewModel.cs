@@ -1,4 +1,5 @@
-﻿using DAL.DTO.Recall;
+﻿using BLL.Helpers;
+using DAL.DTO.Recall;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Apply
 {
-	public class RecallViewModel : ApiDataModel
+	public class RecallViewModel : ApiResult
 	{
 		public RecallOrderVDto Data { get; set; }
 	}

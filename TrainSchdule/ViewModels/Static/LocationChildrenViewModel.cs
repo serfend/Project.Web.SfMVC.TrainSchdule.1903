@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BLL.Helpers;
+using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Static
@@ -6,7 +7,7 @@ namespace TrainSchdule.ViewModels.Static
 	/// <summary>
 	/// 
 	/// </summary>
-	public class LocationChildrenViewModel:ApiDataModel
+	public class LocationChildrenViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

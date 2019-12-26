@@ -1,4 +1,5 @@
-﻿using DAL.DTO.User;
+﻿using BLL.Helpers;
+using DAL.DTO.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 用户休假信息
 	/// </summary>
-	public class UserVocationInfoViewModel : ApiDataModel
+	public class UserVocationInfoViewModel : ApiResult
 	{
 		/// <summary>
 		/// 

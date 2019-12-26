@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 返回头像
 	/// </summary>
-	public class AvatarViewModel:ApiDataModel
+	public class AvatarViewModel:ApiResult
 	{
 		/// <summary>
 		/// 头像信息

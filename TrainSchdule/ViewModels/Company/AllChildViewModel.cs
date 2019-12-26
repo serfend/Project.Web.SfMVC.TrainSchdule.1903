@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BLL.Helpers;
+using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Company
@@ -6,7 +7,7 @@ namespace TrainSchdule.ViewModels.Company
 	/// <summary>
 	/// 
 	/// </summary>
-	public class AllChildViewModel:ApiDataModel
+	public class AllChildViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

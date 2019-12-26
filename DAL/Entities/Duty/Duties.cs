@@ -18,6 +18,11 @@ namespace DAL.Entities
 		/// 是否是主官
 		/// </summary>
 		public bool IsMajorManager { get; set; }
+
+		/// <summary>
+		/// 职务原始类型
+		/// </summary>
+		public DutiesRawType DutiesRawType { get; set; }
 	}
 
 }

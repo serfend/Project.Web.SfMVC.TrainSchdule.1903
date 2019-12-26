@@ -72,7 +72,10 @@
 				public static readonly ApiResult TripTimesExceed = new ApiResult(44300, "剩余可休路途次数不足");
 				public static readonly ApiResult VocationLengthTooShort = new ApiResult(44400, "休假长度不可少于5天");
 				public static readonly ApiResult InvalidVocationType = new ApiResult(44500, "无效的休假类型");
+				public static readonly ApiResult NotPermitCrossYear = new ApiResult(44600, "不允许跨年休假，请调整休假时间，是的归队时间在年末结束前");
+
 				
+
 
 			}
 			public static readonly ApiResult GuidFail = new ApiResult(45000, "申请的ID无效");

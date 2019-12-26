@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using BLL.Helpers;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.System;
 
@@ -8,7 +9,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserApplicationInfoViewModel:ApiDataModel
+	public class UserApplicationInfoViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

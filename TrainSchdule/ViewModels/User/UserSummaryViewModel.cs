@@ -1,4 +1,5 @@
-﻿using DAL.DTO.User;
+﻿using BLL.Helpers;
+using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserSummaryViewModel: ApiDataModel
+	public class UserSummaryViewModel: ApiResult
 	{
 		/// <summary>
 		/// 

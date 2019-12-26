@@ -31,7 +31,8 @@ namespace TrainSchdule.Extensions
 				DutiesType = null,//用于转换后手动
 				Code = model.Code,
 				IsMajorManager = model.IsMajorManager,
-				Name = model.Name
+				Name = model.Name,
+				DutyType = model.DutiesRawType
 			};
 		}
 		/// <summary>
@@ -46,7 +47,6 @@ namespace TrainSchdule.Extensions
 			{
 				AuditLevelNum = type.AuditLevelNum,
 				Code = type.Code,
-				DutiesRawType = type.DutiesRawType,
 				Name = type.Name
 			};
 		}

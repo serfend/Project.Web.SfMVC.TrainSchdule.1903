@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using BLL.Helpers;
+using DAL.Entities.UserInfo;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,14 +10,14 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserBaseInfoViewModel : ApiDataModel
+	public class UserBaseInfoViewModel : ApiResult
 	{
 		/// <summary>
 		/// 用户基本信息
 		/// </summary>
 		public UserBaseInfo Data { get; set; }
 	}
-	public class UserBaseInfoWithIdViewModel:ApiDataModel
+	public class UserBaseInfoWithIdViewModel:ApiResult
 	{
 		public UserBaseInfoWithIdDataModel Data { get; set; }
 	}
@@ -35,7 +36,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 用户id列表
 	/// </summary>
-	public class UsersBaseInfoWithIdViewModel:ApiDataModel
+	public class UsersBaseInfoWithIdViewModel:ApiResult
 	{
 		public UsersBaseInfoWithIdDataModel Data { get; set; }
 	}

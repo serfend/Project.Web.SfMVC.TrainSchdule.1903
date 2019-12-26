@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using BLL.Helpers;
+using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 获取用户操作记录
 	/// </summary>
-	public class UserActionViewModel:ApiDataModel
+	public class UserActionViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

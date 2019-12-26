@@ -77,7 +77,7 @@ namespace TrainSchdule.ViewModels.Apply
 	/// <summary>
 	/// 返回审核结果
 	/// </summary>
-	public class ApplyAuditResponseStatusViewModel:ApiDataModel
+	public class ApplyAuditResponseStatusViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

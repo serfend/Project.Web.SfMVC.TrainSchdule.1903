@@ -1276,17 +1276,17 @@
             获取某个申请的信息
             </summary>
         </member>
-        <member name="T:TrainSchdule.ViewModels.System.ApiDataModel">
+        <member name="T:TrainSchdule.ViewModels.System.ApiResult">
             <summary>
             API返回状态
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.System.ApiDataModel.Code">
+        <member name="P:TrainSchdule.ViewModels.System.ApiResult.Code">
             <summary>
             
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.System.ApiDataModel.Message">
+        <member name="P:TrainSchdule.ViewModels.System.ApiResult.Message">
             <summary>
             
             </summary>

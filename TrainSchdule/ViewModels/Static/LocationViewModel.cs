@@ -1,11 +1,12 @@
-﻿using TrainSchdule.ViewModels.System;
+﻿using BLL.Helpers;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Static
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public class LocationViewModel:ApiDataModel
+	public class LocationViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

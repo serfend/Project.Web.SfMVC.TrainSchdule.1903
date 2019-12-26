@@ -153,6 +153,7 @@ namespace TrainSchdule.Controllers.Apply
 				default:
 					return new JsonResult(ActionStatusMessage.Apply.Request.InvalidVocationType);
 			}
+			if (m.StampReturn.Value.Year != m.StampLeave.Value.Year) return new JsonResult(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
 			var info = _applyService.SubmitRequest(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
 		}

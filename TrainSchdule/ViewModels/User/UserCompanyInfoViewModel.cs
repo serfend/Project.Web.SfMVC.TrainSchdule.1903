@@ -1,4 +1,6 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Helpers;
+using BLL.Interfaces;
+using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.System;
 
@@ -7,7 +9,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserCompanyInfoViewModel:ApiDataModel
+	public class UserCompanyInfoViewModel:ApiResult
 	{
 		/// <summary>
 		/// 
@@ -50,7 +52,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserDutiesViewModel : ApiDataModel
+	public class UserDutiesViewModel : ApiResult
 	{
 		/// <summary>
 		/// 
@@ -69,6 +71,10 @@ namespace TrainSchdule.ViewModels.User
 		/// 
 		/// </summary>
 		public string Name { get; set; }
+		/// <summary>
+		/// 职务类别
+		/// </summary>
+		public DutiesRawType? DutiesRawType { get; set; }
 	}
 	/// <summary>
 	/// 
@@ -104,7 +110,8 @@ namespace TrainSchdule.ViewModels.User
 			return new UserDutiesDataModel()
 			{
 				Code = model.Duties?.Code,
-				Name = model.Duties?.Name
+				Name = model.Duties?.Name,
+				DutiesRawType=model.Duties?.DutiesRawType
 			};
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using DAL.Entities.Duty;
+using DAL.Entities.UserInfo;
 
 namespace DAL.DTO.User
 {
@@ -19,7 +20,6 @@ namespace DAL.DTO.User
 		/// 简介
 		/// </summary>
 		public string About { get; set; }
-
 		/// <summary>
 		/// 性别
 		/// </summary>
@@ -36,6 +36,10 @@ namespace DAL.DTO.User
 		/// 职务代码
 		/// </summary>
 		public int? DutiesCode { get; set; }
+		/// <summary>
+		/// 职务类型
+		/// </summary>
+		public DutiesRawType? DutiesRawType { get; set; }
 		/// <summary>
 		/// 单位名称
 		/// </summary>

@@ -24,11 +24,11 @@ namespace BLL.Extensions
 			 
 		}
 		public static IEnumerable<User>CompanyMembers(this Company company,IUsersService usersService)=> usersService?.Find(u => u.CompanyInfo.Company.Code == company.Code);
-		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService,IHostingEnvironment env)
+		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService)
 		{
 			var b=new CompanyDto()
 			{
-				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToSummaryDto(env)),
+				Managers = companiesService?.GetCompanyManagers(company?.Code).Select(u=>u.ToSummaryDto()),
 				Code = company?.Code,
 				Name = company?.Name,
 				Description=company?.Description

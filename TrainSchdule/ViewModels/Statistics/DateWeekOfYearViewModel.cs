@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace TrainSchdule.ViewModels.Statistics
 	/// <summary>
 	/// 
 	/// </summary>
-	public class DateWeekOfYearViewModel:ApiDataModel
+	public class DateWeekOfYearViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

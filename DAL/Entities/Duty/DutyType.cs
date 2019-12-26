@@ -21,10 +21,6 @@ namespace DAL.Entities.Duty
 		/// 需要审批的层级数量，当为0时则按默认 zs=2，gb=3
 		/// </summary>
 		public int AuditLevelNum { get; set; }
-		/// <summary>
-		/// 职务原始类型
-		/// </summary>
-		public DutiesRawType DutiesRawType { get; set; }
 	}
 	public enum DutiesRawType
 	{

@@ -1,4 +1,5 @@
-﻿using DAL.Entities.ZX.Phy;
+﻿using BLL.Helpers;
+using DAL.Entities.ZX.Phy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.ZX
 {
-	public class PhySubjectViewModel:ApiDataModel
+	public class PhySubjectViewModel:ApiResult
 	{
 		public Subject Data { get; set; }
 	}

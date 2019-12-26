@@ -9,12 +9,11 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.ZX
 {
-	public class PhySingleGradeViewModel: ApiDataModel
+	public class PhySingleGradeViewModel: ApiResult
 	{
 		public PhySingleGradeDataModel Data { get; set; }
-		public  PhySingleGradeViewModel(ApiResult message) : base(message){ }
 	}
-	public class PhyGradesViewModel : ApiDataModel
+	public class PhyGradesViewModel : ApiResult
 	{
 		public PhyGradeDataModel Data { get; set; }
 	}

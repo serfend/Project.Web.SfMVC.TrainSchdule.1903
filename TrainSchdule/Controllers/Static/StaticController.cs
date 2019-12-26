@@ -30,7 +30,7 @@ namespace TrainSchdule.Controllers
 	/// 
 	/// </summary>
 	[Route("[controller]")]
-	public class StaticController : Controller
+	public partial class StaticController : Controller
 	{
 
 		private readonly IVerifyService _verifyService;
@@ -54,122 +54,6 @@ namespace TrainSchdule.Controllers
 			_companiesService = companiesService;
 		}
 
-
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("verify")]
-		public IActionResult VerifyCode()
-		{
-			var imgId = _verifyService.Generate().ToString();
-			if (!CollectionExtensions.IsNullOrEmpty(_verifyService.Status))
-			{
-				var status = _verifyService.Status;
-				_verifyService.Generate();
-				return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, status));
-			}
-
-			return new JsonResult(new ScrollerVerifyGeneratedViewModel()
-			{
-				Data = new ScrollerVerifyGeneratedDataModel()
-				{
-					Id = imgId,
-					PosY = _verifyService.Pos.Y
-				}
-			});
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("verify-ft.jpg")]
-		public IActionResult VerifyCodeFront()
-		{
-			var img = _verifyService.Front();
-			if (img == null) return new JsonResult(new ApiDataModel()
-			{
-				Code = -1,
-				Message = _verifyService.Status
-			});
-			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
-			return new FileContentResult(img, "image/jpg");
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("verify-bg.jpg")]
-		public IActionResult VerifyCodeBackground()
-		{
-			var img = _verifyService.Background();
-			if (img == null) return new JsonResult(new ApiDataModel()
-			{
-				Code = -1,
-				Message = _verifyService.Status
-			});
-			HttpContext.Response.Cookies.Append("posY", _verifyService.Pos.Y.ToString());
-			return new FileContentResult(img, "image/jpg");
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="code"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("Location")]
-		[ProducesResponseType(typeof(LocationDataModel), 0)]
-
-		public IActionResult Location(int code)
-		{
-			var location = _context.AdminDivisions.Find(code);
-			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
-			return new JsonResult(new LocationViewModel()
-			{
-				Data = new LocationDataModel()
-				{
-					Code = location.Code,
-					ParentCode = location.ParentCode,
-					Name = location.Name,
-					ShortName = location.ShortName
-				}
-			});
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="code"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("LocationChildren")]
-		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
-
-		public IActionResult LocationChildren(int code)
-		{
-			var location = _context.AdminDivisions.Find(code);
-			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
-			var list = _context.AdminDivisions.Where(a => a.ParentCode == code);
-			var totalCount = list.Count();
-			return new JsonResult(new LocationChildrenViewModel()
-			{
-				Data = new LocationChildrenDataModel()
-				{
-					List = list.Select(t => t.ToDataModel()),
-					TotalCount=totalCount
-				}
-			});
-		}
 		/// <summary>
 		/// 获取法定节假日情况
 		/// </summary>
@@ -222,7 +106,7 @@ namespace TrainSchdule.Controllers
 				Guid.TryParse(form.Apply, out var guid);
 				if (guid == Guid.Empty) return new JsonResult(ActionStatusMessage.Apply.GuidFail);
 				var a = _applyService.GetById(guid);
-				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From),_hostingEnvironment, false);
+				var apply = a?.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false);
 				if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 				//TODO 需要校验权限
 				//if (!currentUser.Application.Permission.Check(DictionaryAllPermission.Apply.Default, Operation.Update, apply.Company)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -264,18 +148,22 @@ namespace TrainSchdule.Controllers
 				list = list.Where(a =>
 					a.Status != AuditStatus.NotPublish && a.Status != AuditStatus.NotSave &&
 					a.Status != AuditStatus.Withdrew).ToList();
-				fileContent = _applyService.ExportExcel(tempFile.FullName, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), _hostingEnvironment, false)), targetCompany?.ToDto(_companiesService, _hostingEnvironment));
+				fileContent = _applyService.ExportExcel(tempFile.FullName, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false)), targetCompany?.ToDto(_companiesService));
 				if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 				fileName = $"来自{fromName}的申请共计{list.Count()}条导出到{form.Templete}";
 			}
 
 			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 		}
-		[AllowAnonymous]
+		/// <summary>
+		/// 上传休假导出模板
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(string), 0)]
-		[Route("file")]
-		public IActionResult File(IEnumerable<IFormFile> file)
+		[Route("XlsExport")]
+		public IActionResult XlsExport(IEnumerable<IFormFile> file)
 		{
 			return new JsonResult(new { file });
 		}

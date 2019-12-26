@@ -1,11 +1,12 @@
-﻿using TrainSchdule.ViewModels.System;
+﻿using BLL.Helpers;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Verify
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public class ScrollerVerifyGeneratedViewModel:ApiDataModel
+	public class ScrollerVerifyGeneratedViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

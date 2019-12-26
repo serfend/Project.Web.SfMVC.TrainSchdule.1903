@@ -10,7 +10,7 @@ namespace TrainSchdule.ViewModels.System
 	/// <summary>
 	/// 
 	/// </summary>
-	public class APIResponseIdViewModel : ApiDataModel
+	public class APIResponseIdViewModel : ApiResult
 	{
 		/// <summary>
 		/// 
@@ -28,7 +28,7 @@ namespace TrainSchdule.ViewModels.System
 			{
 				Id = id
 			};
-			Code = message.Status;
+			Status = message.Status;
 			Message = message.Message;
 		}
 	}
@@ -44,29 +44,6 @@ namespace TrainSchdule.ViewModels.System
 		public Guid Id { get; set; }
 	}
 
-
-	/// <summary>
-	/// 
-	/// </summary>
-	public class ApiResponseModelStateErrorViewModel : ApiDataModel
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public ModelStateResponseExceptionDataModel Data { get; set; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="state"></param>
-		public ApiResponseModelStateErrorViewModel(Guid id,ModelStateDictionary state)
-		{
-			Data = new ModelStateResponseExceptionDataModel { List = state.AllModelStateErrors() ,Id=id};
-			Code = -2;
-			Message = "成功,数据格式错误";
-		}
-	}
 
 	/// <summary>
 	/// 

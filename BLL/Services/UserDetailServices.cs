@@ -16,11 +16,14 @@ namespace BLL.Services
 		public IEnumerable<Company> InMyManage(User user,out int totalCount)
 		{
 			totalCount = 0;
-			if (user == null) return new List<Company>();
-			var list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
+			var list = new List<Company>();
+
+			if (user == null) return list;
+			list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
 			// 所在单位的主管拥有此单位的管理权
 			var companyCode = user.CompanyInfo.Company.Code;
-			if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode)) list.Append(user.CompanyInfo.Company);
+
+			if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode)) list.Add(user.CompanyInfo.Company);
 			totalCount = list==null?0:list.Count;
 			return list;
 		}

@@ -34,7 +34,7 @@ namespace TrainSchdule.Controllers.Apply
 				if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
 
 				var currentUser = _currentUserService.CurrentUser;
-				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto(_hostingEnvironment));
+				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{
 					Data = new ApplyListDataModel()
@@ -67,7 +67,7 @@ namespace TrainSchdule.Controllers.Apply
 			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From), _hostingEnvironment, userPermitCompany)
+				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From), userPermitCompany)
 			});
 		}
 		/// <summary>
@@ -118,7 +118,7 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _context.Applies.Where(a => a.RecallId == id).FirstOrDefault();
 			return new JsonResult(new RecallViewModel()
 			{
-				Data = recall.ToVDto(apply, _hostingEnvironment)
+				Data = recall.ToVDto(apply)
 			});
 		}
 	}

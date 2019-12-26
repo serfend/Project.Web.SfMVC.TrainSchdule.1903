@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Helpers;
 using DAL.Entities;
 using TrainSchdule.ViewModels.System;
 
@@ -10,7 +11,7 @@ namespace TrainSchdule.ViewModels.Static
 	/// <summary>
 	/// 
 	/// </summary>
-	public class VocationDescriptionViewModel:ApiDataModel
+	public class VocationDescriptionViewModel:ApiResult
 	{
 		/// <summary>
 		/// 

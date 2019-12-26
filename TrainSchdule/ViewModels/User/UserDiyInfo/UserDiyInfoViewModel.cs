@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions;
+using BLL.Helpers;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -10,7 +11,7 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserDiyInfoViewModel: ApiDataModel
+	public class UserDiyInfoViewModel: ApiResult
 	{
 		public UserDiyInfoDataModel Data { get; set; }
 	}

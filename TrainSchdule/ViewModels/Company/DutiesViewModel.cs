@@ -1,4 +1,5 @@
-﻿using DAL.Entities;
+﻿using BLL.Helpers;
+using DAL.Entities;
 using DAL.Entities.Duty;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace TrainSchdule.ViewModels.Company
 	/// <summary>
 	/// 职务列表
 	/// </summary>
-	public class DutiesViewModel:ApiDataModel
+	public class DutiesViewModel:ApiResult
 	{
 		/// <summary>
 		/// 
@@ -35,7 +36,7 @@ namespace TrainSchdule.ViewModels.Company
 	/// <summary>
 	/// 
 	/// </summary>
-	public class DutyViewModel:ApiDataModel
+	public class DutyViewModel:ApiResult
 	{
 		/// <summary>
 		/// 
@@ -60,6 +61,7 @@ namespace TrainSchdule.ViewModels.Company
 		/// </summary>
 		public bool IsMajorManager { get; set; }
 		public DutyTypeDataModel DutiesType { get; set; }
+		public DutiesRawType DutyType { get; set; }
 	}
 	/// <summary>
 	/// 职务类型

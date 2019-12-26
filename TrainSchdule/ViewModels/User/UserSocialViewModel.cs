@@ -1,4 +1,5 @@
-﻿using DAL.Entities;
+﻿using BLL.Helpers;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserSocialViewModel:ApiDataModel
+	public class UserSocialViewModel:ApiResult
 	{
 		/// <summary>
 		/// 社会情况信息
