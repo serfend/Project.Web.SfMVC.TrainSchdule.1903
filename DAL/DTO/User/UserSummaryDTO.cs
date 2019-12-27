@@ -1,5 +1,6 @@
 ﻿using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
+using System;
 
 namespace DAL.DTO.User
 {
@@ -16,6 +17,15 @@ namespace DAL.DTO.User
 		/// 真实姓名
 		/// </summary>
 		public string RealName { get; set; }
+		/// <summary>
+		/// 家乡
+		/// </summary>
+		public string Hometown { get; set; }
+		/// <summary>
+		/// 工作时间
+		/// </summary>
+		public DateTime? TimeWork { get; set; }
+		public DateTime? TimeBirth { get; set; }
 		/// <summary>
 		/// 简介
 		/// </summary>
@@ -48,6 +58,10 @@ namespace DAL.DTO.User
 		/// 职务名
 		/// </summary>
 		public string DutiesName { get; set; }
+		/// <summary>
+		/// 职务等级名称
+		/// </summary>
+		public string UserTitle { get; set; }
 		public UserAction LastLogin { get; set; }
 		/// <summary>
 		/// 邀请人

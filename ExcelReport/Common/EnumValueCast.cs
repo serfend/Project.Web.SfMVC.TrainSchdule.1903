@@ -8,8 +8,10 @@ namespace ExcelReport.Common
 {
 	public static class EnumValueCast
 	{
-		public static string CastToString(this object v,Type t)
+		public static string CastToString(this object v, Type t)
 		{
+			if (!t.IsEnum)
+				return v.ToString();
 			try
 			{
 				FieldInfo oFieldInfo = t.GetField(GetName(t, v));

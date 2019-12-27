@@ -23,7 +23,9 @@ namespace DAL.Entities.UserInfo
 
 
 		public GenderEnum Gender { get; set; }
+		[Required(ErrorMessage = "未输入籍贯")]
 
+		public string Hometown { get; set; }
 		[Required(ErrorMessage = "未输入工作时间")]
 		/// <summary>
 		/// 工作/入伍时间

@@ -1,6 +1,7 @@
 ﻿using DAL.Entities.Vocations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DAL.DTO.User
@@ -15,6 +16,11 @@ namespace DAL.DTO.User
 		/// 全年总天数
 		/// </summary>
 		public int YearlyLength { get; set; }
+		/// <summary>
+		/// 已休天数
+		/// </summary>
+		[NotMapped]
+		public int ComsumeLength { get => YearlyLength - LeftLength; }
 		/// <summary>
 		/// 当前已休假次数
 		/// </summary>

@@ -147,6 +147,7 @@ namespace BLL.Services.ApplyServices
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationPlace", t => t.RequestInfo?.VocationPlace.Name),
 				new ParameterRenderer<ApplyDetailDto>("Base_Company", t => t.Base?.CompanyName),
 				new ParameterRenderer<ApplyDetailDto>("Base_Duties", t => t.Base?.DutiesName),
+				new ParameterRenderer<ApplyDetailDto>("Base_Title", t => t.Base?.UserTitle),
 				new ParameterRenderer<ApplyDetailDto>("Base_RealName", t => t.Base?.RealName),
 				new ParameterRenderer<ApplyDetailDto>("Base_Id", t => t.Base?.Id),
 				new ParameterRenderer<ApplyDetailDto>("Company_Name", t => t.Company?.Name),
