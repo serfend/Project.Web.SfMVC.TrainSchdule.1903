@@ -1,4 +1,5 @@
-﻿using ExcelReport.Contexts;
+﻿using ExcelReport.Common;
+using ExcelReport.Contexts;
 using ExcelReport.Driver;
 using ExcelReport.Exceptions;
 using ExcelReport.Extends;
@@ -41,7 +42,8 @@ namespace ExcelReport.Renderers
                 }
                 else
                 {
-                    cell.Value = (cell.GetStringValue().Replace(parameterName, Value.CastTo<string>()));
+					var type = Value.GetType();
+                    cell.Value = (cell.GetStringValue().Replace(parameterName, type.IsEnum? Value.CastToString(type):Value.CastTo<string>()));
                 }
             }
         }
@@ -76,13 +78,15 @@ namespace ExcelReport.Renderers
                 }
 
                 var parameterName = $"$[{parameter.Name}]";
-                if (parameterName.Equals(cell.GetStringValue().Trim()))
+				var value = DgSetValue(dataSource);
+				var type = value.GetType();
+				if (parameterName.Equals(cell.GetStringValue().Trim()))
                 {
-                    cell.Value = DgSetValue(dataSource);
+					cell.Value = value;
                 }
                 else
                 {
-                    cell.Value = cell.GetStringValue().Replace($"$[{parameter.Name}]", DgSetValue(dataSource).CastTo<string>());
+                    cell.Value = cell.GetStringValue().Replace($"$[{parameter.Name}]", type.IsEnum? value.CastToString(type):value.CastTo<string>());
                 }
             }
         }
