@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20191202164726_UserAction.Designer.cs" />
     <Compile Remove="Migrations\20191207142931_AddNew1207.cs" />
     <Compile Remove="Migrations\20191207142931_AddNew1207.Designer.cs" />
+    <Compile Remove="Migrations\20191227153323_new_CompanyUserTitle2.cs" />
+    <Compile Remove="Migrations\20191227153323_new_CompanyUserTitle2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

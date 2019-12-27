@@ -146,7 +146,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult GetUserIdByCid(string cid)
 		{
 			if (cid == null) return new JsonResult(ActionStatusMessage.User.NoId);
-			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.User.NotCorrectId);
+			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.User.NotCrrectCid);
 			var user = _context.AppUsers.FirstOrDefault(u => u.BaseInfo.Cid == cid);
 			if (user == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
@@ -176,8 +176,9 @@ namespace TrainSchdule.Controllers
 			{
 				return new JsonResult(ActionStatusMessage.Fail);
 			}
-			var user = await _userManager.FindByIdAsync(userId) ??
-					   throw new ApplicationException($"无法加载当前用户信息 '{userId}'.");
+			var user = await _userManager.FindByIdAsync(userId);
+			if(user==null)
+					   return  new JsonResult($"无法加载当前用户信息 '{userId}'.");
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -636,15 +637,8 @@ namespace TrainSchdule.Controllers
 			var modefyUserCompany = modefyUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			if (!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >=1)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if (modefyUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
-			if (modefyUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
-			var anyCodeInvalid = modefyUser.SocialInfo.Settle.AnyCodeInvalid();
-			if (anyCodeInvalid != null) ModelState.AddModelError("settle", $"无效的行政区划:{anyCodeInvalid}");
-
-			if (!ModelState.IsValid)
-			{
-				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
-			}   //await _signInManager.SignInAsync(user, isPersistent: false);
+			CheckCurrentUserData(modefyUser);
+			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);
@@ -657,20 +651,13 @@ namespace TrainSchdule.Controllers
 			var regUser = _usersService.Get(model.Application.UserName);
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
+			var username = model.Application.UserName;
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			//if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
-
-			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
 			var currentUser = _usersService.Get(user.UserName);
-			if (currentUser.CompanyInfo.Company == null) ModelState.AddModelError("company", "单位不存在");
-			if (currentUser.CompanyInfo.Duties == null) ModelState.AddModelError("duties", "职务不存在");
-			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
-			if (anyCodeInvalid != null) ModelState.AddModelError("settle", $"无效的行政区划:{anyCodeInvalid}");
-
+			CheckCurrentUserData(currentUser);
 			if (!ModelState.IsValid)
 			{
 				await Remove(new UserRemoveViewModel()
@@ -679,9 +666,27 @@ namespace TrainSchdule.Controllers
 					Id = model.Application.UserName
 				});
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
-			}   //await _signInManager.SignInAsync(user, isPersistent: false);
+			}
+			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
+			
+
+			
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 			_userActionServices.Status(actionRecord, true, regDescription);
+		}
+		private void CheckCurrentUserData(User currentUser)
+		{
+			//if (currentUser.Application.Email == null || currentUser.Application.Email == "") ModelState.AddModelError("系统信息","认证邮箱为空");
+			if (currentUser.BaseInfo.Time_Work.Year < 1950) ModelState.AddModelError("基本信息", "工作时间格式错误");
+			if (currentUser.BaseInfo.Time_BirthDay.Year < 1900) ModelState.AddModelError("基本信息", "出生日期格式错误");
+			if (currentUser.BaseInfo.Time_Party.Year < 1950) ModelState.AddModelError("基本信息", "党团时间格式错误");
+			if (currentUser.CompanyInfo.Company == null) ModelState.AddModelError("单位信息", "单位不存在");
+			if (currentUser.CompanyInfo.Duties == null) ModelState.AddModelError("单位信息", "职务不存在");
+			if (currentUser.CompanyInfo.Title == null) ModelState.AddModelError("单位信息", "职务等级不存在");
+			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
+			if (anyCodeInvalid != null) ModelState.AddModelError("家庭情况", $"无效的行政区划:{anyCodeInvalid}");
 		}
 	}
 }

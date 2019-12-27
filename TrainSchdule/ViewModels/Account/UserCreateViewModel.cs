@@ -60,14 +60,14 @@ namespace TrainSchdule.ViewModels.Account
 		/// <summary>
 		/// 输入密码
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage ="未输入密码")]
 		[StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 8)]
 
 		public string Password { get; set; }
 		/// <summary>
 		/// 二次输入密码
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "未输入确认密码")]
 		[Compare(nameof(Password), ErrorMessage = "两次输入的密码不一致")]
 		public string ConfirmPassword { get; set; }
 	}
@@ -76,10 +76,18 @@ namespace TrainSchdule.ViewModels.Account
 	/// </summary>
 	public class UserModefyDataModel
 	{
-		[Required]
+		[Required(ErrorMessage = "未输入基础信息")]
+
 		public UserBaseInfo Base { get; set; }
+		[Required(ErrorMessage = "未输入家庭情况")]
+
+
 		public UserSocialDataModel Social { get; set; }
+		[Required(ErrorMessage = "未输入单位信息")]
+
 		public UserCompanyInfo Company { get; set; }
+		[Required(ErrorMessage = "未输入系统信息")]
+
 		public UserApplicationDataModel Application { get; set; }
 		public UserDiyInfoDataModel Diy { get; set; }
 

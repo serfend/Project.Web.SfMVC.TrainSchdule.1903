@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.Duty;
+using DAL.Entities.UserInfo;
 using TrainSchdule.ViewModels.Company;
 
 namespace TrainSchdule.Extensions
@@ -35,6 +36,17 @@ namespace TrainSchdule.Extensions
 				DutyType = model.DutiesRawType
 			};
 		}
+		public static UserTitleDataModel ToDataModel(this UserCompanyTitle model)
+		{
+			if (model == null) return null;
+			return new UserTitleDataModel()
+			{
+				Code=model.Code,
+				Level=model.Level,
+				Name=model.Name
+			};
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

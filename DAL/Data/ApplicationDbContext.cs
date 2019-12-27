@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.BBS;
 using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
@@ -21,10 +22,12 @@ namespace DAL.Data
 		public DbSet<User> AppUsers { get; set; }
 		public DbSet<UserBaseInfo> AppUserBaseInfos { get; set; }
 		public DbSet<UserCompanyInfo> AppUserCompanyInfos { get; set; }
+		public DbSet<UserCompanyTitle> UserCompanyTitles { get; set; }
 		public DbSet<UserApplicationInfo> AppUserApplicationInfos { get; set; }
 		public DbSet<UserApplicationSetting> AppUserApplicationSettings { get; set; }
 		public DbSet<UserSocialInfo> AppUserSocialInfos { get; set; }
-		public DbSet<Settle> Settles { get; set; }
+		public DbSet<Settle> AUserSocialInfoSettles { get; set; }
+		public DbSet<Moment> AppUserSocialInfoSettleMoments { get; set; }
 		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
 		public DbSet<Avatar> AppUserDiyAvatars { get; set; }
 		public DbSet<Company> Companies { get; set; }
@@ -56,6 +59,9 @@ namespace DAL.Data
 		public DbSet<Subject> Subjects { get; set; }
 		public DbSet<Standard> Standards { get; set; }
 		public DbSet<UserAction> UserActions { get; set; }
+
+		public DbSet<Post> Posts { get; set; }
+		public DbSet<DAL.Entities.BBS.PostContent> PostContents { get; set; }
 		#endregion
 
 		#region .ctors

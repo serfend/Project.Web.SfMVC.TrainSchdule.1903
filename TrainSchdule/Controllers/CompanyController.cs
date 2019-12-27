@@ -17,7 +17,7 @@ namespace TrainSchdule.Controllers
 	/// 单位管理
 	/// </summary>
 	[Route("[controller]/[action]")]
-	public class CompanyController : ControllerBase
+	public class CompanyController : Controller
 	{
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
@@ -75,16 +75,40 @@ namespace TrainSchdule.Controllers
 		public IActionResult DutiesQuery(string name,int pageIndex=0,int pageNum=20)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Duties.Name;
-			var dutiesQuery = _context.Duties.Where(d => d.Name.Contains(name));
+			name = name ?? currentUser?.CompanyInfo?.Duties.Name??"";
+			var dutiesQuery = _context.Duties.Where(d => d.Name.Contains(name)&&d.Name!="NotSet");
 			var totalCount = dutiesQuery.Count();
-			var duties = dutiesQuery.Skip(pageIndex * pageNum).Take(pageNum);
+			var duties = dutiesQuery.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(DutiesEqualComparer.GetInstance());
 			return new JsonResult(new DutiesViewModel()
 			{
 				Data= new DutiesDataModel()
 				{
-					List=duties.Select(d=>d.ToDataModel()).ToList(),
+					List=duties.Select(d=>d.ToDataModel()),
 					TotalCount=totalCount
+				}
+			});
+		}
+		/// <summary>
+		/// 检索可能的职务等级
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="pageNum"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult TitleQuery(string name,int pageIndex =0 ,int pageNum = 20)
+		{
+			var currentUser = _currentUserService.CurrentUser;
+			name = name ?? currentUser?.CompanyInfo?.Title.Name??"";
+			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name.Contains(name) && d.Name != "NotSet");
+			var totalCount = dutiesQuery.Count();
+			var duties = dutiesQuery.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(UserTitleCompareer.GetInstance());
+			return new JsonResult(new UserTitlesViewModel()
+			{
+				Data = new UserTitlesDataModel()
+				{
+					List = duties.Select(d => d.ToDataModel()),
+					TotalCount = totalCount
 				}
 			});
 		}

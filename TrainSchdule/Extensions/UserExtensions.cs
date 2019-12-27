@@ -32,18 +32,22 @@ namespace TrainSchdule.Extensions
 				{
 					Company = new Company()
 					{
-						Code = model.Company.Company.Code
+						Code = model.Company?.Company?.Code
 					},
 					Duties = new Duties()
 					{
-						Name = model.Company.Duties.Name
+						Name = model.Company?.Duties?.Name
+					},
+					Title = new UserCompanyTitle()
+					{
+						Name = model.Company?.Title?.Name
 					}
 				},
-				Application = model.Application.ToModel(),
+				Application = model.Application?.ToModel(),
 				BaseInfo = model.Base,
-				SocialInfo = model.Social.ToModel(),
+				SocialInfo = model.Social?.ToModel(),
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
-				DiyInfo = model.Diy.ToModel()
+				DiyInfo = model.Diy?.ToModel()
 			};
 		}
 	}

@@ -17,6 +17,7 @@ namespace TrainSchdule.Crontab
 		public void Run()
 		{
 			applyService.RemoveAllUnSaveApply();
+			applyService.RemoveAllNoneFromUserApply();
 		}
 	}
 }

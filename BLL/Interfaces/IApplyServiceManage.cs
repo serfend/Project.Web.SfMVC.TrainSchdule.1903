@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using DAL.DTO.Apply;
 using DAL.DTO.Company;
 using DAL.Entities.ApplyInfo;
@@ -18,7 +19,13 @@ namespace BLL.Interfaces
 		/// <param name="totalCount"></param>
 		/// <returns></returns>
 		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,bool getAllAppliesPermission, out int totalCount);
-		void RemoveAllUnSaveApply();
+		Task RemoveAllUnSaveApply();
+		Task RemoveAllNoneFromUserApply();
+		/// <summary>
+		/// 删除指定申请
+		/// </summary>
+		/// <param name="Applies"></param>
+		Task RemoveApplies(IEnumerable<Apply> Applies);
 		byte[] ExportExcel(string templete,  ApplyDetailDto model);
 		byte[] ExportExcel(string templete,  IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany);
 	}

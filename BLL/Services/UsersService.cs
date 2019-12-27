@@ -1,10 +1,12 @@
 ﻿using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -32,7 +34,6 @@ namespace BLL.Services
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
-
 
 		#endregion
 
@@ -162,6 +163,7 @@ namespace BLL.Services
 			};
 			user.CompanyInfo.Company = _context.Companies.Find(user.CompanyInfo.Company.Code);
 			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
+			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == user.CompanyInfo.Title.Name);
 			var social = user.SocialInfo;
 			social.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
 			if (social.Settle?.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
@@ -177,10 +179,10 @@ namespace BLL.Services
 			var identity = new ApplicationUser
 			{
 				UserName = user.Id,
-				Email = user.Application.Email,
+				Email = user.Application?.Email,
 				PhoneNumberConfirmed = false,
 				EmailConfirmed = false,
-				NormalizedEmail = user.Application.Email.ToUpper(),
+				NormalizedEmail = user.Application?.Email?.ToUpper(),
 				NormalizedUserName = user.Id.ToUpper(),
 				LockoutEnabled = true,
 				TwoFactorEnabled = false,
@@ -231,21 +233,45 @@ namespace BLL.Services
 		{
 			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(false);
 			if (user == null) return false;
-			//TODO 级联删除相关(休假申请）
-			_context.AppUsers.Remove(user);
-			if(user.BaseInfo!=null)_context.AppUserBaseInfos.Remove(user.BaseInfo);
-			if (user.Application!=null)_context.AppUserApplicationInfos.Remove(user.Application);
-			if(user.Application?.ApplicationSetting!=null)_context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
-			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);
-			if (user.CompanyInfo?.Company != null) _context.Companies.Remove(user.CompanyInfo.Company);
-			if (user.CompanyInfo?.Duties != null) _context.Duties.Remove(user.CompanyInfo.Duties);
-
-			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == id).ConfigureAwait(false);
-			_context.Users.Remove(appUser);
+			await RemoveUser(user).ConfigureAwait(false);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return true;
 		}
-
+		/// <summary>
+		/// 删除用户
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
+		private async Task RemoveUser(User user)
+		{
+			_context.AppUsers.Remove(user);
+			if (user.BaseInfo != null)
+			{
+				_context.AppUserBaseInfos.Remove(user.BaseInfo);
+			}
+			if (user.Application != null)
+			{
+				if (user.Application.Permission != null) _context.Permissions.Remove(user.Application.Permission);
+				if (user.Application.ApplicationSetting != null) _context.AppUserApplicationInfos.Remove(user.Application);
+			}
+			if (user.Application?.ApplicationSetting != null) _context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
+			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);
+			if (user.SocialInfo != null)
+			{
+				_context.AppUserSocialInfos.Remove(user.SocialInfo);
+				if (user.SocialInfo.Settle != null)
+				{
+					_context.AUserSocialInfoSettles.Remove(user.SocialInfo.Settle);
+					if (user.SocialInfo.Settle.Self != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Self);
+					if (user.SocialInfo.Settle.Parent != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Parent);
+					if (user.SocialInfo.Settle.Lover != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Lover);
+					if (user.SocialInfo.Settle.LoversParent != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.LoversParent);
+				}
+			}
+			if (user.DiyInfo != null) _context.AppUserDiyInfos.Remove(user.DiyInfo);
+			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(false);
+			_context.Users.Remove(appUser);
+		}
 		public string ConvertFromUserCiper(string username, string password)
 		{
 			return password.FromCipperToString(username);

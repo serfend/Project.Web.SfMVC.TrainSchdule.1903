@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
 using DAL.Entities.Duty;
+using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,5 +82,42 @@ namespace TrainSchdule.ViewModels.Company
 		/// 职务原始类型
 		/// </summary>
 		public DutiesRawType DutiesRawType { get; set; }
+	}
+	
+		public class UserTitleCompareer : IEqualityComparer<UserCompanyTitle>
+	{
+		private static UserTitleCompareer titleEqualComparer;
+		public static UserTitleCompareer GetInstance()
+		{
+			if (titleEqualComparer == null) titleEqualComparer = new UserTitleCompareer();
+			return titleEqualComparer;
+		}
+		public bool Equals(UserCompanyTitle x, UserCompanyTitle y)
+		{
+			return x.Name == y.Name;
+		}
+
+		public int GetHashCode(UserCompanyTitle obj)
+		{
+			return obj.Name.GetHashCode();
+		}
+	}
+	public class DutiesEqualComparer : IEqualityComparer<Duties>
+	{
+		private static DutiesEqualComparer dutiesEqualComparer;
+		public static DutiesEqualComparer GetInstance()
+		{
+			if (dutiesEqualComparer == null) dutiesEqualComparer = new DutiesEqualComparer();
+			return dutiesEqualComparer;
+		}
+		public bool Equals(Duties x, Duties y)
+		{
+			return x.Name == y.Name;
+		}
+
+		public int GetHashCode(Duties obj)
+		{
+			return obj.Name.GetHashCode();
+		}
 	}
 }

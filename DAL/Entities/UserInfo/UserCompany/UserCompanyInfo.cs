@@ -9,5 +9,9 @@ namespace DAL.Entities.UserInfo
 		/// </summary>
 		public virtual Company Company { get; set; }
 		public virtual Duties Duties { get; set; }
+		/// <summary>
+		/// 用户职务等级
+		/// </summary>
+		public virtual UserCompanyTitle Title { get; set; }
 	}
 }

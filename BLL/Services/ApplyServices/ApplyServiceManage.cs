@@ -10,6 +10,7 @@ using DAL.DTO.Company;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions;
 using DAL.QueryModel;
+using System.Threading.Tasks;
 
 namespace BLL.Services.ApplyServices
 {
@@ -56,12 +57,24 @@ namespace BLL.Services.ApplyServices
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
 			return list.ToList();
 		}
-		public void RemoveAllUnSaveApply()
+		public Task RemoveAllUnSaveApply()
 		{
 			//寻找所有找过1天未保存的申请
 			var list = _context.Applies
 						 .Where(a => a.Status == AuditStatus.NotSave)
 						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+			RemoveApplies(list);
+			return Task.CompletedTask;
+		}
+		public Task RemoveAllNoneFromUserApply()
+		{
+			var list = _context.Applies.Where(a => a.BaseInfo.From == null);
+			RemoveApplies(list);
+			return Task.CompletedTask;
+		}
+		public Task RemoveApplies(IEnumerable<Apply> list)
+		{
+			if (list == null) return Task.CompletedTask;
 			//删除这些申请的审批流
 			foreach (var apply in list) _context.ApplyResponses.RemoveRange(apply.Response);
 			//删除这些申请
@@ -78,22 +91,21 @@ namespace BLL.Services.ApplyServices
 			//删除这些基础信息		
 			_context.ApplyBaseInfos.RemoveRange(baseInfos);
 			_context.SaveChanges();
+			return Task.CompletedTask;
 		}
-
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
 		{
 			var list = SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model, (key, value) =>
 			{
 				switch (key)
 				{
-					case "RequestInfo_ByTransportation": return Enum.GetName(model.RequestInfo.ByTransportation.GetType(), Convert.ToInt32(value));
 					default: return value;
 				}
 			}).ToList();
 			list.Add(new ParameterRenderer("RequestInfo_VocationDescription", model.RequestInfo.RequestInfoVocationDescription()));
 			list.Add(new ParameterRenderer("RequestInfo_VocationTotalLength", model.RequestInfo.VocationTotalLength()));
 			list.Add(new ParameterRenderer("UserVocationInfo_DetailDescription", model.UserVocationDescription.VocationDescription()));
-
+			list.Add(new ParameterRenderer("Social_IsMarried", model.Social.Settle.Lover.Valid ? "已婚" : "未婚"));
 
 			var sheetRenderers = new SheetRenderer[]
 				{
