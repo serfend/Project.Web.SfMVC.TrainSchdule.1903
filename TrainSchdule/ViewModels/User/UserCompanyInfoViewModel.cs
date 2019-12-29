@@ -9,7 +9,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserCompanyInfoViewModel:ApiResult
+	public class UserCompanyInfoViewModel : ApiResult
 	{
 		/// <summary>
 		/// 
@@ -65,12 +65,18 @@ namespace TrainSchdule.ViewModels.User
 	/// </summary>
 	public class UserDutiesDataModel
 	{
-		/// <summary />
+		/// <summary>
+		/// 职务代码
+		/// </summary>
 		public int? Code { get; set; }
 		/// <summary>
-		/// 
+		///  职务名称
 		/// </summary>
 		public string Name { get; set; }
+		/// <summary>
+		/// 职务等级
+		/// </summary>
+		public string Title { get; set; }
 		/// <summary>
 		/// 职务类别
 		/// </summary>
@@ -87,7 +93,7 @@ namespace TrainSchdule.ViewModels.User
 		/// <param name="model"></param>
 		/// <param name="companiesService"></param>
 		/// <returns></returns>
-		public static UserCompanyInfoDataModel ToCompanyModel(this UserCompanyInfo model,ICompaniesService companiesService)
+		public static UserCompanyInfoDataModel ToCompanyModel(this UserCompanyInfo model, ICompaniesService companiesService)
 		{
 			return new UserCompanyInfoDataModel()
 			{
@@ -111,7 +117,8 @@ namespace TrainSchdule.ViewModels.User
 			{
 				Code = model.Duties?.Code,
 				Name = model.Duties?.Name,
-				DutiesRawType=model.Duties?.DutiesRawType
+				DutiesRawType = model.Duties?.DutiesRawType,
+				Title = model.Title.Name
 			};
 		}
 	}

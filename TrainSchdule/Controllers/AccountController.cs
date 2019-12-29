@@ -364,6 +364,7 @@ namespace TrainSchdule.Controllers
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 				if (targetUser.Application.InvitedBy == null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
+				if (targetUser.Application.InvitedBy == "invalid") return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
 				model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
 				if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -565,7 +566,7 @@ namespace TrainSchdule.Controllers
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			if (!myManages.Any(m => targetCompany.StartsWith(m.Code) && targetCompany.Length - m.Code.Length >= 1)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			
-				targetUser.Application.InvitedBy = currentUser.Id;
+				targetUser.Application.InvitedBy =model.Valid ? currentUser.Id:"invalid";
 				_context.AppUserApplicationInfos.Update(targetUser.Application);
 				_context.SaveChanges();
 				return new JsonResult(ActionStatusMessage.Success);
