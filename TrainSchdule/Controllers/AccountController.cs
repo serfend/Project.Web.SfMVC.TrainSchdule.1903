@@ -653,6 +653,8 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
+			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
+			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			//if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);

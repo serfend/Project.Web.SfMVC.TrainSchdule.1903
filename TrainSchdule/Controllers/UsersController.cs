@@ -257,6 +257,7 @@ namespace TrainSchdule.Controllers
 		/// 获取用户休假情况
 		/// </summary>
 		/// <param name="id"></param>
+		/// <param name="yearIndex">休假年度</param>
 		/// <returns></returns>
 		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
 		[AllowAnonymous]

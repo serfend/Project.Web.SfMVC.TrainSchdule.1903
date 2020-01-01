@@ -25,7 +25,7 @@ namespace TrainSchdule.Controllers.Apply
 	/// </summary>
 	[Authorize]
 	[Route("[controller]/[action]")]
-	public partial class ApplyController: Controller
+	public partial class ApplyController : Controller
 	{
 		#region filed
 		private readonly IUsersService _usersService;
@@ -76,7 +76,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>),0)]
+		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>), 0)]
 		public IActionResult AllStatus()
 		{
 			return new JsonResult(new ApplyAuditStatusViewModel()
@@ -85,7 +85,7 @@ namespace TrainSchdule.Controllers.Apply
 				{
 					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic
 				}
-			}) ;
+			});
 		}
 		/// <summary>
 		/// 提交申请的基础信息
@@ -94,24 +94,24 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
+		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
-			if(targetUser==null)return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var userModel = new SubmitBaseInfoViewModel()
 			{//重写前端传回的数据
 				Id = model.Id,
 				Company = targetUser.CompanyInfo.Company.Code,
-				Duties= targetUser.CompanyInfo.Duties.Name,
-				Phone = model.Phone??targetUser.SocialInfo.Phone,
-				RealName=targetUser.BaseInfo.RealName,
-				Settle=targetUser.SocialInfo.Settle,
-				VocationTargetAddress=model.VocationTargetAddress,
-				VocationTargetAddressDetail=model.VocationTargetAddressDetail,
+				Duties = targetUser.CompanyInfo.Duties.Name,
+				Phone = model.Phone ?? targetUser.SocialInfo.Phone,
+				RealName = targetUser.BaseInfo.RealName,
+				Settle = targetUser.SocialInfo.Settle,
+				VocationTargetAddress = model.VocationTargetAddress,
+				VocationTargetAddressDetail = model.VocationTargetAddressDetail,
 			};
-			var m = userModel.ToVDTO( _usersService);
+			var m = userModel.ToVDTO(_usersService);
 			m.CreateBy = _currentUserService.CurrentUser;
 			var info = await _applyService.SubmitBaseInfoAsync(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
@@ -124,15 +124,16 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
-		public  IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
+		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
+		public IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
-			var m = model.ToVDTO(_context, _vocationCheckServices,model.VocationType=="正休");
+			var m = model.ToVDTO(_context, _vocationCheckServices, model.VocationType == "正休");
 			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (model.StampLeave?.Subtract(DateTime.Now).TotalDays < 0) return new JsonResult(ActionStatusMessage.Apply.Request.OutOfDate);
 			var vocationInfo = _usersService.VocationInfo(targetUser);
 			switch (model.VocationType)
 			{
@@ -155,7 +156,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			if (m.StampReturn.Value.Year != m.StampLeave.Value.Year) return new JsonResult(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
 			var info = _applyService.SubmitRequest(m);
-			return new JsonResult(new APIResponseIdViewModel(info.Id,ActionStatusMessage.Success));
+			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
 
 		/// <summary>
@@ -166,7 +167,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 
-		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
+		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
 		{
@@ -175,13 +176,13 @@ namespace TrainSchdule.Controllers.Apply
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 			var dto = model.ToVDTO();
 			var apply = _applyService.Submit(dto);
-			if(apply==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
+			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoRequestInfo);
-			if(apply.BaseInfo==null)return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoBaseInfo);
-			if (apply.BaseInfo?.Company==null)return new JsonResult(ActionStatusMessage.Company.NotExist);
-			if(apply.Response==null||!apply.Response.Any())return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
-			 
-			return new JsonResult(new APIResponseIdViewModel(apply.Id,ActionStatusMessage.Success));
+			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoBaseInfo);
+			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			if (apply.Response == null || !apply.Response.Any()) return new JsonResult(ActionStatusMessage.Company.NoneCompanyBelong);
+
+			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
 		/// <summary>
 		/// 删除指定申请
@@ -190,25 +191,25 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(APIResponseIdViewModel),0)]
+		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.GetById(id);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
-			if(authByUser.Id!=apply.BaseInfo.From.Id && !_userActionServices.Permission(apply.BaseInfo.From.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var ua=_userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id,$"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请");
-			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave || apply.Status == AuditStatus.Withdrew)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);			
+			if (authByUser.Id != apply.BaseInfo.From.Id && !_userActionServices.Permission(apply.BaseInfo.From.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var ua = _userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请");
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave || apply.Status == AuditStatus.Withdrew)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);
 			_applyService.Delete(apply);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
-		
+
 		#endregion
 	}
 }

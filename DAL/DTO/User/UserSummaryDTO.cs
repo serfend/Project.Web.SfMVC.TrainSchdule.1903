@@ -62,6 +62,10 @@ namespace DAL.DTO.User
 		/// 职务等级名称
 		/// </summary>
 		public string UserTitle { get; set; }
+		/// <summary>
+		/// 职务等级时间
+		/// </summary>
+		public DateTime? UserTitleDate { get; set; }
 		public UserAction LastLogin { get; set; }
 		/// <summary>
 		/// 邀请人

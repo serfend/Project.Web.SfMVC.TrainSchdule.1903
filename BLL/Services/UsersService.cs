@@ -6,6 +6,7 @@ using DAL.Data;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -163,13 +164,15 @@ namespace BLL.Services
 			};
 			user.CompanyInfo.Company = _context.Companies.Find(user.CompanyInfo.Company.Code);
 			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
-			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == user.CompanyInfo.Title.Name);
+			var title = user.CompanyInfo.Title;
+			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);
 			var social = user.SocialInfo;
 			social.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
 			if (social.Settle?.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
 			if (social.Settle?.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
 			if (social.Settle?.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
 			if (social.Settle?.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
+			if (social.Settle != null) social.Settle.PrevYealyLengthHistory = new List<VacationModefyRecord>();
 			return user;
 		}
 		private ApplicationUser CreateUser(User user, string password)

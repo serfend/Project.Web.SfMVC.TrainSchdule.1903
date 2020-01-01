@@ -14,44 +14,49 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 用户id
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "用户ID未填写")]
 		public string Id { get; set; }
 		/// <summary>
 		/// 交通工具 0:无 1:汽车 2:火车 3:飞机 -1：其他
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "乘坐交通工具未填写")]
+
 		public Transportation ByTransportation { get; set; }
 		/// <summary>
 		/// 离队时间
 		/// </summary>
-		[Required]
-		
-		public DateTime?StampLeave { get; set; }
+		[Required(ErrorMessage = "离队时间未填写")]
+
+
+		public DateTime? StampLeave { get; set; }
 		/// <summary>
 		/// 休假时长
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "休假时长未填写")]
+
 		public int VocationLength { get; set; }
 		/// <summary>
 		/// 路途时间
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "路途时间未填写")]
+
 		public int OnTripLength { get; set; }
 		/// <summary>
 		/// 休假类型
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "休假类别未填写")]
+
 		public string VocationType { get; set; }
 		/// <summary>
 		/// 休假去向
 		/// </summary>
-		[Required]
+		[Required(ErrorMessage = "休假去向未填写")]
+		[StringLength(10, ErrorMessage = "休假去向填写不明确", MinimumLength = 2)]
 		public int VocationPlace { get; set; }
 		/// <summary>
 		/// 休假原因
 		/// </summary>
 		public string Reason { get; set; }
-
 		/// <summary>
 		/// 用户需要休的福利假列表
 		/// </summary>

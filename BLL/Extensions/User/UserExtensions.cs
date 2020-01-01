@@ -21,6 +21,7 @@ namespace BLL.Extensions
 				CompanyName = user.CompanyInfo?.Company?.Name ?? "无单位",
 				DutiesName = user.CompanyInfo?.Duties?.Name ?? "无职务",
 				UserTitle=user.CompanyInfo?.Title?.Name??"无等级",
+				UserTitleDate = user.CompanyInfo?.TitleDate,
 				DutiesRawType = user.CompanyInfo?.Duties?.DutiesRawType,
 				Gender = user.BaseInfo.Gender,
 				RealName = user.BaseInfo?.RealName ?? "无姓名",

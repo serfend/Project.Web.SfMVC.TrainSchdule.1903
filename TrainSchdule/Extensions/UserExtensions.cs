@@ -24,8 +24,7 @@ namespace TrainSchdule.Extensions
 		public static User ToDTO(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> db)
 		{
 			if (model == null) return null;
-			var settle = model.Social.Settle;
-			return new User()
+			var u = new User()
 			{
 				Id = model.Application.UserName,
 				CompanyInfo = new UserCompanyInfo()
@@ -41,7 +40,9 @@ namespace TrainSchdule.Extensions
 					Title = new UserCompanyTitle()
 					{
 						Name = model.Company?.Title?.Name
-					}
+					},
+					TitleDate = model.Company?.TitleDate
+
 				},
 				Application = model.Application?.ToModel(),
 				BaseInfo = model.Base,
@@ -49,6 +50,8 @@ namespace TrainSchdule.Extensions
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
 				DiyInfo = model.Diy?.ToModel()
 			};
+			if (u.BaseInfo != null) u.BaseInfo.Id = Guid.Empty;
+			return u;
 		}
 	}
 

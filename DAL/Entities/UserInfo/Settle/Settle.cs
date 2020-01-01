@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,9 +31,26 @@ namespace DAL.Entities.UserInfo.Settle
 		/// </summary>
 		public int PrevYearlyLength { get; set; }
 		/// <summary>
+		/// 全年发生变化的记录
+		/// </summary>
+		public virtual IEnumerable<VacationModefyRecord> PrevYealyLengthHistory { get; set; }
+		/// <summary>
 		/// 年初因上一年度休事假消耗的天数
 		/// </summary>
 		public int PrevYearlyComsumeLength { get; set; }
+	}
+	public class VacationModefyRecord
+	{
+		[Key]
+		public int Code { get; set; }
+		/// <summary>
+		/// 长度
+		/// </summary>
+		public double Length { get; set; }
+		/// <summary>
+		/// 生效时间
+		/// </summary>
+		public DateTime UpdateDate { get; set; }
 	}
 }
 

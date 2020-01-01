@@ -4,6 +4,7 @@ using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vocations;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace BLL.Services
 {
 	public partial class UsersService
 	{
-		public IEnumerable<Company> InMyManage(User user,out int totalCount)
+		public IEnumerable<Company> InMyManage(User user, out int totalCount)
 		{
 			totalCount = 0;
 			var list = new List<Company>();
@@ -24,7 +25,7 @@ namespace BLL.Services
 			var companyCode = user.CompanyInfo.Company.Code;
 
 			if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode)) list.Add(user.CompanyInfo.Company);
-			totalCount = list==null?0:list.Count;
+			totalCount = list == null ? 0 : list.Count;
 			return list;
 		}
 		/// <summary>
@@ -35,11 +36,19 @@ namespace BLL.Services
 		public UserVocationInfoVDto VocationInfo(User targetUser)
 		{
 			if (targetUser == null) return null;
-			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept&&a.Create.Value.Year==DateTime.Now.Year&&a.RequestInfo.VocationType=="正休").ToList();//仅正休计算天数
+			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept && a.Create.Value.Year == DateTime.Now.AddDays(5).Year && a.RequestInfo.VocationType == "正休").ToList();//仅正休计算天数
 			int nowLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;
-			int yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var maxOnTripTime, out var description);
+			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var lastModefy, out var newModefy, out var maxOnTripTime, out var description);
+			if (lastModefy==null||(yearlyLength != lastModefy?.Length && lastModefy.UpdateDate!=newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
+			{
+				var list = new List<VacationModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory);
+				list.Add(newModefy);
+				targetUser.SocialInfo.Settle.PrevYealyLengthHistory = list;
+				_context.AUserSocialInfoSettles.Update(targetUser.SocialInfo.Settle);
+				_context.SaveChanges();
+			}
 			var userAdditions = new List<VocationAdditional>();
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
 			{
@@ -58,13 +67,13 @@ namespace BLL.Services
 			});
 			var vocationInfo = new UserVocationInfoVDto()
 			{
-				LeftLength = yearlyLength - nowLength,
+				LeftLength = (int)Math.Ceiling(yearlyLength - nowLength),
 				MaxTripTimes = maxOnTripTime,
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
-				YearlyLength = yearlyLength,
+				YearlyLength = (int)Math.Ceiling(yearlyLength),
 				Description = description,
-				Additionals=userAdditions
+				Additionals = userAdditions
 			};
 			return vocationInfo;
 		}
