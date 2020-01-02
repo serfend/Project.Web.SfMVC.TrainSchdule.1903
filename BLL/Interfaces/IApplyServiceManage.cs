@@ -15,7 +15,8 @@ namespace BLL.Interfaces
 		/// 按筛选查询
 		/// </summary>
 		/// <param name="model"></param>
-		/// <param name="getAllAppliesPermission">是否允许获取所有申请</param>
+		/// <param name="getAllAppliesPermission">是否允许获取所有申请
+		/// 若允许，将不再限制传入的日期是否合法</param>
 		/// <param name="totalCount"></param>
 		/// <returns></returns>
 		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model,bool getAllAppliesPermission, out int totalCount);
@@ -27,6 +28,6 @@ namespace BLL.Interfaces
 		/// <param name="Applies"></param>
 		Task RemoveApplies(IEnumerable<Apply> Applies);
 		byte[] ExportExcel(string templete,  ApplyDetailDto model);
-		byte[] ExportExcel(string templete,  IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany);
+		byte[] ExportExcel(string templete,  IEnumerable<ApplyDetailDto> model);
 	}
 }

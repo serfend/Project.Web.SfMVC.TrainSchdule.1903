@@ -13,11 +13,11 @@ namespace DAL.QueryModel
 		/// <summary>
 		/// 最小值（包含）
 		/// </summary>
-		public int Start { get; set; }
+		public int? Start { get; set; }
 		/// <summary>
 		/// 最大值（包含）
 		/// </summary>
-		public int End { get; set; }
+		public int? End { get; set; }
 		/// <summary>
 		/// 查询个别值
 		/// </summary>
