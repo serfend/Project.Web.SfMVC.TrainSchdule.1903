@@ -133,7 +133,6 @@ namespace TrainSchdule.Controllers.Apply
 			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (model.StampLeave?.Subtract(DateTime.Now).TotalDays < 0) return new JsonResult(ActionStatusMessage.Apply.Request.OutOfDate);
 			var vocationInfo = _usersService.VocationInfo(targetUser);
 			switch (model.VocationType)
 			{

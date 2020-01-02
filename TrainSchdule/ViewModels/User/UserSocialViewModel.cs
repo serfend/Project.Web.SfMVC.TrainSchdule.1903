@@ -2,6 +2,7 @@
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
+using System;
 using System.ComponentModel;
 using TrainSchdule.ViewModels.System;
 
@@ -10,7 +11,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 
 	/// </summary>
-	public class UserSocialViewModel:ApiResult
+	public class UserSocialViewModel : ApiResult
 	{
 		/// <summary>
 		/// 社会情况信息
@@ -26,7 +27,7 @@ namespace TrainSchdule.ViewModels.User
 		/// 联系方式
 		/// </summary>
 		public string Phone { get; set; }
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -34,7 +35,7 @@ namespace TrainSchdule.ViewModels.User
 		/// <summary>
 		/// 家庭地址
 		/// </summary>
-		public  AdminDivision Address { get; set; }
+		public AdminDivision Address { get; set; }
 		/// <summary>
 		/// 家庭详细地址
 		/// </summary>
@@ -64,18 +65,62 @@ namespace TrainSchdule.ViewModels.User
 				Address = model.Address,
 				AddressDetail = model.AddressDetail,
 				Phone = model.Phone,
-				Settle = model.Settle
+				Settle = model.Settle.ToModel()
 			};
 		}
-
+		/// <summary>
+		/// 格式化moment
+		/// </summary>
+		/// <param name="moment"></param>
+		/// <returns></returns>
+		public static Moment ToModel(this Moment moment)
+		{
+			return new Moment()
+			{
+				Address = new AdminDivision()
+				{
+					Code = moment?.Address?.Code ?? 0,
+					Name=moment?.Address?.Name??"无",
+					ParentCode=moment?.Address?.ParentCode??0
+				},
+				AddressDetail = moment?.AddressDetail,
+				Date = moment?.Date??DateTime.Now,
+				Valid = moment?.Valid??false
+			};
+		}
+		/// <summary>
+		/// 格式化Settle
+		/// </summary>
+		/// <param name="settle"></param>
+		/// <returns></returns>
+		public static Settle ToModel(this Settle settle)
+		{
+			if (settle == null) settle = new Settle();
+			return new Settle()
+			{
+				Lover = settle.Lover.ToModel(),
+				Self = settle.Self.ToModel(),
+				Parent = settle.Parent.ToModel(),
+				LoversParent = settle.LoversParent.ToModel(),
+				PrevYearlyLength = settle?.PrevYearlyLength??0
+			};
+		}
+		/// <summary>
+		/// 格式化socialinfo
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static UserSocialInfo ToModel(this UserSocialDataModel model)
 		{
 			return new UserSocialInfo()
 			{
-				Address = model.Address,
-				AddressDetail = model.AddressDetail,
+				Address = new AdminDivision()
+				{
+					Code = model.Address?.Code ?? 0
+				},
+				AddressDetail = model.AddressDetail??"无",
 				Phone = model.Phone,
-				Settle = model.Settle
+				Settle = model.Settle.ToModel()
 			};
 		}
 	}

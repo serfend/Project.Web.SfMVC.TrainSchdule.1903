@@ -10,22 +10,37 @@ namespace DAL.Entities.UserInfo.Settle
 	/// </summary>
 	public class Settle : BaseEntity
 	{
+		private static Moment CreateNewMoment() => new Moment()
+		{
+			Valid = false,
+			Date = DateTime.Now,
+			AddressDetail = "未填写",
+			Address = new AdminDivision()
+			{
+				Code = 0,
+				Name = "未填写"
+			}
+		};
+		private Moment self;
+		private Moment lover;
+		private Moment parent;
+		private Moment loversParent;
 		/// <summary>
 		/// 本人所在地
 		/// </summary>
-		public virtual Moment Self { get; set; }
+		public virtual Moment Self { get => self; set => self = value; }
 		/// <summary>
 		/// 配偶所在地
 		/// </summary>
-		public virtual Moment Lover { get; set; }
+		public virtual Moment Lover { get => lover ; set => lover = value; }
 		/// <summary>
 		/// 父母所在地
 		/// </summary>
-		public virtual Moment Parent { get; set; }
+		public virtual Moment Parent { get => parent ; set => parent = value; }
 		/// <summary>
 		/// 配偶的父母所在地
 		/// </summary>
-		public virtual Moment LoversParent { get; set; }
+		public virtual Moment LoversParent { get => loversParent; set => loversParent = value; }
 		/// <summary>
 		/// 本年原始休假天数
 		/// </summary>

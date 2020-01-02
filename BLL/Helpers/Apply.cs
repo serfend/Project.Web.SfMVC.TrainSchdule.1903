@@ -67,6 +67,7 @@
 			public static class Request
 			{
 				public static readonly ApiResult Default = new ApiResult(44000, "无效的休假申请");
+				// 可能为补充休假
 				public static readonly ApiResult OutOfDate = new ApiResult(44100, "申请的离队时间不可早于当前时间");
 				public static readonly ApiResult NoEnoughVocation = new ApiResult(44200, "剩余休假天数不足");
 				public static readonly ApiResult TripTimesExceed = new ApiResult(44300, "剩余可休路途次数不足");

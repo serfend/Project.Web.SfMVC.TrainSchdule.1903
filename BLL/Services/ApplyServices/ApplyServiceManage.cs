@@ -38,8 +38,8 @@ namespace BLL.Services.ApplyServices
 			//  默认查询7天内的申请
 			if (model.StampLeave == null) model.StampLeave = new QueryByDate()
 			{
-				Start = DateTime.Now.AddDays(-7),
-				End = DateTime.Now
+				Start = DateTime.Now,
+				End = DateTime.Now.AddDays(7)
 			};
 				list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;

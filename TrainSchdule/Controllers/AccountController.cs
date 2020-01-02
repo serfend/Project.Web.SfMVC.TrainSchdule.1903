@@ -673,9 +673,6 @@ namespace TrainSchdule.Controllers
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
 			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
-			
-
-			
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 			_userActionServices.Status(actionRecord, true, regDescription);
 		}
