@@ -642,6 +642,7 @@ namespace TrainSchdule.Controllers
 			if (rankRequire>=0&&!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= rankRequire)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
+			if (modefyUser.Application.InvitedBy == "invalid") modefyUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);

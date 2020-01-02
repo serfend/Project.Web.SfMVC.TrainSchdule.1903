@@ -88,6 +88,9 @@ namespace BLL.Extensions
 		}
 		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description)
 		{
+			maxOnTripTime = 0;
+			description = "本人地址无效，无休假";
+			if(settle?.Self==null||(!settle.Self?.Valid?? false))return 0;
 			maxOnTripTime = 1;
 			description = "工作满20年，驻地假30天。";
 			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;
@@ -99,10 +102,10 @@ namespace BLL.Extensions
 				return title.VacationDay;
 			}
 			description = "未婚，探父母假30天。";
-			if (settle?.Lover == null) return 30;
+			if (settle?.Lover == null||(!settle.Lover?.Valid ?? false)) return 30;
 			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
-			var dis_parent = IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
-			var dis_l_p = IsAllopatry(settle.Lover?.Address, settle.Parent?.Address) || IsAllopatry(settle.LoversParent?.Address, settle.Lover?.Address);//配偶与任意一方家长不在一地
+			var dis_parent =!((settle?.Parent == null || (!settle.Parent?.Valid ?? false))) && IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
+			var dis_l_p =!((settle?.LoversParent == null || (!settle.LoversParent?.Valid ?? false))) && IsAllopatry(settle.Lover?.Address, settle.Parent?.Address) || IsAllopatry(settle.LoversParent?.Address, settle.Lover?.Address);//配偶与任意一方家长不在一地
 			description = "已婚且与妻子同地，探父母假20天。";
 			if (!dis_lover) return 20;
 
