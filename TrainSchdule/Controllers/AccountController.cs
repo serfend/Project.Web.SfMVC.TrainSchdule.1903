@@ -637,7 +637,9 @@ namespace TrainSchdule.Controllers
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
 			var modefyUserCompany = modefyUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
-			if (!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >=1)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var inviteBy = modefyUser.Application.InvitedBy;
+			var rankRequire = inviteBy == "invalid" ? -1 : inviteBy == null ? 0 : 1;
+			if (rankRequire>=0&&!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= rankRequire)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");

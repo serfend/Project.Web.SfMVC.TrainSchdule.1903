@@ -89,15 +89,16 @@ namespace BLL.Extensions
 		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description)
 		{
 			maxOnTripTime = 1;
-			description = "工作满20年，正常驻地假30天。";
-			if (DateTime.Now.AddDays(5).Year - targetUser?.BaseInfo.Time_Work.Year + 1 >= 20) return 30;
+			description = "工作满20年，驻地假30天。";
+			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;
+			if (workYears > 20 || (workYears == 20 && SystemNowDate().Month >= targetUser?.BaseInfo.Time_Work.Month)) return 30;
 			var title = targetUser.CompanyInfo.Title;
 			if (title != null && title.VacationDay != 0)
 			{
 				description = $"{title.Name}，假期天数{title.VacationDay}天";
 				return title.VacationDay;
 			}
-			description = "未婚，正常驻地假30天。";
+			description = "未婚，探父母假30天。";
 			if (settle?.Lover == null) return 30;
 			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
 			var dis_parent = IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
@@ -106,10 +107,10 @@ namespace BLL.Extensions
 			if (!dis_lover) return 20;
 
 			maxOnTripTime = 3;
-			description = "已婚且与三方异地，基础假30天，探配偶假10天，探父母假5天，合计45天。";
+			description = "已婚且三方异地，探父母假、探配偶假共计45天。";
 			if (dis_parent && dis_l_p) return 45;
 			maxOnTripTime = 2;
-			description = "已婚且与父母、妻子异地但父母与妻子不异地，基础假30天，探配偶假10天，合计40天。";
+			description = "已婚且父母、妻子异地但双方父母皆与妻子不异地，探父母假、探配偶假共计40天。";
 			return 40;
 		}
 		private static bool IsAllopatry(AdminDivision d1, AdminDivision d2)
@@ -127,6 +128,9 @@ namespace BLL.Extensions
 				d1 == null ? 999 : GetDistance(db.Where(x => x.Code == d1.ParentCode).FirstOrDefault(), d2, db),
 				d2 == null ? 999 : GetDistance(db.Where(x => x.Code == d2.ParentCode).FirstOrDefault(), d1, db));
 		}
-
+		public static DateTime SystemNowDate()
+		{
+			return DateTime.Now.AddDays(5);
+		}
 	}
 }

@@ -19,7 +19,7 @@ namespace BLL.Services
 			totalCount = 0;
 			var list = new List<Company>();
 
-			if (user == null) return list;
+			if (user == null||user.CompanyInfo?.Company==null) return list;
 			list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
 			// 所在单位的主管拥有此单位的管理权
 			var companyCode = user.CompanyInfo.Company.Code;
