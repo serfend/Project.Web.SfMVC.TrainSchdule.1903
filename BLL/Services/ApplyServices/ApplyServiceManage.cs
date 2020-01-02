@@ -21,7 +21,7 @@ namespace BLL.Services.ApplyServices
 			totalCount = 0;
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
-			if (model.Status != null) list = _context.Applies.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
+			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 			if (model.CreateBy != null)
@@ -118,7 +118,7 @@ namespace BLL.Services.ApplyServices
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
 
-		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model, CompanyDto currentCompany)
+		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model)
 		{
 			var list = model.ToList();
 			int index = 1;
