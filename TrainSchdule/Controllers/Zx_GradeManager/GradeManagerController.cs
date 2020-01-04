@@ -49,10 +49,10 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		[HttpPost]
 		public IActionResult Subject([FromBody]PhySubjectDataModel model)
 		{
-			if (!model.Auth.Verify(googleAuthService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(googleAuthService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!userActionServices.Permission(actionUser.Application.Permission,DictionaryAllPermission.Grade.Subject, Operation.Update,actionUser.Id, "")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Grade.Subject, Operation.Update, actionUser.Id, "")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			phyGradeServices.AddSubject(model.Subject);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -80,12 +80,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		[HttpPost]
 		public IActionResult SingleResult([FromBody]PhySingleGradeDataModel model)
 		{
-			 var result = GetResult(ref model);
+			var result = GetResult(ref model);
 			return new JsonResult(new PhySingleGradeViewModel()
 			{
 				Data = model,
-				Status=result.Status,
-				Message=result.Message
+				Status = result.Status,
+				Message = result.Message
 			});
 		}
 		[AllowAnonymous]
@@ -94,8 +94,8 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		{
 			var list = new List<PhySingleGradeDataModel>(model.Queries);
 			var resultList = new List<PhySingleGradeDataModel>();
-			var finalResult = new ApiResult(0,"");
-			for(int i =0;i<list.Count;i++)
+			var finalResult = new ApiResult(0, "");
+			for (int i = 0; i < list.Count; i++)
 			{
 				var m = list[i];
 				var result = GetResult(ref m);
@@ -104,7 +104,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			}
 			return new JsonResult(new PhyGradesViewModel()
 			{
-				Data = new PhyGradeDataModel() { Queries= resultList }
+				Data = new PhyGradeDataModel() { Queries = resultList }
 			});
 		}
 		/// <summary>
@@ -120,7 +120,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			if (baseUser == null) return (ActionStatusMessage.User.NotExist);
 			foreach (var subject in model.Subjects)
 			{
-				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject,baseUser);
+				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject, baseUser);
 				if (subjectItem == null)
 				{
 					subject.Grade = -1;

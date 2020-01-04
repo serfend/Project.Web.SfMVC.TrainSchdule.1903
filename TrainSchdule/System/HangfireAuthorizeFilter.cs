@@ -23,12 +23,11 @@ namespace TrainSchdule.System
 		{
 			var httpcontext = context.GetHttpContext();
 			var auth = httpcontext.Request.Cookies?["Auth"];
-			if (auth != null) return new GoogleAuthDataModel()
+			return new GoogleAuthDataModel()
 			{
-				AuthByUserID="root",
-				Code=Convert.ToInt32(auth)
-			}.Verify(googleAuthService);
-			return (httpcontext.User.Identity.IsAuthenticated && httpcontext.User.Identity.Name == "1000000");
+				AuthByUserID = "root",
+				Code = Convert.ToInt32(auth)
+			}.Verify(googleAuthService, httpcontext.User.Identity.Name);
 		}
 	}
 }

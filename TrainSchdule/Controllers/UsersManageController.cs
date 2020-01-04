@@ -50,7 +50,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (model.Auth==null||!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (model.Auth==null||!model.Auth.Verify(_authService,_currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -72,7 +72,7 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model,string mdzz)
 		{
-			if(!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if(!model.Auth.Verify(_authService,_currentUserService.CurrentUser?.Id))return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
