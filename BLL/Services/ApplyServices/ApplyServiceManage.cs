@@ -36,11 +36,14 @@ namespace BLL.Services.ApplyServices
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
 			//  默认查询7天内的申请
-			if (model.StampLeave == null) model.StampLeave = new QueryByDate()
+			if (model.StampLeave == null)
 			{
-				Start = DateTime.Now,
-				End = DateTime.Now.AddDays(7)
-			};
+				model.StampLeave = new QueryByDate()
+				{
+					Start = DateTime.Now,
+					End = DateTime.Now.AddDays(7)
+				};
+			}
 				list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;
 			
@@ -51,7 +54,8 @@ namespace BLL.Services.ApplyServices
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.Create > DateTime.Now.AddDays(-360));
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
-			list = list.OrderByDescending(a => a.Status).OrderBy(a => a.BaseInfo.Company.Code);
+			if (model.Id != null) list = list.Where(a => model.Id.Arrays.Contains(a.Id));
+			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
 			totalCount = list.Count();
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
 			{

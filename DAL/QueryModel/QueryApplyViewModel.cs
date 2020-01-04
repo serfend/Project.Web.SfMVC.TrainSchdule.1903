@@ -14,6 +14,7 @@ namespace DAL.QueryModel
 	/// </summary>
 	public class QueryApplyDataModel
 	{
+		public QueryByGuid Id { get; set; }
 		public QueryByPage Pages { get; set; }
 		/// <summary>
 		/// 申请的状态
