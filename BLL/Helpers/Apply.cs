@@ -19,6 +19,8 @@
 					
 					public static readonly ApiResult AllReadyWithdrew = new ApiResult(43220, "当前申请处于已撤回状态，无需撤回");
 					public static readonly ApiResult AuditBeenAcceptedByOneCompany = new ApiResult(43230, "当前申请已被审核，无法撤回");
+					public static readonly ApiResult AuditBeenDenied = new ApiResult(43240, "申请被驳回，无法撤回");
+					
 				}
 
 				public static class Submit
