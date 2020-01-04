@@ -177,8 +177,8 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ActionStatusMessage.Fail);
 			}
 			var user = await _userManager.FindByIdAsync(userId);
-			if(user==null)
-					   return  new JsonResult($"无法加载当前用户信息 '{userId}'.");
+			if (user == null)
+				return new JsonResult($"无法加载当前用户信息 '{userId}'.");
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -223,7 +223,7 @@ namespace TrainSchdule.Controllers
 
 		public IActionResult Permission([FromBody]ModefyPermissionsViewModel model)
 		{
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
@@ -251,7 +251,7 @@ namespace TrainSchdule.Controllers
 			bool authUserPermission = false;
 			if (authUser != null)
 			{
-				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authUserPermission = _userActionServices.Permission((authUser ?? currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, currentUser.Id, targetUser.CompanyInfo.Company.Code);
 			}
 			if (model.Id != currentUser?.Id && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -284,7 +284,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult CheckAuthCode([FromBody]GoogleAuthViewModel model)
 		{
-			var r = model?.Auth?.Verify(_authService);
+			var r = model?.Auth?.Verify(_authService, currentUserService.CurrentUser?.Id);
 			if (!r.HasValue) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Default);
 			if (r.Value) return new JsonResult(ActionStatusMessage.Success);
 			return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -303,7 +303,7 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -388,7 +388,7 @@ namespace TrainSchdule.Controllers
 				}
 				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			}
-			else  return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			else return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
 		}
 		/// <summary>
@@ -402,7 +402,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> RemoveMutil([FromBody]UserRemoveMutiViewMode model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			var statusME = new Dictionary<string, ApiResult>();
@@ -434,7 +434,7 @@ namespace TrainSchdule.Controllers
 
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			try
 			{
 				var authByUser = _usersService.Get(model.Auth.AuthByUserID);
@@ -467,7 +467,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Application([FromBody]UserApplicationViewModel model)
 		{
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var targetUser = _usersService.Get(model.Id);
 			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
@@ -497,7 +497,7 @@ namespace TrainSchdule.Controllers
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
 			{
-				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			}
 			try
@@ -531,7 +531,7 @@ namespace TrainSchdule.Controllers
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
 			{
-				if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			}
 			try
@@ -565,11 +565,11 @@ namespace TrainSchdule.Controllers
 			var targetCompany = targetUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			if (!myManages.Any(m => targetCompany.StartsWith(m.Code) && targetCompany.Length - m.Code.Length >= 1)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			
-				targetUser.Application.InvitedBy =model.Valid ? currentUser.Id:"invalid";
-				_context.AppUserApplicationInfos.Update(targetUser.Application);
-				_context.SaveChanges();
-				return new JsonResult(ActionStatusMessage.Success);
+
+			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : "invalid";
+			_context.AppUserApplicationInfos.Update(targetUser.Application);
+			_context.SaveChanges();
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 		/// <summary>
 		/// 注册新用户
@@ -586,7 +586,7 @@ namespace TrainSchdule.Controllers
 			var r = model.Verify.Verify(_verifyService);
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 
-			if (!model.Auth.Verify(_authService)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
@@ -639,7 +639,7 @@ namespace TrainSchdule.Controllers
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			var inviteBy = modefyUser.Application.InvitedBy;
 			var rankRequire = inviteBy == "invalid" ? -1 : inviteBy == null ? 0 : 1;
-			if (rankRequire>=0&&!nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= rankRequire)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (rankRequire >= 0 && !nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= rankRequire)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (modefyUser.Application.InvitedBy == "invalid") modefyUser.Application.InvitedBy = null;//  重新提交

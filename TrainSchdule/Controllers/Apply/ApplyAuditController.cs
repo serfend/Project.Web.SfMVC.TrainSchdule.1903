@@ -109,15 +109,17 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = _currentUserService.CurrentUser;
-
-			if (model.Auth.Verify(_authService))
-				auditUser = _usersService.Get(model.Auth.AuthByUserID);
-			else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (auditUser.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
+					auditUser = _usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
 			try
 			{
 				var applyStrList = new StringBuilder();
 				foreach (var a in model.Data.List) applyStrList.Append(a.Id).Append(':').Append(a.Action).Append(',');
-				var ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.AuditApply, auditUser.Id, $"授权审批申请:{applyStrList}",true);
+				var ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.AuditApply, auditUser.Id, $"授权审批申请:{applyStrList}", true);
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());
 				var results = _applyService.Audit(model.ToAuditVDTO(auditUser, _applyService));
 				int count = 0;

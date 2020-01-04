@@ -63,8 +63,8 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
-			var managedCompany = _usersService.InMyManage(currentUser,out var totalCount);
-			var userPermitCompany = managedCompany.Any<Company>(c=>c.Code==apply.Response.NowAuditCompany()?.Code);
+			var managedCompany = _usersService.InMyManage(currentUser, out var totalCount);
+			var userPermitCompany = managedCompany.Any<Company>(c => c.Code == apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
 				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From), userPermitCompany)
@@ -92,11 +92,11 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
-			if (!model.Auth.Verify(_authService))return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try
 			{
-				result=recallOrderServices.Create(model.Data.ToVDto());
+				result = recallOrderServices.Create(model.Data.ToVDto());
 			}
 			catch (ActionStatusMessageException ex)
 			{
