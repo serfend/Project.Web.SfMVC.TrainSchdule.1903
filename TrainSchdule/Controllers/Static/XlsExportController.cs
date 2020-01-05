@@ -1,10 +1,13 @@
 ﻿using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.Static;
 
@@ -17,10 +20,9 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="form"></param>
 		/// <returns></returns>
-		[HttpGet]
+		[HttpPost]
 		[ProducesResponseType(typeof(string), 0)]
-		[Route("exportApplies")]
-		public IActionResult ExportApplies(AppliesExportDataModel form)
+		public async Task<IActionResult> ExportApplies([FromBody] AppliesExportDataModel form)
 		{
 			string filePath = null;
 			try
@@ -34,17 +36,16 @@ namespace TrainSchdule.Controllers
 			var list = _applyService.QueryApplies(form.Query, true, out var totalCount);
 			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false)));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
-			return ExportXls(fileContent, $"{list.Count()}/{totalCount}条({form.Templete}");
+			return await ExportXls(fileContent, $"{list.Count()}/{totalCount}条({form.Templete})");
 		}
 		/// <summary>
 		/// 依据模板导出单个申请到Xls
 		/// </summary>
 		/// <param name="form"></param>
 		/// <returns></returns>
-		[HttpGet]
+		[HttpPost]
 		[ProducesResponseType(typeof(string), 0)]
-		[Route("exportApply")]
-		public IActionResult ExportApply(AppliesExportDataModel form)
+		public async Task<IActionResult> ExportApply([FromBody]AppliesExportDataModel form)
 		{
 			string filePath = null;
 			try
@@ -58,7 +59,7 @@ namespace TrainSchdule.Controllers
 			var singleApply = _applyService.QueryApplies(form.Query, true, out var totalCount).FirstOrDefault();
 			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo.From), false));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
-			return ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
+			return await ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
 		}
 		private string GetFilePath(string templete)
 		{
@@ -68,11 +69,62 @@ namespace TrainSchdule.Controllers
 			if (!tempFile.Exists) throw new ActionStatusMessageException(ActionStatusMessage.Static.TempXlsNotExist);
 			return tempFile.FullName;
 		}
-		private IActionResult ExportXls(byte[] fileContent, string description)
+		/// <summary>
+		/// 删除临时文件
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		public IActionResult RemoveTempFile(string id)
 		{
-			var datetime = DateTime.Now.ToString("yyyy年mm月dd日");
-			var fileName = $"{datetime}导出{description}.xlsx";
-			return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+			var tmpFile = new FileInfo(GetTempFile(id));
+			tmpFile.Delete();
+			return new JsonResult(ActionStatusMessage.Success);
 		}
+		/// <summary>
+		/// 下载指定临时文件
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult Download(string id)
+		{
+			var tmpFile = new FileInfo(GetTempFile(id));
+			if (!tmpFile.Exists) return Redirect("/#/404");
+			_httpContext.HttpContext.Session.TryGetValue(id, out var filenameRaw);
+			var filename = Encoding.UTF8.GetString(filenameRaw);
+			using (var f = tmpFile.OpenRead())
+			{
+				var buffer = new byte[f.Length];
+				f.Read(buffer);
+				return File(buffer, "application/octet-stream", filename);
+			}
+		}
+		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
+		{
+			var datetime = DateTime.Now.ToString("MMdd");
+			var fileName = $"TS{datetime}-{description}.xlsx";
+			var guid = Guid.NewGuid().ToString();
+			var tmpFile = new FileInfo(GetTempFile(guid));
+			using (var f = tmpFile.OpenWrite())
+			{
+				await f.WriteAsync(fileContent);
+			}
+			var removeTime = TimeSpan.FromMinutes(10);
+			_httpContext.HttpContext.Session.Set(guid, Encoding.UTF8.GetBytes(fileName));
+			var jobId = BackgroundJob.Schedule(() => RemoveTempFile(guid), removeTime);
+			return new JsonResult(new FileReturnViewModel()
+			{
+				Data = new FileReturnDataModel()
+				{
+					FileName = fileName,
+					RequestUrl = $"/static/download?id={guid}",
+					ValidStamp = (long)(DateTime.Now.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
+					Length = tmpFile.Length
+				}
+			});
+		}
+		private string GetTempFile(string filename) => Path.Combine(_hostingEnvironment.WebRootPath, "tmp", filename);
+
 	}
 }

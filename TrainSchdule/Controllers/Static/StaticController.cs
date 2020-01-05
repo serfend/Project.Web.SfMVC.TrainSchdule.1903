@@ -29,7 +29,7 @@ namespace TrainSchdule.Controllers
 	/// <summary>
 	/// 
 	/// </summary>
-	[Route("[controller]")]
+	[Route("[controller]/[action]")]
 	public partial class StaticController : Controller
 	{
 
@@ -38,11 +38,12 @@ namespace TrainSchdule.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
 		private readonly IHostingEnvironment _hostingEnvironment;
+		private readonly IHttpContextAccessor _httpContext;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
 
-		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService)
+		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext)
 		{
 			_verifyService = verifyService;
 			_vocationCheckServices = vocationCheckServices;
@@ -52,6 +53,7 @@ namespace TrainSchdule.Controllers
 			_currentUserService = currentUserService;
 			_usersService = usersService;
 			_companiesService = companiesService;
+			_httpContext = httpContext;
 		}
 
 		/// <summary>
@@ -64,7 +66,6 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
-		[Route("VocationDate")]
 		public IActionResult VocationDate(DateTime start, int length,bool caculateLawVocation)
 		{
 			var list = _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation);
@@ -86,7 +87,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(string), 0)]
-		[Route("XlsExport")]
 		public IActionResult XlsExport(IEnumerable<IFormFile> file)
 		{
 			return new JsonResult(new { file });

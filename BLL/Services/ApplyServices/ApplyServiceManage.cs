@@ -44,15 +44,15 @@ namespace BLL.Services.ApplyServices
 					End = DateTime.Now.AddDays(7)
 				};
 			}
-				list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
-				anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;
-			
+			list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
+			anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;
+
 			if (model.StampReturn != null)
 			{
 				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
-			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.Create > DateTime.Now.AddDays(-360));
+			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			if (model.Id != null) list = list.Where(a => model.Id.Arrays.Contains(a.Id));
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);

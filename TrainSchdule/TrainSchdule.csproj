@@ -36,6 +36,7 @@
     <Folder Include="wwwroot\data\avatars\" />
     <Folder Include="wwwroot\data\settings\" />
     <Folder Include="Common\" />
+    <Folder Include="wwwroot\tmp\" />
   </ItemGroup>
 
 
