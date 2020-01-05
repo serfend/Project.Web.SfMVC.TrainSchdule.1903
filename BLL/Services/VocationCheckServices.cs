@@ -43,7 +43,12 @@ namespace BLL.Services
 		{
 			var endDate = date.AddDays(length);
 			return _context.VocationDescriptions.Where(v => v.Start <= endDate)
-				.Where(v => v.Start.AddDays(v.Length) >= date).ToList();
+				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VocationDescription()
+				{
+					Name = v.Name,
+					Length=v.Length,
+					Start = v.Start
+				});
 		}
 		/// <summary>
 		/// 当用户本应休假日期进入了假期范围，则应添加整个范围
