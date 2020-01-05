@@ -22,7 +22,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
-			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
+			if (model.AuditByCompany != null) list = list.Where(a => a.Response.NowAuditCompany().Code == model.AuditByCompany.Value);
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 			if (model.CreateBy != null)
 			{

@@ -293,6 +293,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="userId"></param>
 		/// <param name="avatarId">如果传入了此字段则直接读取头像</param>
 		/// <returns></returns>
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(AvatarViewModel), 0)]
 		[HttpGet]
 		public async Task<IActionResult> Avatar(string userId, string avatarId)
@@ -302,7 +303,7 @@ namespace TrainSchdule.Controllers
 			if (avatarId == null)
 			{
 				if (result != null) return result;
-				avatar = targetUser.DiyInfo.Avatar;
+				avatar = targetUser?.DiyInfo?.Avatar;
 			}
 			else
 			{
