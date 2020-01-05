@@ -52,7 +52,11 @@ namespace BLL.Interfaces
         bool Edit(string code, Action<Company> editCallBack);
 
         Task<bool> EditAsync(string code, Action<Company> editCallBack);
-
+		/// <summary>
+		/// 返回显示指定的管理
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
         IEnumerable<User> GetCompanyManagers(string code);
         bool CheckManagers(string code, string userid);
 

@@ -85,12 +85,14 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(gid);
 			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
-			var userid = currentUser?.Id;
-			if (userid == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			if (currentUser == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var action = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");
-			if (apply.BaseInfo.From.Id != userid)
+			if (apply.BaseInfo.From.Id != currentUser?.Id)
 			{
-				if (apply.Response.All(r => !_companiesService.CheckManagers(r.Company.Code, userid))) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+				// 当不是本人时，如果直接上级则也可以操作
+				var targetUserCompanyParentCode = apply.BaseInfo.From.CompanyInfo.Company.Code;
+				var currentUserManages = _usersService.InMyManage(currentUser, out var totalCount);
+				if (currentUserManages.All(c => c.Code == targetUserCompanyParentCode)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default); ;
 			}
 			_userActionServices.Status(action, true);
 			callBack.Invoke(apply);
