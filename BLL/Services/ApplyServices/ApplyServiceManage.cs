@@ -22,7 +22,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
-			if (model.AuditByCompany != null) list = list.Where(a => a.Response.NowAuditCompany().Code == model.AuditByCompany.Value);
+			if (model.AuditByCompany != null) list = list.Where(a => a.FinnalAuditCompany == model.AuditByCompany.Value);
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 			if (model.CreateBy != null)
 			{
@@ -56,14 +56,15 @@ namespace BLL.Services.ApplyServices
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
 			if (model.Id != null) list = list.Where(a => model.Id.Arrays.Contains(a.Id));
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
-			totalCount = list.Count();
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
 			{
 				PageIndex = 0,
 				PageSize = 20
 			};
 			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
-			return list.ToList();
+			var result = list.ToList();
+			totalCount = result.Count;
+			return result;
 		}
 		public Task RemoveAllUnSaveApply()
 		{

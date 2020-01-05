@@ -44,7 +44,7 @@ namespace TrainSchdule.Controllers.Apply
 					}
 				}); ;
 			}
-			catch (Exception ex)
+			catch (ActionStatusMessageException ex)
 			{
 				return new JsonResult(new ApiResult(-1, ex.Message));
 			}
