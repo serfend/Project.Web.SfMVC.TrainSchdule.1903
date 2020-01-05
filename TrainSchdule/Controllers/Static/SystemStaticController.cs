@@ -23,7 +23,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("verify")]
 		public IActionResult VerifyCode()
 		{
 			var imgId = _verifyService.Generate().ToString();
@@ -49,7 +48,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("verify-ft.jpg")]
 		public IActionResult VerifyCodeFront()
 		{
 			var img = _verifyService.Front();
@@ -68,7 +66,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("verify-bg.jpg")]
 		public IActionResult VerifyCodeBackground()
 		{
 			var img = _verifyService.Background();
@@ -88,7 +85,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("Location")]
 		[ProducesResponseType(typeof(LocationDataModel), 0)]
 
 		public IActionResult Location(int code)
@@ -113,7 +109,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[Route("LocationChildren")]
 		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
 
 		public IActionResult LocationChildren(int code)

@@ -57,6 +57,7 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ex.Status);
 			}
 			var singleApply = _applyService.QueryApplies(form.Query, true, out var totalCount).FirstOrDefault();
+			if (singleApply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo.From), false));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
