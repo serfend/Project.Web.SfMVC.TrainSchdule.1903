@@ -89,7 +89,7 @@ namespace TrainSchdule.Controllers.Apply
 			var action = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");
 			if (apply.BaseInfo.From.Id != currentUser?.Id)
 			{
-				// 当不是本人时，如果直接上级则也可以操作
+				// 当不是本人时，如果本级管理则也可以操作
 				var targetUserCompanyParentCode = apply.BaseInfo.From.CompanyInfo.Company.Code;
 				var currentUserManages = _usersService.InMyManage(currentUser, out var totalCount);
 				if (currentUserManages.All(c => c.Code == targetUserCompanyParentCode)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default); ;
