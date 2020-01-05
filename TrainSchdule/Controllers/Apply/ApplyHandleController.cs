@@ -96,7 +96,8 @@ namespace TrainSchdule.Controllers.Apply
 			RecallOrder result;
 			try
 			{
-				result = recallOrderServices.Create(model.Data.ToVDto());
+				var recall = model.Data.ToVDto();
+				result = recallOrderServices.Create(recall);
 			}
 			catch (ActionStatusMessageException ex)
 			{
