@@ -45,6 +45,10 @@ namespace DAL.QueryModel
 		/// </summary>
 		public QueryByString AuditByCompany { get; set; }
 		/// <summary>
+		/// 当前审批单位
+		/// </summary>
+		public QueryByString NowAuditByCompany { get; set; }
+		/// <summary>
 		/// 休假开始时间
 		/// </summary>
 		public QueryByDate StampLeave { get; set; }

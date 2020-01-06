@@ -22,6 +22,10 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public string FinnalAuditCompany { get; set; }
 		/// <summary>
+		/// 当前审批单位
+		/// </summary>
+		public string NowAuditCompany { get; set; }
+		/// <summary>
 		/// 申请的状态
 		/// </summary>
 		public AuditStatus Status { get; set; }

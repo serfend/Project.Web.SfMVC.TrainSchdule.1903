@@ -35,5 +35,6 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
+		public static string GetCode(this Company company) => company?.Code;
 	}
 }

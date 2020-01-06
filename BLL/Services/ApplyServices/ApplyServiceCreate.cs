@@ -168,6 +168,7 @@ namespace BLL.Services.ApplyServices
 							foreach (var r in model.Response)
 							{
 								r.Status = Auditing.Received;
+								model.NowAuditCompany = r.Company.Code;
 								break;
 							}
 							_context.Applies.Update(model);
@@ -264,11 +265,13 @@ namespace BLL.Services.ApplyServices
 					{
 						next.Status = Auditing.Received;// 下一级变更为审核中
 						target.FinnalAuditCompany = next.Company.Code;
+						target.NowAuditCompany = target.FinnalAuditCompany;
 					}
 					break;
 				case AuditResult.Deny:
 					response.Status = Auditing.Denied;
 					target.Status = AuditStatus.Denied;
+					target.NowAuditCompany = response.Company.Code;
 					return;
 				case AuditResult.NoAction:
 					return;

@@ -39,7 +39,7 @@ namespace BLL.Extensions.ApplyExtensions
 			{
 				Create = model?.Create,
 				Status = model.Status,
-				NowAuditCompany = model.Response.FirstOrDefault(r => r.Status == Auditing.Received || r.Status == Auditing.Denied)?.Company.Name,
+				NowAuditCompany = model.NowAuditCompany,
 				Base = model.BaseInfo.ToDto(),
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
