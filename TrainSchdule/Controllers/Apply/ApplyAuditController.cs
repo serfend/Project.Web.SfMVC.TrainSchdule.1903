@@ -92,7 +92,7 @@ namespace TrainSchdule.Controllers.Apply
 				// 当不是本人时，如果本级管理则也可以操作
 				var targetUserCompanyParentCode = apply.BaseInfo.From.CompanyInfo.Company.Code;
 				var currentUserManages = _usersService.InMyManage(currentUser, out var totalCount);
-				if (currentUserManages.All(c => c.Code == targetUserCompanyParentCode)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default); ;
+				if (currentUserManages.All(c => c.Code != targetUserCompanyParentCode)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default); ;
 			}
 			_userActionServices.Status(action, true);
 			callBack.Invoke(apply);
