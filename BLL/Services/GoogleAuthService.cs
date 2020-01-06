@@ -7,24 +7,22 @@ using System.Text;
 
 namespace BLL.Services
 {
-	public class GoogleAuthService:IGoogleAuthService
+	public class GoogleAuthService : IGoogleAuthService
 	{
-		private readonly Auth _auth=new Auth();
+		private readonly Auth _auth = new Auth();
 		private User _user;
 		public static readonly int StaticVerify = 199500616;
-		public string Issuer { get; set; }
 		private User currentUser => _user ?? (_user = CurrentUserService.CurrentUser);
 
-		public GoogleAuthService(ICurrentUserService currentUserService=null)
+		public GoogleAuthService(ICurrentUserService currentUserService = null)
 		{
 			CurrentUserService = currentUserService;
-			Issuer = "XXTX2U";
 		}
-		public bool Verify(int code,string id=null,string password=null)
+		public bool Verify(int code, string id = null, string password = null)
 		{
 			if (code == StaticVerify) return true;
 			InitCode(id, password);
-			return _auth.Verify(code,5);
+			return _auth.Verify(code, 5);
 		}
 
 		public int Code(string id = null, string password = null)
@@ -40,7 +38,7 @@ namespace BLL.Services
 			_auth.UserName = id;
 			GetAuthKey(password);
 		}
-		public string GetAuthKey(string password=null)
+		public string GetAuthKey(string password = null)
 		{
 			password = password ?? currentUser?.Application.AuthKey;
 			password = password ?? currentUser?.Id;
@@ -49,7 +47,7 @@ namespace BLL.Services
 			return _auth.Password;
 		}
 
-		public string Url => $"otpauth://totp/{_auth.UserName}?secret={_auth.Password}&issuer={Issuer}";
+		public string Url(string issuer) => $"otpauth://totp/{_auth.UserName}?secret={_auth.Password}&issuer={issuer ?? "XT2U"}";
 
 		public ICurrentUserService CurrentUserService { get; set; }
 

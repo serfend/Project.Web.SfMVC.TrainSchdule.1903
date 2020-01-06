@@ -326,7 +326,9 @@ namespace TrainSchdule.Controllers
 			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var qrCoder = new BLL.Helpers.SfQRCoder();
 			_authService.InitCode();
-			var img = qrCoder.GenerateBytes(_authService.Url);
+			var realName = _authService.CurrentUserService.CurrentUser?.BaseInfo?.RealName;
+			if (realName == null || realName.Length == 0) realName = null;
+			var img = qrCoder.GenerateBytes(_authService.Url(realName));
 			HttpContext.Response.Cookies.Append("key", _authService.Code().ToString());
 			return new FileContentResult(img, "image/png");
 		}

@@ -12,8 +12,7 @@ namespace BLL.Interfaces
 		int Code([Optional] string id, [Optional] string password);
 		void InitCode([Optional] string id, [Optional] string password);
 		string GetAuthKey([Optional] string password);
-		string Issuer { get; set; }
-		string Url { get; }
+		string Url(string issuer);
 
 		ICurrentUserService CurrentUserService { get; set; }
 	}
