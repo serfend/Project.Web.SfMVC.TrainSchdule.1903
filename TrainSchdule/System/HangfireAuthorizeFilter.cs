@@ -12,22 +12,11 @@ namespace TrainSchdule.System
 {
 	public class HangfireAuthorizeFilter : IDashboardAuthorizationFilter
 	{
-		private IGoogleAuthService googleAuthService;
-
-		public HangfireAuthorizeFilter()
-		{
-			this.googleAuthService = new GoogleAuthService();
-		}
-
 		public bool Authorize([NotNull] DashboardContext context)
 		{
 			var httpcontext = context.GetHttpContext();
 			var auth = httpcontext.Request.Cookies?["Auth"];
-			return new GoogleAuthDataModel()
-			{
-				AuthByUserID = "root",
-				Code = Convert.ToInt32(auth)
-			}.Verify(googleAuthService, httpcontext.User.Identity.Name);
+			return auth == "199500616";
 		}
 	}
 }
