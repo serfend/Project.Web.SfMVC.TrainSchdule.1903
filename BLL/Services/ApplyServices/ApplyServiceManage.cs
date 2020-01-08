@@ -22,8 +22,13 @@ namespace BLL.Services.ApplyServices
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
+			if (model.AuditByCompany == null) model.AuditByCompany = new QueryByString()
+			{
+				// 默认查询本单位相关的申请
+				Value = _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code
+			};
 			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
-			if (model.NowAuditByCompany != null) list = list.Where(a => a.NowAuditCompany == null || a.NowAuditCompany == model.NowAuditByCompany.Value);
+			if (model.NowAuditByCompany != null) list = list.Where(a => a.NowAuditCompany == model.NowAuditByCompany.Value);
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 			if (model.CreateBy != null)
 			{
@@ -36,13 +41,15 @@ namespace BLL.Services.ApplyServices
 				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
-			//  默认查询7天内的申请
+			//  默认查询到下周五前的的申请
 			if (model.StampLeave == null)
 			{
+				var thisFri = DayOfWeek.Friday;
+				var nowDay = DateTime.Now;
 				model.StampLeave = new QueryByDate()
 				{
-					Start = DateTime.Now,
-					End = DateTime.Now.AddDays(7)
+					Start = nowDay,
+					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(7)
 				};
 			}
 			list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
@@ -55,7 +62,8 @@ namespace BLL.Services.ApplyServices
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
-			if (model.Id != null) list = list.Where(a => model.Id.Arrays.Contains(a.Id));
+			// 若精确按id查询，则直接导出
+			if (model.Id != null) list = _context.Applies.AsQueryable().Where(a => model.Id.Arrays.Contains(a.Id));
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
 			{

@@ -11,7 +11,7 @@ using ExcelReport.Driver.NPOI;
 
 namespace BLL.Services.ApplyServices
 {
-	public partial class ApplyService:IApplyService
+	public partial class ApplyService : IApplyService
 	{
 		#region Fileds
 
@@ -19,34 +19,35 @@ namespace BLL.Services.ApplyServices
 		#endregion
 
 
-		public ApplyService(ApplicationDbContext context, IUsersService usersService)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService)
 		{
 			_context = context;
 			_usersService = usersService;
-			new Configurator()[".xlsx"]= new WorkbookLoader();
+			_currentUserService = currentUserService;
+			new Configurator()[".xlsx"] = new WorkbookLoader();
 		}
-		
+
 
 
 		public Apply GetById(Guid id) => _context.Applies.Find(id);
 		public IEnumerable<Apply> GetAll(int page, int pageSize)
 		{
-			return GetAll((item) => true,page,pageSize);
+			return GetAll((item) => true, page, pageSize);
 		}
 
-		public IEnumerable<Apply> GetAll(string userid,int page,int pageSize)
+		public IEnumerable<Apply> GetAll(string userid, int page, int pageSize)
 		{
-			return GetAll((item) => item.BaseInfo.From.Id == userid, page,pageSize);
+			return GetAll((item) => item.BaseInfo.From.Id == userid, page, pageSize);
 		}
 
-		public IEnumerable<Apply> GetAll(string userid, AuditStatus status,int page,int pageSize)
+		public IEnumerable<Apply> GetAll(string userid, AuditStatus status, int page, int pageSize)
 		{
-			return GetAll((item) => item.BaseInfo.From.Id == userid && status == item.Status,page,pageSize);
+			return GetAll((item) => item.BaseInfo.From.Id == userid && status == item.Status, page, pageSize);
 		}
 
-		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool> > predicate, int page, int pageSize)
+		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize)
 		{
-			var items = _context.Applies.Where(predicate).OrderByDescending(a=>a.Status).ThenByDescending(a=>a.Create).Skip(page * pageSize).Take(pageSize);
+			var items = _context.Applies.Where(predicate).OrderByDescending(a => a.Status).ThenByDescending(a => a.Create).Skip(page * pageSize).Take(pageSize);
 			return items;
 		}
 		public Apply Create(Apply item)
@@ -54,7 +55,7 @@ namespace BLL.Services.ApplyServices
 			if (item == null) return null;
 			_context.Applies.Add(item);
 			if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
-			    DateTime.Now) return null;
+				DateTime.Now) return null;
 			if (item.BaseInfo.From.Application.ApplicationSetting != null)
 				item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime = DateTime.Now;
 

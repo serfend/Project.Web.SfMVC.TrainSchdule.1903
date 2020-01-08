@@ -13,8 +13,11 @@ namespace ExcelReport.Driver.NPOI
 
         public Sheet(NpoiSheet npoiSheet)
         {
-            NpoiSheet = npoiSheet;
-        }
+			npoiSheet.DisplayGridlines = false;
+			npoiSheet.IsPrintGridlines = false;
+			NpoiSheet = npoiSheet;
+
+		}
 
         public IRow this[int rowIndex] => NpoiSheet.GetRow(rowIndex).GetAdapter();
 

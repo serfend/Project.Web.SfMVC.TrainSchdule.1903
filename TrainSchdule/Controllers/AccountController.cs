@@ -365,8 +365,9 @@ namespace TrainSchdule.Controllers
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
 				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-				if (targetUser.Application.InvitedBy == null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
-				if (targetUser.Application.InvitedBy == "invalid") return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
+				var accountType = targetUser.Application.InvalidAccount();
+				if (accountType == BLL.Extensions.UserExtensions.AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
+				if (accountType == BLL.Extensions.UserExtensions.AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
 				model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
 				if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -568,7 +569,7 @@ namespace TrainSchdule.Controllers
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			if (!myManages.Any(m => targetCompany.StartsWith(m.Code) && targetCompany.Length - m.Code.Length >= 1)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 
-			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : "invalid";
+			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : BLL.Extensions.UserExtensions.InviteByInvalidValue;
 			_context.AppUserApplicationInfos.Update(targetUser.Application);
 			_context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
@@ -639,12 +640,11 @@ namespace TrainSchdule.Controllers
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
 			var modefyUserCompany = modefyUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
-			var inviteBy = modefyUser.Application.InvitedBy;
-			var rankRequire = inviteBy == "invalid" ? -1 : inviteBy == null ? 0 : 1;
-			if (rankRequire >= 0 && !nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= rankRequire)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var invalidAccount = modefyUser.Application.InvalidAccount();
+			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && !nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= (int)invalidAccount)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
-			if (modefyUser.Application.InvitedBy == "invalid") modefyUser.Application.InvitedBy = null;//  重新提交
+			if (invalidAccount == BLL.Extensions.UserExtensions.AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);

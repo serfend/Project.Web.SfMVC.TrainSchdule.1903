@@ -8,10 +8,26 @@ namespace BLL.Extensions
 {
 	public static class UserExtensions
 	{
-
+		public const string InviteByInvalidValue = "00Invalid";
+		public enum AccountType
+		{
+			Deny = -1,
+			NotBeenAuth = 0,
+			BeenAuth = 1
+		}
+		public static AccountType InvalidAccount(this UserApplicationInfo app)
+		{
+			if (app == null) return AccountType.NotBeenAuth;
+			var inviteBy = app.InvitedBy;
+			if (inviteBy == null) return AccountType.NotBeenAuth;
+			if (inviteBy == InviteByInvalidValue || inviteBy == "invalid") return AccountType.Deny;
+			return AccountType.BeenAuth;
+		}
 		public static UserSummaryDto ToSummaryDto(this User user)
 		{
 			if (user == null) return null;
+			var inviteBy = user.Application?.InvitedBy;
+			inviteBy = inviteBy == "invalid" ? InviteByInvalidValue : inviteBy;
 			var b = new UserSummaryDto()
 			{
 				About = user.DiyInfo?.About ?? "无简介",
@@ -20,17 +36,17 @@ namespace BLL.Extensions
 				DutiesCode = user.CompanyInfo?.Duties?.Code,
 				CompanyName = user.CompanyInfo?.Company?.Name ?? "无单位",
 				DutiesName = user.CompanyInfo?.Duties?.Name ?? "无职务",
-				UserTitle=user.CompanyInfo?.Title?.Name??"无等级",
+				UserTitle = user.CompanyInfo?.Title?.Name ?? "无等级",
 				UserTitleDate = user.CompanyInfo?.TitleDate,
 				DutiesRawType = user.CompanyInfo?.Duties?.DutiesRawType,
 				Gender = user.BaseInfo.Gender,
 				RealName = user.BaseInfo?.RealName ?? "无姓名",
-				TimeBirth=user.BaseInfo?.Time_BirthDay,
-				TimeWork=user.BaseInfo?.Time_Work,
-				Hometown=user.BaseInfo?.Hometown,
+				TimeBirth = user.BaseInfo?.Time_BirthDay,
+				TimeWork = user.BaseInfo?.Time_Work,
+				Hometown = user.BaseInfo?.Hometown,
 				Id = user.Id,
 				IsInitPassword = user.BaseInfo.PasswordModefy,
-				InviteBy = user.Application?.InvitedBy
+				InviteBy = inviteBy
 			};
 			return b;
 		}

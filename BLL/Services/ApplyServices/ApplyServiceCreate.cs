@@ -16,6 +16,7 @@ namespace BLL.Services.ApplyServices
 	public partial class ApplyService
 	{
 		private readonly IUsersService _usersService;
+		private readonly ICurrentUserService _currentUserService;
 		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model)
 		{
 			if (model == null) return null;

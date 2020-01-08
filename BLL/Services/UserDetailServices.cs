@@ -41,6 +41,7 @@ namespace BLL.Services
 			int nowTimes = 0;
 			int onTripTime = 0;
 			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var lastModefy, out var newModefy, out var maxOnTripTime, out var description);
+			if (yearlyLength < 0) yearlyLength = 0;
 			if (lastModefy==null||(yearlyLength != lastModefy?.Length && lastModefy.UpdateDate!=newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
 			{
 				var list = new List<VacationModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory);
