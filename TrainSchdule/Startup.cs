@@ -78,7 +78,7 @@ namespace TrainSchdule
 			services.AddSingleton<IVerifyService, VerifyService>();
 			services.AddSingleton<IFileProvider>(
 				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-			
+
 
 		}
 		private void AddHangfireServices(IServiceCollection services)
@@ -109,8 +109,6 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
 			RecurringJob.AddOrUpdate<YearlyVocationStatistics>((u) => u.Run(), Cron.Yearly(1, 1, 0));
 			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
-			var arg = "system load";
-			BackgroundJob.Schedule(() => Console.WriteLine(arg), TimeSpan.FromSeconds(10));
 		}
 
 		public void ConfigureServices(IServiceCollection services)
@@ -144,8 +142,8 @@ namespace TrainSchdule
 				options.User.RequireUniqueEmail = true;
 			});
 			AddApplicationServices(services);
-			services.AddMvc().AddJsonOptions(opt=>opt.SerializerSettings.DateFormatString="yyyy-MM-dd HH:mm:ss");
-			
+			services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)
