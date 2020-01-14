@@ -170,6 +170,7 @@ namespace BLL.Services.ApplyServices
 							{
 								r.Status = Auditing.Received;
 								model.NowAuditCompany = r.Company.Code;
+								model.NowAuditCompanyName = r.Company.Name;
 								break;
 							}
 							_context.Applies.Update(model);
@@ -267,12 +268,14 @@ namespace BLL.Services.ApplyServices
 						next.Status = Auditing.Received;// 下一级变更为审核中
 						target.FinnalAuditCompany = next.Company.Code;
 						target.NowAuditCompany = target.FinnalAuditCompany;
+						target.NowAuditCompanyName = next.Company.Name;
 					}
 					break;
 				case AuditResult.Deny:
 					response.Status = Auditing.Denied;
 					target.Status = AuditStatus.Denied;
 					target.NowAuditCompany = response.Company.Code;
+					target.NowAuditCompanyName = response.Company.Name;
 					return;
 				case AuditResult.NoAction:
 					return;

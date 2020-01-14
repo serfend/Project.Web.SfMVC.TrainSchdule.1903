@@ -111,7 +111,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = _currentUserService.CurrentUser;
-			if (auditUser.Id != model.Auth?.AuthByUserID)
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
 					auditUser = _usersService.Get(model.Auth.AuthByUserID);

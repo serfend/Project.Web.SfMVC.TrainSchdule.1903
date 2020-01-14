@@ -8,8 +8,8 @@ namespace DAL.DTO.Apply
 {
 	public sealed class ApplyRequestVdto
 	{
-		public DateTime?StampLeave { get; set; }
-		public DateTime?StampReturn { get; set; }
+		public DateTime? StampLeave { get; set; }
+		public DateTime? StampReturn { get; set; }
 		/// <summary>
 		/// 本次休假中跨越的假期的描述
 		/// </summary>
@@ -18,6 +18,7 @@ namespace DAL.DTO.Apply
 		public int VocationLength { get; set; }
 		public string VocationType { get; set; }
 		public AdminDivision VocationPlace { get; set; }
+		public string VocationPlaceDetail { get; set; }
 		public string Reason { get; set; }
 		public Transportation ByTransportation { get; set; }
 		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }

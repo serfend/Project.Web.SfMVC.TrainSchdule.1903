@@ -30,11 +30,7 @@ namespace BLL.Services.ApplyServices
 			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
 			if (model.NowAuditByCompany != null) list = list.Where(a => a.NowAuditCompany == model.NowAuditByCompany.Value);
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
-			if (model.CreateBy != null)
-			{
-				list = list.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
-			}
-			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName.Contains(model.CreateFor.Value));
+
 			bool anyDateFilterIsLessThan30Days = false;
 			if (model.Create != null)
 			{
@@ -62,7 +58,12 @@ namespace BLL.Services.ApplyServices
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
 			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
-			// 若精确按id查询，则直接导出
+			// 若精确按id或按人查询，则直接导出
+			if (model.CreateBy != null)
+			{
+				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
+			}
+			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName.Contains(model.CreateFor.Value));
 			if (model.Id != null) list = _context.Applies.AsQueryable().Where(a => model.Id.Arrays.Contains(a.Id));
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()

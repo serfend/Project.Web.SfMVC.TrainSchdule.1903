@@ -18,6 +18,10 @@ namespace DAL.DTO.Apply
 		/// 当前审批单位
 		/// </summary>
 		public string NowAuditCompany { get; set; }
+		/// <summary>
+		/// 当前审批单位名称
+		/// </summary>
+		public string NowAuditCompanyName { get; set; }
 		public ApplyRequest Request { get; set; }
 		/// <summary>
 		/// 创建时间

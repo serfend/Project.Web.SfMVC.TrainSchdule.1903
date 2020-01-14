@@ -11,11 +11,12 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model,UserVocationInfoVDto info, bool AuditAvailable)
+		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVocationInfoVDto info, bool AuditAvailable)
 		{
+			if (model == null) return null;
 			var b = new ApplyDetailDto()
 			{
-				Base = model?.BaseInfo.From.ToSummaryDto(),
+				Base = model.BaseInfo.From.ToSummaryDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
@@ -40,12 +41,13 @@ namespace BLL.Extensions.ApplyExtensions
 				Create = model?.Create,
 				Status = model.Status,
 				NowAuditCompany = model.NowAuditCompany,
+				NowAuditCompanyName = model.NowAuditCompanyName,
 				Base = model.BaseInfo.ToDto(),
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = model.RequestInfo,
-				RecallId=model.RecallId,
-				FinnalAuditCompany=model.FinnalAuditCompany
+				RecallId = model.RecallId,
+				FinnalAuditCompany = model.FinnalAuditCompany
 			};
 			return b;
 		}
