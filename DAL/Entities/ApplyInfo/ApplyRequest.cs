@@ -29,6 +29,7 @@ namespace DAL.Entities.ApplyInfo
 		public virtual IEnumerable<VocationAdditional> AdditialVocations { get; set; }
 		
 		public virtual AdminDivision VocationPlace { get; set; }
+		public string VocationPlaceDetail { get; set; }
 		public string Reason { get; set; }
 		public DateTime CreateTime { get; set; }
 		public Transportation ByTransportation { get; set; }

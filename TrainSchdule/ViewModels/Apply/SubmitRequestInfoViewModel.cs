@@ -53,6 +53,10 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required(ErrorMessage = "休假去向未填写")]
 		public int VocationPlace { get; set; }
 		/// <summary>
+		/// 休假详细地址
+		/// </summary>
+		public string VocationPlaceName { get; set; }
+		/// <summary>
 		/// 休假原因
 		/// </summary>
 		public string Reason { get; set; }
