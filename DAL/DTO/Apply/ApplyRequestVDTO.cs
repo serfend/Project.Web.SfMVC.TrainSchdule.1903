@@ -18,7 +18,7 @@ namespace DAL.DTO.Apply
 		public int VocationLength { get; set; }
 		public string VocationType { get; set; }
 		public AdminDivision VocationPlace { get; set; }
-		public string VocationPlaceDetail { get; set; }
+		public string VocationPlaceName { get; set; }
 		public string Reason { get; set; }
 		public Transportation ByTransportation { get; set; }
 		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }

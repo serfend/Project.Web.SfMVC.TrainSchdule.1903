@@ -57,7 +57,7 @@ namespace TrainSchdule.Extensions
 				StampLeave = model.StampLeave,
 				VocationLength = model.VocationLength,
 				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
-				VocationPlaceDetail = model.VocationPlaceDetail,
+				VocationPlaceName = model.VocationPlaceName,
 				VocationType = model.VocationType,
 				ByTransportation = model.ByTransportation,
 				VocationAdditionals = model.VocationAdditionals

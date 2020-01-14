@@ -75,6 +75,7 @@ namespace BLL.Services.ApplyServices
 				StampReturn = model.StampReturn,
 				VocationLength = model.VocationLength,
 				VocationPlace = model.VocationPlace,
+				VocationPlaceName = model.VocationPlaceName,
 				VocationType = model.VocationType,
 				CreateTime = DateTime.Now,
 				ByTransportation = model.ByTransportation,
