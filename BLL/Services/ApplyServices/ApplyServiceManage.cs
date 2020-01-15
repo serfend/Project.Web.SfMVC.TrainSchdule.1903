@@ -37,7 +37,7 @@ namespace BLL.Services.ApplyServices
 				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
-			//  默认查询到下周五前的的申请
+			//  默认查询到下周六前的的申请
 			if (model.StampLeave == null)
 			{
 				var thisFri = DayOfWeek.Friday;
@@ -45,7 +45,7 @@ namespace BLL.Services.ApplyServices
 				model.StampLeave = new QueryByDate()
 				{
 					Start = nowDay,
-					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(7)
+					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8) 
 				};
 			}
 			list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
@@ -53,7 +53,7 @@ namespace BLL.Services.ApplyServices
 
 			if (model.StampReturn != null)
 			{
-				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (a.RequestInfo.StampReturn != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
+				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (model.StampReturn.Dates != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
