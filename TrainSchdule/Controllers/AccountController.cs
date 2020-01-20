@@ -560,11 +560,8 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
 			if (targetUser.Application.InvitedBy != null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
 			var currentUser = currentUserService.CurrentUser;
-			var myManages = _usersService.InMyManage(currentUser, out var totalCount);
-			var targetCompany = targetUser.CompanyInfo.Company.Code;
-			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
-			if (!myManages.Any(m => targetCompany.StartsWith(m.Code) && targetCompany.Length - m.Code.Length >= 1)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-
+			var canAuthRank = _usersService.CheckAuthorizedToUser(currentUser, targetUser);
+			if (canAuthRank < 1) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : BLL.Extensions.UserExtensions.InviteByInvalidValue;
 			_context.AppUserApplicationInfos.Update(targetUser.Application);
 			_context.SaveChanges();
@@ -622,22 +619,14 @@ namespace TrainSchdule.Controllers
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
-			var currentUser = currentUserService.CurrentUser;
-			var nowUserManageCompanies = _usersService.InMyManage(authByUser, out var authUserTotalCount).ToList();
-			List<Company> currentUserManageCompanies;
-			if (currentUser != null)
-			{
-				currentUserManageCompanies = _usersService.InMyManage(currentUser, out var currentUserTotalCount).ToList();
-				nowUserManageCompanies.AddRange(currentUserManageCompanies);
-			}
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
-			var modefyUserCompany = modefyUser.CompanyInfo.Company.Code;
-			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
+
 			var invalidAccount = modefyUser.Application.InvalidAccount();
-			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && !nowUserManageCompanies.Any(m => modefyUserCompany.StartsWith(m.Code) && modefyUserCompany.Length - m.Code.Length >= (int)invalidAccount)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
+			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount-canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (invalidAccount == BLL.Extensions.UserExtensions.AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
@@ -657,11 +646,10 @@ namespace TrainSchdule.Controllers
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
-			//if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, model.Company.Company.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
-			var currentUser = _usersService.Get(user.UserName);
-			CheckCurrentUserData(currentUser);
+			var toRegisterUser = _usersService.Get(user.UserName);
+			CheckCurrentUserData(toRegisterUser);
 			if (!ModelState.IsValid)
 			{
 				await Remove(new UserRemoveViewModel()
@@ -670,6 +658,14 @@ namespace TrainSchdule.Controllers
 					Id = model.Application.UserName
 				});
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
+			}
+			// 若当前用户不具有权限，不允许邀请注册时通过
+			if (toRegisterUser.Application.InvitedBy != null)
+			{
+				var authUserPermissionRank = _usersService.CheckAuthorizedToUser(authByUser, toRegisterUser);
+				if (authUserPermissionRank < 1) toRegisterUser.Application.InvitedBy = null;
+				_context.AppUserApplicationInfos.Update(toRegisterUser.Application);
+				_context.SaveChanges();
 			}
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
