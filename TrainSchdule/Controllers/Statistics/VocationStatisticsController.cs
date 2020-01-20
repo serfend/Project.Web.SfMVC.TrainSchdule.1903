@@ -66,9 +66,9 @@ namespace TrainSchdule.Controllers.Statistics
 			var statistics = context.VocationStatistics.Find(statisticsId);
 			if (statistics == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
 			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.StatisticsId == statisticsId && v.Company.Code == companyCode).FirstOrDefault();
-			return new JsonResult(new VocationStatisticsViewModel()
+			return new JsonResult(new CurrentLevelStatisticsViewModel()
 			{
-				Data = targetCompanyStatistics
+				Data = targetCompanyStatistics.ToDetailDataModel()
 			});
 		}
 		/// <summary>
@@ -158,7 +158,7 @@ namespace TrainSchdule.Controllers.Statistics
 			var cmp = context.Companies.Find(companyCode);
 			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
 			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.Company.Code == companyCode).ToList();
-			bool anyChange = false;
+			bool anyChange = false;// 当本级不存在时，删除本级
 			foreach (var item in targetCompanyStatistics) if (item.StatisticsId == null)
 				{
 					anyChange = true;
@@ -177,7 +177,7 @@ namespace TrainSchdule.Controllers.Statistics
 			{
 				Data = new NewStatisticsListDataModel()
 				{
-					List = targetCompanyStatistics.Select(v => v.ToMode(context.VocationStatistics.Find(v.StatisticsId)))
+					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VocationStatistics.Find(v.StatisticsId)))
 				}
 			});
 		}
