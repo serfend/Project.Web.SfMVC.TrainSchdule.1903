@@ -44,7 +44,7 @@ namespace TrainSchdule.Extensions
 					TitleDate = model.Company?.TitleDate
 
 				},
-				Application = model.Application?.ToModel(),
+				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,
 				SocialInfo = model.Social?.ToModel(),
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
