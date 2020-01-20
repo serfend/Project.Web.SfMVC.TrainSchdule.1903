@@ -24,7 +24,7 @@ namespace BLL.Extensions
 			 
 		}
 		public static IEnumerable<User>CompanyMembers(this Company company,IUsersService usersService)=> usersService?.Find(u => u.CompanyInfo.Company.Code == company.Code);
-		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService)
+		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService=null)
 		{
 			var b=new CompanyDto()
 			{
