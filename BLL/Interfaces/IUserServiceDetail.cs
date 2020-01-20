@@ -15,7 +15,7 @@ namespace BLL.Interfaces
 		/// <param name="user"></param>
 		/// <param name="totalCount"></param>
 		/// <returns></returns>
-		IEnumerable<Company> InMyManage(User user,out int totalCount);
+		IEnumerable<Company> InMyManage(User user, out int totalCount);
 		/// <summary>
 		/// 获取用户的休假概况
 		/// </summary>
@@ -34,5 +34,14 @@ namespace BLL.Interfaces
 		/// <param name="targetUser"></param>
 		/// <returns></returns>
 		Task<Avatar> GetAvatar(User targetUser);
+
+		/// <summary>
+		/// 检查是否有权限操作用户
+		/// </summary>
+		/// <param name="authUser"></param>
+		/// <param name="modefyUser"></param>
+		/// <param name="requireAuthRank"></param>
+		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
+		int CheckAuthorizedToUser(User authUser, User modefyUser);
 	}
 }

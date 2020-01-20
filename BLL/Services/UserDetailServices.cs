@@ -14,12 +14,28 @@ namespace BLL.Services
 {
 	public partial class UsersService
 	{
+		/// <summary>
+		/// 检查是否有权限操作用户
+		/// </summary>
+		/// <param name="authUser"></param>
+		/// <param name="modefyUser"></param>
+		/// <param name="requireAuthRank"></param>
+		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
+		public int CheckAuthorizedToUser(User authUser, User modefyUser)
+		{
+			var myManages = InMyManage(authUser, out var totalCount)?.ToList();
+			if (myManages == null || myManages.Count == 0) return -1;
+			if (modefyUser == null) return 1;
+			var targetCompany = modefyUser.CompanyInfo.Company.Code;
+			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
+			return myManages.Max(m => targetCompany.StartsWith(m.Code) ? targetCompany.Length - m.Code.Length : -1);
+		}
 		public IEnumerable<Company> InMyManage(User user, out int totalCount)
 		{
 			totalCount = 0;
 			var list = new List<Company>();
 
-			if (user == null||user.CompanyInfo?.Company==null) return list;
+			if (user == null || user.CompanyInfo?.Company == null) return list;
 			list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
 			// 所在单位的主管拥有此单位的管理权
 			var companyCode = user.CompanyInfo.Company.Code;
@@ -42,7 +58,7 @@ namespace BLL.Services
 			int onTripTime = 0;
 			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var lastModefy, out var newModefy, out var maxOnTripTime, out var description);
 			if (yearlyLength < 0) yearlyLength = 0;
-			if (lastModefy==null||(yearlyLength != lastModefy?.Length && lastModefy.UpdateDate!=newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
+			if (lastModefy == null || (yearlyLength != lastModefy?.Length && lastModefy.UpdateDate != newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
 			{
 				var list = new List<VacationModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory);
 				list.Add(newModefy);
