@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
 {
-	public class Duties 
+	public class Duties
 	{
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		[Key]
@@ -18,7 +18,6 @@ namespace DAL.Entities
 		/// 是否是主官
 		/// </summary>
 		public bool IsMajorManager { get; set; }
-
 		/// <summary>
 		/// 职务原始类型
 		/// </summary>
