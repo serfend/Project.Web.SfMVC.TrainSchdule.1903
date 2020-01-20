@@ -1,6 +1,6 @@
 ﻿using BLL.Interfaces;
 using BLL.Services;
-using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace TrainSchdule.ViewModels.Verify
 {
@@ -22,11 +22,11 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <summary>
 		/// 超级管理
 		/// </summary>
-		public static readonly GoogleAuthDataModel Root = new GoogleAuthDataModel() { AuthByUserID = "root", Code = GoogleAuthService.StaticVerify };
+		public static readonly GoogleAuthDataModel Root = new GoogleAuthDataModel() { AuthByUserID = "root", Code = GoogleAuthService.StaticVerify.ToString() };
 		/// <summary>
 		/// 普通用户
 		/// </summary>
-		public static readonly GoogleAuthDataModel User = new GoogleAuthDataModel() { AuthByUserID = "user", Code = GoogleAuthService.StaticVerify };
+		public static readonly GoogleAuthDataModel User = new GoogleAuthDataModel() { AuthByUserID = "user", Code = GoogleAuthService.StaticVerify.ToString() };
 		/// <summary>
 		/// 授权权限来源
 		/// </summary>
@@ -34,8 +34,7 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <summary>
 		/// 授权码
 		/// </summary>
-		[Required]
-		public int Code { get; set; }
+		public string Code { get; set; }
 	}
 	public static class GoogleAuthExtension
 	{
@@ -46,6 +45,6 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <param name="authService"></param>
 		/// <param name="currentUserId"></param>
 		/// <returns></returns>
-		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService,string currentUserId) => model?.AuthByUserID == currentUserId||(model!=null && authService.Verify(model.Code, model?.AuthByUserID));
+		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService,string currentUserId) => model?.AuthByUserID == currentUserId||(model!=null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
 	}
 }
