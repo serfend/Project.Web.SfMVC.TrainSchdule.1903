@@ -59,12 +59,13 @@ namespace TrainSchdule.ViewModels.User
 				InvitedBy = model.InvitedBy
 			};
 		}
-		public static UserApplicationInfo ToModel(this UserApplicationDataModel model)
+		public static UserApplicationInfo ToModel(this UserApplicationDataModel model,string inviteBy)
 		{
 			return new UserApplicationInfo()
 			{
 				Email = model.Email,
-				InvitedBy=model.InvitedBy,
+				// fixbug do not beleve user data: InvitedBy=model.InvitedBy,
+				InvitedBy = inviteBy
 			};
 		}
 	}
