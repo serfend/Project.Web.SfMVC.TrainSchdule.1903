@@ -1,5 +1,6 @@
 ﻿using BLL.Extensions;
 using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -60,6 +61,7 @@ namespace BLL.Services
 			if (yearlyLength < 0) yearlyLength = 0;
 			if (lastModefy == null || (yearlyLength != lastModefy?.Length && lastModefy.UpdateDate != newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
 			{
+				//当存在当前假期天数与目前最新记录值不一致  或  新的一年到来时，重新计算并更新
 				var list = new List<VacationModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory);
 				list.Add(newModefy);
 				targetUser.SocialInfo.Settle.PrevYealyLengthHistory = list;
@@ -67,29 +69,40 @@ namespace BLL.Services
 				_context.SaveChanges();
 			}
 			var userAdditions = new List<VocationAdditional>();
+			var maxOnTripTimeGainForRecall = 0;//应召回而增加路途次数
+			var maxOnTripTimeGainForRecallDescription = "";
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
 			{
 				nowLength += a.RequestInfo.VocationLength;
 				if (a.RequestInfo.OnTripLength > 0) onTripTime++;
 				nowTimes++;
 				userAdditions.AddRange(a.RequestInfo.AdditialVocations);
+
+				//处理被召回的假期
 				if (a.RecallId != null)
 				{
-					if (a.RequestInfo.OnTripLength > 0) onTripTime--;
+					//不论用户是否休路途，均应该增加一次路途
+					maxOnTripTimeGainForRecall++;
 					var order = _context.RecallOrders.Find(a.RecallId);
 					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.IdRecordButNoData);
-					nowLength -= a.RequestInfo.StampReturn.Value.Subtract(order.ReturnStramp).Days;
+					//此处减去召回时间应注意是否在福利假内部
+					var dayComsumeBeforeRecall = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
+					var containsLawVacations = _vocationCheckServices.GetVocationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
+					var containsLawVacationsLength = containsLawVacations.Sum(v => v.Length);
+					var realComsumeMainVacation = dayComsumeBeforeRecall - containsLawVacationsLength - a.RequestInfo.OnTripLength;
+					if (realComsumeMainVacation > 0) nowLength -= realComsumeMainVacation;
 				}
 				return true;
 			});
+			if (maxOnTripTimeGainForRecall > 0) maxOnTripTimeGainForRecallDescription = $"因期间被召回{maxOnTripTimeGainForRecall}次，全年可休路途次数相应增加。";
 			var vocationInfo = new UserVocationInfoVDto()
 			{
 				LeftLength = (int)Math.Ceiling(yearlyLength - nowLength),
-				MaxTripTimes = maxOnTripTime,
+				MaxTripTimes = maxOnTripTime + maxOnTripTimeGainForRecall,
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
 				YearlyLength = (int)Math.Ceiling(yearlyLength),
-				Description = description,
+				Description = $"{description}{maxOnTripTimeGainForRecallDescription}",
 				Additionals = userAdditions
 			};
 			return vocationInfo;

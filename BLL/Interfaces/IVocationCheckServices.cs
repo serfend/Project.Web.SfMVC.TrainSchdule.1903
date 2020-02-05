@@ -13,8 +13,9 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="targetDate"></param>
 		/// <param name="length"></param>
+		/// <param name="CheckInner">是否检查实际包含假期的长度 例如1.1-1.3元旦，从1.2-1.12只能算2天假期</param>
 		/// <returns></returns>
-		IEnumerable<VocationDescription> GetVocationDates(DateTime targetDate,int length);
+		IEnumerable<VocationDescription> GetVocationDates(DateTime targetDate,int length,bool CheckInner);
 		/// <summary>
 		/// 判断从指定日期开始，跳过法定节假日会到何时
 		/// </summary>

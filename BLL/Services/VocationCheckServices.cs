@@ -38,15 +38,21 @@ namespace BLL.Services
 			_context.VocationDescriptions.Add(model);
 			_context.SaveChanges();
 		}
-
-		public IEnumerable<VocationDescription> GetVocationDates(DateTime date, int length)
+		/// <summary>
+		/// 获取指定日期间包含的假期
+		/// </summary>
+		/// <param name="date"></param>
+		/// <param name="length"></param>
+		/// <param name="CheckInner">是否检查实际包含假期的长度 例如1.1-1.3元旦，从1.2-1.12只能算2天假期</param>
+		/// <returns></returns>
+		public IEnumerable<VocationDescription> GetVocationDates(DateTime date, int length, bool CheckInner)
 		{
 			var endDate = date.AddDays(length);
 			return _context.VocationDescriptions.Where(v => v.Start < endDate)
 				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VocationDescription()
 				{
 					Name = v.Name,
-					Length=v.Length,
+					Length = CheckInner ? GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length)) : v.Length,
 					Start = v.Start
 				});
 		}
@@ -74,7 +80,13 @@ namespace BLL.Services
 			VocationDesc = GetVocationDescriptions(start, length, caculateLawVocation);
 			return EndDate;
 		}
-
+		/// <summary>
+		/// 判断并初始化指定日期范围内包含的假期长度
+		/// </summary>
+		/// <param name="start"></param>
+		/// <param name="length"></param>
+		/// <param name="caculateLawVocation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
+		/// <returns></returns>
 		public IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation)
 		{
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
@@ -87,9 +99,8 @@ namespace BLL.Services
 			var end = start.AddDays(length);
 			int vocationDay = 0;
 			if (caculateLawVocation)
-				foreach (var description in GetVocationDates(start, length))
+				foreach (var description in GetVocationDates(start, length, true))
 				{
-					description.Length = GetCrossDay(start, end, description.Start, description.Start.AddDays(description.Length));
 					list.Add(description);
 					vocationDay += description.Length;
 				}
@@ -97,7 +108,6 @@ namespace BLL.Services
 			VocationDesc = list;
 			return list;
 		}
-
 		public DateTime EndDate { get; private set; }
 		public IEnumerable<VocationDescription> VocationDesc { get; set; }
 	}

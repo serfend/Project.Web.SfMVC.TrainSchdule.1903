@@ -32,10 +32,9 @@ namespace BLL.Services
 	{
 		#region Fields
 
-		private readonly ICurrentUserService _currentUserService;
 		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
-
+		private readonly IVocationCheckServices _vocationCheckServices;
 		#endregion
 
 		#region .ctors
@@ -43,11 +42,11 @@ namespace BLL.Services
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UsersService"/>.
 		/// </summary>
-		public UsersService(ICurrentUserService currentUserService, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+		public UsersService(IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
-			_currentUserService = currentUserService;
 			_context = context;
 			_hostingEnvironment = hostingEnvironment;
+			_vocationCheckServices = vocationCheckServices;
 		}
 
 		#endregion

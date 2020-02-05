@@ -86,6 +86,15 @@ namespace BLL.Extensions
 			if (maxDate < TargetUser.CompanyInfo.TitleDate) maxDate = TargetUser.CompanyInfo.TitleDate ?? maxDate;
 			return maxDate;
 		}
+
+		/// <summary>
+		/// 根据用户条件获取当前用户的全年总假期长度
+		/// </summary>
+		/// <param name="settle"></param>
+		/// <param name="targetUser"></param>
+		/// <param name="maxOnTripTime"></param>
+		/// <param name="description"></param>
+		/// <returns></returns>
 		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description)
 		{
 			maxOnTripTime = 0;

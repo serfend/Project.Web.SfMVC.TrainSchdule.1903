@@ -69,11 +69,7 @@ namespace TrainSchdule.Crontab
 			if (company == null) return null;
 			var statistics = new VocationStatisticsDescription();
 			statistics.Applies = _context.Applies.
-				Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code && a.Create.Value >= Start && a.Create.Value <= End).
-				Where(a => _context.DutyTypes.
-					Where(d => d.Duties.Code == a.BaseInfo.From.CompanyInfo.Duties.Code).FirstOrDefault() != null).
-				Where(a => !_context.DutyTypes.
-					Where(d => d.Duties.Code == a.BaseInfo.From.CompanyInfo.Duties.Code).FirstOrDefault().NotCaculateStatistics).ToList().AsQueryable();
+				Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code && a.Create.Value >= Start && a.Create.Value <= End);
 			statistics.Company = company;
 			var companies = _context.Companies.Where<Company>(c => ParentCode(c.Code) == company.Code);
 			var list = new List<VocationStatisticsDescription>();
