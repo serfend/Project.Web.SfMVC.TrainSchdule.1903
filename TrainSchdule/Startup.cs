@@ -71,8 +71,9 @@ namespace TrainSchdule
 			services.AddScoped<IEmailSender, EmailSender>();
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IUserActionServices, UserActionServices>();
+			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
 
-
+			
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();

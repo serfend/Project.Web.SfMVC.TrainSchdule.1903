@@ -8,6 +8,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Vocations;
+using DAL.QueryModel;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Crontab;
@@ -26,13 +27,15 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IGoogleAuthService authService;
 		private readonly IUsersService usersService;
 		private readonly IUserActionServices _userActionServices;
+		private readonly IVacationStatisticsServices _vacationStatisticsServices;
 
-		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices)
+		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices)
 		{
 			this.context = context;
 			this.authService = authService;
 			this.usersService = usersService;
 			_userActionServices = userActionServices;
+			_vacationStatisticsServices = vacationStatisticsServices;
 		}
 
 		/// <summary>
@@ -53,22 +56,17 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <summary>
 		/// 获取指定统计内某单位的情况
 		/// </summary>
-		/// <param name="statisticsId"></param>
-		/// <param name="companyCode"></param>
+		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpGet]
+		[HttpPost]
 		[ProducesResponseType(typeof(VocationStatisticsViewModel), 0)]
 
-		public IActionResult Detail(string statisticsId, string companyCode)
+		public IActionResult DetailsList([FromBody]QueryVacationStatisticsDataModel model)
 		{
-			var cmp = context.Companies.Find(companyCode);
-			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			var statistics = context.VocationStatistics.Find(statisticsId);
-			if (statistics == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
-			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.StatisticsId == statisticsId && v.Company.Code == companyCode).FirstOrDefault();
-			return new JsonResult(new CurrentLevelStatisticsViewModel()
+			var result = _vacationStatisticsServices.Query(model);
+			return new JsonResult(new VocationStatisticsDescriptions()
 			{
-				Data = targetCompanyStatistics.ToDetailDataModel()
+				List = result
 			});
 		}
 		/// <summary>

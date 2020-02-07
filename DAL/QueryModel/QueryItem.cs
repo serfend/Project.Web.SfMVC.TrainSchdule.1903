@@ -54,13 +54,14 @@ namespace DAL.QueryModel
 		/// 查询个别日期
 		/// </summary>
 		public IEnumerable<DateTime> Dates { get; set; }
- }
+	}
 	/// <summary>
 	/// 通过字符串查询（
 	/// </summary>
 	public class QueryByString
 	{
 		public string Value { get; set; }
+		public IEnumerable<string> Arrays { get; set; }
 	}
 	public class QueryByGuid
 	{

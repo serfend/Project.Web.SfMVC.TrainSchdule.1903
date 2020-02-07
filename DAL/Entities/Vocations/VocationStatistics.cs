@@ -30,6 +30,7 @@ namespace DAL.Entities.Vocations
 		/// <summary>
 		/// 单位下属单位休假情况
 		/// </summary>
+		[NotMapped]
 		public virtual IEnumerable<VocationStatisticsDescription> Childs { get; set; }
 		/// <summary>
 		/// 单位

@@ -8,8 +8,13 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Statistics
 {
-	public class VocationStatisticsViewModel:ApiResult
+	public class VocationStatisticsViewModel : ApiResult
 	{
 		public VocationStatisticsDescription Data { get; set; }
+	}
+
+	public class VocationStatisticsDescriptions : ApiResult
+	{
+		public IEnumerable<VocationStatisticsDescription> List { get; set; }
 	}
 }
