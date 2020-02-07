@@ -155,7 +155,7 @@ namespace TrainSchdule.Controllers.Statistics
 		{
 			var cmp = context.Companies.Find(companyCode);
 			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.Company.Code == companyCode).ToList();
+			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VocationStatisticsDescription>(v => v.Company.Code == companyCode).OrderBy(v => v.StatisticsId).ToList();
 			bool anyChange = false;// 当本级不存在时，删除本级
 			foreach (var item in targetCompanyStatistics) if (item.StatisticsId == null)
 				{
