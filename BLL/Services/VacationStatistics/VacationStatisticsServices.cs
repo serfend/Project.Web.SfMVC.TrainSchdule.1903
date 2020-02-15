@@ -20,11 +20,13 @@ namespace BLL.Services
 
 		public IEnumerable<VocationStatisticsDescription> Query(QueryVacationStatisticsDataModel model)
 		{
+			if (model == null) return null;
 			var list = _context.VocationStatisticsDescriptions.AsQueryable();
 			if (model.CompanyId?.Value != null) list = list.Where(v => v.Company.Code == model.CompanyId.Value);
 			if (model.CompanyId?.Arrays != null) list = list.Where(v => model.CompanyId.Arrays.Contains(v.Company.Code));
-			if (model.Id.Arrays != null) list = list.Where(v => model.Id.Arrays.Contains(v.StatisticsId));
-				return list.ToList();
+			if (model.Id?.Value != null) list = list.Where(v => model.Id.Value == v.StatisticsId);
+			if (model.Id?.Arrays != null) list = list.Where(v => model.Id.Arrays.Contains(v.StatisticsId));
+			return list.ToList();
 		}
 	}
 }

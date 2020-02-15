@@ -66,8 +66,8 @@ namespace BLL.Services.ApplyServices
 
 		public async Task<Apply> CreateAsync(Apply item)
 		{
-			await _context.Applies.AddAsync(item).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await _context.Applies.AddAsync(item).ConfigureAwait(true);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return item;
 		}
 
@@ -86,9 +86,9 @@ namespace BLL.Services.ApplyServices
 		{
 			var target = _context.Applies.Find(id);
 			if (target == null) return false;
-			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(false);
+			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
 			_context.Applies.Update(target);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
 

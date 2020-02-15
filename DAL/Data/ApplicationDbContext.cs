@@ -2,6 +2,7 @@
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.BBS;
 using DAL.Entities.Duty;
+using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vocations;
@@ -62,6 +63,12 @@ namespace DAL.Data
 
 		public DbSet<Post> Posts { get; set; }
 		public DbSet<DAL.Entities.BBS.PostContent> PostContents { get; set; }
+
+		public DbSet<GiftCode> GiftCodes { get; set; }
+		public DbSet<DAL.Entities.Game_r3.User> GameR3Users { get; set; }
+		public DbSet<DAL.Entities.Game_r3.UserInfo> GameR3UserInfos { get; set; }
+		public DbSet<GainGiftCode> GainGiftCodeHistory { get; set; }
+
 		#endregion
 
 		#region .ctors

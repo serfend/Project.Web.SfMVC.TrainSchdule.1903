@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using BLL.Interfaces;
+using BLL.Interfaces.GameR3;
 using BLL.Interfaces.ZX;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.GameR3;
 using BLL.Services.ZX;
 using DAL.Data;
 using DAL.Entities.UserInfo;
@@ -72,8 +74,8 @@ namespace TrainSchdule
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IUserActionServices, UserActionServices>();
 			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
+			services.AddScoped<IGameR3Services, R3HandleServices>();
 
-			
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();
@@ -105,6 +107,7 @@ namespace TrainSchdule
 		private void ConfigureHangfireServices()
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), "*/10 * * * *");
+			RecurringJob.AddOrUpdate<R3HandleServices>((a) => a.HandleAllUsersGiftCode(), "*/10 * * * *");//忍3自动化
 			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1, 1, 0, 0));
 			RecurringJob.AddOrUpdate<WeeklyVocationStatistics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday, 0, 0));
 			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));

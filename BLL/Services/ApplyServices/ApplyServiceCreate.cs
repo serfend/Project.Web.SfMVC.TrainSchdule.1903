@@ -43,13 +43,13 @@ namespace BLL.Services.ApplyServices
 			if (model == null) return null;
 			var m = new ApplyBaseInfo()
 			{
-				Company = await _context.Companies.FindAsync(model.Company).ConfigureAwait(false),
-				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties).ConfigureAwait(false),
+				Company = await _context.Companies.FindAsync(model.Company).ConfigureAwait(true),
+				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties).ConfigureAwait(true),
 				From = model.From,
 				CreateBy = model.CreateBy,
 				Social = new UserSocialInfo()
 				{
-					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(false),
+					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(true),
 					AddressDetail = model.VocationTargetAddressDetail,
 					Phone = model.Phone,
 					Settle = model.Settle
@@ -60,8 +60,8 @@ namespace BLL.Services.ApplyServices
 				CreateTime = DateTime.Now
 			};
 			if (m.Company != null) m.CompanyName = m.Company.Name;
-			await _context.ApplyBaseInfos.AddAsync(m).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await _context.ApplyBaseInfos.AddAsync(m).ConfigureAwait(true);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return m;
 		}
 		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
@@ -87,7 +87,7 @@ namespace BLL.Services.ApplyServices
 		}
 		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
 		{
-			return await Task.Run(() => SubmitRequest(model)).ConfigureAwait(false);
+			return await Task.Run(() => SubmitRequest(model)).ConfigureAwait(true);
 		}
 
 		public Apply Submit(ApplyVdto model)

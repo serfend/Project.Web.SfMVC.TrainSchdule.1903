@@ -46,7 +46,7 @@ namespace BLL.Extensions
 
 			var filePath = System.IO.Path.Combine(hostingEnvironment.WebRootPath, AvatarRawPath, avatar.FilePath);
 			if (!File.Exists(filePath))
-				if (!isFirstTimeLoad) return null; else return await Load(null, user, hostingEnvironment, false).ConfigureAwait(false);
+				if (!isFirstTimeLoad) return null; else return await Load(null, user, hostingEnvironment, false).ConfigureAwait(true);
 			lock (fileLocker)
 			{
 				using (var s = new FileStream(filePath, FileMode.Open))

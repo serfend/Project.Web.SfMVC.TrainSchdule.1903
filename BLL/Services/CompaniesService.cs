@@ -86,9 +86,9 @@ namespace BLL.Services
 
 		public async Task<bool> EditAsync(string code, Action<Company> editCallBack)
 		{
-			var target =await _context.Companies.FindAsync(code).ConfigureAwait(false);
+			var target =await _context.Companies.FindAsync(code).ConfigureAwait(true);
 			if (target == null) return false;
-			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(false);
+			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
 			_context.Companies.Update(target);
 			return true;
 		}

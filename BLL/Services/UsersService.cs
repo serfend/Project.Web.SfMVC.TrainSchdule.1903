@@ -130,9 +130,9 @@ namespace BLL.Services
 			if (identity == null) return null;
 			var appUser = CreateAppUser(user);
 
-			await _context.Users.AddAsync(identity).ConfigureAwait(false);
-			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await _context.Users.AddAsync(identity).ConfigureAwait(true);
+			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(true);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 
 			return identity;
 		}
@@ -143,7 +143,7 @@ namespace BLL.Services
 			if (update)
 			{
 				_context.AppUsers.Update(appUser);
-				await _context.SaveChangesAsync().ConfigureAwait(false);
+				await _context.SaveChangesAsync().ConfigureAwait(true);
 			}
 			return appUser;
 		}
@@ -214,7 +214,7 @@ namespace BLL.Services
 		public async Task<bool> EditAsync(User newUser)
 		{
 			_context.AppUsers.Update(newUser);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
 
@@ -233,10 +233,10 @@ namespace BLL.Services
 		}
 		public async Task<bool> RemoveAsync(string id)
 		{
-			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(false);
+			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(true);
 			if (user == null) return false;
-			await RemoveUser(user).ConfigureAwait(false);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			await RemoveUser(user).ConfigureAwait(true);
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
 		/// <summary>
@@ -271,7 +271,7 @@ namespace BLL.Services
 				}
 			}
 			if (user.DiyInfo != null) _context.AppUserDiyInfos.Remove(user.DiyInfo);
-			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(false);
+			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
 			_context.Users.Remove(appUser);
 		}
 		public string ConvertFromUserCiper(string username, string password)
@@ -292,10 +292,10 @@ namespace BLL.Services
 			if (newAvatar != null&&avatar.Img.Length<=1024*200)
 			{
 				_context.AppUserDiyAvatars.Add(avatar);
-				await avatar.Update(_hostingEnvironment).ConfigureAwait(false);
+				await avatar.Update(_hostingEnvironment).ConfigureAwait(true);
 				targetUser.DiyInfo.Avatar = avatar;
 				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
-				await _context.SaveChangesAsync().ConfigureAwait(false);
+				await _context.SaveChangesAsync().ConfigureAwait(true);
 			}
 			return avatar;
 		}
