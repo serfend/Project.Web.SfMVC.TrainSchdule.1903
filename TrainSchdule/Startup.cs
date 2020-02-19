@@ -75,6 +75,7 @@ namespace TrainSchdule
 			services.AddScoped<IUserActionServices, UserActionServices>();
 			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
 			services.AddScoped<IGameR3Services, R3HandleServices>();
+			services.AddScoped<IR3UsersServices, R3UsersServices>();
 
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

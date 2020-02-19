@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces.GameR3;
+﻿using BLL.Helpers;
+using BLL.Interfaces.GameR3;
 using BLL.Services.Game_r3.R3ResultContent;
 using DAL.Data;
 using DAL.Entities.Game_r3;
@@ -32,7 +33,8 @@ namespace BLL.Services.GameR3
 			if (gainHistory != null)
 			{
 				// 当领取过时，不再领取
-				code.StatusDescription = $"{new DateTime(1970,1,1).AddMilliseconds(gainHistory.GainStamp)} 已领取过";
+				code.StatusDescription = $"{DateTime.FromFileTime(new DateTime(1970, 1, 1).ToFileTime() + (gainHistory.GainStamp))} 已领取过";
+				context.GiftCodes.Update(code);
 				return code;
 			}
 			var r = await http.GetAsync(new Uri($"{host}/player/giftCode?uid={user.GameId}&code={code.Code}")).ConfigureAwait(true);
@@ -48,7 +50,7 @@ namespace BLL.Services.GameR3
 					gainHistory = new GainGiftCode()
 					{
 						Code = code,
-						GainStamp = Convert.ToInt64(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds),
+						GainStamp = Convert.ToInt64(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds),
 						User = user
 					};
 					context.GainGiftCodeHistory.Add(gainHistory);
@@ -69,12 +71,12 @@ namespace BLL.Services.GameR3
 		{
 			if (code == null) return null;
 			var u =await UpdateUser(user).ConfigureAwait(true);
-			if (u.NickName == null) return null;
+			if (u.NickName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist, $"忍忍{user.GameId}不存在");
 			var prevCode = context.GiftCodes.Where(g => g.Code == code.Code).FirstOrDefault();
 			if (prevCode != null) return prevCode;
-			code.ShareBy = u.User;
+			code.ShareBy = $"{u.Level} {u.NickName}";
 			code.ShareTime = DateTime.Now;
-			code = await HandleCode(code.ShareBy, code).ConfigureAwait(true);
+			code = await HandleCode(u.User, code).ConfigureAwait(true);
 			context.GiftCodes.Update(code);
 			await context.SaveChangesAsync().ConfigureAwait(true);
 			return code;
@@ -122,6 +124,7 @@ namespace BLL.Services.GameR3
 				context.GameR3UserInfos.Add(u);
 				prevUserInfo = u;
 			}
+			context.GameR3UserInfos.Update(prevUserInfo);
 			await context.SaveChangesAsync().ConfigureAwait(true);
 			return prevUserInfo;
 		}
@@ -134,12 +137,13 @@ namespace BLL.Services.GameR3
 
 		public async Task HandleAllUsersGiftCode()
 		{
-			var nowStamp = (long)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+			var nowStamp = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
 			var list = await GetAllValidGiftCodes().ConfigureAwait(true);
-			var handleUsers = context.GameR3Users.Where(u=>u.Enable).Where(u => u.LastHandleStamp + u.HandleInterval > nowStamp);
+			var handleUsers = context.GameR3Users.Where(u=>u.Enable).Where(u => u.LastHandleStamp + u.HandleInterval < nowStamp).ToList();
 			foreach (var u in handleUsers)
 			{
 				u.LastHandleStamp = nowStamp;
+				context.GameR3Users.Update(u);
 				var uAfter =await UpdateUser(u).ConfigureAwait(true);
 				if (uAfter == null)
 				{

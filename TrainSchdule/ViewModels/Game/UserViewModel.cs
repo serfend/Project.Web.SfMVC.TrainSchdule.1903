@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.Game
 {
-	public class UserInfoViewModel : ApiResult
+	public class UsersViewModel:ApiResult
 	{
-		public UserInfoDataModel Data { get; set; }
+		public UsersDataModel Data { get; set; }
 	}
-	public class UserInfoDataModel
+	public class UsersDataModel
 	{
-		public UserInfo User { get; set; }
+		public IEnumerable<UserInfo> Users { get; set; }
 	}
 }

@@ -16,10 +16,12 @@ namespace TrainSchdule.Controllers.Game_r3
 	public class R3Controller : Controller
 	{
 		private readonly IGameR3Services gameR3Services;
+		private readonly IR3UsersServices r3UsersServices;
 
-		public R3Controller(IGameR3Services gameR3Services)
+		public R3Controller(IGameR3Services gameR3Services, IR3UsersServices r3UsersServices)
 		{
 			this.gameR3Services = gameR3Services;
+			this.r3UsersServices = r3UsersServices;
 		}
 		/// <summary>
 		/// 领取当前礼品码
@@ -56,7 +58,6 @@ namespace TrainSchdule.Controllers.Game_r3
 				}
 			});
 		}
-
 		/// <summary>
 		/// 分享新的礼品码
 		/// </summary>
@@ -80,6 +81,49 @@ namespace TrainSchdule.Controllers.Game_r3
 				Data = new UserInfoDataModel()
 				{
 					User = u
+				}
+			});
+		}
+		/// <summary>
+		/// 获取领取记录
+		/// </summary>
+		/// <param name="userid">需要查询的人员</param>
+		/// <param name="code">需要查询的礼品码</param>
+		/// <param name="pageIndex"></param>
+		/// <param name="pageSize"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> GiftCodeHistory(string userid, string code, int pageIndex = 0, int pageSize = 20)
+		{
+			pageSize = pageSize > 20 ? 20 : pageSize;
+			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.User.Default);
+			var list = await r3UsersServices.GainGiftCodeHistory(userid, code, pageIndex, pageSize).ConfigureAwait(true);
+			return new JsonResult(new UserGiftCodeGainHistoryViewModel()
+			{
+				Data = new UserGiftCodeGainHistoryDataModel()
+				{
+					List = list.Select(i => new GiftCodeDataModel()
+					{
+						Code = i.Code,
+						GainStamp = i.GainStamp,
+						User = r3UsersServices.GetUser(i.User.GameId)?.NickName
+					})
+				}
+			});
+		}
+		/// <summary>
+		/// 获取登记在册的可爱用户
+		/// </summary>
+		/// <returns></returns>
+		public async Task<IActionResult> Members(int pageIndex = 0, int pageSize = 20)
+		{
+			pageSize = pageSize > 20 ? 20 : pageSize;
+			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.User.Default);
+			var users = await r3UsersServices.Members(pageIndex, pageSize).ConfigureAwait(true);
+			return new JsonResult(new UsersViewModel()
+			{
+				Data = new UsersDataModel()
+				{
+					Users = users
 				}
 			});
 		}

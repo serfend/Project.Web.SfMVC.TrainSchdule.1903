@@ -120,7 +120,7 @@ namespace TrainSchdule.Controllers
 				{
 					FileName = fileName,
 					RequestUrl = $"/static/download?id={guid}",
-					ValidStamp = (long)(DateTime.Now.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
+					ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
 					Length = tmpFile.Length
 				}
 			});

@@ -29,7 +29,7 @@ namespace DAL.Entities.Game_r3
 		/// <summary>
 		/// 分享人
 		/// </summary>
-		public virtual User ShareBy { get; set; }
+		public string ShareBy { get; set; }
 	}
 	public class GainGiftCode:BaseEntity
 	{
