@@ -1,10 +1,12 @@
 ﻿using BLL.Helpers;
+using BLL.Interfaces.BBS;
 using BLL.Interfaces.GameR3;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels.BBS;
 using TrainSchdule.ViewModels.Game;
 
 namespace TrainSchdule.Controllers.Game_r3
@@ -17,12 +19,41 @@ namespace TrainSchdule.Controllers.Game_r3
 	{
 		private readonly IGameR3Services gameR3Services;
 		private readonly IR3UsersServices r3UsersServices;
+		private readonly ISignInServices signInServices;
 
-		public R3Controller(IGameR3Services gameR3Services, IR3UsersServices r3UsersServices)
+		public R3Controller(IGameR3Services gameR3Services, IR3UsersServices r3UsersServices, ISignInServices signInServices)
 		{
 			this.gameR3Services = gameR3Services;
 			this.r3UsersServices = r3UsersServices;
+			this.signInServices = signInServices;
 		}
+
+		/// <summary>
+		/// 依据用户签到情况，更新登录时间
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		public IActionResult UpdateHandleInterval(string userId)
+		{
+			var signInToday = signInServices.QuerySingle(userId, DateTime.Today, DateTime.Now);
+			if (signInToday == null) return new JsonResult(new ApiResult(ActionStatusMessage.Fail, "今天没有签到呢", false));
+			var u = r3UsersServices.GetUser(userId);
+			if (u != null)
+			{
+				u.User.LastLogin = DateTime.Now;
+				u.User.LastSignIn = signInToday;
+				r3UsersServices.UpdateUserInfo(u);
+				return new JsonResult(new SignInSuccessViewModel()
+				{
+					Data = new SignInSuccessDataModel() { Description = $"成功~连续签到{signInToday.ComboTimes}次~", SignIn = signInToday }
+				});
+			}
+			else
+			{
+				return new JsonResult(ActionStatusMessage.User.NotExist);
+			}
+		}
+
 		/// <summary>
 		/// 领取当前礼品码
 		/// </summary>
@@ -42,9 +73,10 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// 返回所有可用的礼品码
 		/// </summary>
 		/// <returns></returns>
-		public async Task<IActionResult> GiftCodes(string userid)
+		public async Task<IActionResult> GiftCodes(string userid, int pageIndex, int pageSize)
 		{
-			var list = await gameR3Services.GetAllValidGiftCodes().ConfigureAwait(true);
+			pageSize = pageSize > 20 ? 20 : pageSize <= 0 ? 1 : pageSize;
+			var list = await gameR3Services.GetAllValidGiftCodes(pageIndex, pageSize).ConfigureAwait(true);
 			var userhistory = await gameR3Services.GetUserGiftCodeHistory(new DAL.Entities.Game_r3.User() { GameId = userid }).ConfigureAwait(true);
 			return new JsonResult(new UserGiftCodeGainHistoryViewModel()
 			{
@@ -58,6 +90,7 @@ namespace TrainSchdule.Controllers.Game_r3
 				}
 			});
 		}
+
 		/// <summary>
 		/// 分享新的礼品码
 		/// </summary>
@@ -69,6 +102,7 @@ namespace TrainSchdule.Controllers.Game_r3
 			var c = await gameR3Services.ShareCode(new DAL.Entities.Game_r3.User() { GameId = userid }, new DAL.Entities.Game_r3.GiftCode() { Code = code });
 			return new JsonResult(new GiftCodeViewModel() { Data = new GiftCodeDataModel() { Code = c } });
 		}
+
 		/// <summary>
 		/// 调取用户信息，同时注册此用户
 		/// </summary>
@@ -84,6 +118,7 @@ namespace TrainSchdule.Controllers.Game_r3
 				}
 			});
 		}
+
 		/// <summary>
 		/// 获取领取记录
 		/// </summary>
@@ -94,7 +129,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// <returns></returns>
 		public async Task<IActionResult> GiftCodeHistory(string userid, string code, int pageIndex = 0, int pageSize = 20)
 		{
-			pageSize = pageSize > 20 ? 20 : pageSize;
+			pageSize = pageSize > 20 ? 20 : pageSize <= 0 ? 1 : pageSize;
 			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.User.Default);
 			var list = await r3UsersServices.GainGiftCodeHistory(userid, code, pageIndex, pageSize).ConfigureAwait(true);
 			return new JsonResult(new UserGiftCodeGainHistoryViewModel()
@@ -110,6 +145,7 @@ namespace TrainSchdule.Controllers.Game_r3
 				}
 			});
 		}
+
 		/// <summary>
 		/// 获取登记在册的可爱用户
 		/// </summary>

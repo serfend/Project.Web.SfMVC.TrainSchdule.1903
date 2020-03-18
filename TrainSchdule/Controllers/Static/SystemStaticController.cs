@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,59 @@ namespace TrainSchdule.Controllers
 	public partial class StaticController
 	{
 		/// <summary>
-		/// 
+		/// 产生一个二维码
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult QrCodeGenerate([FromBody] QrCodeDataModel model)
+		{
+			if (model == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
+			var qrEncoder = new SfQRCoder();
+			var rawText = model.Data;
+			if (rawText == null)
+			{
+				if (model.Data == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
+				rawText = qrEncoder.DecodeQrCode(model.Img);
+			}
+			if (model.Config != null) qrEncoder.Config = model.Config;
+			var img = qrEncoder.GenerateBytes(rawText);
+			return new JsonResult(new QrCodeViewModel()
+			{
+				Data = new QrCodeDataModel()
+				{
+					Data = rawText,
+					Img = img,
+					Config = qrEncoder.Config
+				}
+			});
+		}
+
+		/// <summary>
+		/// 识别二维码
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult QrCodeScan([FromBody] QrCodeDataModel model)
+		{
+			if (model == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
+
+			var qrEncoder = new SfQRCoder();
+			return new JsonResult(new QrCodeViewModel()
+			{
+				Data = new QrCodeDataModel()
+				{
+					Data = qrEncoder.DecodeQrCode(model.Img),
+					Img = model.Img,
+					Config = qrEncoder.Config
+				}
+			});
+		}
+
+		/// <summary>
+		///
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
@@ -26,7 +79,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult VerifyCode()
 		{
 			var imgId = _verifyService.Generate().ToString();
-			if (_verifyService.Status!=null)
+			if (_verifyService.Status != null)
 			{
 				var status = _verifyService.Status;
 				_verifyService.Generate();
@@ -42,8 +95,9 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
@@ -61,7 +115,7 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
@@ -79,14 +133,13 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(LocationDataModel), 0)]
-
 		public IActionResult Location(int code)
 		{
 			var location = _context.AdminDivisions.Find(code);
@@ -102,15 +155,15 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
-
 		public IActionResult LocationChildren(int code)
 		{
 			var location = _context.AdminDivisions.Find(code);

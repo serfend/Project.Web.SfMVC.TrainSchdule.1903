@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
 using BLL.Interfaces;
+using BLL.Interfaces.BBS;
+using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
 using BLL.Interfaces.ZX;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.BBS;
+using BLL.Services.File;
 using BLL.Services.GameR3;
 using BLL.Services.ZX;
 using DAL.Data;
@@ -14,35 +18,39 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Swashbuckle.AspNetCore.Swagger;
+using TrainSchdule.Controllers.Log;
 using TrainSchdule.Crontab;
 using TrainSchdule.System;
 
 namespace TrainSchdule
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class Startup
 	{
 		#region Properties
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public IConfiguration Configuration { get; set; }
-		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-		#endregion
+		private readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+		#endregion Properties
 
 		#region .ctors
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="configuration"></param>
 		public Startup(IConfiguration configuration)
@@ -51,7 +59,7 @@ namespace TrainSchdule
 			Configuration = configuration;
 		}
 
-		#endregion
+		#endregion .ctors
 
 		#region Logic
 
@@ -76,15 +84,16 @@ namespace TrainSchdule
 			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
 			services.AddScoped<IGameR3Services, R3HandleServices>();
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
+			services.AddScoped<ISignInServices, SignInServices>();
+			services.AddScoped<IFileServices, FileServices>();
 
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();
 			services.AddSingleton<IFileProvider>(
 				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-
-
 		}
+
 		private void AddHangfireServices(IServiceCollection services)
 		{
 			// Add Hangfire services.
@@ -105,6 +114,7 @@ namespace TrainSchdule
 			// Add the processing server as IHostedService
 			services.AddHangfireServer();
 		}
+
 		private void ConfigureHangfireServices()
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), "*/10 * * * *");
@@ -114,11 +124,11 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
 			RecurringJob.AddOrUpdate<YearlyVocationStatistics>((u) => u.Run(), Cron.Yearly(1, 1, 0));
 			RecurringJob.AddOrUpdate<SeasonlyVocationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
+			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), "*/10 * * * *"); // 自动删除失效的文件上传状态
 		}
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-
 			services.AddDbContext<ApplicationDbContext>(options =>
 			{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -148,7 +158,6 @@ namespace TrainSchdule
 			});
 			AddApplicationServices(services);
 			services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
-
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)
@@ -163,9 +172,9 @@ namespace TrainSchdule
 				c.IncludeXmlComments(xmlPath, true);
 			});
 		}
+
 		private void AddAllowCorsServices(IServiceCollection services)
 		{
-
 			services.AddCors(options =>
 			{
 				options.AddPolicy(MyAllowSpecificOrigins,
@@ -202,10 +211,10 @@ namespace TrainSchdule
 				s.IdleTimeout = TimeSpan.FromMinutes(60);
 				s.Cookie.SameSite = SameSiteMode.None;
 			});
-
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="app"></param>
 		/// <param name="env"></param>
@@ -214,12 +223,11 @@ namespace TrainSchdule
 		{
 			if (env.IsDevelopment())
 			{
-
 			}
 			else if (env.IsProduction())
 			{
-
 			}
+			app.Map("/ws/log", WebSocketLog.Map);// 连接到资源上报的ws
 			app.UseHangfireServer();
 			app.UseHangfireDashboard("/schdule", new DashboardOptions()
 			{
@@ -231,10 +239,6 @@ namespace TrainSchdule
 
 			app.UseDeveloperExceptionPage();
 			app.UseDatabaseErrorPage();
-			app.UseWelcomePage(new WelcomePageOptions()
-			{
-				Path = "/welcome"
-			});
 			DefaultFilesOptions options = new DefaultFilesOptions();
 			options.DefaultFileNames.Add("index.html");    //将index.html改为需要默认起始页的文件名.
 			app.UseDefaultFiles(options);
@@ -257,7 +261,6 @@ namespace TrainSchdule
 			});
 			app.UseAuthentication();
 
-
 			//默认路由
 			app.UseMvc(routes =>
 			{
@@ -269,9 +272,8 @@ namespace TrainSchdule
 
 			//seeder.Seed().Wait();
 			//seeder.CreateUserRoles(services).Wait();
-
 		}
 
-		#endregion
+		#endregion Logic
 	}
 }

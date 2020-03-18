@@ -14,11 +14,13 @@ namespace BLL.Interfaces.GameR3
 		/// <param name="user"></param>
 		/// <returns></returns>
 		Task<IEnumerable<GainGiftCode>> GetUserGiftCodeHistory(User user);
+
 		/// <summary>
 		/// 对所有的用户进行尝试领取操作
 		/// </summary>
 		/// <returns></returns>
 		Task HandleAllUsersGiftCode();
+
 		/// <summary>
 		/// /player/simpleInfo?uid=
 		/// 获取用户基本信息：{"msg":"success","code":0,"data":{"name":"\u6d1b\u5929\u5624","title":"\u5f71\u5fcd"}}
@@ -26,11 +28,12 @@ namespace BLL.Interfaces.GameR3
 		/// <param name="user"></param>
 		/// <returns></returns>
 		Task<UserInfo> UpdateUser(User user);
+
 		/// <summary>
 		/// 获取所有可用的礼品码
 		/// </summary>
 		/// <returns></returns>
-		Task<IEnumerable<GiftCode>> GetAllValidGiftCodes();
+		Task<IEnumerable<GiftCode>> GetAllValidGiftCodes(int pageIndex, int pageSize);
 
 		/// <summary>
 		/// /player/giftCode?uid=&code=
@@ -42,6 +45,7 @@ namespace BLL.Interfaces.GameR3
 		/// <param name="code"></param>
 		/// <returns></returns>
 		Task<GiftCode> HandleCode(User user, GiftCode code);
+
 		/// <summary>
 		/// 分享新的礼品码
 		/// </summary>
@@ -49,6 +53,7 @@ namespace BLL.Interfaces.GameR3
 		/// <param name="code"></param>
 		/// <returns></returns>
 		Task<GiftCode> ShareCode(User user, GiftCode code);
+
 		/// <summary>
 		/// 修改用户礼品码领取间隔
 		/// </summary>

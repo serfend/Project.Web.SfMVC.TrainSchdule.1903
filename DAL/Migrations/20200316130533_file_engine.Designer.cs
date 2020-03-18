@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200316130533_file_engine")]
+    partial class file_engine
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,40 +302,6 @@ namespace DAL.Migrations
                     b.ToTable("DutyTypes");
                 });
 
-            modelBuilder.Entity("DAL.Entities.FileEngine.FileUploadStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("Current");
-
-                    b.Property<Guid?>("FileInfoId");
-
-                    b.Property<DateTime>("LastUpdate");
-
-                    b.Property<long>("Total");
-
-                    b.Property<Guid?>("UploadCacheId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileInfoId");
-
-                    b.HasIndex("UploadCacheId");
-
-                    b.ToTable("FileUploadStatuses");
-                });
-
-            modelBuilder.Entity("DAL.Entities.FileEngine.UploadCache", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UploadCaches");
-                });
-
             modelBuilder.Entity("DAL.Entities.FileEngine.UserFile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -350,10 +318,6 @@ namespace DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Create");
-
-                    b.Property<long>("Length");
 
                     b.Property<string>("Name");
 
@@ -1297,17 +1261,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Duties", "Duties")
                         .WithMany()
                         .HasForeignKey("DutiesCode");
-                });
-
-            modelBuilder.Entity("DAL.Entities.FileEngine.FileUploadStatus", b =>
-                {
-                    b.HasOne("DAL.Entities.FileEngine.UserFileInfo", "FileInfo")
-                        .WithMany()
-                        .HasForeignKey("FileInfoId");
-
-                    b.HasOne("DAL.Entities.FileEngine.UploadCache")
-                        .WithMany("FileStatus")
-                        .HasForeignKey("UploadCacheId");
                 });
 
             modelBuilder.Entity("DAL.Entities.Game_r3.GainGiftCode", b =>

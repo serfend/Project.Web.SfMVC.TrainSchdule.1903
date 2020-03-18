@@ -1,9 +1,11 @@
 ﻿using DAL.Entities;
 using DAL.Entities.UserInfo;
+using DAL.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BLL.Interfaces
 {
@@ -19,13 +21,15 @@ namespace BLL.Interfaces
 		/// <param name="user"></param>
 		/// <param name="success"></param>
 		/// <returns></returns>
-		UserAction Log(UserOperation operation, string username,string Description, bool success = false);
+		UserAction Log(UserOperation operation, string username, string Description, bool success = false, ActionRank rank = ActionRank.Debug);
+
 		/// <summary>
 		/// 当创建的记录状态为不成功时，需要将记录状态置为成功
 		/// </summary>
 		/// <param name="action"></param>
 		/// <returns></returns>
 		UserAction Status(UserAction action, bool success, string description = null);
+
 		/// <summary>
 		/// 授权记录
 		/// </summary>
@@ -35,6 +39,8 @@ namespace BLL.Interfaces
 		/// <param name="permissionUserName"></param>
 		/// <param name="targetUserCompanyCode"></param>
 		/// <returns></returns>
-		bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName,string targetUserCompanyCode);
+		bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode);
+
+		Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
 	}
 }

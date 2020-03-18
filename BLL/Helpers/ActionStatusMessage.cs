@@ -13,11 +13,13 @@
 
 		public int Status { get => status; set => status = value; }
 		public string Message { get => message; set => message = value; }
+
 		public ApiResult(int status, string message)
 		{
 			this.Status = status;
 			this.Message = message;
 		}
+
 		/// <summary>
 		/// 在原报错信息基础上附加信息
 		/// </summary>
@@ -26,10 +28,13 @@
 		/// <param name="AppendToRawMessage"></param>
 		public ApiResult(ApiResult status, string message, bool AppendToRawMessage)
 		{
-			this.status = status?.status??-25844;
-			this.message = status?.message??"未定义类型";
-			if (AppendToRawMessage) this.message += $" {AppendToRawMessage}";
+			this.status = status?.status ?? -25844;
+			this.message = status?.message ?? "未定义类型";
+			if (AppendToRawMessage) this.message += $" {message}";
 		}
-		public ApiResult() { }
+
+		public ApiResult()
+		{
+		}
 	}
 }

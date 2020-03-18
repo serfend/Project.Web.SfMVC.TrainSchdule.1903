@@ -13,6 +13,8 @@
     <Compile Remove="Migrations\20191207142931_AddNew1207.Designer.cs" />
     <Compile Remove="Migrations\20191227153323_new_CompanyUserTitle2.cs" />
     <Compile Remove="Migrations\20191227153323_new_CompanyUserTitle2.Designer.cs" />
+    <Compile Remove="Migrations\20200316022738_logRemote.cs" />
+    <Compile Remove="Migrations\20200316022738_logRemote.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,5 +24,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
   </ItemGroup>
-
 </Project>

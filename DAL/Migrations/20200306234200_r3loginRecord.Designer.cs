@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200306234200_r3loginRecord")]
+    partial class r3loginRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,22 +207,6 @@ namespace DAL.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("PostContent");
                 });
 
-            modelBuilder.Entity("DAL.Entities.BBS.SignIn", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ComboTimes");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<string>("SignId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SignIns");
-                });
-
             modelBuilder.Entity("DAL.Entities.Company", b =>
                 {
                     b.Property<string>("Code");
@@ -300,70 +286,6 @@ namespace DAL.Migrations
                     b.ToTable("DutyTypes");
                 });
 
-            modelBuilder.Entity("DAL.Entities.FileEngine.FileUploadStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("Current");
-
-                    b.Property<Guid?>("FileInfoId");
-
-                    b.Property<DateTime>("LastUpdate");
-
-                    b.Property<long>("Total");
-
-                    b.Property<Guid?>("UploadCacheId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileInfoId");
-
-                    b.HasIndex("UploadCacheId");
-
-                    b.ToTable("FileUploadStatuses");
-                });
-
-            modelBuilder.Entity("DAL.Entities.FileEngine.UploadCache", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UploadCaches");
-                });
-
-            modelBuilder.Entity("DAL.Entities.FileEngine.UserFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Data");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserFiles");
-                });
-
-            modelBuilder.Entity("DAL.Entities.FileEngine.UserFileInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Create");
-
-                    b.Property<long>("Length");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Path");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserFileInfos");
-                });
-
             modelBuilder.Entity("DAL.Entities.Game_r3.GainGiftCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -421,11 +343,7 @@ namespace DAL.Migrations
 
                     b.Property<DateTime>("LastLogin");
 
-                    b.Property<Guid?>("LastSignInId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("LastSignInId");
 
                     b.ToTable("GameR3Users");
                 });
@@ -715,8 +633,6 @@ namespace DAL.Migrations
                     b.Property<string>("Ip");
 
                     b.Property<int>("Operation");
-
-                    b.Property<int>("Rank");
 
                     b.Property<bool>("Success");
 
@@ -1299,17 +1215,6 @@ namespace DAL.Migrations
                         .HasForeignKey("DutiesCode");
                 });
 
-            modelBuilder.Entity("DAL.Entities.FileEngine.FileUploadStatus", b =>
-                {
-                    b.HasOne("DAL.Entities.FileEngine.UserFileInfo", "FileInfo")
-                        .WithMany()
-                        .HasForeignKey("FileInfoId");
-
-                    b.HasOne("DAL.Entities.FileEngine.UploadCache")
-                        .WithMany("FileStatus")
-                        .HasForeignKey("UploadCacheId");
-                });
-
             modelBuilder.Entity("DAL.Entities.Game_r3.GainGiftCode", b =>
                 {
                     b.HasOne("DAL.Entities.Game_r3.GiftCode", "Code")
@@ -1319,13 +1224,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Game_r3.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Game_r3.User", b =>
-                {
-                    b.HasOne("DAL.Entities.BBS.SignIn", "LastSignIn")
-                        .WithMany()
-                        .HasForeignKey("LastSignInId");
                 });
 
             modelBuilder.Entity("DAL.Entities.Game_r3.UserInfo", b =>

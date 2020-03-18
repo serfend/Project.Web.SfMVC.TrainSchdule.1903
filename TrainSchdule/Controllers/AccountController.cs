@@ -44,10 +44,10 @@ namespace TrainSchdule.Controllers
 		private readonly IGoogleAuthService _authService;
 		private readonly IUserActionServices _userActionServices;
 
-
-		#endregion
+		#endregion Fields
 
 		#region .ctors
+
 		/// <summary>
 		/// 账号管理
 		/// </summary>
@@ -80,12 +80,10 @@ namespace TrainSchdule.Controllers
 			_userActionServices = userActionServices;
 		}
 
-		#endregion
-
-
-
+		#endregion .ctors
 
 		#region Rest
+
 		/// <summary>
 		/// 获取用户操作记录
 		/// </summary>
@@ -94,7 +92,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(UserActionViewModel), 0)]
-
 		public IActionResult UserAction(int page, int pageSize = 20)
 		{
 			var currentUser = currentUserService.CurrentUser;
@@ -110,6 +107,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 通过用户真实姓名查询身份号
 		/// </summary>
@@ -131,6 +129,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 通过身份证号查询身份号
 		/// </summary>
@@ -154,6 +153,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 确认邮箱
 		/// </summary>
@@ -178,13 +178,13 @@ namespace TrainSchdule.Controllers
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 退出登录
 		/// </summary>
 		/// <returns>需要登录</returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
@@ -192,6 +192,7 @@ namespace TrainSchdule.Controllers
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 获取当前用户的权限
 		/// </summary>
@@ -199,7 +200,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(IDictionary<string, PermissionRegion>), 0)]
-
 		public IActionResult Permission(string id)
 		{
 			var currentId = id ?? currentUserService.CurrentUser.Id;
@@ -209,6 +209,7 @@ namespace TrainSchdule.Controllers
 			var permission = targetUser.Application.Permission;
 			return new JsonResult(new QueryPermissionsOutViewModel() { Data = permission.GetRegionList() });
 		}
+
 		/// <summary>
 		/// 修改权限情况
 		/// </summary>
@@ -216,7 +217,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Permission([FromBody]ModefyPermissionsViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -228,6 +228,7 @@ namespace TrainSchdule.Controllers
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 修改密码
 		/// </summary>
@@ -235,7 +236,6 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
 		{
 			var currentUser = currentUserService.CurrentUser;
@@ -270,6 +270,7 @@ namespace TrainSchdule.Controllers
 			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 检查授权码是否正确
 		/// </summary>
@@ -294,7 +295,6 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
@@ -309,6 +309,7 @@ namespace TrainSchdule.Controllers
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 获取安全码 二维码
 		/// </summary>
@@ -316,7 +317,6 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(Image), 0)]
-
 		public IActionResult AuthKey()
 		{
 			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
@@ -328,6 +328,7 @@ namespace TrainSchdule.Controllers
 			HttpContext.Response.Cookies.Append("key", _authService.Code().ToString());
 			return new FileContentResult(img, "image/png");
 		}
+
 		/// <summary>
 		/// 用户登录界面回调
 		/// </summary>
@@ -336,11 +337,11 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Login(string returnUrl)
 		{
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
+
 		/// <summary>
 		/// 用户登录
 		/// </summary>
@@ -349,7 +350,6 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
 			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "");
@@ -388,8 +388,8 @@ namespace TrainSchdule.Controllers
 				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			}
 			else return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-
 		}
+
 		/// <summary>
 		/// 批量移除用户
 		/// </summary>
@@ -422,6 +422,7 @@ namespace TrainSchdule.Controllers
 				StatusException = statusME
 			});
 		}
+
 		/// <summary>
 		/// 移除用户
 		/// </summary>
@@ -430,7 +431,6 @@ namespace TrainSchdule.Controllers
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -456,8 +456,9 @@ namespace TrainSchdule.Controllers
 			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
 			_userActionServices.Status(actionRecord, true);
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -479,6 +480,7 @@ namespace TrainSchdule.Controllers
 			await _context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 修改用户信息
 		/// </summary>
@@ -487,7 +489,6 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> ModefyUser([FromBody]UserModefyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -513,6 +514,7 @@ namespace TrainSchdule.Controllers
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 注册新用户
 		/// </summary>
@@ -521,7 +523,6 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -547,6 +548,7 @@ namespace TrainSchdule.Controllers
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 对用户进行登录授权
 		/// </summary>
@@ -567,6 +569,7 @@ namespace TrainSchdule.Controllers
 			_context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 注册新用户
 		/// </summary>
@@ -575,7 +578,6 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public async Task<IActionResult> RegisterMutil([FromBody]UsersCreateMutilViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -607,7 +609,9 @@ namespace TrainSchdule.Controllers
 				StatusException = exStatus
 			});
 		}
-		#endregion
+
+		#endregion Rest
+
 		/// <summary>
 		/// 修改用户信息，只要当前登录的或者授权登录的为目标用户的上级，则可修改
 		/// </summary>
@@ -626,7 +630,7 @@ namespace TrainSchdule.Controllers
 
 			var invalidAccount = modefyUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
-			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount-canAuthRank}级权限", true));
+			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
 			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (invalidAccount == BLL.Extensions.UserExtensions.AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
@@ -636,6 +640,7 @@ namespace TrainSchdule.Controllers
 			await _context.SaveChangesAsync();
 			_userActionServices.Status(actionRecord, true, modefyDescription);
 		}
+
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
@@ -673,6 +678,7 @@ namespace TrainSchdule.Controllers
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 			_userActionServices.Status(actionRecord, true, regDescription);
 		}
+
 		private void CheckCurrentUserData(User currentUser)
 		{
 			//if (currentUser.Application.Email == null || currentUser.Application.Email == "") ModelState.AddModelError("系统信息","认证邮箱为空");

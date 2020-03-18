@@ -18,12 +18,12 @@ namespace BLL.Services.GameR3
 			this.context = context;
 		}
 
-		public async Task<IEnumerable<GainGiftCode>> GainGiftCodeHistory(string userid,string code, int pageIndex, int pageSize)
+		public async Task<IEnumerable<GainGiftCode>> GainGiftCodeHistory(string userid, string code, int pageIndex, int pageSize)
 		{
 			var history = context.GainGiftCodeHistory.AsQueryable();
 			if (userid != null) history = history.Where(h => h.Code.Code == code);
 			if (code != null) history = history.Where(h => h.User.GameId == userid);
-			history=history.OrderByDescending(h => h.GainStamp).Skip(pageIndex * pageSize).Take(pageSize);
+			history = history.OrderByDescending(h => h.GainStamp).Skip(pageIndex * pageSize).Take(pageSize);
 			return history.ToList();
 		}
 
@@ -36,6 +36,13 @@ namespace BLL.Services.GameR3
 		{
 			var users = context.GameR3UserInfos.OrderByDescending(u => u.DateTime).Skip(pageIndex * pageSize).Take(pageSize);
 			return users.ToList();
+		}
+
+		public UserInfo UpdateUserInfo(UserInfo u)
+		{
+			context.GameR3UserInfos.Update(u);
+			context.SaveChanges();
+			return u;
 		}
 	}
 }

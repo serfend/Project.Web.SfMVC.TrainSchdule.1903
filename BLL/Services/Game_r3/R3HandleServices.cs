@@ -29,7 +29,7 @@ namespace BLL.Services.GameR3
 		{
 			if (code == null) return code;
 			if (user == null) return null;
-			var gainHistory = context.GainGiftCodeHistory.Where(h => h.User.Id == user.Id&&h.Code.Code==code.Code).FirstOrDefault();
+			var gainHistory = context.GainGiftCodeHistory.Where(h => h.User.Id == user.Id && h.Code.Code == code.Code).FirstOrDefault();
 			if (gainHistory != null)
 			{
 				// 当领取过时，不再领取
@@ -55,6 +55,7 @@ namespace BLL.Services.GameR3
 					};
 					context.GainGiftCodeHistory.Add(gainHistory);
 					break;
+
 				default:
 					{
 						code.InvalidTime = DateTime.Now;
@@ -70,7 +71,7 @@ namespace BLL.Services.GameR3
 		public async Task<GiftCode> ShareCode(User user, GiftCode code)
 		{
 			if (code == null) return null;
-			var u =await UpdateUser(user).ConfigureAwait(true);
+			var u = await UpdateUser(user).ConfigureAwait(true);
 			if (u.NickName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist, $"忍忍{user.GameId}不存在");
 			var prevCode = context.GiftCodes.Where(g => g.Code == code.Code).FirstOrDefault();
 			if (prevCode != null) return prevCode;
@@ -122,33 +123,46 @@ namespace BLL.Services.GameR3
 					DateTime = DateTime.Now
 				};
 				context.GameR3UserInfos.Add(u);
-				prevUserInfo = u;
 			}
 			context.GameR3UserInfos.Update(prevUserInfo);
 			await context.SaveChangesAsync().ConfigureAwait(true);
 			return prevUserInfo;
 		}
 
-		public async Task<IEnumerable<GiftCode>> GetAllValidGiftCodes()
+		public async Task<IEnumerable<GiftCode>> GetAllValidGiftCodes(int pageIndex, int pageSize)
 		{
 			var codes = context.GiftCodes.Where(c => c.Valid);
+			codes = codes.OrderByDescending(c => c.ShareTime);
+			if (pageIndex != 0 && pageSize != 0)
+			{
+				codes = codes.Skip(pageIndex * pageSize);
+				codes = codes.Take(pageSize);
+			}
 			return codes.ToList();
 		}
 
 		public async Task HandleAllUsersGiftCode()
 		{
 			var nowStamp = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-			var list = await GetAllValidGiftCodes().ConfigureAwait(true);
-			var handleUsers = context.GameR3Users.Where(u=>u.Enable).Where(u => u.LastHandleStamp + u.HandleInterval < nowStamp).ToList();
+			var list = await GetAllValidGiftCodes(0, 100).ConfigureAwait(true);
+			var handleUsers = context.GameR3Users.Where(u => u.Enable).Where(u => u.LastHandleStamp + u.HandleInterval < nowStamp).ToList();
 			foreach (var u in handleUsers)
 			{
 				u.LastHandleStamp = nowStamp;
 				context.GameR3Users.Update(u);
-				var uAfter =await UpdateUser(u).ConfigureAwait(true);
+
+				var uAfter = await UpdateUser(u).ConfigureAwait(true);
 				if (uAfter == null)
 				{
+					u.Enable = false;
+					context.GameR3Users.Update(u);
 					continue;
 				}
+				u.HandleInterval = new Random().Next(3600 * 1000, 3600 * 1000 * 24);//默认下次领取时间在1小时到1天之间
+				var lastLogin = u.LastLogin;
+				var comboTimes = u.LastSignIn?.ComboTimes ?? 0;
+				if (lastLogin > new DateTime(0) && DateTime.Now.Day != (u.LastSignIn?.Date.Day ?? 0) || DateTime.Now.Subtract(lastLogin).TotalDays > comboTimes) continue;
+
 				foreach (var c in list)
 				{
 					var cAfter = await HandleCode(u, c).ConfigureAwait(true);
@@ -156,6 +170,7 @@ namespace BLL.Services.GameR3
 					if (!cAfter.Valid) break;
 				}
 			}
+			await context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
 		public async Task<IEnumerable<GainGiftCode>> GetUserGiftCodeHistory(User user)

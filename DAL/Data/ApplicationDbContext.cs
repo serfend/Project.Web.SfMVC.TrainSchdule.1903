@@ -2,6 +2,7 @@
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.BBS;
 using DAL.Entities.Duty;
+using DAL.Entities.FileEngine;
 using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
@@ -46,14 +47,17 @@ namespace DAL.Data
 		public DbSet<XlsTemplete> XlsTempletes { get; set; }
 		public DbSet<VocationStatistics> VocationStatistics { get; set; }
 		public DbSet<VocationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
+
 		/// <summary>
 		/// 统计数据值
 		/// </summary>
 		public DbSet<VocationStatisticsData> VocationStatisticsDatas { get; set; }
+
 		/// <summary>
 		/// 统计数据值的具体值
 		/// </summary>
-		public DbSet<VocationStatisticsDescriptionDataStatusCount>VocationStatisticsDescriptionDataStatusCounts{get;set;}
+		public DbSet<VocationStatisticsDescriptionDataStatusCount> VocationStatisticsDescriptionDataStatusCounts { get; set; }
+
 		public DbSet<VocationDescription> VocationDescriptions { get; set; }
 		public DbSet<VocationAdditional> VocationAdditionals { get; set; }
 
@@ -68,8 +72,13 @@ namespace DAL.Data
 		public DbSet<DAL.Entities.Game_r3.User> GameR3Users { get; set; }
 		public DbSet<DAL.Entities.Game_r3.UserInfo> GameR3UserInfos { get; set; }
 		public DbSet<GainGiftCode> GainGiftCodeHistory { get; set; }
+		public DbSet<SignIn> SignIns { get; set; }
+		public DbSet<UserFile> UserFiles { get; set; }
+		public DbSet<UserFileInfo> UserFileInfos { get; set; }
+		public DbSet<FileUploadStatus> FileUploadStatuses { get; set; }
+		public DbSet<UploadCache> UploadCaches { get; set; }
 
-		#endregion
+		#endregion Properties
 
 		#region .ctors
 
@@ -77,20 +86,19 @@ namespace DAL.Data
 		/// Initializes a new instance of the <see cref="ApplicationDbContext"/>.
 		/// </summary>
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-			
-        }
+			: base(options)
+		{
+		}
 
-        #endregion
+		#endregion .ctors
 
-        #region Logic
-        
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
+		#region Logic
 
-        #endregion
-    }
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			base.OnModelCreating(builder);
+		}
+
+		#endregion Logic
+	}
 }

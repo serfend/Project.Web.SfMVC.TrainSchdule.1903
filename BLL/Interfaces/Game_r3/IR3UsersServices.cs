@@ -8,12 +8,15 @@ namespace BLL.Interfaces.GameR3
 {
 	public interface IR3UsersServices
 	{
+		UserInfo UpdateUserInfo(UserInfo u);
+
 		/// <summary>
 		/// 通过userid获取用户信息
 		/// </summary>
 		/// <param name="userid"></param>
 		/// <returns></returns>
 		UserInfo GetUser(string userid);
+
 		/// <summary>
 		/// 返回以注册时间后先排序的会员
 		/// </summary>
@@ -21,6 +24,7 @@ namespace BLL.Interfaces.GameR3
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		Task<IEnumerable<UserInfo>> Members(int pageIndex, int pageSize);
+
 		/// <summary>
 		/// 返回以领取时间后先排序的记录
 		/// </summary>
