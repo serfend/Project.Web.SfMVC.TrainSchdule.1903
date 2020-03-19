@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DAL.Entities.FileEngine
@@ -22,5 +23,16 @@ namespace DAL.Entities.FileEngine
 		/// 路径
 		/// </summary>
 		public string Path { get; set; }
+
+		/// <summary>
+		/// 文件来源ip
+		/// </summary>
+		public string FromClient { get; set; }
+
+		/// <summary>
+		/// 当文件需要修改或者删除时需要验证身份
+		/// </summary>
+		[NotMapped]
+		public Guid ClientKey { get; set; }
 	}
 }

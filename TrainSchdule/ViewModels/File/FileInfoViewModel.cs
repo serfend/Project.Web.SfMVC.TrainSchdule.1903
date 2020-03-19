@@ -45,5 +45,10 @@ namespace TrainSchdule.ViewModels.File
 		/// 文件路径
 		/// </summary>
 		public string FilePath { get; set; }
+
+		/// <summary>
+		/// 当文件已存在时，需要传入原文件的Key以操作，防止越权
+		/// </summary>
+		public string ClientKey { get; set; }
 	}
 }

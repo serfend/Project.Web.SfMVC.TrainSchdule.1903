@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces.File;
+﻿using BLL.Helpers;
+using BLL.Interfaces.File;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities.FileEngine;
@@ -36,7 +37,7 @@ namespace BLL.Services.File
 
 		public UserFileInfo Load(string path, string filename) => context.UserFileInfos.Where(c => c.Path == path).Where(c => c.Name == filename).FirstOrDefault();
 
-		public async Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId)
+		public async Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId, Guid clientKey)
 		{
 			if (file == null) return null;
 			UserFile f = null;
@@ -50,6 +51,7 @@ namespace BLL.Services.File
 				fi = Load(path, filename);
 				if (fi != null)
 				{
+					if (fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 					var prevFile = context.UserFiles.Find(fi.Id);
 					var uploadingFile = context.FileUploadStatuses.Where(st => st.FileInfo.Id == fi.Id).FirstOrDefault();
 					if (uploadingFile != null) context.FileUploadStatuses.Remove(uploadingFile);
@@ -63,7 +65,9 @@ namespace BLL.Services.File
 					Name = filename,
 					Path = path,
 					Create = DateTime.Now,
-					Length = file.Length
+					Length = file.Length,
+					FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
+					ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey
 				};
 				context.UserFileInfos.Add(fi);
 			}
@@ -81,7 +85,7 @@ namespace BLL.Services.File
 			if (uploadStatusId != Guid.Empty)
 			{
 				var lastStatus = uploadStatus.FileStatus.Where(s => s.Id == uploadStatusId).FirstOrDefault();
-				if (lastStatus == null) throw new Exception("断点续传失败，因为缓存已失效");
+				if (lastStatus == null) throw new ActionStatusMessageException(ActionStatusMessage.Static.CacheIsInvalid);
 				fileInfo = lastStatus.FileInfo;
 				file = context.UserFiles.Find(uploadStatusId);
 			}

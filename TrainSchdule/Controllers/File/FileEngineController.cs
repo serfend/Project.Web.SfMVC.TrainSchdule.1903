@@ -66,13 +66,16 @@ namespace TrainSchdule.Controllers.File
 		{
 			try
 			{
-				await fileServices.Upload(model.File, model.FilePath, model.FileName, model.ResumeUploadId == null ? Guid.Empty : Guid.Parse(model.ResumeUploadId));
+				await fileServices.Upload(
+					model.File,
+					model.FilePath,
+					model.FileName,
+					model.ResumeUploadId == null ? Guid.Empty : Guid.Parse(model.ResumeUploadId),
+					model.ClientKey == null ? Guid.Empty : Guid.Parse(model.ClientKey));
 			}
-			catch (Exception ex)
+			catch (ActionStatusMessageException ex)
 			{
-				return new JsonResult(new ResponseStatusOrModelExceptionViweModel(new ApiResult(-10303, ex.Message))
-				{
-				});
+				return new JsonResult(ex.Status);
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}

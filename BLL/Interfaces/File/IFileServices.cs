@@ -17,8 +17,9 @@ namespace BLL.Interfaces.File
 		/// <param name="path"></param>
 		/// <param name="filename">用户自定义名称，无名称则用文件名</param>
 		/// <param name="uploadStatusId">断点续传需要传入id</param>
+		/// <param name="clientKey">文件所有者认证</param>
 		/// <returns></returns>
-		Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId);
+		Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId, Guid clientKey);
 
 		void RemoveTimeoutUploadStatus();
 
