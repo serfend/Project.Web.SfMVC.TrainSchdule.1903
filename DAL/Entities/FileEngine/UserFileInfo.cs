@@ -32,7 +32,6 @@ namespace DAL.Entities.FileEngine
 		/// <summary>
 		/// 当文件需要修改或者删除时需要验证身份
 		/// </summary>
-		[NotMapped]
 		public Guid ClientKey { get; set; }
 	}
 }
