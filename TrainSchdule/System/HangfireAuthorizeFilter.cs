@@ -10,8 +10,16 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.System
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class HangfireAuthorizeFilter : IDashboardAuthorizationFilter
 	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
 		public bool Authorize([NotNull] DashboardContext context)
 		{
 			var httpcontext = context.GetHttpContext();

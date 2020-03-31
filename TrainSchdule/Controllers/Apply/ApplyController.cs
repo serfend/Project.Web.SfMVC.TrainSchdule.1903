@@ -28,6 +28,7 @@ namespace TrainSchdule.Controllers.Apply
 	public partial class ApplyController : Controller
 	{
 		#region filed
+
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyService _applyService;
@@ -39,8 +40,9 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IRecallOrderServices recallOrderServices;
 		private readonly IUserActionServices _userActionServices;
 		private readonly IHostingEnvironment _hostingEnvironment;
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="usersService"></param>
 		/// <param name="currentUserService"></param>
@@ -51,6 +53,8 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="authService"></param>
 		/// <param name="vocationCheckServices"></param>
 		/// <param name="recallOrderServices"></param>
+		/// <param name="userActionServices"></param>
+		/// <param name="hostingEnvironment"></param>
 		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
@@ -66,7 +70,7 @@ namespace TrainSchdule.Controllers.Apply
 			_hostingEnvironment = hostingEnvironment;
 		}
 
-		#endregion
+		#endregion filed
 
 		#region Logic
 
@@ -87,6 +91,7 @@ namespace TrainSchdule.Controllers.Apply
 				}
 			});
 		}
+
 		/// <summary>
 		/// 提交申请的基础信息
 		/// </summary>
@@ -142,14 +147,17 @@ namespace TrainSchdule.Controllers.Apply
 					if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
 					if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
 					break;
+
 				case "事假":
 					m.VocationAdditionals = null;
 					m.OnTripLength = 0;
 					break;
+
 				case "病休":
 					m.VocationAdditionals = null;
 					m.OnTripLength = 0;
 					break;
+
 				default:
 					return new JsonResult(ActionStatusMessage.Apply.Request.InvalidVocationType);
 			}
@@ -165,9 +173,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -183,6 +189,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
+
 		/// <summary>
 		/// 删除指定申请
 		/// </summary>
@@ -191,7 +198,6 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-
 		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -209,6 +215,6 @@ namespace TrainSchdule.Controllers.Apply
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		#endregion
+		#endregion Logic
 	}
 }

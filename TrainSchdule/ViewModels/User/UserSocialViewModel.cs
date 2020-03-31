@@ -9,7 +9,7 @@ using TrainSchdule.ViewModels.System;
 namespace TrainSchdule.ViewModels.User
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class UserSocialViewModel : ApiResult
 	{
@@ -18,8 +18,9 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		public UserSocialDataModel Data { get; set; }
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class UserSocialDataModel
 	{
@@ -29,32 +30,39 @@ namespace TrainSchdule.ViewModels.User
 		public string Phone { get; set; }
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public Settle Settle { get; set; }
+
 		/// <summary>
 		/// 家庭地址
 		/// </summary>
 		public AdminDivision Address { get; set; }
+
 		/// <summary>
 		/// 家庭详细地址
 		/// </summary>
 		public string AddressDetail { get; set; }
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class UserSettleDataModel : Settle
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public new string Id { get; set; }
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public static class UserSocialExtensions
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -68,6 +76,7 @@ namespace TrainSchdule.ViewModels.User
 				Settle = model.Settle.ToModel()
 			};
 		}
+
 		/// <summary>
 		/// 格式化moment
 		/// </summary>
@@ -80,14 +89,15 @@ namespace TrainSchdule.ViewModels.User
 				Address = new AdminDivision()
 				{
 					Code = moment?.Address?.Code ?? 0,
-					Name=moment?.Address?.Name??"无",
-					ParentCode=moment?.Address?.ParentCode??0
+					Name = moment?.Address?.Name ?? "无",
+					ParentCode = moment?.Address?.ParentCode ?? 0
 				},
 				AddressDetail = moment?.AddressDetail,
-				Date = moment?.Date??DateTime.Now,
-				Valid = moment?.Valid??false
+				Date = moment?.Date ?? DateTime.Now,
+				Valid = moment?.Valid ?? false
 			};
 		}
+
 		/// <summary>
 		/// 格式化Settle
 		/// </summary>
@@ -102,9 +112,10 @@ namespace TrainSchdule.ViewModels.User
 				Self = settle.Self.ToModel(),
 				Parent = settle.Parent.ToModel(),
 				LoversParent = settle.LoversParent.ToModel(),
-				PrevYearlyLength = settle?.PrevYearlyLength??0
+				PrevYearlyLength = settle?.PrevYearlyLength ?? 0
 			};
 		}
+
 		/// <summary>
 		/// 格式化socialinfo
 		/// </summary>
@@ -118,7 +129,7 @@ namespace TrainSchdule.ViewModels.User
 				{
 					Code = model.Address?.Code ?? 0
 				},
-				AddressDetail = model.AddressDetail??"无",
+				AddressDetail = model.AddressDetail ?? "无",
 				Phone = model.Phone,
 				Settle = model.Settle.ToModel()
 			};

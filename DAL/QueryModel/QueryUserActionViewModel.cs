@@ -10,6 +10,10 @@ namespace DAL.QueryModel
 		public QueryByDate Date { get; set; }
 		public QueryByIntOrEnum Rank { get; set; }
 
+		public QueryByString Ip { get; set; }
+		public QueryByString Device { get; set; }
+		public QueryByString Message { get; set; }
+
 		public QueryByPage Page { get; set; }
 	}
 }

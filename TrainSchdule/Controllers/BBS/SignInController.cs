@@ -16,6 +16,10 @@ namespace TrainSchdule.Controllers.BBS
 	{
 		private readonly ISignInServices signInServices;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="signInServices"></param>
 		public SignInController(ISignInServices signInServices)
 		{
 			this.signInServices = signInServices;

@@ -21,6 +21,12 @@ namespace TrainSchdule.Controllers.Game_r3
 		private readonly IR3UsersServices r3UsersServices;
 		private readonly ISignInServices signInServices;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="gameR3Services"></param>
+		/// <param name="r3UsersServices"></param>
+		/// <param name="signInServices"></param>
 		public R3Controller(IGameR3Services gameR3Services, IR3UsersServices r3UsersServices, ISignInServices signInServices)
 		{
 			this.gameR3Services = gameR3Services;

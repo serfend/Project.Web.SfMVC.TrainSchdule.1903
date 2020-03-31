@@ -6,10 +6,20 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.Static
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class QrCodeViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public QrCodeDataModel Data { get; set; }
 	}
+
+	/// <summary>
+	///
+	/// </summary>
 
 	public class QrCodeDataModel
 	{

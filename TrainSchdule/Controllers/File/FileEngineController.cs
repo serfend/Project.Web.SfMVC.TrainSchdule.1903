@@ -11,11 +11,18 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.File
 {
+	/// <summary>
+	/// 文件助手
+	/// </summary>
 	[Route("[controller]/[action]")]
 	public class FileController : Controller
 	{
 		private readonly IFileServices fileServices;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="fileServices"></param>
 		public FileController(IFileServices fileServices)
 		{
 			this.fileServices = fileServices;
@@ -30,7 +37,7 @@ namespace TrainSchdule.Controllers.File
 		public async Task<IActionResult> Download(string fileid)
 		{
 			var file = Guid.Parse(fileid);
-			var f = fileServices.Download(file);
+			var f = await Task.Run(() => { return fileServices.Download(file); }).ConfigureAwait(true);
 			if (f == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
 			return File(f.Data, "text/plain");
 		}
@@ -44,7 +51,7 @@ namespace TrainSchdule.Controllers.File
 		[HttpGet]
 		public async Task<IActionResult> Load(string filepath, string filename)
 		{
-			var file = fileServices.Load(filepath, filename);
+			var file = await Task.Run(() => { return fileServices.Load(filepath, filename); }).ConfigureAwait(true);
 			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
 			return new JsonResult(new FileInfoViewModel()
 			{

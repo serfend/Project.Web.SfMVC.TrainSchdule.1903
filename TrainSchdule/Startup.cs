@@ -127,6 +127,10 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), "*/10 * * * *"); // 自动删除失效的文件上传状态
 		}
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>

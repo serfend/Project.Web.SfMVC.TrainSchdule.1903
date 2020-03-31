@@ -29,7 +29,7 @@ namespace BLL.Services
 			var ua = new UserAction()
 			{
 				Date = DateTime.Now,
-				Device = context.Request.Query["device"],
+				Device = context.Request.Headers["Device"],
 				UA = context.Request.Headers["User-Agent"],
 				Operation = operation,
 				UserName = username,
@@ -56,20 +56,26 @@ namespace BLL.Services
 
 		public async Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model)
 		{
-			if (model == null) return null;
-			var r = _context.UserActions.AsQueryable();
-			if (model.UserName?.Value != null) r = r.Where(h => h.UserName == (model.UserName.Value));
-			if (model.Date?.Start != null && model.Date?.End != null)
+			return await Task.Run(() =>
 			{
-				r = r.Where(h => h.Date >= model.Date.Start).Where(h => h.Date <= model.Date.End);
-			}
-			if (model.Rank?.Arrays != null) r = r.Where(h => model.Rank.Arrays.Contains((int)h.Rank));
-			if (model.Page == null) model.Page = new QueryByPage()
-			{
-				PageIndex = 0,
-				PageSize = 20
-			};
-			return r.OrderByDescending(h => h.Date).Skip(model.Page.PageSize * model.Page.PageIndex).Take(model.Page.PageSize);
+				if (model == null) return null;
+				var r = _context.UserActions.AsQueryable();
+				if (model.UserName?.Value != null) r = r.Where(h => h.UserName == (model.UserName.Value));
+				if (model.Date?.Start != null && model.Date?.End != null)
+				{
+					r = r.Where(h => h.Date >= model.Date.Start).Where(h => h.Date <= model.Date.End);
+				}
+				if (model.Rank?.Arrays != null) r = r.Where(h => model.Rank.Arrays.Contains((int)h.Rank));
+				if (model.Ip?.Arrays != null) r = r.Where(h => model.Ip.Arrays.Contains(h.Ip));
+				if (model.Device?.Arrays != null) r = r.Where(h => model.Device.Arrays.Contains(h.Device));
+				if (model.Message?.Value != null) r = r.Where(h => h.Description.Contains(model.Message.Value));
+				if (model.Page == null) model.Page = new QueryByPage()
+				{
+					PageIndex = 0,
+					PageSize = 20
+				};
+				return r.OrderByDescending(h => h.Date).Skip(model.Page.PageSize * model.Page.PageIndex).Take(model.Page.PageSize);
+			}).ConfigureAwait(true);
 		}
 
 		public UserAction Status(UserAction action, bool success, string description = null)

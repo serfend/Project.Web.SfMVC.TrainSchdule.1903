@@ -14,6 +14,7 @@ namespace TrainSchdule.ViewModels.Verify
 		/// </summary>
 		public GoogleAuthDataModel Auth { get; set; }
 	}
+
 	/// <summary>
 	/// 授权
 	/// </summary>
@@ -23,19 +24,26 @@ namespace TrainSchdule.ViewModels.Verify
 		/// 超级管理
 		/// </summary>
 		public static readonly GoogleAuthDataModel Root = new GoogleAuthDataModel() { AuthByUserID = "root", Code = GoogleAuthService.StaticVerify.ToString() };
+
 		/// <summary>
 		/// 普通用户
 		/// </summary>
 		public static readonly GoogleAuthDataModel User = new GoogleAuthDataModel() { AuthByUserID = "user", Code = GoogleAuthService.StaticVerify.ToString() };
+
 		/// <summary>
 		/// 授权权限来源
 		/// </summary>
 		public string AuthByUserID { get; set; }
+
 		/// <summary>
 		/// 授权码
 		/// </summary>
 		public string Code { get; set; }
 	}
+
+	/// <summary>
+	/// 认证
+	/// </summary>
 	public static class GoogleAuthExtension
 	{
 		/// <summary>
@@ -45,6 +53,6 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <param name="authService"></param>
 		/// <param name="currentUserId"></param>
 		/// <returns></returns>
-		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService,string currentUserId) => model?.AuthByUserID == currentUserId||(model!=null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
+		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId) => model?.AuthByUserID == currentUserId || (model != null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
 	}
 }

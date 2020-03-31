@@ -27,8 +27,9 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		private readonly IUsersService usersService;
 		private readonly IGoogleAuthService googleAuthService;
 		private readonly IUserActionServices userActionServices;
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="phyGradeServices"></param>
 		/// <param name="usersService"></param>
@@ -41,6 +42,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			this.googleAuthService = googleAuthService;
 			this.userActionServices = userActionServices;
 		}
+
 		/// <summary>
 		/// 添加一个科目
 		/// </summary>
@@ -56,6 +58,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			phyGradeServices.AddSubject(model.Subject);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 查询科目
 		/// </summary>
@@ -71,6 +74,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 				Data = r
 			});
 		}
+
 		/// <summary>
 		/// 获取单个成绩结果及标准
 		/// </summary>
@@ -88,6 +92,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 				Message = result.Message
 			});
 		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[AllowAnonymous]
 		[HttpPost]
 		public IActionResult MutilResult([FromBody]PhyGradeDataModel model)
@@ -107,6 +117,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 				Data = new PhyGradeDataModel() { Queries = resultList }
 			});
 		}
+
 		/// <summary>
 		/// 获取单个成绩结果及标准
 		/// </summary>

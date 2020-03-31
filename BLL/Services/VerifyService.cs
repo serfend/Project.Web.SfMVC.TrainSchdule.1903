@@ -1,5 +1,4 @@
-﻿
-using BLL.Interfaces;
+﻿using BLL.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -10,15 +9,18 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 namespace BLL.Services
 {
 	public class VerifyService : IVerifyService
 	{
 		#region Fileds
+
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IFileProvider _fileProvider;
 		public static readonly int StaticVerify = 201700816;
-		#endregion
+
+		#endregion Fileds
 
 		public VerifyService(IHttpContextAccessor httpContextAccessor, IFileProvider fileProvider)
 		{
@@ -30,10 +32,12 @@ namespace BLL.Services
 				ExpirationScanFrequency = TimeSpan.FromMinutes(30)
 			});
 		}
+
 		~VerifyService()
 		{
 			_cache.Dispose();
 		}
+
 		private void ReloadPath()
 		{
 			verifyImgNum = _fileProvider.GetDirectoryContents(VerifyPath).Count();
@@ -56,6 +60,7 @@ namespace BLL.Services
 
 		private const string VerifyPath = "wwwroot\\images\\verify";
 		private readonly MemoryCache _cache;
+
 		public Guid Generate()
 		{
 			var newCodeValue = Guid.NewGuid();
@@ -92,6 +97,7 @@ namespace BLL.Services
 			if (img == null) Status = "验证码已过期";
 			return img;
 		}
+
 		public string Verify(int code)
 		{
 			string result;
@@ -137,6 +143,7 @@ namespace BLL.Services
 			g.DrawImage(raw, new RectangleF(0, 0, (float)dstWidth, (float)dstHeight), new RectangleF(0, 0, raw.Width, raw.Height), GraphicsUnit.Pixel);
 			return img;
 		}
+
 		/// <summary>
 		/// 对图片增加拼图的剪切路径
 		/// </summary>
@@ -184,7 +191,6 @@ namespace BLL.Services
 			gp.AddLine(left + width, top, left, top);
 			gp.CloseFigure();
 
-
 			using (var sb = new SolidBrush(Color.FromArgb(200, 0, 0, 0)))
 			{
 				using (var pg = new PathGradientBrush(gp)
@@ -197,25 +203,22 @@ namespace BLL.Services
 					front.FillPath(new TextureBrush(srcImg), gp);
 				}
 			}
-
-
-
 		}
 
 		private void InitCodeValue(int fullWidth, int targetWidth)
 		{
 			_code = new Random().Next(50, fullWidth - targetWidth);
 		}
+
 		public VerifyImg(Image raw)
 		{
+			if (raw == null) return;
 			var imgBack = Compress(raw, 260);
 			var size = imgBack.Size;
 			var width = (int)(size.Height * 0.3);
 			InitCodeValue(size.Width, width);
 
-
 			var imgFront = new Bitmap(width, width);
-
 
 			var gBack = Graphics.FromImage(imgBack);
 			var gFront = Graphics.FromImage(imgFront);
@@ -235,6 +238,7 @@ namespace BLL.Services
 			Front = ImageToBytes(imgFront);
 			Background = ImageToBytes(imgBack);
 		}
+
 		/// <summary>
 		/// 图片转换为字节数组
 		/// </summary>

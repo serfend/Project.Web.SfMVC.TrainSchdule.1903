@@ -6,24 +6,30 @@ using TrainSchdule.ViewModels.Company;
 namespace TrainSchdule.Extensions
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public static class CompanyExtensions
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
 		public static CompanyChildDataModel ToCompanyModel(this Company model)
 		{
-			var b=new CompanyChildDataModel()
+			var b = new CompanyChildDataModel()
 			{
 				Code = model.Code,
 				Name = model.Name
 			};
 			return b;
 		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static DutyDataModel ToDataModel(this Duties model)
 		{
 			if (model == null) return null;
@@ -36,19 +42,25 @@ namespace TrainSchdule.Extensions
 				DutyType = model.DutiesRawType
 			};
 		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		public static UserTitleDataModel ToDataModel(this UserCompanyTitle model)
 		{
 			if (model == null) return null;
 			return new UserTitleDataModel()
 			{
-				Code=model.Code,
-				Level=model.Level,
-				Name=model.Name
+				Code = model.Code,
+				Level = model.Level,
+				Name = model.Name
 			};
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>

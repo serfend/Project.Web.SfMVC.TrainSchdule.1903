@@ -9,12 +9,25 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.ZX
 {
-	public class PhySubjectViewModel:ApiResult
+	/// <summary>
+	/// 成绩查询
+	/// </summary>
+	public class PhySubjectViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public Subject Data { get; set; }
 	}
-	public class PhySubjectDataModel: GoogleAuthViewModel
+
+	/// <summary>
+	///
+	/// </summary>
+	public class PhySubjectDataModel : GoogleAuthViewModel
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public Subject Subject { get; set; }
 	}
 }

@@ -36,9 +36,10 @@ namespace TrainSchdule.Controllers
 		private readonly IUserActionServices _userActionServices;
 		private readonly IHostingEnvironment _hostingEnvironment;
 
-		#endregion
+		#endregion Fields
 
 		#region .ctors
+
 		/// <summary>
 		/// 用户管理
 		/// </summary>
@@ -48,6 +49,9 @@ namespace TrainSchdule.Controllers
 		/// <param name="applyService"></param>
 		/// <param name="authService"></param>
 		/// <param name="companyManagerServices"></param>
+		/// <param name="userActionServices"></param>
+		/// <param name="context"></param>
+		/// <param name="hostingEnvironment"></param>
 		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
@@ -61,7 +65,7 @@ namespace TrainSchdule.Controllers
 			_hostingEnvironment = hostingEnvironment;
 		}
 
-		#endregion
+		#endregion .ctors
 
 		#region Logic
 
@@ -82,6 +86,7 @@ namespace TrainSchdule.Controllers
 			result = null;
 			return targetUser;
 		}
+
 		/// <summary>
 		/// 系统信息
 		/// </summary>
@@ -99,6 +104,7 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.Application.ToModel(targetUser)
 			});
 		}
+
 		/// <summary>
 		/// 用户自定义信息
 		/// </summary>
@@ -116,6 +122,7 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.DiyInfo?.ToViewModel(targetUser, _hostingEnvironment)
 			});
 		}
+
 		/// <summary>
 		/// 用户自定义信息
 		/// </summary>
@@ -136,6 +143,7 @@ namespace TrainSchdule.Controllers
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 社会信息
 		/// </summary>
@@ -171,6 +179,7 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.CompanyInfo.ToDutiesModel()
 			});
 		}
+
 		/// <summary>
 		/// 单位信息
 		/// </summary>
@@ -188,6 +197,7 @@ namespace TrainSchdule.Controllers
 				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
 			});
 		}
+
 		/// <summary>
 		/// 获取用户简要信息
 		/// </summary>
@@ -196,7 +206,6 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSummaryViewModel), 0)]
-
 		public IActionResult Summary(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -208,6 +217,7 @@ namespace TrainSchdule.Controllers
 				Data = data
 			});
 		}
+
 		/// <summary>
 		/// 基础信息
 		/// </summary>
@@ -231,7 +241,6 @@ namespace TrainSchdule.Controllers
 			});
 		}
 
-
 		/// <summary>
 		/// 此用户提交申请后，将生成的审批流
 		/// </summary>
@@ -253,11 +262,11 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 获取用户休假情况
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="yearIndex">休假年度</param>
 		/// <returns></returns>
 		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
 		[AllowAnonymous]
@@ -272,6 +281,7 @@ namespace TrainSchdule.Controllers
 				Data = vocationInfo
 			});
 		}
+
 		/// <summary>
 		/// 修改头像
 		/// </summary>
@@ -319,7 +329,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
-		#endregion
 
+		#endregion Logic
 	}
 }

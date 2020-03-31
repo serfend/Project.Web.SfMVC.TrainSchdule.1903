@@ -10,10 +10,12 @@ namespace TrainSchdule.ViewModels.BBS
 	/// </summary>
 	public class PostCreateDataModel
 	{
-
 	}
+
+	/// <summary>
+	/// 查询动态
+	/// </summary>
 	public class PostQueryDataModel
 	{
-
 	}
 }

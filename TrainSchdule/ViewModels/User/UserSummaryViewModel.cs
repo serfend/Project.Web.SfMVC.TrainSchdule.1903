@@ -9,23 +9,36 @@ using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class UserSummariesViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserSummariesDataModel Data { get; set; }
 	}
+
+	/// <summary>
+	///
+	/// </summary>
 	public class UserSummariesDataModel
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public IEnumerable<UserSummaryDto> List { get; set; }
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
-	public class UserSummaryViewModel: ApiResult
+	public class UserSummaryViewModel : ApiResult
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public UserSummaryDto Data { get; set; }
 	}
-
 }

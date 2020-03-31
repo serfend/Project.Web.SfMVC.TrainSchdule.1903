@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.Account
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class UserActionReportViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserActionDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	public class UserActionReportDataModel
 	{
 		/// <summary>

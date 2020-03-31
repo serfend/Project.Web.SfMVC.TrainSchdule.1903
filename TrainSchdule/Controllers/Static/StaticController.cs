@@ -27,12 +27,11 @@ using CollectionExtensions = Castle.Core.Internal.CollectionExtensions;
 namespace TrainSchdule.Controllers
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	[Route("[controller]/[action]")]
 	public partial class StaticController : Controller
 	{
-
 		private readonly IVerifyService _verifyService;
 		private readonly IVocationCheckServices _vocationCheckServices;
 		private readonly ApplicationDbContext _context;
@@ -43,6 +42,18 @@ namespace TrainSchdule.Controllers
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="verifyService"></param>
+		/// <param name="vocationCheckServices"></param>
+		/// <param name="context"></param>
+		/// <param name="applyService"></param>
+		/// <param name="hostingEnvironment"></param>
+		/// <param name="currentUserService"></param>
+		/// <param name="usersService"></param>
+		/// <param name="companiesService"></param>
+		/// <param name="httpContext"></param>
 		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext)
 		{
 			_verifyService = verifyService;
@@ -66,7 +77,7 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
-		public IActionResult VocationDate(DateTime start, int length,bool caculateLawVocation)
+		public IActionResult VocationDate(DateTime start, int length, bool caculateLawVocation)
 		{
 			var list = _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation);
 			return new JsonResult(new VocationDescriptionViewModel()
@@ -80,6 +91,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 上传休假导出模板
 		/// </summary>

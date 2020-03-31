@@ -1,5 +1,4 @@
-﻿
-using DAL.DTO.Apply;
+﻿using DAL.DTO.Apply;
 using DAL.Entities.ApplyInfo;
 using ExcelReport;
 using ExcelReport.Renderers;
@@ -45,7 +44,7 @@ namespace BLL.Services.ApplyServices
 				model.StampLeave = new QueryByDate()
 				{
 					Start = nowDay,
-					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8) 
+					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8)
 				};
 			}
 			list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
@@ -76,6 +75,7 @@ namespace BLL.Services.ApplyServices
 			totalCount = result.Count;
 			return result;
 		}
+
 		public Task RemoveAllUnSaveApply()
 		{
 			//寻找所有找过1天未保存的申请
@@ -85,12 +85,14 @@ namespace BLL.Services.ApplyServices
 			RemoveApplies(list);
 			return Task.CompletedTask;
 		}
+
 		public Task RemoveAllNoneFromUserApply()
 		{
 			var list = _context.Applies.Where(a => a.BaseInfo.From == null);
 			RemoveApplies(list);
 			return Task.CompletedTask;
 		}
+
 		public Task RemoveApplies(IEnumerable<Apply> list)
 		{
 			if (list == null) return Task.CompletedTask;
@@ -101,19 +103,21 @@ namespace BLL.Services.ApplyServices
 			var applies = _context.Applies;
 			//寻找所有没有创建申请且不是今天创建的 请求信息
 			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day).ToList();
-			//删除这些请求信息的福利信息		
+			//删除这些请求信息的福利信息
 			foreach (var add in request) _context.VocationAdditionals.RemoveRange(add.AdditialVocations);
 			//删除这些请求信息
 			_context.ApplyRequests.RemoveRange(request);
 			//寻找所有没有创建申请且不是今天创建的 基础信息
 			var baseInfos = _context.ApplyBaseInfos.Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
-			//删除这些基础信息		
+			//删除这些基础信息
 			_context.ApplyBaseInfos.RemoveRange(baseInfos);
 			_context.SaveChanges();
 			return Task.CompletedTask;
 		}
+
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
 		{
+			if (model == null) return null;
 			var list = SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model, (key, value) =>
 			{
 				switch (key)
@@ -140,7 +144,6 @@ namespace BLL.Services.ApplyServices
 			if (list.Count == 0) return null;
 			var mapList = new List<ParameterRenderer<ApplyDetailDto>>()
 			{
-
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_LeftLength", t => t.UserVocationDescription?.LeftLength),
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_MaxTripTimes", t => t.UserVocationDescription?.MaxTripTimes),
 				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_NowTimes", t => t.UserVocationDescription?.NowTimes),

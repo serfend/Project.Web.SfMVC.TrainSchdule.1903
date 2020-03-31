@@ -13,6 +13,9 @@ namespace TrainSchdule.ViewModels.Account
 	/// </summary>
 	public class UserActionDictionaryViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserActionDictionaryDataModel Data { get; set; }
 	}
 
@@ -32,6 +35,12 @@ namespace TrainSchdule.ViewModels.Account
 	/// </summary>
 	public class UserActionDictionaryItem
 	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <param name="foreColor"></param>
 		public UserActionDictionaryItem(string name, int value, string foreColor)
 		{
 			Name = name;
@@ -39,6 +48,9 @@ namespace TrainSchdule.ViewModels.Account
 			ForeColor = foreColor;
 		}
 
+		/// <summary>
+		///
+		/// </summary>
 		public UserActionDictionaryItem()
 		{
 		}
@@ -59,8 +71,18 @@ namespace TrainSchdule.ViewModels.Account
 		public string ForeColor { get; set; }
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	public static class UADI
 	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <param name="color"></param>
+		/// <returns></returns>
 		public static UserActionDictionaryItem Build(string name, int value, Color color)
 		{
 			var colorStr = Color.FromArgb(color.ToArgb());
@@ -72,8 +94,20 @@ namespace TrainSchdule.ViewModels.Account
 			};
 		}
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="rank"></param>
+		/// <param name="color"></param>
+		/// <returns></returns>
 		public static UserActionDictionaryItem Build(this ActionRank rank, Color color) => Build(rank.ToString(), (int)rank, color);
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="rank"></param>
+		/// <param name="color"></param>
+		/// <returns></returns>
 		public static UserActionDictionaryItem Build(this UserOperation rank, Color color) => Build(rank.ToString(), (int)rank, color);
 	}
 }

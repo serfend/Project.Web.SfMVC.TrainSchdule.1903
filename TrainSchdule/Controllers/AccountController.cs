@@ -175,7 +175,7 @@ namespace TrainSchdule.Controllers
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 				return new JsonResult($"无法加载当前用户信息 '{userId}'.");
-			var result = await _userManager.ConfirmEmailAsync(user, code);
+			await _userManager.ConfirmEmailAsync(user, code);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -196,7 +196,7 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 获取当前用户的权限
 		/// </summary>
-		/// <param name="model"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(IDictionary<string, PermissionRegion>), 0)]
@@ -339,6 +339,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Login(string returnUrl)
 		{
+			Console.WriteLine(returnUrl);
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
 

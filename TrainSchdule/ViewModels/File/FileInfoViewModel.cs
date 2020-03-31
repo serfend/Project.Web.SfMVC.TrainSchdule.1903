@@ -12,12 +12,20 @@ namespace TrainSchdule.ViewModels.File
 	/// 用户上传的文件信息
 	/// </summary>
 	public class FileInfoViewModel : ApiResult
-	{
+	{/// <summary>
+	 ///
+	 /// </summary>
 		public FileInfoDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	public class FileInfoDataModel
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserFileInfo File { get; set; }
 	}
 

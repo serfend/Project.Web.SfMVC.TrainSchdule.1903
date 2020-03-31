@@ -29,6 +29,14 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IUserActionServices _userActionServices;
 		private readonly IVacationStatisticsServices _vacationStatisticsServices;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="authService"></param>
+		/// <param name="usersService"></param>
+		/// <param name="userActionServices"></param>
+		/// <param name="vacationStatisticsServices"></param>
 		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices)
 		{
 			this.context = context;
@@ -41,18 +49,19 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <summary>
 		/// 获取某日在一年中的周数
 		/// </summary>
-		/// <param name="date"></param>
+		/// <param name="value"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(DateWeekOfYearViewModel), 0)]
-		public IActionResult WhichWeekInYear(DateTime date)
+		public IActionResult WhichWeekInYear(DateTime value)
 		{
-			var result = new GregorianCalendar().GetWeekOfYear(date, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday) + 1;
+			var result = new GregorianCalendar().GetWeekOfYear(value, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday) + 1;
 			return new JsonResult(new DateWeekOfYearViewModel()
 			{
 				Data = new DateWeekOfYearDataModel() { WeekOfYear = result }
 			});
 		}
+
 		/// <summary>
 		/// 获取指定统计内某单位的情况
 		/// </summary>
@@ -60,7 +69,6 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(VocationStatisticsViewModel), 0)]
-
 		public IActionResult DetailsList([FromBody]QueryVacationStatisticsDataModel model)
 		{
 			var result = _vacationStatisticsServices.Query(model);
@@ -69,6 +77,7 @@ namespace TrainSchdule.Controllers.Statistics
 				List = result
 			});
 		}
+
 		/// <summary>
 		/// 添加新的统计任务
 		/// </summary>
@@ -103,6 +112,7 @@ namespace TrainSchdule.Controllers.Statistics
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 删除指定单位的指定统计
 		/// </summary>
@@ -127,6 +137,7 @@ namespace TrainSchdule.Controllers.Statistics
 			await context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		private void RemoveStatisticsDescription(VocationStatisticsDescription entity)
 		{
 			if (entity == null) return;
@@ -145,6 +156,7 @@ namespace TrainSchdule.Controllers.Statistics
 
 			context.VocationStatisticsDescriptions.Remove(entity);
 		}
+
 		/// <summary>
 		/// 单位统计记录
 		/// </summary>

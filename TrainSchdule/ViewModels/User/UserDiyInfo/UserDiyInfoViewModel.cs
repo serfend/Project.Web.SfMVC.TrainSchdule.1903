@@ -11,20 +11,47 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.User
 {
-	public class UserDiyInfoViewModel: ApiResult
+	/// <summary>
+	///
+	/// </summary>
+	public class UserDiyInfoViewModel : ApiResult
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserDiyInfoDataModel Data { get; set; }
 	}
-public class UserDiyInfoModefyModel:GoogleAuthViewModel
+
+	/// <summary>
+	///
+	/// </summary>
+	public class UserDiyInfoModefyModel : GoogleAuthViewModel
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public UserDiyInfoDataModel Data { get; set; }
-	}	
- public class UserDiyInfoDataModel
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class UserDiyInfoDataModel
 	{
+		/// <summary>
+		///
+		/// </summary>
 		public string About { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
 		public string Avatar { get; set; }
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	public static class UserDiyInfoExtension
 	{
 		/// <summary>
@@ -32,8 +59,9 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="user">需要传入用户本身</param>
+		/// <param name="env"></param>
 		/// <returns></returns>
-		public static UserDiyInfoDataModel ToViewModel (this UserDiyInfo model,DAL.Entities.UserInfo.User user,IHostingEnvironment env)
+		public static UserDiyInfoDataModel ToViewModel(this UserDiyInfo model, DAL.Entities.UserInfo.User user, IHostingEnvironment env)
 		{
 			return new UserDiyInfoDataModel()
 			{
@@ -41,6 +69,7 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 				Avatar = model.Avatar?.Id.ToString()
 			};
 		}
+
 		/// <summary>
 		/// 将传入信息转换为UserDiyInfo
 		/// </summary>
@@ -50,7 +79,7 @@ public class UserDiyInfoModefyModel:GoogleAuthViewModel
 		{
 			var r = new UserDiyInfo()
 			{
-				About=model.About
+				About = model.About
 			};
 			return r;
 		}

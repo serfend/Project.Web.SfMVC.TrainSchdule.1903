@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.BBS
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class SignInSuccessViewModel : ApiResult
-	{
+	{/// <summary>
+	 ///
+	 /// </summary>
 		public SignInSuccessDataModel Data { get; set; }
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	public class SignInSuccessDataModel
 	{
 		/// <summary>
