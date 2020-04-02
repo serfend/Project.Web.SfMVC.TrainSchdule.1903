@@ -45,7 +45,7 @@ namespace BLL.Services
 
 		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode)
 		{
-			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}");
+			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}", false, ActionRank.Danger);
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
 				Status(a, true, "授权成功");
