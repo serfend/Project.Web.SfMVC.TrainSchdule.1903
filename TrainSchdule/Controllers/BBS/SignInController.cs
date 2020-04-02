@@ -30,6 +30,7 @@ namespace TrainSchdule.Controllers.BBS
 		/// </summary>
 		/// <param name="signInId"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public IActionResult SignIn(string signInId)
 		{
 			var lastInDaySignIn = signInServices.QuerySingle(signInId, DateTime.Today, DateTime.Now);

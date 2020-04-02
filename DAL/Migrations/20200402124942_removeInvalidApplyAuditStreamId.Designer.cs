@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200402124942_removeInvalidApplyAuditStreamId")]
+    partial class removeInvalidApplyAuditStreamId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,10 +81,6 @@ namespace DAL.Migrations
 
                     b.Property<int>("Index");
 
-                    b.Property<string>("MembersAcceptToAudit");
-
-                    b.Property<string>("MembersFitToAudit");
-
                     b.Property<int>("RequireMembersAcceptCount");
 
                     b.HasKey("Id");
@@ -101,8 +99,6 @@ namespace DAL.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Nodes");
-
                     b.HasKey("Name");
 
                     b.ToTable("ApplyAuditStreams");
@@ -113,11 +109,9 @@ namespace DAL.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuditMembers");
+                    b.Property<string>("ApplyAuditStreamName");
 
                     b.Property<int>("AuditMembersCount");
-
-                    b.Property<string>("Companies");
 
                     b.Property<string>("CompanyRefer");
 
@@ -125,11 +119,11 @@ namespace DAL.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Duties");
-
                     b.Property<int>("DutyIsMajor");
 
                     b.HasKey("Name");
+
+                    b.HasIndex("ApplyAuditStreamName");
 
                     b.ToTable("ApplyAuditStreamNodeActions");
                 });
@@ -139,19 +133,13 @@ namespace DAL.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuditMembers");
-
                     b.Property<int>("AuditMembersCount");
-
-                    b.Property<string>("Companies");
 
                     b.Property<string>("CompanyRefer");
 
                     b.Property<DateTime>("Create");
 
                     b.Property<string>("Description");
-
-                    b.Property<string>("Duties");
 
                     b.Property<int>("DutyIsMajor");
 
@@ -317,6 +305,62 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SignIns");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Base.IntResources", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ApplyAuditStreamNodeActionName");
+
+                    b.Property<string>("ApplyAuditStreamSolutionRuleName");
+
+                    b.Property<int>("Data");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyAuditStreamNodeActionName");
+
+                    b.HasIndex("ApplyAuditStreamSolutionRuleName");
+
+                    b.ToTable("IntResources");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Base.StringResources", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ApplyAuditStepId");
+
+                    b.Property<Guid?>("ApplyAuditStepId1");
+
+                    b.Property<string>("ApplyAuditStreamNodeActionName");
+
+                    b.Property<string>("ApplyAuditStreamNodeActionName1");
+
+                    b.Property<string>("ApplyAuditStreamSolutionRuleName");
+
+                    b.Property<string>("ApplyAuditStreamSolutionRuleName1");
+
+                    b.Property<string>("Data");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyAuditStepId");
+
+                    b.HasIndex("ApplyAuditStepId1");
+
+                    b.HasIndex("ApplyAuditStreamNodeActionName");
+
+                    b.HasIndex("ApplyAuditStreamNodeActionName1");
+
+                    b.HasIndex("ApplyAuditStreamSolutionRuleName");
+
+                    b.HasIndex("ApplyAuditStreamSolutionRuleName1");
+
+                    b.ToTable("StringResources");
                 });
 
             modelBuilder.Entity("DAL.Entities.Company", b =>
@@ -1330,6 +1374,13 @@ namespace DAL.Migrations
                         .HasForeignKey("ApplyId");
                 });
 
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyAuditStreamNodeAction", b =>
+                {
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStream")
+                        .WithMany("Nodes")
+                        .HasForeignKey("ApplyAuditStreamName");
+                });
+
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", b =>
                 {
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStream", "Solution")
@@ -1395,6 +1446,44 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "ReplyTo")
                         .WithMany()
                         .HasForeignKey("ReplyToId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Base.IntResources", b =>
+                {
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamNodeAction")
+                        .WithMany("Duties")
+                        .HasForeignKey("ApplyAuditStreamNodeActionName");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule")
+                        .WithMany("Duties")
+                        .HasForeignKey("ApplyAuditStreamSolutionRuleName");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Base.StringResources", b =>
+                {
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStep")
+                        .WithMany("MembersAcceptToAudit")
+                        .HasForeignKey("ApplyAuditStepId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStep")
+                        .WithMany("MembersFitToAudit")
+                        .HasForeignKey("ApplyAuditStepId1");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamNodeAction")
+                        .WithMany("AuditMembers")
+                        .HasForeignKey("ApplyAuditStreamNodeActionName");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamNodeAction")
+                        .WithMany("Companies")
+                        .HasForeignKey("ApplyAuditStreamNodeActionName1");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule")
+                        .WithMany("AuditMembers")
+                        .HasForeignKey("ApplyAuditStreamSolutionRuleName");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule")
+                        .WithMany("Companies")
+                        .HasForeignKey("ApplyAuditStreamSolutionRuleName1");
                 });
 
             modelBuilder.Entity("DAL.Entities.CompanyManagers", b =>

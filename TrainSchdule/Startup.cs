@@ -86,6 +86,7 @@ namespace TrainSchdule
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
 			services.AddScoped<ISignInServices, SignInServices>();
 			services.AddScoped<IFileServices, FileServices>();
+			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamServices>();
 
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
-using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
@@ -125,20 +124,24 @@ namespace BLL.Services.ApplyServices
 			model.ApplyAuditStreamSolutionRule = rule;
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
-			foreach (var n in rule.Solution.Nodes)
+			foreach (var nStr in rule.Solution?.Nodes?.Length == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
+				var n = _context.ApplyAuditStreamNodeActions.Find(nStr);
+				if (n == null) throw new NodeNotExistException($"无效的节点：{nStr}");
+
 				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
 				if (modelApplyAllAuditStep.Count > 0)
 				{
-					var firstHandleUsr = modelApplyAllAuditStep[modelApplyAllAuditStep.Count].MembersFitToAudit.FirstOrDefault();
-					if (firstHandleUsr != null) usrCmp = _usersService.Get(firstHandleUsr)?.CompanyInfo?.Company?.Code ?? usrCmp;
+					var currentNodeFitMembers = modelApplyAllAuditStep[modelApplyAllAuditStep.Count - 1].MembersFitToAudit;
+					var firstHandleUsr = currentNodeFitMembers.Length == 0 ? Array.Empty<string>() : currentNodeFitMembers.Split("##");
+					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.Get(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 				}
 
 				var item = new ApplyAuditStep()
 				{
 					Index = stepIndex++,
-					MembersAcceptToAudit = new List<string>(),
-					MembersFitToAudit = _applyAuditStreamServices.GetToAuditMembers(usrCmp, n),
+					MembersAcceptToAudit = string.Empty,
+					MembersFitToAudit = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n)),
 					RequireMembersAcceptCount = n.AuditMembersCount
 				};
 				modelApplyAllAuditStep.Add(item);
@@ -219,12 +222,13 @@ namespace BLL.Services.ApplyServices
 			// 审批未发布时 不可进行审批
 			if (nowStep == null) return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 			// 待审批人无当前用户时，返回无效
-			if (!nowStep.MembersFitToAudit.Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
-			if (nowStep.MembersAcceptToAudit.Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.BeenAudit;
+			if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
+			if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.BeenAudit;
 			// 当审批的申请为未发布的申请时，将其发布
 			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
-			nowStep.MembersAcceptToAudit = nowStep.MembersAcceptToAudit.Append(AuditUser.Id);
+			var list = nowStep.MembersAcceptToAudit.Length == 0 ? Array.Empty<string>() : nowStep.MembersAcceptToAudit.Split("##");
+			nowStep.MembersAcceptToAudit = string.Join("##", list.Append(AuditUser.Id));
 			_context.ApplyAuditSteps.Update(nowStep);
 			// 对本人审批信息进行追加
 			model.Apply.Response = model.Apply.Response.Append(new ApplyResponse()
@@ -244,7 +248,7 @@ namespace BLL.Services.ApplyServices
 	[Serializable]
 	public class NoAuditStreamRuleFitException : Exception
 	{
-		public NoAuditStreamRuleFitException()
+		public NoAuditStreamRuleFitException() : base("没有合适的审批流方案")
 		{
 		}
 
@@ -257,6 +261,26 @@ namespace BLL.Services.ApplyServices
 		}
 
 		protected NoAuditStreamRuleFitException(
+		  System.Runtime.Serialization.SerializationInfo info,
+		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+	}
+
+	[Serializable]
+	public class NodeNotExistException : Exception
+	{
+		public NodeNotExistException() : base("节点未找到")
+		{
+		}
+
+		public NodeNotExistException(string message) : base(message)
+		{
+		}
+
+		public NodeNotExistException(string message, Exception inner) : base(message, inner)
+		{
+		}
+
+		protected NodeNotExistException(
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 	}

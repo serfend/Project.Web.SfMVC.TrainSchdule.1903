@@ -39,6 +39,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// </summary>
 		/// <param name="userId"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public IActionResult UpdateHandleInterval(string userId)
 		{
 			var signInToday = signInServices.QuerySingle(userId, DateTime.Today, DateTime.Now);
@@ -66,6 +67,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// <param name="userid"></param>
 		/// <param name="code"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> HandleCode(string userid, string code)
 		{
 			var u = await gameR3Services.UpdateUser(new DAL.Entities.Game_r3.User() { GameId = userid });
@@ -79,6 +81,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// 返回所有可用的礼品码
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> GiftCodes(string userid, int pageIndex, int pageSize)
 		{
 			pageSize = pageSize > 20 ? 20 : pageSize <= 0 ? 1 : pageSize;
@@ -103,6 +106,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// <param name="userid"></param>
 		/// <param name="code"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> ShareCode(string userid, string code)
 		{
 			var c = await gameR3Services.ShareCode(new DAL.Entities.Game_r3.User() { GameId = userid }, new DAL.Entities.Game_r3.GiftCode() { Code = code });
@@ -113,6 +117,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// 调取用户信息，同时注册此用户
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> UserInfo(string userid)
 		{
 			var u = await gameR3Services.UpdateUser(new DAL.Entities.Game_r3.User() { GameId = userid }).ConfigureAwait(true);
@@ -133,6 +138,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// <param name="pageIndex"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> GiftCodeHistory(string userid, string code, int pageIndex = 0, int pageSize = 20)
 		{
 			pageSize = pageSize > 20 ? 20 : pageSize <= 0 ? 1 : pageSize;
@@ -156,6 +162,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		/// 获取登记在册的可爱用户
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> Members(int pageIndex = 0, int pageSize = 20)
 		{
 			pageSize = pageSize > 20 ? 20 : pageSize;

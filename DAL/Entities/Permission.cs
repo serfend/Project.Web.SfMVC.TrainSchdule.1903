@@ -4,10 +4,11 @@ using Newtonsoft.Json;
 
 namespace DAL.Entities
 {
-	public class Permissions:BaseEntity
+	public class Permissions : BaseEntity
 	{
 		//TODO 之后可能加上角色控制
 		public string Regions { get; set; }
+
 		/// <summary>
 		/// 用户角色，当角色为System时拥有所有权限，当角色为Admin时拥有所有再说吧
 		/// </summary>
@@ -22,21 +23,23 @@ namespace DAL.Entities
 		Query
 	}
 
-
 	public static class DictionaryAllPermission
 	{
 		public static class User
 		{
-			public static PermissionDescription Application=new PermissionDescription("User.Application","用户的密码、安全码等敏感信息");
-			public static PermissionDescription BaseInfo=new PermissionDescription("User.BaseInfo","用户的基本信息");
+			public static PermissionDescription Application = new PermissionDescription("User.Application", "用户的密码、安全码等敏感信息");
+			public static PermissionDescription BaseInfo = new PermissionDescription("User.BaseInfo", "用户的基本信息");
 		}
+
 		public static class Apply
 		{
 			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的编辑权限");
+			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请审批流的编辑权限");
 		}
+
 		public static class Grade
 		{
-			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject","科目标准的编辑权限");
+			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的编辑权限");
 		}
 	}
 
@@ -51,6 +54,7 @@ namespace DAL.Entities
 			Description = description;
 		}
 	}
+
 	public static class PermissionCheckExtension
 	{
 		/// <summary>
@@ -81,8 +85,8 @@ namespace DAL.Entities
 					return false;
 				})) return false;
 			}
-			
-			Update(permissions,newSerializeRaw);
+
+			Update(permissions, newSerializeRaw);
 			return true;
 		}
 
@@ -92,6 +96,7 @@ namespace DAL.Entities
 			if (expectTo == null) return false;
 			return expectTo.All(p => granter.Any(p.StartsWith));
 		}
+
 		private static void Update(this Permissions permissions, string newSerializeRaw) =>
 			permissions.Regions = newSerializeRaw;
 
@@ -103,14 +108,15 @@ namespace DAL.Entities
 		public static IDictionary<string, PermissionRegion> GetRegionList(this Permissions permissions)
 		{
 			var raw = permissions.Regions;
-			if (raw==null)return new Dictionary<string, PermissionRegion>();
+			if (raw == null) return new Dictionary<string, PermissionRegion>();
 			return ToRegionList(raw);
 		}
 
 		public static IDictionary<string, PermissionRegion> ToRegionList(string raw)
 		{
-			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw??"{}") ?? new Dictionary<string, PermissionRegion>();
+			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw ?? "{}") ?? new Dictionary<string, PermissionRegion>();
 		}
+
 		/// <summary>
 		/// 获取指定权限列表
 		/// </summary>
@@ -130,6 +136,7 @@ namespace DAL.Entities
 
 			return dic;
 		}
+
 		/// <summary>
 		/// 新增权限
 		/// </summary>
@@ -142,7 +149,7 @@ namespace DAL.Entities
 		{
 			if (Check(permissions, key, operation, targetUserCompanyCode)) return;
 			var dicList = permissions.GetRegionList();
-			if(!dicList.ContainsKey(key.Name)) dicList[key.Name]=new PermissionRegion()
+			if (!dicList.ContainsKey(key.Name)) dicList[key.Name] = new PermissionRegion()
 			{
 				Create = new List<string>(),
 				Query = new List<string>(),
@@ -152,12 +159,12 @@ namespace DAL.Entities
 			var dic = dicList[key.Name];
 			switch (operation)
 			{
-				case Operation.Create: dic.Create=dic.Create.Append(targetUserCompanyCode); break;
-				case Operation.Query: dic.Query=dic.Query.Append(targetUserCompanyCode); break;
-				case Operation.Remove: dic.Remove=dic.Remove.Append(targetUserCompanyCode); break;
-				case Operation.Update: dic.Update=dic.Update.Append(targetUserCompanyCode); break;
+				case Operation.Create: dic.Create = dic.Create.Append(targetUserCompanyCode); break;
+				case Operation.Query: dic.Query = dic.Query.Append(targetUserCompanyCode); break;
+				case Operation.Remove: dic.Remove = dic.Remove.Append(targetUserCompanyCode); break;
+				case Operation.Update: dic.Update = dic.Update.Append(targetUserCompanyCode); break;
 			}
-			Update(permissions,JsonConvert.SerializeObject(dicList));
+			Update(permissions, JsonConvert.SerializeObject(dicList));
 		}
 
 		public static void Remove(this Permissions permissions, PermissionDescription key, Operation operation,
@@ -172,26 +179,27 @@ namespace DAL.Entities
 				Remove = new List<string>(),
 				Update = new List<string>()
 			};
-			
+
 			var dic = dicList[key.Name];
 			switch (operation)
 			{
-				case Operation.Create:dic.Create=dic.Create.Where(t=>!t.StartsWith(targetUserCompanyCode)); break;
-				case Operation.Query: dic.Query= dic.Query.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
-				case Operation.Remove: dic.Remove=dic.Remove.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
-				case Operation.Update: dic.Update=dic.Update.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
+				case Operation.Create: dic.Create = dic.Create.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
+				case Operation.Query: dic.Query = dic.Query.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
+				case Operation.Remove: dic.Remove = dic.Remove.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
+				case Operation.Update: dic.Update = dic.Update.Where(t => !t.StartsWith(targetUserCompanyCode)); break;
 			}
 			Update(permissions, JsonConvert.SerializeObject(dicList));
 		}
-		public static bool Check(this Permissions permissions, PermissionDescription key,Operation operation,string targetUserCompanyCode)
+
+		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation, string targetUserCompanyCode)
 		{
-			if (permissions.Role=="Admin") return true;
+			if (permissions.Role == "Admin") return true;
 			var dic = GetRegion(permissions, key);
 			if (dic == null) return false;
 			IEnumerable<string> list;
 			switch (operation)
 			{
-				case Operation.Create: list = dic.Create;break;
+				case Operation.Create: list = dic.Create; break;
 				case Operation.Query: list = dic.Query; break;
 				case Operation.Remove: list = dic.Remove; break;
 				case Operation.Update: list = dic.Update; break;
@@ -202,7 +210,6 @@ namespace DAL.Entities
 		}
 	}
 
-
 	public class PermissionRegion
 	{
 		public IEnumerable<string> Create { get; set; }
@@ -210,5 +217,4 @@ namespace DAL.Entities
 		public IEnumerable<string> Remove { get; set; }
 		public IEnumerable<string> Query { get; set; }
 	}
-
 }

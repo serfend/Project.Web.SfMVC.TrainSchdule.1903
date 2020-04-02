@@ -1,4 +1,5 @@
 ﻿using BLL.Helpers;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		///
 		/// </summary>
-		public DAL.Entities.ApplyInfo.ApplyAuditStream Solution { get; set; }
+		public ApplyAuditStreamDto Solution { get; set; }
 	}
 }

@@ -69,7 +69,7 @@ namespace TrainSchdule.Extensions
 			if (type == null) return null;
 			return new DutyTypeDataModel()
 			{
-				AuditLevelNum = type.AuditLevelNum,
+				AuditLevelNum = 0, // TODO Warning AuditLevelNum
 				Code = type.Code,
 				Name = type.Name
 			};

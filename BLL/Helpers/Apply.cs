@@ -1,4 +1,7 @@
-﻿namespace BLL.Helpers
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace BLL.Helpers
 {
 	public static partial class ActionStatusMessage
 	{
@@ -93,14 +96,14 @@
 
 				public static class StreamSolution
 				{
-					public static readonly ApiResult NotExist = new ApiResult(47201, "节点不存在");
-					public static readonly ApiResult AlreadyExist = new ApiResult(47202, "节点已存在");
+					public static readonly ApiResult NotExist = new ApiResult(47201, "审批方案不存在");
+					public static readonly ApiResult AlreadyExist = new ApiResult(47202, "审批方案已存在");
 				}
 
 				public static class StreamSolutionRule
 				{
-					public static readonly ApiResult NotExist = new ApiResult(47301, "节点不存在");
-					public static readonly ApiResult AlreadyExist = new ApiResult(47302, "节点已存在");
+					public static readonly ApiResult NotExist = new ApiResult(47301, "审批方案规则不存在");
+					public static readonly ApiResult AlreadyExist = new ApiResult(47302, "审批方案规则已存在");
 					public static readonly ApiResult NoAuditStreamRuleFit = new ApiResult(47303, "当前用户没有合适的审批流供使用");
 				}
 			}

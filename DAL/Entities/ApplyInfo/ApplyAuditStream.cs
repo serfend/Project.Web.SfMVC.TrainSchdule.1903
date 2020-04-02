@@ -11,6 +11,7 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 规则名称
 		/// </summary>
+		[Key]
 		public string Name { get; set; }
 
 		/// <summary>
@@ -28,10 +29,12 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public bool Enable { get; set; }
 
+		public string SolutionName { get; set; }
+
 		/// <summary>
 		/// 规则对应的方案
 		/// </summary>
-		[InverseProperty("ApplyAuditStreamSolutionRuleInverseSolution")]
+		[ForeignKey(nameof(SolutionName))]
 		public virtual ApplyAuditStream Solution { get; set; }
 
 		public DateTime Create { get; set; }
@@ -40,20 +43,20 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 审批流方案
 	/// </summary>
-	public class ApplyAuditStream : BaseEntity
+	public class ApplyAuditStream
 	{
 		/// <summary>
 		/// 审批方案名称
 		/// </summary>
+		[Key]
 		public string Name { get; set; }
 
 		public string Description { get; set; }
 
 		/// <summary>
-		/// 审批流全流节点
+		/// 审批流全流节点,以##分割表示多个
 		/// </summary>
-		[InverseProperty("ApplyAuditStreamInverseApplyAuditStreamNode")]
-		public virtual IEnumerable<ApplyAuditStreamNodeAction> Nodes { get; set; }
+		public string Nodes { get; set; }
 
 		public DateTime Create { get; set; }
 	}
@@ -64,14 +67,9 @@ namespace DAL.Entities.ApplyInfo
 	public class ApplyAuditStreamNodeAction : MembersFilter
 	{
 		/// <summary>
-		/// 节点代码
-		/// </summary>
-		[Key]
-		public int Code { get; set; }
-
-		/// <summary>
 		/// 审批节点的名称
 		/// </summary>
+		[Key]
 		public string Name { get; set; }
 
 		/// <summary>
@@ -85,13 +83,12 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 通过条件设置，筛选出符合条件的人
 	/// </summary>
-	public class MembersFilter : BaseEntity
+	public class MembersFilter
 	{
 		/// <summary>
-		/// 职务范围
+		/// 职务范围,int类型，以##分割
 		/// </summary>
-		[InverseProperty("ApplyAuditStreamNodeActionInverseDuties")]
-		public virtual IEnumerable<int> Duties { get; set; }
+		public virtual string Duties { get; set; }
 
 		/// <summary>
 		/// 职务主官选择
@@ -99,10 +96,9 @@ namespace DAL.Entities.ApplyInfo
 		public DutiesIsMajor DutyIsMajor { get; set; }
 
 		/// <summary>
-		/// 单位范围
+		/// 单位范围，以##分割
 		/// </summary>
-		[InverseProperty("ApplyAuditStreamNodeActionInverseCompany")]
-		public virtual IEnumerable<string> Companies { get; set; }
+		public virtual string Companies { get; set; }
 
 		/// <summary>
 		/// 可以设置为self或parent或null，当设置非null，则Companies字段失效
@@ -115,10 +111,9 @@ namespace DAL.Entities.ApplyInfo
 		public int AuditMembersCount { get; set; }
 
 		/// <summary>
-		/// 精确设置需要审批的人，当设置此属性，其他设置均失效
+		/// 精确设置需要审批的人，当设置此属性，其他设置均失效，以##分割
 		/// </summary>
-		[InverseProperty("ApplyAuditStreamNodeActionInverseAuditMembers")]
-		public virtual IEnumerable<string> AuditMembers { get; set; }
+		public string AuditMembers { get; set; }
 	}
 
 	public enum DutiesIsMajor

@@ -29,7 +29,6 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 本申请需要进行的步骤
 		/// </summary>
-		[InverseProperty("ApplyInverseAllAuditStep")]
 		public virtual IEnumerable<ApplyAuditStep> ApplyAllAuditStep { get; set; }
 
 		/// <summary>

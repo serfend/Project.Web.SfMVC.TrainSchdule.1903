@@ -45,8 +45,14 @@ namespace BLL.Services.ApplyServices
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.Company.Code;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
-			var auditRule = context.ApplyAuditStreamSolutionRules.Where(s => GetToAuditMembers(cmp, s).Contains(user.Id)).OrderByDescending(a => a.Priority).FirstOrDefault();
-			return auditRule;
+			var auditRule = context.ApplyAuditStreamSolutionRules.ToList();
+			var fitRule = new List<ApplyAuditStreamSolutionRule>();
+			foreach (var rule in auditRule)
+			{
+				if (GetToAuditMembers(cmp, rule).Contains(user.Id))
+					fitRule.Add(rule);
+			};
+			return fitRule.OrderByDescending(a => a.Priority).FirstOrDefault();
 		}
 
 		public ApplyAuditStreamNodeAction NewNode(MembersFilter filter, string name, string description = null)
@@ -81,7 +87,7 @@ namespace BLL.Services.ApplyServices
 				Description = description,
 				Create = DateTime.Now,
 
-				Nodes = Nodes
+				Nodes = string.Join("##", Nodes.Select(n => n.Name))
 			};
 			context.ApplyAuditStreams.Add(result);
 			context.SaveChanges();
@@ -98,6 +104,7 @@ namespace BLL.Services.ApplyServices
 				Description = description,
 				Priority = priority,
 				Enable = enable,
+				Create = DateTime.Now,
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
@@ -114,7 +121,8 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<string> GetToAuditMembers(string company, MembersFilter filter)
 		{
-			if (filter.AuditMembers != null) return filter.AuditMembers;
+			if (filter == null || company == null) return null;
+			if (filter.AuditMembers != null && filter.AuditMembers?.Length > 0) return filter.AuditMembers.Split("##");
 			var result = context.AppUsers.AsQueryable();
 
 			// 指定单位
@@ -126,13 +134,15 @@ namespace BLL.Services.ApplyServices
 			}
 			if (target == null)
 			{
-				if (filter.Companies != null) result = result.Where(u => filter.Companies.Contains(u.CompanyInfo.Company.Code));
+				var cmpArr = filter?.Companies?.Length == 0 ? Array.Empty<string>() : filter.Companies.Split("##");
+				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Code));
 			}
 			else
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
 
 			// 指定职务
-			if (filter.Duties != null) result = result.Where(u => filter.Duties.Contains(u.CompanyInfo.Duties.Code));
+			var dutyArr = filter.Duties?.Length == 0 ? Array.Empty<int>() : filter.Duties?.Split("##")?.Select(d => Convert.ToInt32(d)).ToArray();
+			if (dutyArr != null && dutyArr.Length > 0) result = result.Where(u => dutyArr.Any(d => d == u.CompanyInfo.Duties.Code));
 			switch (filter.DutyIsMajor)
 			{
 				case DutiesIsMajor.BothCanGo: break;

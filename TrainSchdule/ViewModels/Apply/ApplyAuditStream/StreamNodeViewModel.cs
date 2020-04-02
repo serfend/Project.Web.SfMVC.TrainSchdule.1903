@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities.ApplyInfo;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 
 namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 {
@@ -26,6 +27,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		/// Node
 		/// </summary>
-		public ApplyAuditStreamNodeAction Node { get; set; }
+		public ApplyAuditStreamNodeActionDto Node { get; set; }
 	}
 }

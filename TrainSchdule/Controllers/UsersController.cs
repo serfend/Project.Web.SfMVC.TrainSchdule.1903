@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Extensions;
+using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
@@ -260,12 +261,20 @@ namespace TrainSchdule.Controllers
 					From = targetUser
 				}
 			};
-			_applyService.InitAuditStream(a);
+			try
+			{
+				_applyService.InitAuditStream(a);
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new ApiResult(-1404, ex.Message));
+			}
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					Steps = a.ApplyAllAuditStep
+					Steps = a.ApplyAllAuditStep.Select(s => s.ToDtoModel()),
+					SolutionName=a.ApplyAuditStreamSolutionRule.SolutionName
 				}
 			});
 		}
