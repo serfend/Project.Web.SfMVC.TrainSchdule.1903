@@ -40,6 +40,9 @@ namespace DAL.Data
 		public DbSet<DutyType> DutyTypes { get; set; }
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
+		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
+		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
+		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
 
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
