@@ -11,19 +11,23 @@ namespace BLL.Interfaces
 	public interface IApplyServiceCreate
 	{
 		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model);
+
 		ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model);
+
 		Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model);
+
 		ApplyRequest SubmitRequest(ApplyRequestVdto model);
+
 		Apply Submit(ApplyVdto model);
 
 		/// <summary>
-		/// 依据用户所在单位获取审批流，后期将修改为自定义审批方式
+		/// 初始化申请
 		/// </summary>
-		/// <param name="company"></param>
-		/// <returns></returns>
-		IEnumerable<ApplyResponse> GetAuditStream(Company company,User ApplyUser);
+		/// <param name="model"></param>
+		void InitAuditStream(Apply model);
 
 		void ModifyAuditStatus(Apply model, AuditStatus status);
+
 		IEnumerable<ApiResult> Audit(ApplyAuditVdto models);
 	}
 }

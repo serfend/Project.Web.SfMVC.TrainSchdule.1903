@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.ApplyInfo
 {
@@ -23,27 +24,18 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 本申请使用的审批流方案
 		/// </summary>
-		public virtual ApplyAuditStream ApplyAuditStreamSolutionRule { get; set; }
+		public virtual ApplyAuditStreamSolutionRule ApplyAuditStreamSolutionRule { get; set; }
+
+		/// <summary>
+		/// 本申请需要进行的步骤
+		/// </summary>
+		[InverseProperty("ApplyInverseAllAuditStep")]
+		public virtual IEnumerable<ApplyAuditStep> ApplyAllAuditStep { get; set; }
 
 		/// <summary>
 		/// 当前审批步骤应有哪些人审批
 		/// </summary>
-		public virtual ApplyAuditStreamNodeAction NowAuditStep { get; set; }
-
-		/// <summary>
-		/// 终审单位
-		/// </summary>
-		public string FinnalAuditCompany { get; set; }
-
-		/// <summary>
-		/// 当前审批单位
-		/// </summary>
-		public string NowAuditCompany { get; set; }
-
-		/// <summary>
-		/// 当前审批单位名称
-		/// </summary>
-		public string NowAuditCompanyName { get; set; }
+		public virtual ApplyAuditStep NowAuditStep { get; set; }
 
 		/// <summary>
 		/// 申请的状态

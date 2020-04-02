@@ -21,13 +21,10 @@ namespace BLL.Services.ApplyServices
 			var list = _context.Applies.AsQueryable();
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
-			if (model.AuditByCompany == null) model.AuditByCompany = new QueryByString()
-			{
-				// 默认查询本单位相关的申请
-				Value = _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code
-			};
-			if (model.AuditByCompany != null) list = list.Where(a => a.Response.Any(r => r.Company.Code == model.AuditByCompany.Value));
-			if (model.NowAuditByCompany != null) list = list.Where(a => a.NowAuditCompany == model.NowAuditByCompany.Value);
+
+			if (model.NowAuditBy != null) list = list.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(model.NowAuditBy.Value));
+			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(model.AuditBy.Value)));
+
 			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == model.CreateCompany.Value);
 
 			bool anyDateFilterIsLessThan30Days = false;
@@ -56,12 +53,13 @@ namespace BLL.Services.ApplyServices
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
-			if (model.AuditBy != null) list = list.Where(a => a.Response.Any(r => _context.CompanyManagers.Any(m => m.Company.Code == r.Company.Code && m.User.Id == model.AuditBy.Value)));
+
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
 				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
 			}
+
 			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName.Contains(model.CreateFor.Value));
 			if (model.Id != null) list = _context.Applies.AsQueryable().Where(a => model.Id.Arrays.Contains(a.Id));
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);

@@ -16,20 +16,20 @@ namespace BLL.Services.ApplyServices
 		#region Fileds
 
 		private readonly ApplicationDbContext _context;
-		#endregion
 
+		#endregion Fileds
 
-		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices)
 		{
 			_context = context;
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			new Configurator()[".xlsx"] = new WorkbookLoader();
+			_applyAuditStreamServices = applyAuditStreamServices;
 		}
 
-
-
 		public Apply GetById(Guid id) => _context.Applies.Find(id);
+
 		public IEnumerable<Apply> GetAll(int page, int pageSize)
 		{
 			return GetAll((item) => true, page, pageSize);
@@ -50,6 +50,7 @@ namespace BLL.Services.ApplyServices
 			var items = _context.Applies.Where(predicate).OrderByDescending(a => a.Status).ThenByDescending(a => a.Create).Skip(page * pageSize).Take(pageSize);
 			return items;
 		}
+
 		public Apply Create(Apply item)
 		{
 			if (item == null) return null;

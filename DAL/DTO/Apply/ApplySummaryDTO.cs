@@ -2,6 +2,8 @@
 using DAL.Entities.ApplyInfo;
 using System;
 using DAL.DTO.User;
+using System.Collections.Generic;
+
 namespace DAL.DTO.Apply
 {
 	public class ApplySummaryDto : BaseEntity
@@ -10,34 +12,43 @@ namespace DAL.DTO.Apply
 		/// 用户基本信息
 		/// </summary>
 		public UserSummaryDto UserBase { get; set; }
+
 		/// <summary>
 		/// 申请基本信息
 		/// </summary>
 		public ApplyBaseInfoDto Base { get; set; }
-		/// <summary>
-		/// 当前审批单位
-		/// </summary>
-		public string NowAuditCompany { get; set; }
-		/// <summary>
-		/// 当前审批单位名称
-		/// </summary>
-		public string NowAuditCompanyName { get; set; }
+
 		public ApplyRequest Request { get; set; }
+
 		/// <summary>
 		/// 创建时间
 		/// </summary>
-		public DateTime?Create { get; set; }
+		public DateTime? Create { get; set; }
+
 		/// <summary>
 		/// 审批状态
 		/// </summary>
-		
-		public AuditStatus Status { get; set; }
-		public Guid? RecallId { get; set; }
-		/// <summary>
-		/// 申请最后审批的单位
-		/// </summary>
-		public string FinnalAuditCompany { get; set; }
 
+		public AuditStatus Status { get; set; }
+
+		/// <summary>
+		/// 召回id
+		/// </summary>
+		public Guid? RecallId { get; set; }
+
+		/// <summary>
+		/// 全流程
+		/// </summary>
+		public IEnumerable<ApplyAuditStep> Steps { get; set; }
+
+		/// <summary>
+		/// 当前流程
+		/// </summary>
+		public ApplyAuditStep NowStep { get; set; }
+
+		/// <summary>
+		/// 使用的Solution名称
+		/// </summary>
+		public string AuditStreamSolution { get; set; }
 	}
-	
 }

@@ -34,10 +34,11 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ex.Status);
 			}
 			var list = _applyService.QueryApplies(form.Query, true, out var totalCount);
-			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From), false)));
+			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From))));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{list.Count()}/{totalCount}条({form.Templete})");
 		}
+
 		/// <summary>
 		/// 依据模板导出单个申请到Xls
 		/// </summary>
@@ -58,10 +59,11 @@ namespace TrainSchdule.Controllers
 			}
 			var singleApply = _applyService.QueryApplies(form.Query, true, out var totalCount).FirstOrDefault();
 			if (singleApply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
-			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo?.From), false));
+			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo?.From)));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
 		}
+
 		private string GetFilePath(string templete)
 		{
 			var sWebRootFolder = _hostingEnvironment.WebRootPath;
@@ -70,6 +72,7 @@ namespace TrainSchdule.Controllers
 			if (!tempFile.Exists) throw new ActionStatusMessageException(ActionStatusMessage.Static.TempXlsNotExist);
 			return tempFile.FullName;
 		}
+
 		/// <summary>
 		/// 删除临时文件
 		/// </summary>
@@ -82,6 +85,7 @@ namespace TrainSchdule.Controllers
 			tmpFile.Delete();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 下载指定临时文件
 		/// </summary>
@@ -101,6 +105,7 @@ namespace TrainSchdule.Controllers
 				return File(buffer, "application/octet-stream", filename);
 			}
 		}
+
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
 			var datetime = DateTime.Now.ToString("MMdd");
@@ -125,7 +130,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
-		private string GetTempFile(string filename) => Path.Combine(_hostingEnvironment.WebRootPath, "tmp", filename);
 
+		private string GetTempFile(string filename) => Path.Combine(_hostingEnvironment.WebRootPath, "tmp", filename);
 	}
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -180,7 +181,15 @@ namespace TrainSchdule.Controllers.Apply
 			var r = model.Verify.Verify(_verifyService);
 			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
 			var dto = model.ToVDTO();
-			var apply = _applyService.Submit(dto);
+			DAL.Entities.ApplyInfo.Apply apply = null;
+			try
+			{
+				apply = _applyService.Submit(dto);
+			}
+			catch (NoAuditStreamRuleFitException)
+			{
+				return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NoAuditStreamRuleFit);
+			}
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoRequestInfo);
 			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoBaseInfo);

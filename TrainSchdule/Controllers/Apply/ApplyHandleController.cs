@@ -64,14 +64,14 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
 			var managedCompany = _usersService.InMyManage(currentUser, out var totalCount);
-			var userPermitCompany = managedCompany.Any<Company>(c => c.Code == apply.Response.NowAuditCompany()?.Code);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From), userPermitCompany)
+				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From))
 			});
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
@@ -81,6 +81,7 @@ namespace TrainSchdule.Controllers.Apply
 			_applyService.RemoveAllUnSaveApply();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 召回休假
 		/// </summary>
@@ -105,6 +106,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
 		}
+
 		/// <summary>
 		/// 通过召回id获取召回信息
 		/// </summary>

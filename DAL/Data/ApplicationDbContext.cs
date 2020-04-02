@@ -43,7 +43,7 @@ namespace DAL.Data
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
 		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
-
+		public DbSet<ApplyAuditStep> ApplyAuditSteps { get; set; }
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }

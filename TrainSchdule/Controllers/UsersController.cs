@@ -253,12 +253,19 @@ namespace TrainSchdule.Controllers
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var list = _applyService.GetAuditStream(targetUser.CompanyInfo.Company, targetUser);
+			var a = new DAL.Entities.ApplyInfo.Apply()
+			{
+				BaseInfo = new DAL.Entities.ApplyInfo.ApplyBaseInfo()
+				{
+					From = targetUser
+				}
+			};
+			_applyService.InitAuditStream(a);
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
 				{
-					List = list.Select(c => c.Company.ToDto(_companiesService))
+					Steps = a.ApplyAllAuditStep
 				}
 			});
 		}

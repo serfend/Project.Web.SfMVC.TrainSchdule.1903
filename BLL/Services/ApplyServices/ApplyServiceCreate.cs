@@ -17,6 +17,8 @@ namespace BLL.Services.ApplyServices
 	{
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
+		private readonly IApplyAuditStreamServices _applyAuditStreamServices;
+
 		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model)
 		{
 			if (model == null) return null;
@@ -38,6 +40,7 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return m;
 		}
+
 		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
 		{
 			if (model == null) return null;
@@ -64,6 +67,7 @@ namespace BLL.Services.ApplyServices
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return m;
 		}
+
 		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
 		{
 			if (model == null) return null;
@@ -85,6 +89,7 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return r;
 		}
+
 		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
 		{
 			return await Task.Run(() => SubmitRequest(model)).ConfigureAwait(true);
@@ -104,40 +109,46 @@ namespace BLL.Services.ApplyServices
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
-			var user = apply.BaseInfo?.From;
 
-
-			apply.Response = GetAuditStream(company, user);
+			InitAuditStream(apply);
 			return Create(apply);
 		}
 
+		public void InitAuditStream(Apply model)
+		{
+			var user = model?.BaseInfo?.From;
+			if (user == null) return;
+			var usrCmp = user.CompanyInfo.Company.Code;
+			// 初始化审批流
+			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
+			if (rule == null) throw new NoAuditStreamRuleFitException();
+			model.ApplyAuditStreamSolutionRule = rule;
+			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
+			int stepIndex = 0;
+			foreach (var n in rule.Solution.Nodes)
+			{
+				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
+				if (modelApplyAllAuditStep.Count > 0)
+				{
+					var firstHandleUsr = modelApplyAllAuditStep[modelApplyAllAuditStep.Count].MembersFitToAudit.FirstOrDefault();
+					if (firstHandleUsr != null) usrCmp = _usersService.Get(firstHandleUsr)?.CompanyInfo?.Company?.Code ?? usrCmp;
+				}
 
-		public IEnumerable<ApplyResponse> GetAuditStream(Company company, User ApplyUser)
-		{
-			var dutyType = _context.DutyTypes.Where(d => d.Duties.Code == ApplyUser.CompanyInfo.Duties.Code).FirstOrDefault();
-			int auditStreamLength = 0;
-			auditStreamLength = dutyType == null ? 3 : dutyType.AuditLevelNum;//当没有职务类别时，默认需要三个层级进行审批
-			var responses = new List<ApplyResponse>();
-			var nowId = company?.Code;
-			for (var i = 0; i < auditStreamLength && nowId.Length > 0; i++)//本级 上级
-			{
-				var t = GenerateAuditStream(nowId);
-				if (t.Company != null) responses.Add(t);
-				nowId = nowId.Substring(0, nowId.Length - 1);
+				var item = new ApplyAuditStep()
+				{
+					Index = stepIndex++,
+					MembersAcceptToAudit = new List<string>(),
+					MembersFitToAudit = _applyAuditStreamServices.GetToAuditMembers(usrCmp, n),
+					RequireMembersAcceptCount = n.AuditMembersCount
+				};
+				modelApplyAllAuditStep.Add(item);
 			}
-			//responses.Add(GenerateAuditStream("ROOT"));//人力
-			//无需人力终审，人力同时执行A层级
-			//type1人员 AAA层级和AA层级  type2人员AAAA、AAA、AA层级即可
-			return responses;
+			model.ApplyAllAuditStep = modelApplyAllAuditStep;
+
+			// 初始化审批记录，当每个人审批时，添加一条记录。并检查是否已全部完成审批，若已完成则进入下一步。
+			model.Response = new List<ApplyResponse>();
 		}
-		public ApplyResponse GenerateAuditStream(string companyId)
-		{
-			return new ApplyResponse()
-			{
-				Status = Auditing.UnReceive,
-				Company = _context.Companies.Find(companyId)
-			};
-		}
+
 		public void ModifyAuditStatus(Apply model, AuditStatus status)
 		{
 			if (model == null) return;
@@ -148,7 +159,6 @@ namespace BLL.Services.ApplyServices
 						if (model.Status == AuditStatus.Auditing)
 						{
 							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
-							_context.Applies.Update(model);
 						}
 						else if (model.Status == AuditStatus.Denied) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenDenied);
 						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnAuditingStatus);
@@ -158,7 +168,6 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.NotSave)
 						{
-							_context.Applies.Update(model);
 						}
 						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnNotSaveStatus);
 						break;//保存
@@ -167,14 +176,7 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.NotPublish || model.Status == AuditStatus.NotSave)
 						{
-							foreach (var r in model.Response)
-							{
-								r.Status = Auditing.Received;
-								model.NowAuditCompany = r.Company.Code;
-								model.NowAuditCompanyName = r.Company.Name;
-								break;
-							}
-							_context.Applies.Update(model);
+							model.NowAuditStep = model.ApplyAllAuditStep.FirstOrDefault();
 						}
 						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnPublishable);
 
@@ -184,27 +186,25 @@ namespace BLL.Services.ApplyServices
 			}
 
 			model.Status = status;
+			_context.Applies.Update(model);
 			_context.SaveChanges();
 		}
 
 		public IEnumerable<ApiResult> Audit(ApplyAuditVdto model)
 		{
 			if (model == null) return null;
-			// 获取授权用户的所有管辖单位
-			var myManages = _usersService.InMyManage(model.AuditUser, out var totalCount)?.ToList();
-
-			if (myManages == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 			var list = new List<ApiResult>();
 			foreach (var apply in model.List)
 			{
-				var result = AuditSingle(apply, myManages, model.AuditUser);
+				var result = AuditSingle(apply, model.AuditUser);
 				list.Add(result);
 			}
 
 			_context.SaveChanges();
 			return list;
 		}
+
 		/// <summary>
 		/// 用户对指定申请进行审批
 		/// </summary>
@@ -212,84 +212,52 @@ namespace BLL.Services.ApplyServices
 		/// <param name="myManages">用户所管辖的单位列表</param>
 		/// <param name="AuditUser">审批人</param>
 		/// <returns></returns>
-		private ApiResult AuditSingle(ApplyAuditNodeVdto model, IEnumerable<Company> myManages, User AuditUser)
+		private ApiResult AuditSingle(ApplyAuditNodeVdto model, User AuditUser)
 		{
 			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
-			var nowAudit = new List<ApplyResponse>();//获取所有可能审批的流程
-			foreach (var r in model.Apply.Response) if (myManages.Any(c => c.Code == r.Company.Code)) nowAudit.Add(r);
-			if (nowAudit.Count == 0) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
-
+			var nowStep = model.Apply.NowAuditStep;
+			// 审批未发布时 不可进行审批
+			if (nowStep == null) return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
+			// 待审批人无当前用户时，返回无效
+			if (!nowStep.MembersFitToAudit.Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
+			if (nowStep.MembersAcceptToAudit.Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.BeenAudit;
 			// 当审批的申请为未发布的申请时，将其发布
-			if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
-				ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
+			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+			nowStep.MembersAcceptToAudit = nowStep.MembersAcceptToAudit.Append(AuditUser.Id);
+			_context.ApplyAuditSteps.Update(nowStep);
+			// 对本人审批信息进行追加
+			model.Apply.Response = model.Apply.Response.Append(new ApplyResponse()
+			{
+				AuditingBy = AuditUser,
+				Remark = model.Remark,
+				HandleStamp = DateTime.Now,
+				StepIndex = nowStep.Index,
+				Status = model.Action == AuditResult.Accept ? Auditing.Accept : Auditing.Denied
+			});
+			_context.Applies.Update(model.Apply);
+			_context.SaveChanges();
+			return ActionStatusMessage.Success;
+		}
+	}
 
-			var result = AuditResponse(nowAudit, model.Apply, model.Action, model.Remark, AuditUser);
-			return result;
-		}
-		/// <summary>
-		/// 对一个审批流程进行审批
-		/// </summary>
-		/// <param name="responses">目标审批流程</param>
-		/// <param name="target">目标申请</param>
-		/// <param name="action">审批操作</param>
-		/// <param name="remark">备注</param>
-		/// <param name="auditBy">审批人</param>
-		/// <returns></returns>
-		private ApiResult AuditResponse(IEnumerable<ApplyResponse> responses, Apply target, AuditResult action, string remark, User auditBy)
+	[Serializable]
+	public class NoAuditStreamRuleFitException : Exception
+	{
+		public NoAuditStreamRuleFitException()
 		{
-			foreach (var r in responses)
-			{
-				// 审批流程中第一个正在审批中的流程
-				if (r.Status == Auditing.Received)
-				{
-					r.Remark = remark;
-					r.AuditingBy = auditBy;
-					r.HandleStamp = DateTime.Now;
-					AuditSingle(r, target, action);
-					return ActionStatusMessage.Success;
-				}
-			}
-			return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 		}
-		/// <summary>
-		/// 对单个流程进行审批
-		/// </summary>
-		/// <param name="response">目标审批流程</param>
-		/// <param name="target">目标申请</param>
-		/// <param name="action">审批操作</param>
-		private static void AuditSingle(ApplyResponse response, Apply target, AuditResult action)
+
+		public NoAuditStreamRuleFitException(string message) : base(message)
 		{
-			switch (action)
-			{
-				case AuditResult.Accept:
-					response.Status = Auditing.Accept;
-					var next = target.Response.FirstOrDefault(r => r.Status == Auditing.UnReceive);
-					if (next != null)
-					{
-						next.Status = Auditing.Received;// 下一级变更为审核中
-						target.FinnalAuditCompany = next.Company.Code;
-						target.NowAuditCompany = target.FinnalAuditCompany;
-						target.NowAuditCompanyName = next.Company.Name;
-					}
-					break;
-				case AuditResult.Deny:
-					response.Status = Auditing.Denied;
-					target.Status = AuditStatus.Denied;
-					target.NowAuditCompany = response.Company.Code;
-					target.NowAuditCompanyName = response.Company.Name;
-					return;
-				case AuditResult.NoAction:
-					return;
-			}
-			switch (target.Response.Count(r => r.Status != Auditing.Accept))
-			{
-				case 1:
-					target.Status = AuditStatus.AcceptAndWaitAdmin;
-					break;
-				case 0:
-					target.Status = AuditStatus.Accept;
-					break;
-			}
 		}
+
+		public NoAuditStreamRuleFitException(string message, Exception inner) : base(message, inner)
+		{
+		}
+
+		protected NoAuditStreamRuleFitException(
+		  System.Runtime.Serialization.SerializationInfo info,
+		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 	}
 }

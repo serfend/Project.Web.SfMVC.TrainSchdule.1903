@@ -22,7 +22,6 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPut]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Save(string id)
 		{
 			try
@@ -35,6 +34,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 发布申请
 		/// </summary>
@@ -42,9 +42,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[AllowAnonymous]
-
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Publish(string id)
 		{
 			try
@@ -57,6 +55,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
 		/// 撤回申请
 		/// </summary>
@@ -65,7 +64,6 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPut]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Withdrew(string id)
 		{
 			try
@@ -106,7 +104,6 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-
 		public IActionResult Audit([FromBody]AuditApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
@@ -135,6 +132,5 @@ namespace TrainSchdule.Controllers.Apply
 				return new JsonResult(e.Status);
 			}
 		}
-
 	}
 }

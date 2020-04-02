@@ -17,6 +17,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var item = list.ElementAtOrDefault(0);
 			return item;
 		}
+
 		public static ApplyResponseDto LastRankAuditStatus(this IEnumerable<ApplyResponseDto> model)
 		{
 			var list = model.ToList();
@@ -25,10 +26,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var item = list.ElementAtOrDefault(list.Count - 2);
 			return item;
 		}
-		public static Company NowAuditCompany(this IEnumerable<ApplyResponse> model)
-		{
-			return model.Where(a => a.Status == Auditing.Received).FirstOrDefault()?.Company;
-		}
+
 		public static string AuditResult(this ApplyResponseDto model)
 		{
 			if (model == null) return "无审批结果";
@@ -41,7 +39,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var b = new ApplyResponseDto()
 			{
 				AuditingUserRealName = model?.AuditingBy?.BaseInfo?.RealName,
-				CompanyName = model.Company.Name,
+				Index = model.StepIndex,
 				HandleStamp = model.HandleStamp,
 				Remark = model.Remark,
 				Status = model.Status
