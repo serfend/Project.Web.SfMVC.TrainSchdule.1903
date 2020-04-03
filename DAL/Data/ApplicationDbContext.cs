@@ -1,7 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.BBS;
-using DAL.Entities.Duty;
 using DAL.Entities.FileEngine;
 using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
@@ -37,7 +36,6 @@ namespace DAL.Data
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions> Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
-		public DbSet<DutyType> DutyTypes { get; set; }
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }

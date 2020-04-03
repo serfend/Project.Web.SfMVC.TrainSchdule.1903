@@ -67,8 +67,8 @@ namespace BLL.Services.ApplyServices
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
-				CompanyTags = model.CompanyTags?.Length == 0 ? Array.Empty<string>() : model.CompanyTags.Split("##"),
-				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
+				CompanyTags = filter.CompanyTags,
+				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
@@ -110,8 +110,8 @@ namespace BLL.Services.ApplyServices
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
-				CompanyTags = model.CompanyTags?.Length == 0 ? Array.Empty<string>() : model.CompanyTags.Split("##"),
-				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
+				CompanyTags = filter.CompanyTags,
+				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
@@ -143,12 +143,12 @@ namespace BLL.Services.ApplyServices
 				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Code));
 
 				// CompanyTag
-				cmpArr = filter?.CompanyTags?.Length == 0 ? Array.Empty<string>() : filter.CompanyTags.Split("##");
-				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Tag));
+				var CompanyTag = filter?.CompanyTags?.Length == 0 ? Array.Empty<string>() : filter.CompanyTags.Split("##");
+				if (CompanyTag != null && CompanyTag.Length > 0) result = result.Where(u => CompanyTag.Any(c => c == u.CompanyInfo.Company.Tag));
 
 				// CompanyLength
-				var cmpArrInt = filter?.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : filter.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)).ToArray();
-				if (cmpArrInt != null && cmpArrInt.Length > 0) result = result.Where(u => cmpArrInt.Any(c => c == u.CompanyInfo.Company.Code.Length));
+				var cmpArrLength = filter?.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : filter.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)).ToArray();
+				if (cmpArrLength != null && cmpArrLength.Length > 0) result = result.Where(u => cmpArrLength.Any(c => c == u.CompanyInfo.Company.Code.Length));
 			}
 			else
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
@@ -167,6 +167,7 @@ namespace BLL.Services.ApplyServices
 					result = result.Where(u => !u.CompanyInfo.Duties.IsMajorManager);
 					break;
 			}
+
 			return result.Select(u => u.Id);
 		}
 	}

@@ -6,7 +6,6 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities.ApplyInfo;
-using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using Microsoft.EntityFrameworkCore;
 

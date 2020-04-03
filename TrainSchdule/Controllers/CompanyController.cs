@@ -25,6 +25,7 @@ namespace TrainSchdule.Controllers
 		private readonly IUserServiceDetail _usersService;
 		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
+
 		/// <summary>
 		/// 单位信息
 		/// </summary>
@@ -43,6 +44,7 @@ namespace TrainSchdule.Controllers
 			_hostingEnvironment = hostingEnvironment;
 			_context = context;
 		}
+
 		/// <summary>
 		/// 获取指定岗位名称的详细信息
 		/// </summary>
@@ -55,9 +57,7 @@ namespace TrainSchdule.Controllers
 			name = name ?? currentUser?.CompanyInfo?.Duties.Name;
 			var duty = _context.Duties.Where(d => d.Name == name).FirstOrDefault();
 			if (duty == null) return new JsonResult(ActionStatusMessage.Company.Duty.NotExist);
-			var type = _context.DutyTypes.Where(t => t.Duties.Code == duty.Code).FirstOrDefault();
 			var r = duty.ToDataModel();
-			if (r != null) r.DutiesType = type.ToDataModel();
 			return new JsonResult(new DutyViewModel()
 			{
 				Data = r
@@ -72,22 +72,23 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult DutiesQuery(string name,int pageIndex=0,int pageNum=20)
+		public IActionResult DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Duties.Name??"";
-			var dutiesQuery = _context.Duties.Where(d => d.Name.Contains(name)&&d.Name!="NotSet").ToList();
+			name = name ?? currentUser?.CompanyInfo?.Duties.Name ?? "";
+			var dutiesQuery = _context.Duties.Where(d => d.Name.Contains(name) && d.Name != "NotSet").ToList();
 			var totalCount = dutiesQuery.Count();
 			var duties = dutiesQuery;//.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(DutiesEqualComparer.GetInstance());
 			return new JsonResult(new DutiesViewModel()
 			{
-				Data= new DutiesDataModel()
+				Data = new DutiesDataModel()
 				{
-					List=duties.Select(d=>d.ToDataModel()),
-					TotalCount=totalCount
+					List = duties.Select(d => d.ToDataModel()),
+					TotalCount = totalCount
 				}
 			});
 		}
+
 		/// <summary>
 		/// 检索可能的职务等级
 		/// </summary>
@@ -96,10 +97,10 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult TitleQuery(string name,int pageIndex =0 ,int pageNum = 20)
+		public IActionResult TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Title?.Name??"";
+			name = name ?? currentUser?.CompanyInfo?.Title?.Name ?? "";
 			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name.Contains(name) && d.Name != "NotSet").ToList();
 			var totalCount = dutiesQuery.Count();
 			var duties = dutiesQuery;//.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(UserTitleCompareer.GetInstance());
@@ -112,6 +113,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 获取单位的子层级单位
 		/// </summary>
@@ -125,7 +127,7 @@ namespace TrainSchdule.Controllers
 			List<Company> list;
 			if (id == null) id = "root";
 			list = _companiesService.FindAllChild(id).ToList();
-			if (currentUser != null && id =="root")
+			if (currentUser != null && id == "root")
 			{
 				var mymanage = _usersService.InMyManage(currentUser, out var totalCount);
 				list.AddRange(mymanage);
@@ -147,7 +149,6 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(CompanyManagerDataModel), 0)]
-
 		public IActionResult Managers(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
@@ -161,6 +162,7 @@ namespace TrainSchdule.Controllers
 				}
 			});
 		}
+
 		/// <summary>
 		/// 获取单位中的人员列表
 		/// </summary>
@@ -171,7 +173,6 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(AllMembersDataModel), 0)]
-
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;

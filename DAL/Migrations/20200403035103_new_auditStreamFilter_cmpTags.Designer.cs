@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200403035103_new_auditStreamFilter_cmpTags")]
+    partial class new_auditStreamFilter_cmpTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -641,13 +643,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("FilePath");
 
-                    b.Property<byte[]>("Img");
-
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("AppUserDiyAvatars");
                 });
@@ -1454,13 +1450,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "RecallBy")
                         .WithMany()
                         .HasForeignKey("RecallById");
-                });
-
-            modelBuilder.Entity("DAL.Entities.UserInfo.Avatar", b =>
-                {
-                    b.HasOne("DAL.Entities.UserInfo.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>

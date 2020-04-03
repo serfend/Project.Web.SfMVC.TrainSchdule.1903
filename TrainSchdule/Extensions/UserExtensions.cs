@@ -10,12 +10,12 @@ using TrainSchdule.ViewModels.User;
 namespace TrainSchdule.Extensions
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public static class UserExtensions
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="invitedBy"></param>
@@ -42,7 +42,6 @@ namespace TrainSchdule.Extensions
 						Name = model.Company?.Title?.Name
 					},
 					TitleDate = model.Company?.TitleDate
-
 				},
 				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,
@@ -54,6 +53,4 @@ namespace TrainSchdule.Extensions
 			return u;
 		}
 	}
-
-
 }

@@ -91,6 +91,11 @@ namespace DAL.Entities.ApplyInfo
 		public virtual string Duties { get; set; }
 
 		/// <summary>
+		/// 职务类型范围，以##分割
+		/// </summary>
+		public string DutiesTags { get; set; }
+
+		/// <summary>
 		/// 职务主官选择
 		/// </summary>
 		public DutiesIsMajor DutyIsMajor { get; set; }
@@ -104,6 +109,16 @@ namespace DAL.Entities.ApplyInfo
 		/// 可以设置为self或parent或null，当设置非null，则Companies字段失效
 		/// </summary>
 		public string CompanyRefer { get; set; }
+
+		/// <summary>
+		/// 可以设置单位类型，用于区分各类单位，以##分割
+		/// </summary>
+		public string CompanyTags { get; set; }
+
+		/// <summary>
+		/// 可以设置单位代码长度进行筛选，int类型 以##分割
+		/// </summary>
+		public string CompanyCodeLength { get; set; }
 
 		/// <summary>
 		/// 设置本节点需要审批的成员数量

@@ -1,6 +1,6 @@
 ﻿using DAL.Entities;
-using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
+using System;
 using TrainSchdule.ViewModels.Company;
 
 namespace TrainSchdule.Extensions
@@ -35,11 +35,10 @@ namespace TrainSchdule.Extensions
 			if (model == null) return null;
 			return new DutyDataModel()
 			{
-				DutiesType = null,//用于转换后手动
 				Code = model.Code,
 				IsMajorManager = model.IsMajorManager,
 				Name = model.Name,
-				DutyType = model.DutiesRawType
+				Tags = model.Tags?.Length == 0 ? Array.Empty<string>() : model.Tags.Split("##")
 			};
 		}
 
@@ -56,22 +55,6 @@ namespace TrainSchdule.Extensions
 				Code = model.Code,
 				Level = model.Level,
 				Name = model.Name
-			};
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public static DutyTypeDataModel ToDataModel(this DutyType type)
-		{
-			if (type == null) return null;
-			return new DutyTypeDataModel()
-			{
-				AuditLevelNum = 0, // TODO Warning AuditLevelNum
-				Code = type.Code,
-				Name = type.Name
 			};
 		}
 	}

@@ -1,6 +1,5 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
-using DAL.Entities.Duty;
 using DAL.Entities.UserInfo;
 using System;
 using TrainSchdule.ViewModels.System;
@@ -90,11 +89,6 @@ namespace TrainSchdule.ViewModels.User
 		/// 职务生效时间
 		/// </summary>
 		public DateTime? TitleDate { get; set; }
-
-		/// <summary>
-		/// 职务类别
-		/// </summary>
-		public DutiesRawType? DutiesRawType { get; set; }
 	}
 
 	/// <summary>
@@ -133,7 +127,6 @@ namespace TrainSchdule.ViewModels.User
 			{
 				Code = model.Duties?.Code,
 				Name = model.Duties?.Name,
-				DutiesRawType = model.Duties?.DutiesRawType,
 				Title = model.Title?.Name,
 				TitleDate = model.TitleDate
 			};

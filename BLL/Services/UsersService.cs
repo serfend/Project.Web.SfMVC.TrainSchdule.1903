@@ -35,7 +35,8 @@ namespace BLL.Services
 		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
 		private readonly IVocationCheckServices _vocationCheckServices;
-		#endregion
+
+		#endregion Fields
 
 		#region .ctors
 
@@ -49,9 +50,10 @@ namespace BLL.Services
 			_vocationCheckServices = vocationCheckServices;
 		}
 
-		#endregion
+		#endregion .ctors
 
 		#region Logic
+
 		/// <summary>
 		/// Loads all users with paggination, returns collection of user DTOs.
 		/// </summary>
@@ -95,7 +97,6 @@ namespace BLL.Services
 				SocialInfo = new UserSocialInfo()
 				{
 					Address = new AdminDivision(),
-
 				}
 			};
 			var user = _context.AppUsers.Find(id);
@@ -112,7 +113,6 @@ namespace BLL.Services
 		{
 			return _context.Users.FirstOrDefault(u => u.UserName == id);
 		}
-
 
 		/// <summary>
 		/// Creates user.
@@ -136,7 +136,8 @@ namespace BLL.Services
 
 			return identity;
 		}
-		public async Task<User> ModefyAsync(User user,bool update)
+
+		public async Task<User> ModefyAsync(User user, bool update)
 		{
 			if (user == null) return null;
 			var appUser = CreateAppUser(user);
@@ -147,9 +148,9 @@ namespace BLL.Services
 			}
 			return appUser;
 		}
+
 		private User CreateAppUser(User user)
 		{
-
 			user.Application.Create = DateTime.Now;
 			user.Application.AuthKey = new Random().Next(1000, 9999).ToString().GetHashCode().ToString();
 			user.Application.ApplicationSetting = new UserApplicationSetting()
@@ -174,6 +175,7 @@ namespace BLL.Services
 			if (social.Settle != null) social.Settle.PrevYealyLengthHistory = new List<VacationModefyRecord>();
 			return user;
 		}
+
 		private ApplicationUser CreateUser(User user, string password)
 		{
 			if (_context.Users.Where(u => u.UserName == user.Id).FirstOrDefault() != null) return null;
@@ -194,15 +196,14 @@ namespace BLL.Services
 			var passwordHasher = new PasswordHasher<ApplicationUser>();
 			identity.PasswordHash = passwordHasher.HashPassword(identity, password);
 
-
 			return identity;
 		}
+
 		/// <summary>
 		/// Edits user.
 		/// </summary>
 		public bool Edit(User newUser)
 		{
-
 			_context.AppUsers.Update(newUser);
 			_context.SaveChanges();
 			return true;
@@ -218,8 +219,6 @@ namespace BLL.Services
 			return true;
 		}
 
-
-
 		public bool Remove(string id)
 		{
 			var user = _context.AppUsers.Find(id);
@@ -231,6 +230,7 @@ namespace BLL.Services
 			_context.SaveChanges();
 			return true;
 		}
+
 		public async Task<bool> RemoveAsync(string id)
 		{
 			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(true);
@@ -239,6 +239,7 @@ namespace BLL.Services
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
+
 		/// <summary>
 		/// 删除用户
 		/// </summary>
@@ -274,6 +275,7 @@ namespace BLL.Services
 			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
 			_context.Users.Remove(appUser);
 		}
+
 		public string ConvertFromUserCiper(string username, string password)
 		{
 			return password.FromCipperToString(username);
@@ -285,14 +287,14 @@ namespace BLL.Services
 			var now = DateTime.Now;
 			var avatar = new Avatar()
 			{
-				FilePath= newAvatar==null?null:$"{Guid.NewGuid().ToString()}.png",
-				CreateTime =now,
-				Img = newAvatar.FromBase64ToBytes()
+				FilePath = newAvatar == null ? null : $"{Guid.NewGuid().ToString()}.png",
+				CreateTime = now,
+				Img = newAvatar.FromBase64ToBytes(),
+				User = targetUser
 			};
-			if (newAvatar != null&&avatar.Img.Length<=1024*200)
+			if (newAvatar != null && avatar.Img.Length <= 1024 * 200)
 			{
 				_context.AppUserDiyAvatars.Add(avatar);
-				await avatar.Update(_hostingEnvironment).ConfigureAwait(true);
 				targetUser.DiyInfo.Avatar = avatar;
 				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
 				await _context.SaveChangesAsync().ConfigureAwait(true);
@@ -300,13 +302,13 @@ namespace BLL.Services
 			return avatar;
 		}
 
-		public async Task<Avatar> GetAvatar(User targetUser)
+		public IEnumerable<Avatar> QueryAvatar(string targetUser, DateTime start)
 		{
-			throw new NotImplementedException();
+			if (targetUser == null) return null;
+			var list = _context.AppUserDiyAvatars.Where(a => a.CreateTime >= start).Where(a => a.User.Id == targetUser);
+			return list;
 		}
-		#endregion
 
-
-
+		#endregion Logic
 	}
 }

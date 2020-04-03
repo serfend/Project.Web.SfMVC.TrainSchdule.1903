@@ -451,7 +451,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new AuditStreamSolutionListRuleDataModel()
 				{
-					List = context.ApplyAuditStreamSolutionRules.ToList().Select(r => r.ToSolutionRuleDtoModel())
+					List = context.ApplyAuditStreamSolutionRules.OrderByDescending(r => r.Priority).ToList().Select(r => r.ToSolutionRuleDtoModel())
 				}
 			});
 		}

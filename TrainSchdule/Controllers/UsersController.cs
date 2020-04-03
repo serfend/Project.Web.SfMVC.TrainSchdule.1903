@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrainSchdule.Extensions.Users;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
 
@@ -274,7 +275,7 @@ namespace TrainSchdule.Controllers
 				Data = new UserAuditStreamDataModel()
 				{
 					Steps = a.ApplyAllAuditStep.Select(s => s.ToDtoModel()),
-					SolutionName=a.ApplyAuditStreamSolutionRule.SolutionName
+					SolutionName = a.ApplyAuditStreamSolutionRule.SolutionName
 				}
 			});
 		}
@@ -330,18 +331,38 @@ namespace TrainSchdule.Controllers
 			{
 				if (result != null) return result;
 				avatar = targetUser?.DiyInfo?.Avatar;
+				if (avatar == null)
+				{
+					avatar = targetUser.BaseInfo.RealName.CreateTempAvatar(targetUser.BaseInfo.Gender, _hostingEnvironment.WebRootPath);
+					await _usersService.UpdateAvatar(targetUser, avatar?.Img?.ToBase64()).ConfigureAwait(true);
+				}
 			}
 			else
 			{
 				avatar = _context.AppUserDiyAvatars.Where(a => a.Id.ToString() == avatarId).FirstOrDefault();
 			}
-			avatar = await avatar.Load(targetUser, _hostingEnvironment);
 			return new JsonResult(new AvatarViewModel()
 			{
-				Data = new AvatarDataModel()
+				Data = avatar.ToModel()
+			});
+		}
+
+		/// <summary>
+		/// 获取用户历史头像
+		/// </summary>
+		/// <param name="userid"></param>
+		/// <param name="start"></param>
+		/// <returns></returns>
+		[AllowAnonymous]
+		[HttpGet]
+		public IActionResult Avatars(string userid, DateTime start)
+		{
+			var list = _usersService.QueryAvatar(userid, start);
+			return new JsonResult(new AvatarListViewModel()
+			{
+				Data = new AvatarListDataModel()
 				{
-					Create = avatar == null ? DateTime.Now : avatar.CreateTime,
-					Url = $"data:image/png;base64,{avatar?.Img?.ToBase64()}"
+					List = list.Select(a => a.ToModel())
 				}
 			});
 		}

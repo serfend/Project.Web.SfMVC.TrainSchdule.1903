@@ -18,6 +18,11 @@ namespace DAL.DTO.Apply
 		public DutiesIsMajor DutyIsMajor { get; set; }
 
 		/// <summary>
+		/// //TODO 职务类型范围
+		/// </summary>
+		public IEnumerable<string> DutyTypes { get; set; }
+
+		/// <summary>
 		/// 单位范围
 		/// </summary>
 		public IEnumerable<string> Companies { get; set; }
