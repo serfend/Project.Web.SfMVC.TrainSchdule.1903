@@ -27,13 +27,12 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AllowAnonymous]
 		public IActionResult List([FromBody]QueryApplyDataModel model)
 		{
 			try
 			{
 				if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
-
-				var currentUser = _currentUserService.CurrentUser;
 				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{

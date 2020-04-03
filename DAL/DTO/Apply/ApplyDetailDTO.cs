@@ -4,6 +4,7 @@ using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
 using DAL.DTO.User;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 
 namespace DAL.DTO.Apply
 {
@@ -41,8 +42,8 @@ namespace DAL.DTO.Apply
 
 		public DateTime? Create { get; set; }
 		public IEnumerable<ApplyResponseDto> Response { get; set; }
-		public IEnumerable<ApplyAuditStep> Steps { get; set; }
-		public ApplyAuditStep NowStep { get; set; }
+		public IEnumerable<ApplyAuditStepDto> Steps { get; set; }
+		public ApplyAuditStepDto NowStep { get; set; }
 		public string AuditSolution { get; set; }
 
 		public AuditStatus Status { get; set; }

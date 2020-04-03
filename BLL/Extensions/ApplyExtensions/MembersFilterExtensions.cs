@@ -18,6 +18,8 @@ namespace BLL.Extensions.ApplyExtensions
 				AuditMembersCount = model.AuditMembersCount,
 				Companies = string.Join("##", model.Companies),
 				CompanyRefer = model.CompanyRefer,
+				CompanyTags = string.Join("##", model.CompanyTags),
+				CompanyCodeLength = string.Join("##", model.CompanyCodeLength),
 				Duties = string.Join("##", model.Duties),
 				DutyIsMajor = model.DutyIsMajor
 			};

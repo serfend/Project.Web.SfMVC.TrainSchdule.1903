@@ -1,4 +1,5 @@
-﻿using DAL.DTO.Apply;
+﻿using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
+using DAL.DTO.Apply;
 using DAL.DTO.User;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Hosting;
@@ -23,9 +24,9 @@ namespace BLL.Extensions.ApplyExtensions
 				Hidden = model.Hidden,
 				RequestInfo = model.RequestInfo,
 				Response = model.Response.Select(r => r.ToResponseDto()),
-				NowStep = model?.NowAuditStep,
-				Steps = model?.ApplyAllAuditStep,
-				AuditSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name??"旧版本方式审批",
+				NowStep = model?.NowAuditStep?.ToDtoModel(),
+				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()),
+				AuditSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "旧版本方式审批",
 				Id = model.Id,
 				Social = model.BaseInfo.Social,
 				Status = model.Status,
@@ -47,9 +48,9 @@ namespace BLL.Extensions.ApplyExtensions
 				Id = model.Id,
 				Request = model.RequestInfo,
 				RecallId = model.RecallId,
-				NowStep = model?.NowAuditStep,
-				Steps = model?.ApplyAllAuditStep,
-				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name??"旧版本方式审批"
+				NowStep = model?.NowAuditStep?.ToDtoModel(),
+				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()),
+				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "旧版本方式审批"
 			};
 			return b;
 		}

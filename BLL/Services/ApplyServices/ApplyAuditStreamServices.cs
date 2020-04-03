@@ -67,6 +67,8 @@ namespace BLL.Services.ApplyServices
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
+				CompanyTags = model.CompanyTags?.Length == 0 ? Array.Empty<string>() : model.CompanyTags.Split("##"),
+				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
 				Duties = filter?.Duties,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
@@ -108,6 +110,8 @@ namespace BLL.Services.ApplyServices
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
+				CompanyTags = model.CompanyTags?.Length == 0 ? Array.Empty<string>() : model.CompanyTags.Split("##"),
+				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
 				Duties = filter?.Duties,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
@@ -134,8 +138,17 @@ namespace BLL.Services.ApplyServices
 			}
 			if (target == null)
 			{
+				// Companies
 				var cmpArr = filter?.Companies?.Length == 0 ? Array.Empty<string>() : filter.Companies.Split("##");
 				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Code));
+
+				// CompanyTag
+				cmpArr = filter?.CompanyTags?.Length == 0 ? Array.Empty<string>() : filter.CompanyTags.Split("##");
+				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Tag));
+
+				// CompanyLength
+				var cmpArrInt = filter?.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : filter.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)).ToArray();
+				if (cmpArrInt != null && cmpArrInt.Length > 0) result = result.Where(u => cmpArrInt.Any(c => c == u.CompanyInfo.Company.Code.Length));
 			}
 			else
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);

@@ -3,6 +3,7 @@ using DAL.Entities.ApplyInfo;
 using System;
 using DAL.DTO.User;
 using System.Collections.Generic;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 
 namespace DAL.DTO.Apply
 {
@@ -39,12 +40,12 @@ namespace DAL.DTO.Apply
 		/// <summary>
 		/// 全流程
 		/// </summary>
-		public IEnumerable<ApplyAuditStep> Steps { get; set; }
+		public IEnumerable<ApplyAuditStepDto> Steps { get; set; }
 
 		/// <summary>
 		/// 当前流程
 		/// </summary>
-		public ApplyAuditStep NowStep { get; set; }
+		public ApplyAuditStepDto NowStep { get; set; }
 
 		/// <summary>
 		/// 使用的Solution名称

@@ -45,7 +45,7 @@ namespace TrainSchdule.Controllers.Apply
 			var u = usersService.Get(auth?.AuthByUserID);
 			if (u == null) return (ActionStatusMessage.User.NotExist);
 			// 如果要新增相对，则需要管理员权限
-			if (filter?.CompanyRefer != null)
+			if (filter?.CompanyRefer != null || filter?.CompanyCodeLength?.Count() > 0 || filter?.CompanyTags?.Count() > 0)
 				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root"))
 					return (ActionStatusMessage.Account.Auth.Invalid.Default);
 			var targetCompaines = filter?.Companies;
@@ -236,7 +236,7 @@ namespace TrainSchdule.Controllers.Apply
 				}
 				return false;
 			});
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.AlreadyExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}

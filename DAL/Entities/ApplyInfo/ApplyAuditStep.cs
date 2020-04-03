@@ -29,5 +29,15 @@ namespace DAL.Entities.ApplyInfo
 		/// 需要有多少人通过审批
 		/// </summary>
 		public int RequireMembersAcceptCount { get; set; }
+
+		/// <summary>
+		/// 当前步骤对应的Node名称
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// 为了便于观察，展示首个审批人的单位
+		/// </summary>
+		public string FirstMemberCompanyName { get; set; }
 	}
 }

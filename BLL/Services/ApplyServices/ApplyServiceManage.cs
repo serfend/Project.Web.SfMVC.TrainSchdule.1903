@@ -171,6 +171,7 @@ namespace BLL.Services.ApplyServices
 				new ParameterRenderer<ApplyDetailDto>("Base_RealName", t => t.Base?.RealName),
 				new ParameterRenderer<ApplyDetailDto>("Base_Id", t => t.Base?.Id),
 				new ParameterRenderer<ApplyDetailDto>("Company_Name", t => t.Company?.Name),
+				new ParameterRenderer<ApplyDetailDto>("Company_Tag", t => t.Company?.Tag),
 				new ParameterRenderer<ApplyDetailDto>("Company_Code", t => t.Company?.Code),
 				new ParameterRenderer<ApplyDetailDto>("Status", t => t.Status),
 				new ParameterRenderer<ApplyDetailDto>("Create", t => t.Create),

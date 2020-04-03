@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
 {
-
 	public class Company
 	{
 		/// <summary>
@@ -12,27 +11,15 @@ namespace DAL.Entities
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[Key]
 		public string Code { get; set; }
+
 		public string Name { get; set; }
-		public CompanyLevel Level { get; set; }
+
+		/// <summary>
+		/// 单位标识，用于进行分组
+		/// </summary>
+		public string Tag { get; set; }
+
 		public bool IsPrivate { get; set; }
 		public string Description { get; set; }
-	}
-	public enum CompanyLevel
-	{
-		JW,
-		DJQ,
-		FJQ,
-		ZJ,
-		FJ,
-		ZS,
-		FS,
-		ZT,
-		FT,
-		ZY,
-		FY,
-		ZL,
-		FL,
-		ZP,
-		None
 	}
 }

@@ -137,12 +137,19 @@ namespace BLL.Services.ApplyServices
 					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.Get(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 				}
 
+				var nextNodeUsrCmp = usrCmp;
+				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n));
+				var nextNodeFirstHandleUsr = nextNodeFitMembers.Length == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
+				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.Get(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
+
 				var item = new ApplyAuditStep()
 				{
 					Index = stepIndex++,
 					MembersAcceptToAudit = string.Empty,
-					MembersFitToAudit = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n)),
-					RequireMembersAcceptCount = n.AuditMembersCount
+					MembersFitToAudit = nextNodeFitMembers,
+					RequireMembersAcceptCount = n.AuditMembersCount,
+					Name = n.Name,
+					FirstMemberCompanyName = _context.Companies.Where(c => c.Code == nextNodeUsrCmp).FirstOrDefault()?.Name
 				};
 				modelApplyAllAuditStep.Add(item);
 			}
@@ -219,6 +226,7 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
 			var nowStep = model.Apply.NowAuditStep;
+			List<ApplyAuditStep> allStep = new List<ApplyAuditStep>(model.Apply.ApplyAllAuditStep);
 			// 审批未发布时 不可进行审批
 			if (nowStep == null) return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
 			// 待审批人无当前用户时，返回无效
@@ -228,10 +236,12 @@ namespace BLL.Services.ApplyServices
 			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
 			var list = nowStep.MembersAcceptToAudit.Length == 0 ? Array.Empty<string>() : nowStep.MembersAcceptToAudit.Split("##");
-			nowStep.MembersAcceptToAudit = string.Join("##", list.Append(AuditUser.Id));
+			list = list.Append(AuditUser.Id).ToArray();
+			nowStep.MembersAcceptToAudit = string.Join("##", list);
 			_context.ApplyAuditSteps.Update(nowStep);
 			// 对本人审批信息进行追加
-			model.Apply.Response = model.Apply.Response.Append(new ApplyResponse()
+			var responseList = new List<ApplyResponse>(model.Apply.Response);
+			responseList.Add(new ApplyResponse()
 			{
 				AuditingBy = AuditUser,
 				Remark = model.Remark,
@@ -239,6 +249,22 @@ namespace BLL.Services.ApplyServices
 				StepIndex = nowStep.Index,
 				Status = model.Action == AuditResult.Accept ? Auditing.Accept : Auditing.Denied
 			});
+			model.Apply.Response = responseList;
+			// 判断是否被驳回
+			if (model.Action != AuditResult.Accept)
+				model.Apply.Status = AuditStatus.Denied;
+			// 判断本步骤是否结束
+			else if (nowStep.RequireMembersAcceptCount <= list.Length)
+			{
+				// 寻找下一个步骤
+				if (nowStep.Index == allStep.Count - 1)
+					model.Apply.Status = AuditStatus.Accept;
+				else
+				{
+					model.Apply.NowAuditStep = allStep[nowStep.Index + 1];
+					if (model.Apply.NowAuditStep.Index == allStep.Count - 1) model.Apply.Status = AuditStatus.AcceptAndWaitAdmin;
+				}
+			}
 			_context.Applies.Update(model.Apply);
 			_context.SaveChanges();
 			return ActionStatusMessage.Success;
