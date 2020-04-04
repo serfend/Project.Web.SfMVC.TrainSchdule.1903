@@ -1,16 +1,13 @@
 ﻿using DAL.Data;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TrainSchdule.Crontab
 {
 	/// <summary>
 	/// 每周休假情况统计
 	/// </summary>
-	public class WeeklyVocationStatistics:BaseOnTimeVocationStatistics
+	public class WeeklyVocationStatistics : BaseOnTimeVocationStatistics
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -20,10 +17,9 @@ namespace TrainSchdule.Crontab
 		public static DateTime Start { get => start; set => start = value; }
 		public static DateTime End { get => end; set => end = value; }
 
-		public WeeklyVocationStatistics(ApplicationDbContext context):base(context,Start,End,$"{Start.Year}_Week{new GregorianCalendar().GetWeekOfYear(Start,CalendarWeekRule.FirstFullWeek,DayOfWeek.Monday) + 1}")
+		public WeeklyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_Week{new GregorianCalendar().GetWeekOfYear(Start, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday) + 1}")
 		{
 			_context = context;
 		}
-
 	}
 }

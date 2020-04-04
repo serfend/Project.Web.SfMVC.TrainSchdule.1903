@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using DAL.Entities.UserInfo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DAL.Entities.UserInfo;
-using DAL.Entities.UserInfo.Settle;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
 

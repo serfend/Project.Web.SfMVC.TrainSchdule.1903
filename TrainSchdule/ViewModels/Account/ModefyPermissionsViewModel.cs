@@ -12,12 +12,13 @@ namespace TrainSchdule.ViewModels.Account
 		/// 指定id
 		/// </summary>
 		public string Id { get; set; }
+
 		/// <summary>
 		/// 新的权限
 		/// </summary>
 		public string NewPermission { get; set; }
-
 	}
+
 	/// <summary>
 	/// 修改密码
 	/// </summary>
@@ -27,6 +28,7 @@ namespace TrainSchdule.ViewModels.Account
 		/// 用户id
 		/// </summary>
 		public string Id { get; set; }
+
 		/// <summary>
 		/// 老密码
 		/// </summary>
@@ -37,8 +39,8 @@ namespace TrainSchdule.ViewModels.Account
 		/// 输入密码
 		/// </summary>
 		[Required]
-
 		public string NewPassword { get; set; }
+
 		/// <summary>
 		/// 二次输入密码
 		/// </summary>

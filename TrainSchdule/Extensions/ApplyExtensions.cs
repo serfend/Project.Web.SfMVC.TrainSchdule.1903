@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BLL.Extensions;
+﻿using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vocations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TrainSchdule.ViewModels.Apply;
 
 namespace TrainSchdule.Extensions
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public static class ApplyExtensions
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="usersService"></param>
@@ -35,7 +35,6 @@ namespace TrainSchdule.Extensions
 				Phone = model.Phone,
 				RealName = model.RealName,
 				Settle = model.Settle
-
 			};
 			return b;
 		}
@@ -78,10 +77,9 @@ namespace TrainSchdule.Extensions
 						Description = "法定节假日"
 					}).ToList();
 					lawVocations.AddRange(b.VocationAdditionals);
-					b.VocationAdditionals= lawVocations;//执行完crossVocation后已经处于加载完毕状态可直接使用
+					b.VocationAdditionals = lawVocations;//执行完crossVocation后已经处于加载完毕状态可直接使用
 				}
-				else b.StampReturn = b.StampLeave.Value.AddDays(vocationLength-1);
-
+				else b.StampReturn = b.StampLeave.Value.AddDays(vocationLength - 1);
 
 				b.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription(CaculateAdditionalAndTripLength);
 			}
@@ -89,7 +87,7 @@ namespace TrainSchdule.Extensions
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -104,13 +102,13 @@ namespace TrainSchdule.Extensions
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="auditUser"></param>
 		/// <param name="applyService"></param>
 		/// <returns></returns>
-		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model,User auditUser , IApplyService applyService)
+		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model, User auditUser, IApplyService applyService)
 		{
 			var b = new ApplyAuditVdto()
 			{
@@ -121,7 +119,6 @@ namespace TrainSchdule.Extensions
 					Apply = applyService.GetById(d.Id),
 					Remark = d.Remark
 				})
-
 			};
 			return b;
 		}

@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Castle.Core.Internal;
+﻿using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TrainSchdule.Extensions
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public static class ModelStateExtensions
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="modelState"></param>
 		/// <returns></returns>
@@ -24,24 +24,25 @@ namespace TrainSchdule.Extensions
 			foreach (var item in errorFieldsAndMsgs)
 			{
 				//获取键
-				var fieldKey = item.Key.IsNullOrEmpty()?"Unknown":item.Key;
+				var fieldKey = item.Key.IsNullOrEmpty() ? "Unknown" : item.Key;
 				//获取键对应的错误信息
 				var fieldErrors = item.Errors
-					.Select(e => new ShowError(fieldKey, e.ErrorMessage.IsNullOrEmpty()?e.Exception.Message:e.ErrorMessage));
+					.Select(e => new ShowError(fieldKey, e.ErrorMessage.IsNullOrEmpty() ? e.Exception.Message : e.ErrorMessage));
 				result.AddRange(fieldErrors);
 			}
 			return result;
 		}
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class ShowError
 	{
 		private string _message;
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="message"></param>
@@ -50,13 +51,14 @@ namespace TrainSchdule.Extensions
 			Key = key;
 			Message = message;
 		}
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public string Key { get; set; }
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public string Message
 		{

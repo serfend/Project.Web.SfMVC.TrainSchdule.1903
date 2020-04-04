@@ -1,8 +1,6 @@
-﻿using DAL.DTO.Apply;
-using DAL.Entities.ApplyInfo;
+﻿using DAL.Entities.ApplyInfo;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace BLL.Extensions.ApplyExtensions
 {
@@ -19,7 +17,9 @@ namespace BLL.Extensions.ApplyExtensions
 				default: return "null";
 			}
 		}
+
 		private static Dictionary<int, AuditStatusMessage> statusDic;
+
 		public static Dictionary<int, AuditStatusMessage> StatusDic
 		{
 			get
@@ -28,6 +28,7 @@ namespace BLL.Extensions.ApplyExtensions
 				return statusDic;
 			}
 		}
+
 		public static readonly Dictionary<int, Color> StatusColors = new Dictionary<int, Color>
 			{
 				{(int)AuditStatus.NotPublish, Color.DarkGray},
@@ -38,6 +39,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Denied, Color.Red},
 				{(int)AuditStatus.NotSave,Color.Black }
 			};
+
 		public readonly static Dictionary<int, string> StatusDesc = new Dictionary<int, string>()
 			{
 				{(int) AuditStatus.NotPublish, "未发布"},
@@ -48,6 +50,7 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int) AuditStatus.Denied, "已驳回"},
 				{(int) AuditStatus.NotSave,"未保存" }
 			};
+
 		public static readonly Dictionary<int, IEnumerable<string>> StatusAcessable = new Dictionary<int, IEnumerable<string>>()
 			{
 				{(int)AuditStatus.NotPublish,new List<string>(){"Publish","Delete"}},
@@ -58,7 +61,6 @@ namespace BLL.Extensions.ApplyExtensions
 				{(int)AuditStatus.Denied, new List<string>(){"Delete"}},
 				{(int)AuditStatus.NotSave,new List<string>(){"Delete","Save","Publish"} }
 			};
-
 
 		private static Dictionary<int, AuditStatusMessage> InitStatusDic()
 		{

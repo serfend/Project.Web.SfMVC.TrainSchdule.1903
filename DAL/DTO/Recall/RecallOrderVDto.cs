@@ -1,9 +1,5 @@
-﻿using DAL.DTO.Apply;
-using DAL.DTO.User;
-using DAL.Entities;
+﻿using DAL.DTO.User;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DAL.DTO.Recall
 {
@@ -15,6 +11,4 @@ namespace DAL.DTO.Recall
 		public DateTime ReturnStamp { get; set; }
 		public Guid Apply { get; set; }
 	}
-
-
 }

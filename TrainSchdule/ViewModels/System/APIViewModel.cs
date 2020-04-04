@@ -1,5 +1,4 @@
 ﻿using BLL.Helpers;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace TrainSchdule.ViewModels.System

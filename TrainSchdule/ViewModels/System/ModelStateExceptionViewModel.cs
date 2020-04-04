@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
+using System.Collections.Generic;
 using TrainSchdule.Extensions;
-using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels
 {

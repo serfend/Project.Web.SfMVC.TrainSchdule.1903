@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace DAL.Entities
 {
@@ -9,6 +7,7 @@ namespace DAL.Entities
 	{
 		[Key]
 		public int Id { get; set; }
+
 		public DateTime Start { get; set; }
 
 		public int Length { get; set; }

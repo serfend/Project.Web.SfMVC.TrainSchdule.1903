@@ -1,8 +1,4 @@
-﻿using DAL.Entities.UserInfo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DAL.Entities.ZX.Phy
 {
@@ -12,12 +8,16 @@ namespace DAL.Entities.ZX.Phy
 		/// 科目名称
 		/// </summary>
 		public string Name { get; set; }
+
 		public ValueFormat ValueFormat { get; set; }
+
 		/// <summary>
 		/// 是否为值越小成绩越好
 		/// </summary>
 		public bool CountDown { get; set; }
+
 		private IEnumerable<Standard> standards;
+
 		public virtual IEnumerable<Standard> Standards
 		{
 			get => standards; set
@@ -25,7 +25,6 @@ namespace DAL.Entities.ZX.Phy
 				foreach (var i in value) { i.BelongTo = this; i.GradePairs = i.GradePairs; }
 				standards = value;
 			}
-
 		}
 	}
 }

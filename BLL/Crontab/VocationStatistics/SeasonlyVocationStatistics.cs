@@ -1,8 +1,5 @@
 ﻿using DAL.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TrainSchdule.Crontab
 {
@@ -17,7 +14,7 @@ namespace TrainSchdule.Crontab
 		public static DateTime Start { get => start; set => start = value; }
 		public static DateTime End { get => end; set => end = value; }
 
-		public SeasonlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_Season{(int)(1 + ( Start.Month - 1) / 3d)}")
+		public SeasonlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"{Start.Year}_Season{(int)(1 + (Start.Month - 1) / 3d)}")
 		{
 		}
 	}

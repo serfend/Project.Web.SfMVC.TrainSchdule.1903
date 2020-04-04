@@ -1,31 +1,32 @@
-﻿using System.Collections.Generic;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using DAL.DTO.Company;
-using TrainSchdule.ViewModels.System;
+using System.Collections.Generic;
 
 namespace TrainSchdule.ViewModels.User
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
-	public class UserManageRangeViewModel:ApiResult
+	public class UserManageRangeViewModel : ApiResult
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public UserManageRangeDataModel Data { get; set; }
 	}
+
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class UserManageRangeDataModel
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public IEnumerable<CompanyDto> List { get; set; }
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public int TotalCount { get; set; }
 	}

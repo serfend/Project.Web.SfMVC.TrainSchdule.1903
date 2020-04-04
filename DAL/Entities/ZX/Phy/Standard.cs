@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 
 namespace DAL.Entities.ZX.Phy
 {
@@ -13,10 +12,13 @@ namespace DAL.Entities.ZX.Phy
 		[NotMapped]
 		[JsonIgnore]
 		public virtual Subject BelongTo { get; set; }
+
 		[NotMapped]
 		[JsonIgnore]
 		public SortedDictionary<int, int> GradePairsInner { get; set; }
+
 		private string GradePairsStr;
+
 		/// <summary>
 		/// 分数对     成绩:得分|成绩:得分|成绩:得分|...
 		/// </summary>
@@ -38,21 +40,25 @@ namespace DAL.Entities.ZX.Phy
 				if (BaseStandard == 0) BaseStandard = 60;
 			}
 		}
+
 		public string ExpressionWhenFullGrade { get; set; }
 		public int minAge { get; set; }
 		public int maxAge { get; set; }
 		public GenderEnum gender { get; set; }
+
 		/// <summary>
 		/// 达到及格所需成绩
 		/// </summary>
 		public int BaseStandard { get; set; }
 	}
+
 	public enum ValueFormat
 	{
 		Default,
 		TimeBase,
 		SecondBase
 	}
+
 	public static class StandardExtensions
 	{
 		public static int ToValue(this Standard standard, string raw)
@@ -78,6 +84,7 @@ namespace DAL.Entities.ZX.Phy
 			}
 			return 0;
 		}
+
 		public static string ToRawValue(this Standard standard, int expectGrade = 0)
 		{
 			if (standard == null) return "无此标准";
@@ -99,6 +106,7 @@ namespace DAL.Entities.ZX.Phy
 			}
 			return "未设计分法";
 		}
+
 		public static int Age(this DateTime birthDay)
 		{
 			DateTime now = DateTime.Now;

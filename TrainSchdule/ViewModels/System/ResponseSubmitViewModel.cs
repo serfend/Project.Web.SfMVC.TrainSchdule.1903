@@ -1,30 +1,28 @@
-﻿using System;
+﻿using BLL.Helpers;
+using System;
 using System.Collections.Generic;
-using BLL.Helpers;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TrainSchdule.Extensions;
 
 namespace TrainSchdule.ViewModels.System
 {
-
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class APIResponseIdViewModel : ApiResult
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public ApiResponseDataModel Data { get; set; }
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="message"></param>
 		public APIResponseIdViewModel(Guid id, ApiResult message)
 		{
-			Data =new ApiResponseDataModel()
+			Data = new ApiResponseDataModel()
 			{
 				Id = id
 			};
@@ -34,28 +32,28 @@ namespace TrainSchdule.ViewModels.System
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class ApiResponseDataModel
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public Guid Id { get; set; }
 	}
 
-
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public class ModelStateResponseExceptionDataModel
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public IEnumerable<ShowError> List { get; set; }
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public Guid Id { get; set; }
 	}

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DAL.QueryModel
+﻿namespace DAL.QueryModel
 {
 	public class QueryVacationStatisticsDataModel
 	{

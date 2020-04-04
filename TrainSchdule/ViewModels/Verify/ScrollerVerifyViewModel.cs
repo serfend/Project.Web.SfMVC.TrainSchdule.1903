@@ -8,11 +8,12 @@ namespace TrainSchdule.ViewModels.Verify
 	public class ScrollerVerifyViewModel
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="_verifyService"></param>
 		/// <returns></returns>
 		public string Verify(IVerifyService _verifyService) => _verifyService.Verify(Code);
+
 		/// <summary>
 		/// X轴位置
 		/// </summary>

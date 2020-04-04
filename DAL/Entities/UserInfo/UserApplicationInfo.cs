@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.UserInfo
 {
-	public class UserApplicationInfo:BaseEntity
+	public class UserApplicationInfo : BaseEntity
 	{
 		/// <summary>
 		/// 用户注册时的授权人id
@@ -10,7 +10,7 @@ namespace DAL.Entities.UserInfo
 		public string InvitedBy { get; set; }
 
 		public virtual Permissions Permission { get; set; }
-		public DateTime?Create { get; set; }
+		public DateTime? Create { get; set; }
 		public string Email { get; set; }
 		public string AuthKey { get; set; }
 

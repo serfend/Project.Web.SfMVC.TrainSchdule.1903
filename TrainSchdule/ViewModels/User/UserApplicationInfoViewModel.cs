@@ -1,8 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using DAL.Entities.UserInfo;
-using TrainSchdule.ViewModels.System;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainSchdule.ViewModels.User
 {

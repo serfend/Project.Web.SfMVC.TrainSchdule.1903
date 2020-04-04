@@ -1,10 +1,5 @@
 ﻿using BLL.Helpers;
 using DAL.DTO.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {
@@ -14,11 +9,8 @@ namespace TrainSchdule.ViewModels.User
 	public class UserVocationInfoViewModel : ApiResult
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
-		public UserVocationInfoVDto Data{get;set;}
+		public UserVocationInfoVDto Data { get; set; }
 	}
-	
-
-
 }

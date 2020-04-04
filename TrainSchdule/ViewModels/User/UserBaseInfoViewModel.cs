@@ -1,9 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.UserInfo;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {

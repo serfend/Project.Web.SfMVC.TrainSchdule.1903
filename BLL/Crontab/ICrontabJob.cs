@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TrainSchdule.Crontab
+﻿namespace TrainSchdule.Crontab
 {
 	/// <summary>
 	/// 定时工作任务
@@ -13,6 +8,6 @@ namespace TrainSchdule.Crontab
 		/// <summary>
 		/// 执行任务
 		/// </summary>
-		 void Run();
+		void Run();
 	}
 }

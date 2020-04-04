@@ -14,10 +14,11 @@ namespace DAL.DTO.Apply
 		public string Remark { get; set; }
 		public Entities.ApplyInfo.Apply Apply { get; set; }
 	}
+
 	public enum AuditResult
 	{
-		NoAction=0,
-		Accept=1,
-		Deny=2
+		NoAction = 0,
+		Accept = 1,
+		Deny = 2
 	}
 }

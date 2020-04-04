@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities
 {
@@ -8,10 +7,10 @@ namespace DAL.Entities
 	/// Contains <see cref="Id"/> property.
 	/// </summary>
 	public class BaseEntity
-    {
+	{
 		/// <summary>
 		/// Gets and sets id.
 		/// </summary>
 		public Guid Id { get; set; }
-    }
+	}
 }

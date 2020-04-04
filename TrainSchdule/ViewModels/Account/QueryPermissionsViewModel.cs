@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using DAL.Entities;
-using TrainSchdule.ViewModels.System;
-using TrainSchdule.ViewModels.Verify;
+using System.Collections.Generic;
 
 namespace TrainSchdule.ViewModels.Account
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
-	public class QueryPermissionsOutViewModel:ApiResult
+	public class QueryPermissionsOutViewModel : ApiResult
 	{
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public IDictionary<string, PermissionRegion> Data { get; set; }
 	}

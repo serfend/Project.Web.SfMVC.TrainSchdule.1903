@@ -33,17 +33,15 @@
 					public static readonly ApiResult SystemAllReadyValid = new ApiResult(12430, "用户的注册申请已被审批");
 					public static readonly ApiResult SystemInvalid = new ApiResult(12440, "用户未被授权使用系统");
 					public static readonly ApiResult SystemAllReadyInvalid = new ApiResult(12450, "用户的注册申请已被退回，需重新注册");
-					
 				}
-				
 			}
-			public static class Register { 
+
+			public static class Register
+			{
 				public static readonly ApiResult Default = new ApiResult(13000, "未知的注册错误");
 				public static readonly ApiResult UserExist = new ApiResult(13100, "用户已存在");
 				public static readonly ApiResult ConfirmPasswordNotSame = new ApiResult(13200, "两次输入的密码不一致");
 				public static readonly ApiResult CidExist = new ApiResult(13300, "身份证已被使用");
-				
-
 			}
 		}
 	}

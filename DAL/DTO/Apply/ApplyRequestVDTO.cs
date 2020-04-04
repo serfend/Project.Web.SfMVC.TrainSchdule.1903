@@ -1,8 +1,8 @@
 ﻿using DAL.Entities;
-using System;
 using DAL.Entities.ApplyInfo;
-using System.Collections.Generic;
 using DAL.Entities.Vocations;
+using System;
+using System.Collections.Generic;
 
 namespace DAL.DTO.Apply
 {
@@ -10,10 +10,12 @@ namespace DAL.DTO.Apply
 	{
 		public DateTime? StampLeave { get; set; }
 		public DateTime? StampReturn { get; set; }
+
 		/// <summary>
 		/// 本次休假中跨越的假期的描述
 		/// </summary>
 		public string VocationDescriptions { get; set; }
+
 		public int OnTripLength { get; set; }
 		public int VocationLength { get; set; }
 		public string VocationType { get; set; }

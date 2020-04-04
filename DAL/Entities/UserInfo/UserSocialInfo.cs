@@ -6,7 +6,5 @@
 		public virtual Settle.Settle Settle { get; set; }
 		public virtual AdminDivision Address { get; set; }
 		public string AddressDetail { get; set; }
-
 	}
-
 }

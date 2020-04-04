@@ -11,29 +11,34 @@ namespace DAL.Entities.ApplyInfo
 	{
 		public DateTime? StampLeave { get; set; }
 		public DateTime? StampReturn { get; set; }
+
 		/// <summary>
 		/// 路途长度
 		/// </summary>
 		public int OnTripLength { get; set; }
+
 		/// <summary>
 		/// 正休长度
 		/// </summary>
 		public int VocationLength { get; set; }
+
 		/// <summary>
 		/// 休假类别
 		/// </summary>
 		public string VocationType { get; set; }
+
 		/// <summary>
 		/// 福利假，包含法定节假日自动计算
 		/// </summary>
 		public virtual IEnumerable<VocationAdditional> AdditialVocations { get; set; }
-		
+
 		public virtual AdminDivision VocationPlace { get; set; }
 		public string VocationPlaceName { get; set; }
 		public string Reason { get; set; }
 		public DateTime CreateTime { get; set; }
 		public Transportation ByTransportation { get; set; }
 	}
+
 	public enum Transportation
 	{
 		其他 = -1,

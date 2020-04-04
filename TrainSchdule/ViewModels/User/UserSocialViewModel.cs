@@ -3,8 +3,6 @@ using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using System;
-using System.ComponentModel;
-using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
 {

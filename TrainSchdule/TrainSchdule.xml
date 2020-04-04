@@ -136,7 +136,6 @@
         </member>
         <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService,BLL.Interfaces.IVocationCheckServices)">
             <summary>
-            
             </summary>
             <param name="usersService"></param>
             <param name="currentUserService"></param>
@@ -232,7 +231,6 @@
         </member>
         <member name="M:TrainSchdule.Controllers.CompanyController.#ctor(BLL.Interfaces.ICompaniesService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompanyManagerServices)">
             <summary>
-            
             </summary>
             <param name="companiesService"></param>
             <param name="currentUserService"></param>
@@ -264,12 +262,10 @@
         </member>
         <member name="T:TrainSchdule.Controllers.StaticController">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompaniesService)">
             <summary>
-            
             </summary>
             <param name="verifyService"></param>
             <param name="context"></param>
@@ -281,32 +277,27 @@
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.VerifyCode">
             <summary>
-            
             </summary>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.VerifyCodeFront">
             <summary>
-            
             </summary>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.VerifyCodeBackground">
             <summary>
-            
             </summary>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.Location(System.Int32)">
             <summary>
-            
             </summary>
             <param name="code"></param>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Controllers.StaticController.LocationChildren(System.Int32)">
             <summary>
-            
             </summary>
             <param name="code"></param>
             <returns></returns>
@@ -408,12 +399,10 @@
         </member>
         <member name="T:TrainSchdule.Extensions.ApplyExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel,BLL.Interfaces.IUsersService)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="usersService"></param>
@@ -421,7 +410,6 @@
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="context"></param>
@@ -430,14 +418,12 @@
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitApplyViewModel)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToAuditVDTO(TrainSchdule.ViewModels.Apply.AuditApplyViewModel,BLL.Interfaces.IUsersService,BLL.Interfaces.IApplyService)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="usersService"></param>
@@ -446,24 +432,20 @@
         </member>
         <member name="T:TrainSchdule.Extensions.CompanyExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.CompanyExtensions.ToCompanyModel(DAL.Entities.Company)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Extensions.EmailSenderExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.EmailSenderExtensions.SendEmailConfirmationAsync(BLL.Interfaces.IEmailSender,System.String,System.String)">
             <summary>
-            
             </summary>
             <param name="emailSender"></param>
             <param name="email"></param>
@@ -472,58 +454,48 @@
         </member>
         <member name="T:TrainSchdule.Extensions.ModelStateExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.ModelStateExtensions.AllModelStateErrors(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
             <summary>
-            
             </summary>
             <param name="modelState"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Extensions.ShowError">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.ShowError.#ctor(System.String,System.String)">
             <summary>
-            
             </summary>
             <param name="key"></param>
             <param name="message"></param>
         </member>
         <member name="P:TrainSchdule.Extensions.ShowError.Key">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.Extensions.ShowError.Message">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.Extensions.StaticExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.StaticExtensions.ToDataModel(DAL.Entities.AdminDivision)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Extensions.UserExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Extensions.UserExtensions.ToDTO(TrainSchdule.ViewModels.Account.UserCreateDataModel,System.String)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="invitedBy"></param>
@@ -531,53 +503,44 @@
         </member>
         <member name="T:TrainSchdule.Program">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Program.Main(System.String[])">
             <summary>
-            
             </summary>
             <param name="args"></param>
         </member>
         <member name="M:TrainSchdule.Program.BuildWebHost(System.String[])">
             <summary>
-            
             </summary>
             <param name="args"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.Startup">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.Startup.Configuration">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            
             </summary>
             <param name="configuration"></param>
         </member>
         <member name="M:TrainSchdule.Startup.AddApplicationServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            
             </summary>
             <param name="services"></param>
         </member>
         <member name="M:TrainSchdule.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            
             </summary>
             <param name="services"></param>
         </member>
         <member name="M:TrainSchdule.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,System.IServiceProvider)">
             <summary>
-            
             </summary>
             <param name="app"></param>
             <param name="env"></param>
@@ -585,57 +548,46 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.LoginViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.Verify">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.UserName">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.Password">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.LoginViewModel.RememberMe">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.NewKey">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.ModifyAuthKeyViewModel.ModifyUserId">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.ModifyPermissionsViewModel.Id">
@@ -650,57 +602,46 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="F:TrainSchdule.ViewModels.Account.QueryPermissionsViewModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.QueryPermissionsOutViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.QueryPermissionsOutViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserCreateViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Verify">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserCreateDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Cid">
@@ -710,47 +651,38 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.RealName">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Password">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.ConfirmPassword">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Phone">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Email">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.HomeAddress">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.HomeDetailAddress">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Duties">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Company">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserCreateDataModel.Settle">
@@ -760,27 +692,22 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserIdByCidViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserIdByCidViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserIdByCidDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Account.UserIdByCidDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Account.UserRemoveViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel">
@@ -790,93 +717,75 @@
         </member>
         <member name="M:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel.#ctor(BLL.Helpers.Status)">
             <summary>
-            
             </summary>
             <param name="status"></param>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyActionResponseViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyActionResponseDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyActionResponseDataModel.Status">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditStatusViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditStatusViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditStatusDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditStatusDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyListViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyListViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyListDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyListDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyRemoveViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.CompareAudit">
@@ -886,7 +795,6 @@
         </member>
         <member name="M:TrainSchdule.ViewModels.Apply.CompareAudit.Equals(TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel,TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel)">
             <summary>
-            
             </summary>
             <param name="x"></param>
             <param name="y"></param>
@@ -894,29 +802,25 @@
         </member>
         <member name="M:TrainSchdule.ViewModels.Apply.CompareAudit.GetHashCode(TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel)">
             <summary>
-            
             </summary>
             <param name="obj"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Action">
             <summary>
-            <see cref="T:DAL.DTO.Apply.AuditResult"/> : 0:无操作 1:同意  2:驳回
+            <see cref="T:DAL.DTO.Apply.AuditResult" /> : 0:无操作 1:同意  2:驳回
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.AuditApplyNodeDataModel.Remark">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusViewModel">
@@ -926,94 +830,76 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.Apply.ApplyAuditResponseStatusDataModel.#ctor(System.Guid,BLL.Helpers.Status)">
             <summary>
-            
             </summary>
             <param name="id"></param>
             <param name="status"></param>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.InfoApplyDetailViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.InfoApplyDetailViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.Verify">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.BaseId">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitApplyViewModel.RequestId">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.RealName">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Company">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Duties">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.HomeAddress">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.HomeDetailAddress">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Phone">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitBaseInfoViewModel.Settle">
@@ -1028,7 +914,6 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.Id">
@@ -1073,37 +958,30 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.AllChildViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.AllChildViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.AllChildDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.AllChildDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.CompanyChildDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.CompanyChildDataModel.Name">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.CompanyChildDataModel.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.AllMembersViewModel">
@@ -1113,7 +991,6 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.AllMembersViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.AllMembersDataModel">
@@ -1128,107 +1005,86 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.CompanyManagerViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.CompanyManagerViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Company.CompanyManagerDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Company.CompanyManagerDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.LocationChildrenViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationChildrenViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.LocationChildrenDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationChildrenDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel.Name">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationChildNodeDataModel.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.LocationViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.LocationDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.Name">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.ShortName">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.LocationDataModel.ParentCode">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.Descriptions">
@@ -1253,7 +1109,6 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Static.XlsExportViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Static.XlsExportViewModel.Templete">
@@ -1283,17 +1138,14 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ApiResult.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ApiResult.Message">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.IdSubmitViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.IdSubmitViewModel.Id">
@@ -1303,209 +1155,169 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.System.IdSubmitViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.APIResponseIdViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.APIResponseIdViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.System.APIResponseIdViewModel.#ctor(System.Guid,BLL.Helpers.Status)">
             <summary>
-            
             </summary>
             <param name="id"></param>
             <param name="message"></param>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.ApiResponseDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ApiResponseDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.System.ApiResponseModelStateErrorViewModel.#ctor(System.Guid,Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
             <summary>
-            
             </summary>
             <param name="id"></param>
             <param name="state"></param>
         </member>
         <member name="T:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.System.ModelStateResponseExceptionDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.ModelStateExceptionViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.ModelStateExceptionViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.ModelStateExceptionViewModel.#ctor(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
             <summary>
-            
             </summary>
             <param name="state"></param>
         </member>
         <member name="T:TrainSchdule.ViewModels.ModelStateExceptionDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.ModelStateExceptionDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserApplicationInfoViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserApplicationInfoViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserApplicationDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.InvitedBy">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.About">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.Create">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserApplicationDataModel.Email">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserApplicationInfoExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.User.UserApplicationInfoExtensions.ToModel(DAL.Entities.UserInfo.UserApplicationInfo)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserAuditStreamViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserAuditStreamViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserAuditStreamDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserAuditStreamDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.RealName">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Avatar">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.Gender">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserBaseInfoDataModel.PrivateAccount">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserBaseInfoExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.User.UserBaseInfoExtensions.ToModel(DAL.Entities.UserInfo.UserBaseInfo,System.String)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="userid"></param>
@@ -1513,62 +1325,50 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserCompanyDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Name">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyDataModel.Parent">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel.Company">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserCompanyInfoDataModel.Duties">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserDutiesViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserDutiesViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserDutiesDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserDutiesDataModel.Code">
@@ -1576,17 +1376,14 @@
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserDutiesDataModel.Name">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions.ToCompanyModel(DAL.Entities.UserInfo.UserCompanyInfo,BLL.Interfaces.ICompaniesService)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <param name="companiesService"></param>
@@ -1594,54 +1391,44 @@
         </member>
         <member name="M:TrainSchdule.ViewModels.User.UserCompanyInfoExtensions.ToDutiesModel(DAL.Entities.UserInfo.UserCompanyInfo)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Auth">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Code">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserManageRangeModifyViewModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserManageRangeViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserManageRangeViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserManageRangeDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserManageRangeDataModel.List">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserSocialViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserSocialViewModel.Data">
@@ -1651,7 +1438,6 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserSocialDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.User.UserSocialDataModel.Phone">
@@ -1681,12 +1467,10 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.User.UserSocialExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:TrainSchdule.ViewModels.User.UserSocialExtensions.ToModel(DAL.Entities.UserInfo.UserSocialInfo)">
             <summary>
-            
             </summary>
             <param name="model"></param>
             <returns></returns>
@@ -1708,27 +1492,22 @@
         </member>
         <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedViewModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedViewModel.Data">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel.Id">
             <summary>
-            
             </summary>
         </member>
         <member name="P:TrainSchdule.ViewModels.Verify.ScrollerVerifyGeneratedDataModel.PosY">
             <summary>
-            
             </summary>
         </member>
         <member name="T:TrainSchdule.ViewModels.Verify.ScrollerVerifyViewModel">
@@ -1738,7 +1517,6 @@
         </member>
         <member name="M:TrainSchdule.ViewModels.Verify.ScrollerVerifyViewModel.Verify(BLL.Interfaces.IVerifyService)">
             <summary>
-            
             </summary>
             <param name="_verifyService"></param>
             <returns></returns>
@@ -1750,12 +1528,10 @@
         </member>
         <member name="T:Microsoft.AspNetCore.Mvc.UrlHelperExtensions">
             <summary>
-            
             </summary>
         </member>
         <member name="M:Microsoft.AspNetCore.Mvc.UrlHelperExtensions.EmailConfirmationLink(Microsoft.AspNetCore.Mvc.IUrlHelper,System.String,System.String,System.String)">
             <summary>
-            
             </summary>
             <param name="urlHelper"></param>
             <param name="userId"></param>

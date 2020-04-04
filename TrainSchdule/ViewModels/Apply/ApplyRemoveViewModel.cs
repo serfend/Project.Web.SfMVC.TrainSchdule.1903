@@ -3,9 +3,9 @@
 namespace TrainSchdule.ViewModels.Apply
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
-	public class ApplyRemoveViewModel:IdSubmitViewModel
+	public class ApplyRemoveViewModel : IdSubmitViewModel
 	{
 	}
 }

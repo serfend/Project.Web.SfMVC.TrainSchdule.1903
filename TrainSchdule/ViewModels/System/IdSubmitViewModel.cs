@@ -3,9 +3,9 @@
 namespace TrainSchdule.ViewModels.System
 {
 	/// <summary>
-	/// 
+	///
 	/// </summary>
-	public class IdSubmitViewModel: GoogleAuthViewModel
+	public class IdSubmitViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		/// Id

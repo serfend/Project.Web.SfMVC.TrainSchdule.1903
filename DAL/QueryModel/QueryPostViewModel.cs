@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DAL.QueryModel
+﻿namespace DAL.QueryModel
 {
 	public class QueryPostViewModel
 	{
@@ -10,6 +6,7 @@ namespace DAL.QueryModel
 		public QueryByDate Create { get; set; }
 		public QueryByString CreateBy { get; set; }
 	}
+
 	public class QueryContentViewModel
 	{
 		public QueryByPage Page { get; set; }
