@@ -95,13 +95,7 @@ namespace BLL.Services.ApplyServices
 
 		public void Delete(Apply item)
 		{
-			if (item == null) return;
-			foreach (var applyResponse in item.Response)
-			{
-				_context.ApplyResponses.Remove(applyResponse);
-			}
-			_context.Applies.Remove(item);
-			_context.SaveChanges();
+			RemoveApplies(new List<Apply>() { item });
 		}
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)

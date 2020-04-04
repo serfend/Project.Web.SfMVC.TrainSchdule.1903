@@ -74,43 +74,67 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public Task RemoveAllUnSaveApply()
+		public async Task RemoveAllUnSaveApply()
 		{
 			//寻找所有找过1天未保存的申请
 			var list = _context.Applies
 						 .Where(a => a.Status == AuditStatus.NotSave)
 						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
-			RemoveApplies(list);
-			return Task.CompletedTask;
+			await RemoveApplies(list).ConfigureAwait(false);
 		}
 
-		public Task RemoveAllNoneFromUserApply()
+		public async Task RemoveAllNoneFromUserApply()
 		{
-			var list = _context.Applies.Where(a => a.BaseInfo.From == null);
-			RemoveApplies(list);
-			return Task.CompletedTask;
-		}
-
-		public Task RemoveApplies(IEnumerable<Apply> list)
-		{
-			if (list == null) return Task.CompletedTask;
-			//删除这些申请的审批流
-			foreach (var apply in list) _context.ApplyResponses.RemoveRange(apply.Response);
-			//删除这些申请
-			_context.Applies.RemoveRange(list);
 			var applies = _context.Applies;
+
+			#region request
+
 			//寻找所有没有创建申请且不是今天创建的 请求信息
-			var request = _context.ApplyRequests.Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day).ToList();
+			var request = _context.ApplyRequests.Where(r => DateTime.Now.Day != r.CreateTime.Day).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
 			//删除这些请求信息的福利信息
-			foreach (var add in request) _context.VocationAdditionals.RemoveRange(add.AdditialVocations);
+			foreach (var r in request) _context.VocationAdditionals.RemoveRange(r.AdditialVocations);
 			//删除这些请求信息
 			_context.ApplyRequests.RemoveRange(request);
+
+			#endregion request
+
+			#region steps
+
+			// 删除所有无申请指向的步骤
+			var applySteps = _context.ApplyAuditSteps.Where(s => !_context.Applies.Any(a => a.ApplyAllAuditStep.Any(step => step.Id == s.Id)));
+			_context.ApplyAuditSteps.RemoveRange(applySteps);
+
+			#endregion steps
+
+			#region base
+
 			//寻找所有没有创建申请且不是今天创建的 基础信息
-			var baseInfos = _context.ApplyBaseInfos.Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id)).Where(r => DateTime.Now.Day != r.CreateTime.Day);
+			var baseInfos = _context.ApplyBaseInfos.Where(r => DateTime.Now.Day != r.CreateTime.Day).Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id));
 			//删除这些基础信息
 			_context.ApplyBaseInfos.RemoveRange(baseInfos);
-			_context.SaveChanges();
-			return Task.CompletedTask;
+
+			#endregion base
+
+			#region response
+
+			//寻找所有没有被引用了的反馈信息
+			var responses = _context.ApplyResponses.Where(r => !applies.Any(a => a.Response.Any(ar => ar.Id == r.Id)));
+			_context.ApplyResponses.RemoveRange(responses);
+
+			#endregion response
+
+			await _context.SaveChangesAsync().ConfigureAwait(false);
+
+			var list = _context.Applies.Where(a => a.BaseInfo.From == null);
+			await RemoveApplies(list).ConfigureAwait(false);
+		}
+
+		public async Task RemoveApplies(IEnumerable<Apply> list)
+		{
+			if (list == null) return;
+			//删除这些申请
+			_context.Applies.RemoveRange(list);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 		}
 
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
