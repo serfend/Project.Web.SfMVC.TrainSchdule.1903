@@ -48,7 +48,7 @@ namespace BLL.Services
 			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}", false, ActionRank.Danger);
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
-				Status(a, true, "授权成功");
+				Status(a, true, $"成功-授权到{targetUserCompanyCode}执行{key?.Name} ");
 				return true;
 			}
 			return false;
