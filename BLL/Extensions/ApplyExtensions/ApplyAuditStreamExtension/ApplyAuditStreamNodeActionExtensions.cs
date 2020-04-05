@@ -20,7 +20,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Companies = (model.Companies?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Companies?.Split("##"),
 				CompanyRefer = model.CompanyRefer,
 				CompanyTags = (model.CompanyTags?.Length ?? 0) == 0 ? Array.Empty<string>() : model.CompanyTags.Split("##"),
-				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
+				CompanyCodeLength = (model.CompanyCodeLength?.Length ?? 0) == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
 				Create = model.Create,
 				Description = model.Description,
 				Duties = (model.Duties?.Length ?? 0) == 0 ? Array.Empty<int>() : model.Duties?.Split("##").Select(d => Convert.ToInt32(d)),
