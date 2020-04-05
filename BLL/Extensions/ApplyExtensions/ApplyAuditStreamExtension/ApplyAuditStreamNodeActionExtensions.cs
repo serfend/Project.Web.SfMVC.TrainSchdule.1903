@@ -23,6 +23,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Create = model.Create,
 				Description = model.Description,
 				Duties = model.Duties?.Length == 0 ? Array.Empty<int>() : model.Duties?.Split("##").Select(d => Convert.ToInt32(d)),
+				DutyTags = model.DutiesTags?.Length == 0 ? Array.Empty<string>() : model.DutiesTags?.Split("##"),
 				DutyIsMajor = model.DutyIsMajor,
 				Name = model.Name
 			};

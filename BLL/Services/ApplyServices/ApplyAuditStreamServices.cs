@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Extensions.ApplyExtensions;
+using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -70,6 +71,7 @@ namespace BLL.Services.ApplyServices
 				CompanyTags = filter.CompanyTags,
 				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
+				DutiesTags=filter?.DutiesTags,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
 				AuditMembersCount = filter?.AuditMembersCount ?? 0,
@@ -113,6 +115,7 @@ namespace BLL.Services.ApplyServices
 				CompanyTags = filter.CompanyTags,
 				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
+				DutiesTags=filter?.DutiesTags,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
 				AuditMembersCount = filter?.AuditMembersCount ?? 0,
@@ -123,10 +126,11 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public IEnumerable<string> GetToAuditMembers(string company, MembersFilter filter)
+		public IEnumerable<string> GetToAuditMembers(string company, MembersFilter filterRaw)
 		{
+			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;
-			if (filter.AuditMembers != null && filter.AuditMembers?.Length > 0) return filter.AuditMembers.Split("##");
+			if (filter.AuditMembers != null && filter.AuditMembers.Any(a => true)) return filter.AuditMembers;
 			var result = context.AppUsers.AsQueryable();
 
 			// 指定单位
@@ -139,34 +143,35 @@ namespace BLL.Services.ApplyServices
 			if (target == null)
 			{
 				// Companies
-				var cmpArr = filter?.Companies?.Length == 0 ? Array.Empty<string>() : filter.Companies.Split("##");
-				if (cmpArr != null && cmpArr.Length > 0) result = result.Where(u => cmpArr.Any(c => c == u.CompanyInfo.Company.Code));
+				if (filter.Companies != null && filter.Companies.Any(a => true)) result = result.Where(u => filter.Companies.Any(c => c == u.CompanyInfo.Company.Code));
 
 				// CompanyTag
-				var CompanyTag = filter?.CompanyTags?.Length == 0 ? Array.Empty<string>() : filter.CompanyTags.Split("##");
-				if (CompanyTag != null && CompanyTag.Length > 0) result = result.Where(u => CompanyTag.Any(c => c == u.CompanyInfo.Company.Tag));
+				if (filter.CompanyTags != null && filter.CompanyTags.Any(a => true)) result = result.Where(u => filter.CompanyTags.Any(c => c == u.CompanyInfo.Company.Tag));
 
 				// CompanyLength
-				var cmpArrLength = filter?.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : filter.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)).ToArray();
-				if (cmpArrLength != null && cmpArrLength.Length > 0) result = result.Where(u => cmpArrLength.Any(c => c == u.CompanyInfo.Company.Code.Length));
+				if (filter.CompanyCodeLength != null && filter.CompanyCodeLength.Any(a => true)) result = result.Where(u => filter.CompanyCodeLength.Any(c => c == u.CompanyInfo.Company.Code.Length));
 			}
 			else
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
 
 			// 指定职务
-			var dutyArr = filter.Duties?.Length == 0 ? Array.Empty<int>() : filter.Duties?.Split("##")?.Select(d => Convert.ToInt32(d)).ToArray();
-			if (dutyArr != null && dutyArr.Length > 0) result = result.Where(u => dutyArr.Any(d => d == u.CompanyInfo.Duties.Code));
-			switch (filter.DutyIsMajor)
+			if (filter.Duties == null)
 			{
-				case DutiesIsMajor.BothCanGo: break;
-				case DutiesIsMajor.OnlyMajor:
-					result = result.Where(u => u.CompanyInfo.Duties.IsMajorManager);
-					break;
+				if (filter.DutyTags != null && filter.DutyTags.Any(a => true)) result = result.Where(u => filter.DutyTags.Any(t => u.CompanyInfo.Duties.Tags.Contains(t)));
 
-				case DutiesIsMajor.OnlyUnMajor:
-					result = result.Where(u => !u.CompanyInfo.Duties.IsMajorManager);
-					break;
+				switch (filter.DutyIsMajor)
+				{
+					case DutiesIsMajor.BothCanGo: break;
+					case DutiesIsMajor.OnlyMajor:
+						result = result.Where(u => u.CompanyInfo.Duties.IsMajorManager);
+						break;
+
+					case DutiesIsMajor.OnlyUnMajor:
+						result = result.Where(u => !u.CompanyInfo.Duties.IsMajorManager);
+						break;
+				}
 			}
+			else result = result.Where(u => filter.Duties.Any(d => d == u.CompanyInfo.Duties.Code));
 
 			return result.Select(u => u.Id);
 		}
