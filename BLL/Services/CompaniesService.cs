@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-	public class CompaniesService:ICompaniesService
+	public class CompaniesService : ICompaniesService
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -19,15 +19,20 @@ namespace BLL.Services
 			_context = context;
 		}
 
+		public Duties GetDuties(int code)
+		{
+			return _context.Duties.Find(code);
+		}
+
 		public IEnumerable<Company> GetAll(int page, int pageSize)
 		{
-			var list = _context.Companies.Skip(page*pageSize).Take(pageSize).ToList();
+			var list = _context.Companies.Skip(page * pageSize).Take(pageSize).ToList();
 			return list;
 		}
 
 		public IEnumerable<Company> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize)
 		{
-			var list= _context.Companies.Where(predicate).Skip(page*pageSize).Take(pageSize);
+			var list = _context.Companies.Where(predicate).Skip(page * pageSize).Take(pageSize);
 
 			return list;
 		}
@@ -50,11 +55,11 @@ namespace BLL.Services
 			return _context.Companies.Find(parent);
 		}
 
-		private string ParentCode(string code)=>(code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
+		private string ParentCode(string code) => (code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
 
-		public Company Create(string name,string code)
+		public Company Create(string name, string code)
 		{
-			var company = CreateCompany(name,code);
+			var company = CreateCompany(name, code);
 			_context.Companies.Add(company);
 			return company;
 		}
@@ -68,10 +73,11 @@ namespace BLL.Services
 			};
 			return company;
 		}
-		public async Task<Company> CreateAsync(string name,string code)
+
+		public async Task<Company> CreateAsync(string name, string code)
 		{
-			var company = CreateCompany(name,code);
-			await  _context.Companies.AddAsync(company);
+			var company = CreateCompany(name, code);
+			await _context.Companies.AddAsync(company);
 			return company;
 		}
 
@@ -86,7 +92,7 @@ namespace BLL.Services
 
 		public async Task<bool> EditAsync(string code, Action<Company> editCallBack)
 		{
-			var target =await _context.Companies.FindAsync(code).ConfigureAwait(true);
+			var target = await _context.Companies.FindAsync(code).ConfigureAwait(true);
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
 			_context.Companies.Update(target);
@@ -97,7 +103,7 @@ namespace BLL.Services
 		{
 			var target = _context.Companies.Find(code);
 			if (target == null) return null;
-			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m=>m.User);
+			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m => m.User);
 		}
 
 		public bool CheckManagers(string code, string userid)

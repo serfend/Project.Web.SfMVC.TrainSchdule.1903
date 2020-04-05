@@ -1,7 +1,9 @@
-﻿using DAL.DTO.Apply.ApplyAuditStreamDTO;
+﻿using BLL.Interfaces;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 using DAL.Entities.ApplyInfo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
@@ -16,7 +18,19 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,
-				Nodes = model.Nodes?.Length == 0 ? Array.Empty<string>() : model.Nodes.Split("##")
+				Nodes = (model.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Nodes.Split("##")
+			};
+		}
+
+		public static ApplyAuditStreamVDto ToVDtoModel(this ApplyAuditStreamDto model, IApplyAuditStreamServices applyAuditStreamServices, IUsersService usersService, ICompaniesService companiesService)
+		{
+			if (model == null) return null;
+			return new ApplyAuditStreamVDto()
+			{
+				Create = model.Create,
+				Description = model.Description,
+				Name = model.Name,
+				Nodes = model.Nodes?.Select(n => applyAuditStreamServices.EditNode(n).ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService))
 			};
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BLL.Interfaces;
@@ -34,11 +35,23 @@ namespace BLL.Extensions
 				Code = company.Code,
 				Name = company.Name,
 				Description = company.Description,
-				Tag = company.Tag
+				Tags = (company.Tag?.Length ?? 0) == 0 ? Array.Empty<string>() : company.Tag.Split("##")
 			};
 			return b;
 		}
 
 		public static string GetCode(this Company company) => company?.Code;
+
+		public static DutiesDto ToDto(this Duties model)
+		{
+			if (model == null) return null;
+			return new DutiesDto()
+			{
+				Code = model.Code,
+				IsMajorManager = model.IsMajorManager,
+				Name = model.Name,
+				Tags = (model.Tags?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Tags.Split("##")
+			};
+		}
 	}
 }

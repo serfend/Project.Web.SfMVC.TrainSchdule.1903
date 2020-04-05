@@ -123,7 +123,7 @@ namespace BLL.Services.ApplyServices
 			model.ApplyAuditStreamSolutionRule = rule;
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
-			foreach (var nStr in rule.Solution?.Nodes?.Length == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
+			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
 				var n = _context.ApplyAuditStreamNodeActions.Find(nStr);
 				if (n == null) throw new NodeNotExistException($"无效的节点：{nStr}");
@@ -132,13 +132,13 @@ namespace BLL.Services.ApplyServices
 				if (modelApplyAllAuditStep.Count > 0)
 				{
 					var currentNodeFitMembers = modelApplyAllAuditStep[modelApplyAllAuditStep.Count - 1].MembersFitToAudit;
-					var firstHandleUsr = currentNodeFitMembers.Length == 0 ? Array.Empty<string>() : currentNodeFitMembers.Split("##");
+					var firstHandleUsr = (currentNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : currentNodeFitMembers.Split("##");
 					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.Get(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 				}
 
 				var nextNodeUsrCmp = usrCmp;
 				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n));
-				var nextNodeFirstHandleUsr = nextNodeFitMembers.Length == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
+				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
 				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.Get(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 
 				var item = new ApplyAuditStep()
@@ -234,7 +234,7 @@ namespace BLL.Services.ApplyServices
 			// 当审批的申请为未发布的申请时，将其发布
 			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
-			var list = nowStep.MembersAcceptToAudit.Length == 0 ? Array.Empty<string>() : nowStep.MembersAcceptToAudit.Split("##");
+			var list = (nowStep.MembersAcceptToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : nowStep.MembersAcceptToAudit.Split("##");
 			list = list.Append(AuditUser.Id).ToArray();
 			nowStep.MembersAcceptToAudit = string.Join("##", list);
 			_context.ApplyAuditSteps.Update(nowStep);

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static DAL.DTO.Apply.ApplyAuditStreamDTO.ApplyAuditStreamSolutionRuleDto;
 
 namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 {
@@ -27,7 +28,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		///
 		/// </summary>
-		public IEnumerable<ApplyAuditStreamNodeActionDto> List { get; set; }
+		public IEnumerable<ApplyAuditStreamNodeActionVDto> List { get; set; }
 	}
 
 	/// <summary>
@@ -49,7 +50,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		///
 		/// </summary>
-		public IEnumerable<ApplyAuditStreamDto> List { get; set; }
+		public IEnumerable<ApplyAuditStreamVDto> List { get; set; }
 	}
 
 	/// <summary>
@@ -71,6 +72,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		///
 		/// </summary>
-		public IEnumerable<ApplyAuditStreamSolutionRuleDto> List { get; set; }
+		public IEnumerable<ApplyAuditStreamSolutionRuleVDto> List { get; set; }
 	}
 }

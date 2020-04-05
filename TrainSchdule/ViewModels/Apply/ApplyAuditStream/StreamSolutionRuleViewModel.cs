@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static DAL.DTO.Apply.ApplyAuditStreamDTO.ApplyAuditStreamSolutionRuleDto;
 
 namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 {
@@ -26,6 +27,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		///
 		/// </summary>
-		public ApplyAuditStreamSolutionRuleDto Rule { get; set; }
+		public ApplyAuditStreamSolutionRuleVDto Rule { get; set; }
 	}
 }

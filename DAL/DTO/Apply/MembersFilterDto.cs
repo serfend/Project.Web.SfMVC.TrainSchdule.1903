@@ -55,7 +55,7 @@ namespace DAL.DTO.Apply
 		public IEnumerable<string> AuditMembers { get; set; }
 	}
 
-	public class MembersFitVDto
+	public class MembersFilterVDto
 	{
 		/// <summary>
 		/// 职务范围

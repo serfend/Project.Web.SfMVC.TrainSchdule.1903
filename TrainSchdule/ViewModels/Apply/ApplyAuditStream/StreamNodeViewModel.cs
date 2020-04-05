@@ -27,6 +27,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		/// Node
 		/// </summary>
-		public ApplyAuditStreamNodeActionDto Node { get; set; }
+		public ApplyAuditStreamNodeActionVDto Node { get; set; }
 	}
 }

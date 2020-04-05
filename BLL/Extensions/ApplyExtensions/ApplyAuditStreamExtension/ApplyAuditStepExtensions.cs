@@ -14,8 +14,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			return new ApplyAuditStepDto()
 			{
 				Id = model.Id,
-				MembersAcceptToAudit = model.MembersAcceptToAudit?.Length == 0 ? Array.Empty<string>() : model.MembersAcceptToAudit.Split("##"),
-				MembersFitToAudit = model.MembersFitToAudit?.Length == 0 ? Array.Empty<string>() : model.MembersFitToAudit.Split("##"),
+				MembersAcceptToAudit = (model.MembersAcceptToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersAcceptToAudit.Split("##"),
+				MembersFitToAudit = (model.MembersFitToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersFitToAudit.Split("##"),
 				RequireMembersAcceptCount = model.RequireMembersAcceptCount,
 				Index = model.Index,
 				Name = model.Name,

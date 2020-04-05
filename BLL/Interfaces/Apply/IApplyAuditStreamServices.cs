@@ -14,11 +14,11 @@ namespace BLL.Interfaces
 
 		ApplyAuditStreamNodeAction NewNode(MembersFilter filter, string name, string description = null);
 
-		void EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback);
+		ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback = null);
 
-		void EditSolution(string solutionName, Func<ApplyAuditStream, bool> callback);
+		ApplyAuditStream EditSolution(string solutionName, Func<ApplyAuditStream, bool> callback = null);
 
-		void EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback);
+		ApplyAuditStreamNodeAction EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback = null);
 
 		/// <summary>
 		/// 通过用户信息，决定此用户需要使用哪种审批流规则

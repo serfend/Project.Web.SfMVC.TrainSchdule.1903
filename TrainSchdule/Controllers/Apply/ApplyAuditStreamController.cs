@@ -29,14 +29,16 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IGoogleAuthService googleAuthService;
 		private readonly IUsersService usersService;
 		private readonly IUserActionServices userActionServices;
+		private readonly ICompaniesService companiesService;
 
-		public ApplyAuditStreamController(IApplyAuditStreamServices applyAuditStreamServices, ApplicationDbContext context, IGoogleAuthService googleAuthService, IUsersService usersService, IUserActionServices userActionServices)
+		public ApplyAuditStreamController(IApplyAuditStreamServices applyAuditStreamServices, ApplicationDbContext context, IGoogleAuthService googleAuthService, IUsersService usersService, IUserActionServices userActionServices, ICompaniesService companiesService)
 		{
 			this.applyAuditStreamServices = applyAuditStreamServices;
 			this.context = context;
 			this.googleAuthService = googleAuthService;
 			this.usersService = usersService;
 			this.userActionServices = userActionServices;
+			this.companiesService = companiesService;
 		}
 
 		private ApiResult CheckPermission(GoogleAuthDataModel auth, MembersFilterDto filter)
@@ -107,7 +109,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new StreamNodeDataModel()
 				{
-					Node = r.ToNodeDtoModel()
+					Node = r.ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService)
 				}
 			});
 		}
@@ -257,7 +259,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new StreamSolutionDataModel()
 				{
-					Solution = checkExist.ToDtoModel()
+					Solution = checkExist.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService)
 				}
 			});
 		}
@@ -286,7 +288,7 @@ namespace TrainSchdule.Controllers.Apply
 				checkExist = n;
 				if (n != null)
 				{
-					var nStr = n.Nodes?.Length == 0 ? Array.Empty<string>() : n.Nodes.Split("##");
+					var nStr = (n.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : n.Nodes.Split("##");
 					var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
 					result = CheckPermissionNodes(auth, nList);
 					if (result.Status != 0) return false;
@@ -359,7 +361,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new StreamSolutionRuleDataModel()
 				{
-					Rule = checkExist.ToSolutionRuleDtoModel()
+					Rule = checkExist.ToSolutionRuleDtoModel().ToSolutionRuleVDtoModel(usersService, companiesService)
 				}
 			});
 		}
@@ -417,7 +419,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new StreamNodeListDataModel()
 				{
-					List = context.ApplyAuditStreamNodeActions.Select(n => n.ToNodeDtoModel())
+					List = context.ApplyAuditStreamNodeActions.OrderByDescending(a => a.Create).Select(n => n.ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService))
 				}
 			});
 		}
@@ -434,7 +436,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new AuditStreamSolutionListDataModel()
 				{
-					List = context.ApplyAuditStreams.Select(s => s.ToDtoModel())
+					List = context.ApplyAuditStreams.OrderByDescending(a => a.Create).Select(s => s.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService))
 				}
 			});
 		}
@@ -451,7 +453,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new AuditStreamSolutionListRuleDataModel()
 				{
-					List = context.ApplyAuditStreamSolutionRules.OrderByDescending(r => r.Priority).ToList().Select(r => r.ToSolutionRuleDtoModel())
+					List = context.ApplyAuditStreamSolutionRules.OrderByDescending(r => r.Priority).OrderByDescending(r => r.Create).ToList().Select(r => r.ToSolutionRuleDtoModel().ToSolutionRuleVDtoModel(usersService, companiesService))
 				}
 			});
 		}

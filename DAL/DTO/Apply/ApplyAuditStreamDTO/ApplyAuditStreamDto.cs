@@ -17,4 +17,18 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 
 		public DateTime Create { get; set; }
 	}
+
+	public class ApplyAuditStreamVDto
+	{
+		public string Name { get; set; }
+
+		public string Description { get; set; }
+
+		/// <summary>
+		/// 审批流全流节点
+		/// </summary>
+		public IEnumerable<ApplyAuditStreamNodeActionVDto> Nodes { get; set; }
+
+		public DateTime Create { get; set; }
+	}
 }

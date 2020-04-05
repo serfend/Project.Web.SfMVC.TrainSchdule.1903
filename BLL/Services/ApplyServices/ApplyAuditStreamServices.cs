@@ -20,25 +20,25 @@ namespace BLL.Services.ApplyServices
 			this.context = context;
 		}
 
-		public void EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback)
+		public ApplyAuditStreamNodeAction EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback)
 		{
-			if (callback == null) return;
 			var node = context.ApplyAuditStreamNodeActions.Where(a => a.Name == nodeName).FirstOrDefault();
-			if (callback.Invoke(node)) context.SaveChanges();
+			if (callback != null && callback.Invoke(node)) context.SaveChanges();
+			return node;
 		}
 
-		public void EditSolution(string solutionName, Func<ApplyAuditStream, bool> callback)
+		public ApplyAuditStream EditSolution(string solutionName, Func<ApplyAuditStream, bool> callback)
 		{
-			if (callback == null) return;
 			var solution = context.ApplyAuditStreams.Where(s => s.Name == solutionName).FirstOrDefault();
-			if (callback.Invoke(solution)) context.SaveChanges();
+			if (callback != null && callback.Invoke(solution)) context.SaveChanges();
+			return solution;
 		}
 
-		public void EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback)
+		public ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback)
 		{
-			if (callback == null) return;
 			var rule = context.ApplyAuditStreamSolutionRules.Where(r => r.Name == solutionRuleName).FirstOrDefault();
-			if (callback.Invoke(rule)) context.SaveChanges();
+			if (callback != null && callback.Invoke(rule)) context.SaveChanges();
+			return rule;
 		}
 
 		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user)
@@ -71,7 +71,7 @@ namespace BLL.Services.ApplyServices
 				CompanyTags = filter.CompanyTags,
 				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
-				DutiesTags=filter?.DutiesTags,
+				DutiesTags = filter?.DutiesTags,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
 				AuditMembersCount = filter?.AuditMembersCount ?? 0,
@@ -115,7 +115,7 @@ namespace BLL.Services.ApplyServices
 				CompanyTags = filter.CompanyTags,
 				CompanyCodeLength = filter.CompanyCodeLength,
 				Duties = filter?.Duties,
-				DutiesTags=filter?.DutiesTags,
+				DutiesTags = filter?.DutiesTags,
 				DutyIsMajor = filter?.DutyIsMajor ?? DutiesIsMajor.BothCanGo,
 				AuditMembers = filter?.AuditMembers,
 				AuditMembersCount = filter?.AuditMembersCount ?? 0,
