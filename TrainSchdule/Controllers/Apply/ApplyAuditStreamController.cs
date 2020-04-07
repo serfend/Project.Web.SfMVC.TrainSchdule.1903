@@ -103,16 +103,15 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var permit = CheckPermission(model?.Auth, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
-			var checkExist = applyAuditStreamServices.EditNode(model.Name, n =>
-			 {
-				 if (n == null) return false;
-				 var tmp = (ApplyAuditStreamNodeAction)model.Filter.ToModel();
-				 tmp.Description = model.Description;
-				 tmp.Create = n.Create;
-				 n = tmp;
-				 return true;
-			 });
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
+			var n = applyAuditStreamServices.GetNode(model.Id);
+			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
+			var tmp = (ApplyAuditStreamNodeAction)model.Filter.ToModel();
+			tmp.Description = model.Description;
+			tmp.Create = n.Create;
+			n = tmp;
+			context.ApplyAuditStreamNodeActions.Update(n);
+			context.SaveChanges();
+
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -229,11 +228,11 @@ namespace TrainSchdule.Controllers.Apply
 
 			var list = new List<ApplyAuditStreamNodeAction>();
 			var errorList = new StringBuilder();
-			foreach (var node in model.Nodes)
+			foreach (var no in model.Nodes)
 			{
-				applyAuditStreamServices.EditNode(node, (n) =>
+				applyAuditStreamServices.EditNode(no, (n) =>
 				{
-					if (n == null) ModelState.AddModelError(node, "节点不存在");
+					if (n == null) ModelState.AddModelError("节点列表", $"节点{no}不存在");
 					else list.Add(n);
 					return false;
 				});
@@ -243,19 +242,13 @@ namespace TrainSchdule.Controllers.Apply
 			if (result.Status != 0) return new JsonResult(result);
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
-			ApplyAuditStream checkExist = null;
-			checkExist = applyAuditStreamServices.EditSolution(model.Name, (n) =>
-			  {
-				  if (n != null)
-				  {
-					  n.Description = model.Description;
-					  n.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
-					  return true;
-				  }
-				  return false;
-			  });
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			var node = applyAuditStreamServices.GetSolution(model.Id);
 
+			if (node == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			node.Description = model.Description;
+			node.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
+			context.ApplyAuditStreams.Update(node);
+			context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -363,33 +356,24 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult EditStreamSolutionRule([FromBody]StreamSolutionRuleCreateDataModel model)
 		{
 			ApiResult result = null;
-			ApplyAuditStreamSolutionRule checkExist = null;
-
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
 			if (solution == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
-
-			checkExist = applyAuditStreamServices.EditSolutionRule(model.Name, (n) =>
-			  {
-				  if (n != null)
-				  {
-					  result = CheckPermission(model?.Auth, n.ToDtoModel());
-					  if (result.Status == 0)
-					  {
-						  var tmp = (ApplyAuditStreamSolutionRule)model.Filter.ToModel();
-						  tmp.Description = model.Description;
-						  tmp.Create = n.Create;
-						  tmp.Priority = model.Priority;
-						  tmp.Solution = solution;
-						  tmp.Enable = model.Enable;
-						  n = tmp;
-						  return true;
-					  }
-					  return false;
-				  }
-				  else
-					  result = ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist;
-			  });
+			var n = applyAuditStreamServices.GetRule(model.Id);
+			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
+			result = CheckPermission(model?.Auth, n.ToDtoModel());
+			if (result.Status == 0)
+			{
+				var tmp = (ApplyAuditStreamSolutionRule)model.Filter.ToModel();
+				tmp.Description = model.Description;
+				tmp.Create = n.Create;
+				tmp.Priority = model.Priority;
+				tmp.Solution = solution;
+				tmp.Enable = model.Enable;
+				n = tmp;
+				context.ApplyAuditStreamSolutionRules.Update(n);
+				context.SaveChanges();
+			}
 			if (result.Status != 0) return new JsonResult(result);
 
 			return new JsonResult(ActionStatusMessage.Success);

@@ -175,5 +175,20 @@ namespace BLL.Services.ApplyServices
 
 			return result.Select(u => u.Id);
 		}
+
+		public ApplyAuditStreamNodeAction GetNode(Guid id)
+		{
+			return context.ApplyAuditStreamNodeActions.Where(i => i.Id == id).FirstOrDefault();
+		}
+
+		public ApplyAuditStreamSolutionRule GetRule(Guid id)
+		{
+			return context.ApplyAuditStreamSolutionRules.Where(i => i.Id == id).FirstOrDefault();
+		}
+
+		public ApplyAuditStream GetSolution(Guid id)
+		{
+			return context.ApplyAuditStreams.Where(i => i.Id == id).FirstOrDefault();
+		}
 	}
 }

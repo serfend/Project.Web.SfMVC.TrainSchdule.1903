@@ -30,7 +30,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Enable = model.Enable,
 				Name = model.Name,
 				Priority = model.Priority,
-				SolutionName = model.SolutionName
+				SolutionName = model.Solution.Name
 			};
 		}
 

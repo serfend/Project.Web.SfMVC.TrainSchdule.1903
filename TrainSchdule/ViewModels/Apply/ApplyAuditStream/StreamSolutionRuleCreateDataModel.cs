@@ -15,6 +15,11 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 	public class StreamSolutionRuleCreateDataModel : GoogleAuthViewModel
 	{
 		/// <summary>
+		/// 当为编辑时需要
+		/// </summary>
+		public Guid Id { get; set; }
+
+		/// <summary>
 		/// 方面规则名称
 		/// </summary>
 		[Required(ErrorMessage = "方案规则名称不能为空")]

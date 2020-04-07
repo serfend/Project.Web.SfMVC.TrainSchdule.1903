@@ -15,6 +15,11 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 	public class StreamNodeCreateDataModel : GoogleAuthViewModel
 	{
 		/// <summary>
+		/// 当为编辑时需要
+		/// </summary>
+		public Guid Id { get; set; }
+
+		/// <summary>
 		/// 节点选择器
 		/// </summary>
 		public MembersFilterDto Filter { get; set; }

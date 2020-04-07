@@ -8,10 +8,12 @@ namespace DAL.Entities.ApplyInfo
 {
 	public class ApplyAuditStreamSolutionRule : MembersFilter
 	{
+		[Key]
+		public Guid Id { get; set; }
+
 		/// <summary>
 		/// 规则名称
 		/// </summary>
-		[Key]
 		public string Name { get; set; }
 
 		/// <summary>
@@ -29,12 +31,9 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public bool Enable { get; set; }
 
-		public string SolutionName { get; set; }
-
 		/// <summary>
 		/// 规则对应的方案
 		/// </summary>
-		[ForeignKey(nameof(SolutionName))]
 		public virtual ApplyAuditStream Solution { get; set; }
 
 		public DateTime Create { get; set; }
@@ -45,10 +44,12 @@ namespace DAL.Entities.ApplyInfo
 	/// </summary>
 	public class ApplyAuditStream
 	{
+		[Key]
+		public Guid Id { get; set; }
+
 		/// <summary>
 		/// 审批方案名称
 		/// </summary>
-		[Key]
 		public string Name { get; set; }
 
 		public string Description { get; set; }
@@ -66,10 +67,12 @@ namespace DAL.Entities.ApplyInfo
 	/// </summary>
 	public class ApplyAuditStreamNodeAction : MembersFilter
 	{
+		[Key]
+		public Guid Id { get; set; }
+
 		/// <summary>
 		/// 审批节点的名称
 		/// </summary>
-		[Key]
 		public string Name { get; set; }
 
 		/// <summary>

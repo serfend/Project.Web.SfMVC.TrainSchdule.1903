@@ -7,8 +7,16 @@ using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 {
+	/// <summary>
+	///
+	/// </summary>
 	public class StreamSolutionCreateDataModel : GoogleAuthViewModel
 	{
+		/// <summary>
+		/// 当为编辑时需要
+		/// </summary>
+		public Guid Id { get; set; }
+
 		/// <summary>
 		/// 解决方案名称
 		/// </summary>

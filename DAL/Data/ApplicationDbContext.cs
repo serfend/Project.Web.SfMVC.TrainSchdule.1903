@@ -97,6 +97,7 @@ namespace DAL.Data
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<UserAction>().HasIndex(u => u.Ip);
 			base.OnModelCreating(builder);
 		}
 

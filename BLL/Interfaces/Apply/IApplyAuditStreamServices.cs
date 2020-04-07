@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyAuditStreamServices
+	public interface IApplyAuditStreamServices : IApplyAuditStreamRepositoryServices
 	{
 		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, MembersFilter filter, string name, string description = null, int priority = 0, bool enable = false);
 

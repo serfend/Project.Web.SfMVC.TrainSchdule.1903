@@ -275,7 +275,7 @@ namespace TrainSchdule.Controllers
 				Data = new UserAuditStreamDataModel()
 				{
 					Steps = a.ApplyAllAuditStep.Select(s => s.ToDtoModel()),
-					SolutionName = a.ApplyAuditStreamSolutionRule.SolutionName
+					SolutionName = a.ApplyAuditStreamSolutionRule.Solution.Name
 				}
 			});
 		}
