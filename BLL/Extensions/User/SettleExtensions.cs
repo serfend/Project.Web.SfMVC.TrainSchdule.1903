@@ -102,10 +102,11 @@ namespace BLL.Extensions
 			maxOnTripTime = 0;
 			description = "本人地址无效，无休假";
 			if (settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
-			maxOnTripTime = 1;
+			maxOnTripTime = 0;
 			description = "工作满20年，驻地假30天。";
 			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;
 			if (workYears > 20 || (workYears == 20 && SystemNowDate().Month >= targetUser?.BaseInfo.Time_Work.Month)) return 30;
+			maxOnTripTime = 1;
 			var title = targetUser.CompanyInfo.Title;
 			if (title != null && title.VacationDay != 0)
 			{
