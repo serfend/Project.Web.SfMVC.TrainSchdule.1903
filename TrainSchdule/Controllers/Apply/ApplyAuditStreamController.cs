@@ -126,10 +126,10 @@ namespace TrainSchdule.Controllers.Apply
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
 			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
-			var tmp = model.Filter.ToModel().ToApplyAuditStreamNodeAction();
-			tmp.Description = model.Description;
-			tmp.Create = n.Create;
-			n = tmp;
+			model.Filter.ToModel().ToApplyAuditStreamNodeAction(n);
+			n.Description = model.Description;
+			n.Create = n.Create;
+			n.Name = model.Name;
 			context.ApplyAuditStreamNodeActions.Update(n);
 			context.SaveChanges();
 
@@ -293,6 +293,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (node == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
 			node.Description = model.Description;
 			node.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
+			node.Name = model.Name;
 			context.ApplyAuditStreams.Update(node);
 			context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
@@ -437,14 +438,13 @@ namespace TrainSchdule.Controllers.Apply
 			result = CheckPermission(auditUser, n.ToDtoModel());
 			if (result.Status == 0)
 			{
-				var tmp = model.Filter.ToModel().ToApplyAuditStreamSolutionRule();
-				tmp.Description = model.Description;
-				tmp.Create = n.Create;
-				tmp.Priority = model.Priority;
-				tmp.Solution = solution;
-				tmp.Enable = model.Enable;
-				tmp.Name = model.Name;
-				n = tmp;
+				model.Filter.ToModel().ToApplyAuditStreamSolutionRule(n);
+				n.Description = model.Description;
+				n.Create = n.Create;
+				n.Priority = model.Priority;
+				n.Solution = solution;
+				n.Enable = model.Enable;
+				n.Name = model.Name;
 				context.ApplyAuditStreamSolutionRules.Update(n);
 				context.SaveChanges();
 			}
@@ -536,7 +536,7 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new StreamNodeListDataModel()
 				{
-					List = context.ApplyAuditStreamNodeActions.OrderByDescending(a => a.Create).Select(n => n.ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService))
+					List = context.ApplyAuditStreamNodeActions.OrderByDescending(a => a.Create).Select(n => n.ToNodeDtoModel(null).ToNodeVDtoModel(usersService, companiesService, null))
 				}
 			});
 		}
