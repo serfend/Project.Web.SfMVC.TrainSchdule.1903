@@ -57,4 +57,16 @@ namespace TrainSchdule.ViewModels.System
 		/// </summary>
 		public Guid Id { get; set; }
 	}
+
+	/// <summary>
+	/// 返回任意类型
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class ResponseDataTViewModel<T> : ApiResult
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public T Data { get; set; }
+	}
 }
