@@ -105,7 +105,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
 			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
-			var tmp = (ApplyAuditStreamNodeAction)model.Filter.ToModel();
+			var tmp = model.Filter.ToModel().ToApplyAuditStreamNodeAction();
 			tmp.Description = model.Description;
 			tmp.Create = n.Create;
 			n = tmp;
@@ -364,7 +364,7 @@ namespace TrainSchdule.Controllers.Apply
 			result = CheckPermission(model?.Auth, n.ToDtoModel());
 			if (result.Status == 0)
 			{
-				var tmp = (ApplyAuditStreamSolutionRule)model.Filter.ToModel();
+				var tmp = model.Filter.ToModel().ToApplyAuditStreamSolutionRule();
 				tmp.Description = model.Description;
 				tmp.Create = n.Create;
 				tmp.Priority = model.Priority;

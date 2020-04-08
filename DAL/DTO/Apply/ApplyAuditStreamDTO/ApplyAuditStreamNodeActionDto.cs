@@ -7,6 +7,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 	public class ApplyAuditStreamNodeActionDto : MembersFilterDto
 	{
 		/// <summary>
+		/// id
+		/// </summary>
+		public Guid Id { get; set; }
+
+		/// <summary>
 		/// 审批节点的名称
 		/// </summary>
 		public string Name { get; set; }
@@ -21,6 +26,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 
 	public class ApplyAuditStreamNodeActionVDto : MembersFilterVDto
 	{
+		/// <summary>
+		/// id
+		/// </summary>
+		public Guid Id { get; set; }
+
 		/// <summary>
 		/// 审批节点的名称
 		/// </summary>

@@ -15,6 +15,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			if (model == null) return null;
 			return new ApplyAuditStreamDto()
 			{
+				Id = model.Id,
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,
@@ -27,6 +28,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			if (model == null) return null;
 			return new ApplyAuditStreamVDto()
 			{
+				Id = model.Id,
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,

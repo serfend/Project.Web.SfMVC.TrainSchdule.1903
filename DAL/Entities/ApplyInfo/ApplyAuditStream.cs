@@ -73,6 +73,7 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 审批节点的名称
 		/// </summary>
+		///
 		public string Name { get; set; }
 
 		/// <summary>

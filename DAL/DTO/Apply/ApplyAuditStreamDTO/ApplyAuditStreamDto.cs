@@ -6,6 +6,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 {
 	public class ApplyAuditStreamDto
 	{
+		/// <summary>
+		/// id
+		/// </summary>
+		public Guid Id { get; set; }
+
 		public string Name { get; set; }
 
 		public string Description { get; set; }
@@ -20,6 +25,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 
 	public class ApplyAuditStreamVDto
 	{
+		/// <summary>
+		/// id
+		/// </summary>
+		public Guid Id { get; set; }
+
 		public string Name { get; set; }
 
 		public string Description { get; set; }

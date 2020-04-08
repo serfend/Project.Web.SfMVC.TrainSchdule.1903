@@ -10,11 +10,29 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 {
 	public static class ApplyAuditStreamNodeActionExtensions
 	{
+		public static ApplyAuditStreamNodeAction ToApplyAuditStreamNodeAction(this MembersFilter model)
+		{
+			if (model == null) return null;
+			return new ApplyAuditStreamNodeAction()
+			{
+				AuditMembers = model.AuditMembers,
+				AuditMembersCount = model.AuditMembersCount,
+				Companies = model.Companies,
+				CompanyCodeLength = model.CompanyCodeLength,
+				CompanyRefer = model.CompanyRefer,
+				CompanyTags = model.CompanyTags,
+				Duties = model.Duties,
+				DutiesTags = model.DutiesTags,
+				DutyIsMajor = model.DutyIsMajor,
+			};
+		}
+
 		public static ApplyAuditStreamNodeActionDto ToNodeDtoModel(this ApplyAuditStreamNodeAction model)
 		{
 			if (model == null) return null;
 			return new ApplyAuditStreamNodeActionDto()
 			{
+				Id = model.Id,
 				AuditMembers = (model.AuditMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : model.AuditMembers?.Split("##"),
 				AuditMembersCount = model.AuditMembersCount,
 				Companies = (model.Companies?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Companies?.Split("##"),
@@ -35,6 +53,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			if (model == null) return null;
 			return new ApplyAuditStreamNodeActionVDto()
 			{
+				Id = model.Id,
 				AuditMembers = model.AuditMembers?.Select(m => userServices.Get(m)?.ToSummaryDto()),
 				AuditMembersCount = model.AuditMembersCount,
 				Companies = model.Companies?.Select(c => companiesService.GetById(c)?.ToDto()),

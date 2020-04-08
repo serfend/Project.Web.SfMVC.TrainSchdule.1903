@@ -7,6 +7,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 	public class ApplyAuditStreamSolutionRuleDto : MembersFilterDto
 	{
 		/// <summary>
+		/// id
+		/// </summary>
+		public Guid Id { get; set; }
+
+		/// <summary>
 		/// 规则名称
 		/// </summary>
 		public string Name { get; set; }
@@ -32,6 +37,11 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 
 		public class ApplyAuditStreamSolutionRuleVDto : MembersFilterVDto
 		{
+			/// <summary>
+			/// id
+			/// </summary>
+			public Guid Id { get; set; }
+
 			/// <summary>
 			/// 规则名称
 			/// </summary>
