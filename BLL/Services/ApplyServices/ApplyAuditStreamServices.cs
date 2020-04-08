@@ -46,7 +46,7 @@ namespace BLL.Services.ApplyServices
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.Company.Code;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
-			var auditRule = context.ApplyAuditStreamSolutionRules.ToList();
+			var auditRule = context.ApplyAuditStreamSolutionRules.Where(r => r.Enable).ToList();
 			var fitRule = new List<ApplyAuditStreamSolutionRule>();
 			foreach (var rule in auditRule)
 			{
