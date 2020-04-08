@@ -125,7 +125,7 @@ namespace BLL.Services.ApplyServices
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
-				var n = _context.ApplyAuditStreamNodeActions.Find(nStr);
+				var n = _context.ApplyAuditStreamNodeActions.Where(a => a.Name == nStr).FirstOrDefault();
 				if (n == null) throw new NodeNotExistException($"无效的节点：{nStr}");
 
 				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
@@ -252,8 +252,8 @@ namespace BLL.Services.ApplyServices
 			// 判断是否被驳回
 			if (model.Action != AuditResult.Accept)
 				model.Apply.Status = AuditStatus.Denied;
-			// 判断本步骤是否结束
-			else if (nowStep.RequireMembersAcceptCount <= list.Length)
+			// 判断本步骤是否结束    需审批人数<=已审批人数  或  已审批人数=可审批人数
+			else if ((nowStep.RequireMembersAcceptCount <= list.Length && nowStep.RequireMembersAcceptCount > 0) || (nowStep.MembersAcceptToAudit.Length == nowStep.MembersFitToAudit.Length))
 			{
 				// 寻找下一个步骤
 				if (nowStep.Index == allStep.Count - 1)
