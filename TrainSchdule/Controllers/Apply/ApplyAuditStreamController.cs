@@ -51,6 +51,10 @@ namespace TrainSchdule.Controllers.Apply
 				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root"))
 					return (ActionStatusMessage.Account.Auth.Invalid.Default);
 			var targetCompaines = filter?.Companies;
+			if ((targetCompaines?.Count() ?? 0) == 0)
+			{
+				if (u.Id != "Root") return new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, "通用规则需要管理员权限");
+			}
 			foreach (var targetCompany in targetCompaines)
 			{
 				var permit = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, targetCompany);
@@ -350,11 +354,10 @@ namespace TrainSchdule.Controllers.Apply
 			var nStr = (checkExist.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : checkExist.Nodes.Split("##");
 			var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
 			result = CheckPermissionNodes(auditUser, nList);
-
+			if (result != null && result.Status != 0) return new JsonResult(result);
 			context.ApplyAuditStreams.Remove(checkExist);
 			context.SaveChanges();
 
-			if (result.Status != 0) return new JsonResult(result);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -381,6 +384,8 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			ApiResult result = null;
 			ApplyAuditStreamSolutionRule checkExist = null;
+			var permit = CheckPermission(auditUser, model.Filter);
+			if (permit != null && permit.Status != 0) return new JsonResult(permit);
 			applyAuditStreamServices.EditSolutionRule(model.Name, (n) =>
 			{
 				checkExist = n;
@@ -438,6 +443,7 @@ namespace TrainSchdule.Controllers.Apply
 				tmp.Priority = model.Priority;
 				tmp.Solution = solution;
 				tmp.Enable = model.Enable;
+				tmp.Name = model.Name;
 				n = tmp;
 				context.ApplyAuditStreamSolutionRules.Update(n);
 				context.SaveChanges();
@@ -492,7 +498,6 @@ namespace TrainSchdule.Controllers.Apply
 					auditUser = usersService.Get(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
-
 			ApiResult result = null;
 
 			ApplyAuditStreamSolutionRule checkExist = null;
@@ -508,6 +513,7 @@ namespace TrainSchdule.Controllers.Apply
 				};
 				return false;
 			});
+			if (result != null && result.Status != 0) return new JsonResult(result);
 			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
