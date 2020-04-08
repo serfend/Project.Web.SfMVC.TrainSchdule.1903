@@ -25,14 +25,8 @@ namespace TrainSchdule.ViewModels.Static
 		public string Data { get; set; }
 
 		/// <summary>
-		/// 二维码图像
+		/// 二维码图像的base64
 		/// </summary>
-		public byte[] Img { get; set; }
-
-		/// <summary>
-		/// 二维码设置
-		/// </summary>
-
-		public SfQrCodeConfig Config { get; set; }
+		public string Img { get; set; }
 	}
 }

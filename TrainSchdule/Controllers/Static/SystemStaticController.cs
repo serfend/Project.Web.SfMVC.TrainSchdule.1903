@@ -19,55 +19,24 @@ namespace TrainSchdule.Controllers
 	public partial class StaticController
 	{
 		/// <summary>
-		/// 产生一个二维码
+		/// 获取图像的base64
 		/// </summary>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		[HttpPost]
+		[HttpGet]
 		[AllowAnonymous]
-		public IActionResult QrCodeGenerate([FromBody] QrCodeDataModel model)
+		public IActionResult ImgToBase64(IFormFile file)
 		{
-			if (model == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
-			var qrEncoder = new SfQRCoder();
-			var rawText = model.Data;
-			if (rawText == null)
+			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			using (var img = file.OpenReadStream())
 			{
-				if (model.Data == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
-				rawText = qrEncoder.DecodeQrCode(model.Img);
+				var imgBuffer = new byte[file.Length];
+				img.Read(imgBuffer, 0, (int)file.Length);
+				return new JsonResult(new ResponseDataTViewModel<string>()
+				{
+					Data = $"{ Convert.ToBase64String(imgBuffer)}"
+				});
 			}
-			if (model.Config != null) qrEncoder.Config = model.Config;
-			var img = qrEncoder.GenerateBytes(rawText);
-			return new JsonResult(new QrCodeViewModel()
-			{
-				Data = new QrCodeDataModel()
-				{
-					Data = rawText,
-					Img = img,
-					Config = qrEncoder.Config
-				}
-			});
-		}
-
-		/// <summary>
-		/// 识别二维码
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		[HttpPost]
-		[AllowAnonymous]
-		public IActionResult QrCodeScan([FromBody] QrCodeDataModel model)
-		{
-			if (model == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
-
-			var qrEncoder = new SfQRCoder();
-			return new JsonResult(new QrCodeViewModel()
-			{
-				Data = new QrCodeDataModel()
-				{
-					Data = qrEncoder.DecodeQrCode(model.Img),
-					Img = model.Img,
-					Config = qrEncoder.Config
-				}
-			});
 		}
 
 		/// <summary>

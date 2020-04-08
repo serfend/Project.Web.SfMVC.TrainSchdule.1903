@@ -33,6 +33,7 @@ namespace BLL.Services.ApplyServices
 				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
+
 			//  默认查询到下周六前的的申请
 			if (model.StampLeave == null)
 			{

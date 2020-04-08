@@ -21,6 +21,8 @@ using BLL.Extensions;
 using TrainSchdule.ViewModels.System;
 using System.Drawing;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace TrainSchdule.Controllers
 {
@@ -320,13 +322,18 @@ namespace TrainSchdule.Controllers
 		public IActionResult AuthKey()
 		{
 			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var qrCoder = new BLL.Helpers.SfQRCoder();
+			var qrCoder = new MessagingToolkit.QRCode.Codec.QRCodeEncoder();
 			_authService.InitCode();
 			var realName = _authService.CurrentUserService.CurrentUser?.BaseInfo?.RealName;
 			if (realName == null || realName.Length == 0) realName = null;
-			var img = qrCoder.GenerateBytes(_authService.Url(realName));
-			HttpContext.Response.Cookies.Append("key", _authService.Code().ToString());
-			return new FileContentResult(img, "image/png");
+			var image = qrCoder.Encode(_authService.Url(realName));
+			using (var ms = new MemoryStream())
+			{
+				image.Save(ms, ImageFormat.Png);
+				var img = ms.GetBuffer();
+				HttpContext.Response.Cookies.Append("key", _authService.Code().ToString());
+				return new FileContentResult(img, "image/png");
+			}
 		}
 
 		/// <summary>
