@@ -155,7 +155,7 @@ namespace BLL.Services.ApplyServices
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
 
 			// 指定职务
-			if (filter.Duties == null)
+			if (filter.Duties == null || !filter.Duties.Any(a => true))
 			{
 				if (filter.DutyTags != null && filter.DutyTags.Any(a => true)) result = result.Where(u => filter.DutyTags.Any(t => u.CompanyInfo.Duties.Tags.Contains(t)));
 

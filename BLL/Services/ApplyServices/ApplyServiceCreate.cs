@@ -257,7 +257,10 @@ namespace BLL.Services.ApplyServices
 			{
 				// 寻找下一个步骤
 				if (nowStep.Index == allStep.Count - 1)
+				{
+					model.Apply.NowAuditStep = null;
 					model.Apply.Status = AuditStatus.Accept;
+				}
 				else
 				{
 					model.Apply.NowAuditStep = allStep[nowStep.Index + 1];
