@@ -28,23 +28,23 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly ApplicationDbContext context;
 		private readonly IGoogleAuthService googleAuthService;
 		private readonly IUsersService usersService;
+		private readonly ICurrentUserService currentUserService;
 		private readonly IUserActionServices userActionServices;
 		private readonly ICompaniesService companiesService;
 
-		public ApplyAuditStreamController(IApplyAuditStreamServices applyAuditStreamServices, ApplicationDbContext context, IGoogleAuthService googleAuthService, IUsersService usersService, IUserActionServices userActionServices, ICompaniesService companiesService)
+		public ApplyAuditStreamController(IApplyAuditStreamServices applyAuditStreamServices, ApplicationDbContext context, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices, ICompaniesService companiesService)
 		{
 			this.applyAuditStreamServices = applyAuditStreamServices;
 			this.context = context;
 			this.googleAuthService = googleAuthService;
 			this.usersService = usersService;
+			this.currentUserService = currentUserService;
 			this.userActionServices = userActionServices;
 			this.companiesService = companiesService;
 		}
 
-		private ApiResult CheckPermission(GoogleAuthDataModel auth, MembersFilterDto filter)
+		private ApiResult CheckPermission(DAL.Entities.UserInfo.User u, MembersFilterDto filter)
 		{
-			if (!auth.Verify(googleAuthService, null)) return (ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var u = usersService.Get(auth?.AuthByUserID);
 			if (u == null) return (ActionStatusMessage.User.NotExist);
 			// 如果要新增相对，则需要管理员权限
 			if (filter?.CompanyRefer != null || filter?.CompanyCodeLength?.Count() > 0 || filter?.CompanyTags?.Count() > 0)
@@ -59,14 +59,14 @@ namespace TrainSchdule.Controllers.Apply
 			return ActionStatusMessage.Success;
 		}
 
-		private ApiResult CheckPermissionNodes(GoogleAuthDataModel auth, IEnumerable<ApplyAuditStreamNodeAction> nodes)
+		private ApiResult CheckPermissionNodes(DAL.Entities.UserInfo.User u, IEnumerable<ApplyAuditStreamNodeAction> nodes)
 		{
 			var result = ActionStatusMessage.Success;
 			// 获取第一个低权限的节点，如果不存在则获取任何一个节点
 			var validNode = nodes.Where(no => no.CompanyRefer == null).FirstOrDefault();
 			if (validNode == null) validNode = nodes.FirstOrDefault();
 			if (validNode != null)
-				result = CheckPermission(auth, ((MembersFilter)validNode).ToDtoModel());
+				result = CheckPermission(u, ((MembersFilter)validNode).ToDtoModel());
 			return result;
 		}
 
@@ -81,10 +81,19 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamNode")]
 		public IActionResult AddStreamNode([FromBody]StreamNodeCreateDataModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			var checkExist = applyAuditStreamServices.EditNode(model.Name);
 			if (checkExist != null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.AlreadyExist);
 
-			var permit = CheckPermission(model?.Auth, model?.Filter);
+			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 
 			var r = applyAuditStreamServices.NewNode(model.Filter.ToModel(), model.Name, model.Description);
@@ -101,7 +110,15 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamNode")]
 		public IActionResult EditStreamNode([FromBody]StreamNodeCreateDataModel model)
 		{
-			var permit = CheckPermission(model?.Auth, model?.Filter);
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
 			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
@@ -151,13 +168,22 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != auth?.AuthByUserID)
+			{
+				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 			try
 			{
 				var n = applyAuditStreamServices.EditNode(name);
 				if (n != null)
 				{
-					result = CheckPermission(auth, ((MembersFilter)n).ToDtoModel());
+					result = CheckPermission(auditUser, ((MembersFilter)n).ToDtoModel());
 					if (result.Status == 0)
 					{
 						context.ApplyAuditStreamNodeActions.Remove(n);
@@ -188,6 +214,14 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult AddStreamSolution([FromBody]StreamSolutionCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 
 			var list = new List<ApplyAuditStreamNodeAction>();
@@ -202,7 +236,7 @@ namespace TrainSchdule.Controllers.Apply
 				});
 			}
 
-			result = CheckPermissionNodes(model?.Auth, list);
+			result = CheckPermissionNodes(auditUser, list);
 			if (result.Status != 0) return new JsonResult(result);
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
@@ -224,6 +258,14 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult EditStreamSolution([FromBody]StreamSolutionCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 
 			var list = new List<ApplyAuditStreamNodeAction>();
@@ -238,7 +280,7 @@ namespace TrainSchdule.Controllers.Apply
 				});
 			}
 
-			result = CheckPermissionNodes(model?.Auth, list);
+			result = CheckPermissionNodes(auditUser, list);
 			if (result.Status != 0) return new JsonResult(result);
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
@@ -289,6 +331,15 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != auth?.AuthByUserID)
+			{
+				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 
 			ApplyAuditStream checkExist = null;
@@ -298,7 +349,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			var nStr = (checkExist.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : checkExist.Nodes.Split("##");
 			var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
-			result = CheckPermissionNodes(auth, nList);
+			result = CheckPermissionNodes(auditUser, nList);
 
 			context.ApplyAuditStreams.Remove(checkExist);
 			context.SaveChanges();
@@ -320,6 +371,14 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolutionRule")]
 		public IActionResult AddStreamSolutionRule([FromBody]StreamSolutionRuleCreateDataModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
 			ApiResult result = null;
 			ApplyAuditStreamSolutionRule checkExist = null;
 			applyAuditStreamServices.EditSolutionRule(model.Name, (n) =>
@@ -327,7 +386,7 @@ namespace TrainSchdule.Controllers.Apply
 				checkExist = n;
 				if (n != null)
 				{
-					result = CheckPermission(model?.Auth, n.ToDtoModel());
+					result = CheckPermission(auditUser, n.ToDtoModel());
 					return false;
 				}
 				else
@@ -355,13 +414,22 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolutionRule")]
 		public IActionResult EditStreamSolutionRule([FromBody]StreamSolutionRuleCreateDataModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
 			if (solution == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
 			var n = applyAuditStreamServices.GetRule(model.Id);
 			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
-			result = CheckPermission(model?.Auth, n.ToDtoModel());
+			result = CheckPermission(auditUser, n.ToDtoModel());
 			if (result.Status == 0)
 			{
 				var tmp = model.Filter.ToModel().ToApplyAuditStreamSolutionRule();
@@ -416,6 +484,15 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			var auditUser = currentUserService.CurrentUser;
+			if (auditUser?.Id != auth?.AuthByUserID)
+			{
+				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
+					auditUser = usersService.Get(auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+
 			ApiResult result = null;
 
 			ApplyAuditStreamSolutionRule checkExist = null;
@@ -424,7 +501,7 @@ namespace TrainSchdule.Controllers.Apply
 				checkExist = n;
 				if (n != null)
 				{
-					result = CheckPermission(auth, n.ToDtoModel());
+					result = CheckPermission(auditUser, n.ToDtoModel());
 					if (result.Status != 0) return false;
 					context.ApplyAuditStreamSolutionRules.Remove(n);
 					context.SaveChanges();
