@@ -51,6 +51,18 @@ namespace BLL.Services
 				Status(a, true, $"成功-授权到{targetUserCompanyCode}执行{key?.Name} ");
 				return true;
 			}
+			var u = _context.AppUsers.Where(user => user.Id == permissionUserName).FirstOrDefault();
+			if (u != null)
+			{
+				var uc = u.CompanyInfo;
+				var ud = uc.Duties.IsMajorManager;
+				var ucmp = uc.Company.Code;
+				if (targetUserCompanyCode.StartsWith(ucmp) && ud)
+				{
+					Status(a, true, $"成功-单位主官-授权到{targetUserCompanyCode}执行{key?.Name} ");
+					return true;
+				}
+			}
 			return false;
 		}
 

@@ -87,7 +87,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -116,7 +116,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -174,7 +174,7 @@ namespace TrainSchdule.Controllers.Apply
 			};
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != auth?.AuthByUserID)
+			if (auth?.AuthByUserID != null && auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(auth.AuthByUserID);
@@ -219,7 +219,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -263,7 +263,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -338,7 +338,7 @@ namespace TrainSchdule.Controllers.Apply
 			};
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != auth?.AuthByUserID)
+			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(auth.AuthByUserID);
@@ -377,7 +377,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -422,7 +422,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(model.Auth.AuthByUserID);
@@ -492,7 +492,7 @@ namespace TrainSchdule.Controllers.Apply
 			};
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
-			if (auditUser?.Id != auth?.AuthByUserID)
+			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.Get(auth.AuthByUserID);

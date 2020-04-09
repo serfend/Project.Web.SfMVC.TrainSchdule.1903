@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.QueryModel;
+using System.Collections;
 
 namespace TrainSchdule.ViewModels.Static
 {
@@ -16,7 +17,7 @@ namespace TrainSchdule.ViewModels.Static
 		/// <summary>
 		/// 导出申请的条件
 		/// </summary>
-		public QueryApplyDataModel Query { get; set; }
+		public QueryByGuid Query { get; set; }
 	}
 
 	/// <summary>
