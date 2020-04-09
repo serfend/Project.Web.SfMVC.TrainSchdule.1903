@@ -34,19 +34,19 @@ namespace BLL.Services.ApplyServices
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
 
-			//  默认查询到下周六前的的申请
-			if (model.StampLeave == null)
-			{
-				var thisFri = DayOfWeek.Friday;
-				var nowDay = DateTime.Now;
-				model.StampLeave = new QueryByDate()
-				{
-					Start = nowDay,
-					End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8)
-				};
-			}
-			list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
-			anyDateFilterIsLessThan30Days |= model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360;
+			////  默认查询到下周六前的的申请
+			//if (model.StampLeave == null)
+			//{
+			//	var thisFri = DayOfWeek.Friday;
+			//	var nowDay = DateTime.Now;
+			//	model.StampLeave = new QueryByDate()
+			//	{
+			//		Start = nowDay,
+			//		End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8)
+			//	};
+			//}
+			if (model.StampLeave?.Start != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
+			anyDateFilterIsLessThan30Days |= (model.StampLeave == null || model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360);
 
 			if (model.StampReturn != null)
 			{
@@ -58,11 +58,12 @@ namespace BLL.Services.ApplyServices
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
-				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
+				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
 			}
-
-			if (model.CreateFor != null) list = list.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName.Contains(model.CreateFor.Value));
-			if (model.Id != null) list = _context.Applies.AsQueryable().Where(a => model.Id.Arrays.Contains(a.Id));
+			else if (model.CreateFor != null)
+			{
+				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
+			}
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
 			{

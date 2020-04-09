@@ -28,11 +28,29 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		public IActionResult List([FromBody]QueryApplyDataModel model)
+		public IActionResult List([FromBody]QueryApplyViewModel model)
 		{
 			try
 			{
 				if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
+
+				if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+				var auditUser = _currentUserService.CurrentUser;
+				if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+				{
+					if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
+						auditUser = _usersService.Get(model.Auth.AuthByUserID);
+					else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				}
+
+				// 检查查询的单位范围，如果范围是空，则需要root权限
+				var permitCompaines = new List<string>();
+				if (model.CreateCompany?.Value == null) permitCompaines.Add("Root");
+				else
+				{
+					var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, model.CreateCompany.Value);
+					if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{model.CreateCompany.Value}的权限"));
+				};
 				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{
@@ -41,12 +59,48 @@ namespace TrainSchdule.Controllers.Apply
 						List = list,
 						TotalCount = totalCount
 					}
-				}); ;
+				});
 			}
 			catch (ActionStatusMessageException ex)
 			{
 				return new JsonResult(new ApiResult(-1, ex.Message));
 			}
+		}
+
+		/// <summary>
+		/// 查询当前用户自己的申请
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult ListOfSelf(int pageIndex = 0, int pageSize = 20)
+		{
+			var c = _currentUserService.CurrentUser;
+			var list = _context.Applies.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			return new JsonResult(new ApplyListViewModel()
+			{
+				Data = new ApplyListDataModel()
+				{
+					List = list?.Select(a => a.ToSummaryDto())
+				}
+			});
+		}
+
+		/// <summary>
+		/// 查询当前用户可审批的申请
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20)
+		{
+			var c = _currentUserService.CurrentUser;
+			var list = _context.Applies.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id))).OrderByDescending(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			return new JsonResult(new ApplyListViewModel()
+			{
+				Data = new ApplyListDataModel()
+				{
+					List = list?.Select(a => a.ToSummaryDto())
+				}
+			});
 		}
 
 		/// <summary>

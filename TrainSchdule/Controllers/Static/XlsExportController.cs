@@ -33,10 +33,10 @@ namespace TrainSchdule.Controllers
 			{
 				return new JsonResult(ex.Status);
 			}
-			var list = _applyService.QueryApplies(form.Query, true, out var totalCount);
+			var list = _context.Applies.Where(a => form.Query.Arrays.Contains(a.Id));
 			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From))));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
-			return await ExportXls(fileContent, $"{list.Count()}/{totalCount}条({form.Templete})");
+			return await ExportXls(fileContent, $"{list.Count()}条({form.Templete})");
 		}
 
 		/// <summary>
@@ -57,7 +57,7 @@ namespace TrainSchdule.Controllers
 			{
 				return new JsonResult(ex.Status);
 			}
-			var singleApply = _applyService.QueryApplies(form.Query, true, out var totalCount).FirstOrDefault();
+			var singleApply = _context.Applies.Where(a => a.Id == form.Query.Value).FirstOrDefault();
 			if (singleApply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo?.From)));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);

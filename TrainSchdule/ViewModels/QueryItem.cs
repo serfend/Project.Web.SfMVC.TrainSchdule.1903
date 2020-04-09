@@ -81,5 +81,10 @@ namespace TrainSchdule.ViewModels
 		///
 		/// </summary>
 		public Guid Value { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+		public IEnumerable<Guid> Arrays { get; set; }
 	}
 }

@@ -48,24 +48,24 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="usersService"></param>
 		/// <param name="currentUserService"></param>
 		/// <param name="applyService"></param>
+		/// <param name="vocationCheckServices"></param>
+		/// <param name="context"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="verifyService"></param>
-		/// <param name="context"></param>
 		/// <param name="authService"></param>
-		/// <param name="vocationCheckServices"></param>
 		/// <param name="recallOrderServices"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="hostingEnvironment"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, ICompaniesService companiesService, IVerifyService verifyService, ApplicationDbContext context, IGoogleAuthService authService, IVocationCheckServices vocationCheckServices, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			_applyService = applyService;
+			_vocationCheckServices = vocationCheckServices;
+			_context = context;
 			_companiesService = companiesService;
 			_verifyService = verifyService;
-			_context = context;
 			_authService = authService;
-			_vocationCheckServices = vocationCheckServices;
 			this.recallOrderServices = recallOrderServices;
 			_userActionServices = userActionServices;
 			_hostingEnvironment = hostingEnvironment;
