@@ -206,7 +206,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public IActionResult Submit([FromBody]ApplyRemoveViewModel model)
+		public async Task<IActionResult> Submit([FromBody]ApplyRemoveViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -218,7 +218,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (authByUser.Id != apply.BaseInfo.From.Id && !_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = _userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请");
 			//if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);
-			_applyService.Delete(apply);
+			await _applyService.Delete(apply);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}

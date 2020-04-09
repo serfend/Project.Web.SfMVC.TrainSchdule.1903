@@ -8,7 +8,7 @@ using DAL.Entities.ApplyInfo;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyService :IApplyServiceCreate, IApplyServiceManage
+	public interface IApplyService : IApplyServiceCreate, IApplyServiceManage
 	{
 		Apply GetById(Guid id);
 
@@ -26,6 +26,7 @@ namespace BLL.Interfaces
 		/// 通过userName和status加载申请
 		/// </summary>
 		IEnumerable<Apply> GetAll(string userid, AuditStatus status, int page, int pageSize);
+
 		/// <summary>
 		/// 任意条件获取申请
 		/// </summary>
@@ -34,7 +35,6 @@ namespace BLL.Interfaces
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize);
-
 
 		/// <summary>
 		/// 创建申请.
@@ -46,12 +46,11 @@ namespace BLL.Interfaces
 		/// </summary>
 		Task<Apply> CreateAsync(Apply item);
 
-
 		bool Edit(string id, Action<Apply> editCallBack);
 
 		Task<bool> EditAsync(string id, Action<Apply> editCallBack);
 
-		void Delete(Apply item);
+		Task Delete(Apply item);
 
 		IEnumerable<Apply> Find(Func<Apply, bool> predict);
 	}

@@ -93,9 +93,9 @@ namespace BLL.Services.ApplyServices
 			return true;
 		}
 
-		public void Delete(Apply item)
+		public async Task Delete(Apply item)
 		{
-			RemoveApplies(new List<Apply>() { item });
+			await RemoveApplies(new List<Apply>() { item }).ConfigureAwait(true);
 		}
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)
