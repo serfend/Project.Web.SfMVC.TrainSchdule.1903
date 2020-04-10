@@ -88,16 +88,16 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <param name="pageIndex"></param>
 		/// <param name="pageSize"></param>
-		/// <param name="status">审批的状态</param>
+		/// <param name="status">审批的状态，以##分割</param>
 		/// <param name="actionStatus">我对此审批的状态</param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, int[] status = null, string actionStatus = null)
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, string actionStatus = null)
 		{
 			var c = _currentUserService.CurrentUser;
-
+			var statusArr = status?.Split("##")?.Select(i => Convert.ToInt32(i));
 			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
-			if (status != null) r = r.Where(a => status.Contains((int)a.Status)); // 查出所有状态符合的
+			if (statusArr != null && statusArr.Any()) r = r.Where(a => statusArr.Contains((int)a.Status)); // 查出所有状态符合的
 			r = r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
 
 			if (actionStatus != null)

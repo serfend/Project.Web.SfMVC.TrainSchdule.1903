@@ -73,5 +73,6 @@ namespace DAL.QueryModel
 	public class QueryByGuid
 	{
 		public IEnumerable<Guid> Arrays { get; set; }
+		public Guid Value { get; set; }
 	}
 }
