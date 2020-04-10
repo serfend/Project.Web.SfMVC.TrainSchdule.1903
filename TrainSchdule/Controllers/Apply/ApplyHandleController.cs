@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using TrainSchdule.Extensions;
 using DAL.QueryModel;
 using TrainSchdule.ViewModels;
+using DAL.Entities.ApplyInfo;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -85,14 +86,51 @@ namespace TrainSchdule.Controllers.Apply
 		/// <summary>
 		/// 查询当前用户可审批的申请
 		/// </summary>
+		/// <param name="pageIndex"></param>
+		/// <param name="pageSize"></param>
+		/// <param name="status">审批的状态</param>
+		/// <param name="actionStatus">我对此审批的状态</param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20)
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, int[] status = null, string actionStatus = null)
 		{
 			var c = _currentUserService.CurrentUser;
-			//.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)))
-			var r = _context.AppliesDb.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
-			r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
+
+			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
+			if (status != null) r = r.Where(a => status.Contains((int)a.Status)); // 查出所有状态符合的
+			r = r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
+
+			if (actionStatus != null)
+			{
+				switch (actionStatus.ToLower())
+				{
+					case "accept":
+						{
+							r = r.Where(a => a.Response.Any(res => res.AuditingBy.Id == c.Id && res.Status == Auditing.Accept));
+							break;
+						}
+					case "deny":
+						{
+							r = r.Where(a => a.Response.Any(res => res.AuditingBy.Id == c.Id && res.Status == Auditing.Denied));
+							break;
+						}
+					case "unreceive":
+						{
+							r = r.Where(a => a.Response.All(res => res.AuditingBy.Id != c.Id)); // 我没有进行审批的
+							r = r.Where(a => a.NowAuditStep != null).Where(a => !a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页不该我审批的
+							break;
+						}
+					case "received":
+						{
+							r = r.Where(a => a.Response.All(res => res.AuditingBy.Id != c.Id)); // 我没有进行审批的
+							r = r.Where(a => a.NowAuditStep != null).Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页该我审批的
+							break;
+						}
+					default: return new JsonResult(ActionStatusMessage.Apply.Operation.Default);
+				}
+			}
+
+			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
