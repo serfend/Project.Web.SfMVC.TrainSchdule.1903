@@ -49,7 +49,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Request = model.RequestInfo,
 				RecallId = model.RecallId,
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
-				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()),
+				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
 				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "旧版本方式审批"
 			};
 			return b;
