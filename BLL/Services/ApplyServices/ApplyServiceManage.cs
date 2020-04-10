@@ -18,7 +18,7 @@ namespace BLL.Services.ApplyServices
 		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
 		{
 			totalCount = 0;
-			var list = _context.Applies.AsQueryable();
+			var list = _context.AppliesDb;
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 
@@ -58,11 +58,11 @@ namespace BLL.Services.ApplyServices
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
-				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
+				list = _context.AppliesDb.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
 			}
 			else if (model.CreateFor != null)
 			{
-				list = _context.Applies.AsQueryable().Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
+				list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
 			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
@@ -79,7 +79,7 @@ namespace BLL.Services.ApplyServices
 		public async Task RemoveAllUnSaveApply()
 		{
 			//寻找所有找过1天未保存的申请
-			var list = _context.Applies
+			var list = _context.AppliesDb
 						 .Where(a => a.Status == AuditStatus.NotSave)
 						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
 			await RemoveApplies(list).ConfigureAwait(false);
@@ -87,7 +87,7 @@ namespace BLL.Services.ApplyServices
 
 		public async Task RemoveAllNoneFromUserApply()
 		{
-			var applies = _context.Applies;
+			var applies = _context.AppliesDb;
 
 			#region request
 
@@ -103,7 +103,7 @@ namespace BLL.Services.ApplyServices
 			#region steps
 
 			// 删除所有无申请指向的步骤
-			var applySteps = _context.ApplyAuditSteps.Where(s => !_context.Applies.Any(a => a.ApplyAllAuditStep.Any(step => step.Id == s.Id)));
+			var applySteps = _context.ApplyAuditSteps.Where(s => !_context.AppliesDb.Any(a => a.ApplyAllAuditStep.Any(step => step.Id == s.Id)));
 			_context.ApplyAuditSteps.RemoveRange(applySteps);
 
 			#endregion steps
@@ -127,16 +127,19 @@ namespace BLL.Services.ApplyServices
 
 			await _context.SaveChangesAsync().ConfigureAwait(false);
 
-			var list = _context.Applies.Where(a => a.BaseInfo.From == null);
+			var list = _context.AppliesDb.Where(a => a.BaseInfo.From == null);
 			await RemoveApplies(list).ConfigureAwait(false);
 		}
 
 		public async Task RemoveApplies(IEnumerable<Apply> list)
 		{
 			if (list == null) return;
-			//删除这些申请
-			_context.Applies.RemoveRange(list);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			foreach (var s in list)
+			{
+				s.Remove();
+				_context.Applies.Update(s);
+			}
+			await _context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)

@@ -72,7 +72,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ListOfSelf(int pageIndex = 0, int pageSize = 20)
 		{
 			var c = _currentUserService.CurrentUser;
-			var list = _context.Applies.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
@@ -91,7 +91,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var c = _currentUserService.CurrentUser;
 			//.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)))
-			var r = _context.Applies.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
+			var r = _context.AppliesDb.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
 			r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
@@ -171,7 +171,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
 			if (recall == null) return new JsonResult(ActionStatusMessage.Apply.Recall.NotExist);
-			var apply = _context.Applies.Where(a => a.RecallId == id).FirstOrDefault();
+			var apply = _context.AppliesDb.Where(a => a.RecallId == id).FirstOrDefault();
 			return new JsonResult(new RecallViewModel()
 			{
 				Data = recall.ToVDto(apply)

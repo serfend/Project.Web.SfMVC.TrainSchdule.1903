@@ -28,7 +28,7 @@ namespace BLL.Services.ApplyServices
 			_applyAuditStreamServices = applyAuditStreamServices;
 		}
 
-		public Apply GetById(Guid id) => _context.Applies.Find(id);
+		public Apply GetById(Guid id) => _context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();
 
 		public IEnumerable<Apply> GetAll(int page, int pageSize)
 		{
@@ -47,7 +47,7 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize)
 		{
-			var items = _context.Applies.Where(predicate).OrderByDescending(a => a.Status).ThenByDescending(a => a.Create).Skip(page * pageSize).Take(pageSize);
+			var items = _context.AppliesDb.Where(predicate).OrderByDescending(a => a.Status).ThenByDescending(a => a.Create).Skip(page * pageSize).Take(pageSize);
 			return items;
 		}
 
@@ -75,7 +75,8 @@ namespace BLL.Services.ApplyServices
 		public bool Edit(string id, Action<Apply> editCallBack)
 		{
 			if (editCallBack == null) return false;
-			var target = _context.Applies.Find(id);
+			if (!Guid.TryParse(id, out var guid)) return false;
+			var target = _context.AppliesDb.Where(a => a.Id == guid).FirstOrDefault();
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_context.Applies.Update(target);
@@ -85,7 +86,9 @@ namespace BLL.Services.ApplyServices
 
 		public async Task<bool> EditAsync(string id, Action<Apply> editCallBack)
 		{
-			var target = _context.Applies.Find(id);
+			if (editCallBack == null) return false;
+			if (!Guid.TryParse(id, out var guid)) return false;
+			var target = _context.AppliesDb.Where(a => a.Id == guid).FirstOrDefault();
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
 			_context.Applies.Update(target);
@@ -100,7 +103,7 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)
 		{
-			var list = _context.Applies.Where(predict);
+			var list = _context.AppliesDb.Where(predict);
 			return list;
 		}
 	}

@@ -9,6 +9,7 @@ using DAL.Entities.Vocations;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using User = DAL.Entities.UserInfo.User;
 
 namespace DAL.Data
@@ -38,6 +39,7 @@ namespace DAL.Data
 		public DbSet<Duties> Duties { get; set; }
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<Apply> Applies { get; set; }
+		public IQueryable<Apply> AppliesDb { get => Applies.Where(a => !a.IsRemoved); }
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
 		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
@@ -97,7 +99,6 @@ namespace DAL.Data
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
-			builder.Entity<UserAction>().HasIndex(u => u.Ip);
 			base.OnModelCreating(builder);
 		}
 

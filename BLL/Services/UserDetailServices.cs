@@ -31,6 +31,7 @@ namespace BLL.Services
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			return myManages.Max(m => targetCompany.StartsWith(m.Code) ? targetCompany.Length - m.Code.Length : -1);
 		}
+
 		public IEnumerable<Company> InMyManage(User user, out int totalCount)
 		{
 			totalCount = 0;
@@ -45,6 +46,7 @@ namespace BLL.Services
 			totalCount = list == null ? 0 : list.Count;
 			return list;
 		}
+
 		/// <summary>
 		/// 获取全年休假天数同时，更新休假天数
 		/// </summary>
@@ -53,7 +55,7 @@ namespace BLL.Services
 		public UserVocationInfoVDto VocationInfo(User targetUser)
 		{
 			if (targetUser == null) return null;
-			var applies = _context.Applies.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept && a.Create.Value.Year == DateTime.Now.AddDays(5).Year && a.RequestInfo.VocationType == "正休").ToList();//仅正休计算天数
+			var applies = _context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept && a.Create.Value.Year == DateTime.Now.AddDays(5).Year && a.RequestInfo.VocationType == "正休").ToList();//仅正休计算天数
 			int nowLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;

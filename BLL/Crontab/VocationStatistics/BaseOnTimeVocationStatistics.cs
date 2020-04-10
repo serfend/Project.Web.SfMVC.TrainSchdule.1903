@@ -75,7 +75,7 @@ namespace TrainSchdule.Crontab
 		{
 			if (company == null) return null;
 			var statistics = new VocationStatisticsDescription();
-			statistics.Applies = _context.Applies.
+			statistics.Applies = _context.AppliesDb.
 				Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code && a.Create.Value >= Start && a.Create.Value <= End);
 			statistics.Company = company;
 			var companies = _context.Companies.Where<Company>(c => ParentCode(c.Code) == company.Code);
