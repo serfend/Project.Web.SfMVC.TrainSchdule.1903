@@ -1,4 +1,6 @@
 ﻿using BLL.Helpers;
+using DAL.DTO.System;
+using DAL.Entities.FileEngine;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -43,6 +45,20 @@ namespace BLL.Extensions
 					decryptStr.Substring(decryptStr.Length - md5Str.Length, md5Str.Length) != md5Str.ToLower()) return null;
 				return decryptStr.Substring(8, decryptStr.Length - 8 - md5Str.Length);
 			}
+		}
+
+		public static FileInfoVDto ToVdto(this UserFileInfo model, FileInfoVDto raw = null)
+		{
+			if (model == null) return null;
+			if (raw == null) raw = new FileInfoVDto();
+			raw.Create = model.Create;
+			raw.Exist = model.Exist;
+			raw.FromClient = model.FromClient;
+			raw.LastModefy = model.LastModefy;
+			raw.Length = model.Length;
+			raw.Name = model.Name;
+			raw.Path = model.Path;
+			return raw;
 		}
 	}
 }
