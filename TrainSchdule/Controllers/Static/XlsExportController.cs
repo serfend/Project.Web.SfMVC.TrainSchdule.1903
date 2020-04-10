@@ -92,23 +92,6 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ActionStatusMessage.Fail);
 		}
 
-		/// <summary>
-		/// 下载指定临时文件
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult Download(string id)
-		{
-			var tmpFile = _fileServices.Load(XlsExportPath, id);
-			if (!tmpFile?.Exist ?? false) return Redirect("/#/404");
-			_httpContext.HttpContext.Session.TryGetValue(id, out var filenameRaw);
-			var filename = Encoding.UTF8.GetString(filenameRaw);
-			var buffer = _fileServices.Download(tmpFile.Id)?.Data;
-			if (buffer == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
-			return File(buffer, "application/octet-stream", filename);
-		}
-
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
 			var datetime = DateTime.Now.ToString("MMdd");
@@ -124,7 +107,7 @@ namespace TrainSchdule.Controllers
 					Data = new FileReturnDataModel()
 					{
 						FileName = fileName,
-						RequestUrl = $"/static/download?id={tmpFile.Id}",
+						RequestUrl = $"/fileEngine/download?fileid={tmpFile.Id}",
 						ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
 						Length = tmpFile.Length
 					}
