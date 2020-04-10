@@ -21,16 +21,6 @@ namespace TrainSchdule.ViewModels.Verify
 	public class GoogleAuthDataModel
 	{
 		/// <summary>
-		/// 超级管理
-		/// </summary>
-		public static readonly GoogleAuthDataModel Root = new GoogleAuthDataModel() { AuthByUserID = "root", Code = GoogleAuthService.StaticVerify.ToString() };
-
-		/// <summary>
-		/// 普通用户
-		/// </summary>
-		public static readonly GoogleAuthDataModel User = new GoogleAuthDataModel() { AuthByUserID = "user", Code = GoogleAuthService.StaticVerify.ToString() };
-
-		/// <summary>
 		/// 授权权限来源
 		/// </summary>
 		public string AuthByUserID { get; set; }

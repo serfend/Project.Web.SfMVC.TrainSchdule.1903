@@ -317,21 +317,18 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
 		[ProducesResponseType(typeof(Image), 0)]
 		public IActionResult AuthKey()
 		{
-			if (!User.Identity.IsAuthenticated) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var qrCoder = new MessagingToolkit.QRCode.Codec.QRCodeEncoder();
-			_authService.InitCode();
-			var realName = _authService.CurrentUserService.CurrentUser?.BaseInfo?.RealName;
+			var realName = currentUserService.CurrentUser?.BaseInfo?.RealName;
 			if (realName == null || realName.Length == 0) realName = null;
-			var image = qrCoder.Encode(_authService.Url(realName));
+			var image = qrCoder.Encode(_authService.Init(currentUserService.CurrentUser?.Id)?.Main?.Password);
 			using (var ms = new MemoryStream())
 			{
 				image.Save(ms, ImageFormat.Png);
 				var img = ms.GetBuffer();
-				HttpContext.Response.Cookies.Append("key", _authService.Code().ToString());
+				HttpContext.Response.Cookies.Append("key", _authService.Code(currentUserService.CurrentUser?.Id).ToString());
 				return new FileContentResult(img, "image/png");
 			}
 		}
@@ -666,11 +663,7 @@ namespace TrainSchdule.Controllers
 			CheckCurrentUserData(toRegisterUser);
 			if (!ModelState.IsValid)
 			{
-				await Remove(new UserRemoveViewModel()
-				{
-					Auth = GoogleAuthDataModel.Root,
-					Id = model.Application.UserName
-				});
+				await _usersService.RemoveAsync(model.Application.UserName);
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}
 			// 若当前用户不具有权限，不允许邀请注册时通过

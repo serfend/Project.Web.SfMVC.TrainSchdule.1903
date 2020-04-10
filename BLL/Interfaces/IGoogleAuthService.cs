@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BLL.Services;
+using GoogleAuth;
+using System;
 using System.Runtime.InteropServices;
 
 namespace BLL.Interfaces
@@ -8,16 +10,27 @@ namespace BLL.Interfaces
 	/// </summary>
 	public interface IGoogleAuthService
 	{
-		bool Verify(int code, [Optional]string id, [Optional]string password);
+		AuthServiceModel Init(string username);
 
-		int Code([Optional] string id, [Optional] string password);
+		/// <summary>
+		/// 验证授权码正确性
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="username"></param>
+		/// <returns></returns>
+		bool Verify(int code, string username);
 
-		void InitCode([Optional] string id, [Optional] string password);
+		/// <summary>
+		/// 获取当前授权码
+		/// </summary>
+		/// <param name="username"></param>
+		/// <returns></returns>
+		int Code(string username);
 
-		string GetAuthKey([Optional] string password);
-
-		string Url(string issuer);
-
-		ICurrentUserService CurrentUserService { get; set; }
+		/// <summary>
+		/// 获取指定用户的授权码
+		/// </summary>
+		/// <returns></returns>
+		string GetAuthKey(string username);
 	}
 }

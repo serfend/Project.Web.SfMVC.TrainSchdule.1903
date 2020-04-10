@@ -12,7 +12,7 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 申请创建的目标人
 		/// </summary>
-		public virtual User From { get; set; }
+		public virtual DAL.Entities.UserInfo.User From { get; set; }
 
 		public virtual Company Company { get; set; }
 		public virtual Duties Duties { get; set; }

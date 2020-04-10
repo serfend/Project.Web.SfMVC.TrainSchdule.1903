@@ -2,6 +2,7 @@
 using DAL.Entities.UserInfo;
 using GoogleAuth;
 using GoogleAuther;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,47 +10,67 @@ namespace BLL.Services
 {
 	public class GoogleAuthService : IGoogleAuthService
 	{
-		private readonly Auth _auth = new Auth();
-		private User _user;
-		public static readonly int StaticVerify = 199500616;
-		private User currentUser => _user ?? (_user = CurrentUserService.CurrentUser);
+		private readonly int StaticVerify = 199500616;
+		private readonly IUsersService usersService;
 
-		public GoogleAuthService(ICurrentUserService currentUserService = null)
+		public GoogleAuthService(IUsersService usersService = null)
 		{
-			CurrentUserService = currentUserService;
-		}
-		public bool Verify(int code, string id = null, string password = null)
-		{
-			if (code == StaticVerify) return true;
-			InitCode(id, password);
-			return _auth.Verify(code, 5);
+			this.usersService = usersService;
 		}
 
-		public int Code(string id = null, string password = null)
+		public int Code(string username)
 		{
-			InitCode(id, password);
-			return _auth.OneTimePassword;
+			var m = Init(username);
+			return m.Main.OneTimePassword;
 		}
 
-
-		public void InitCode(string id = null, string password = null)
+		public string GetAuthKey(string username)
 		{
-			id = id ?? currentUser.Id;
-			_auth.UserName = id;
-			GetAuthKey(password);
-		}
-		public string GetAuthKey(string password = null)
-		{
-			password = password ?? currentUser?.Application.AuthKey;
-			password = password ?? currentUser?.Id;
-			if (password == null) return null;
-			_auth.Password = Base32.ToString(Encoding.UTF8.GetBytes(password));
-			return _auth.Password;
+			var m = Init(username);
+			return m.Main.Password;
 		}
 
-		public string Url(string issuer) => $"otpauth://totp/{_auth.UserName}?secret={_auth.Password}&issuer={issuer ?? "XT2U"}";
+		public AuthServiceModel Init(string username)
+		{
+			if (username == null) username = "root";
+			var u = usersService.Get(username);
+			var password = u?.Application?.AuthKey;
+			if (password == null) password = "invalid@user";
 
-		public ICurrentUserService CurrentUserService { get; set; }
+			var normalUserName = $"{username}@{DateTime.Now.ToString("yyyyMMdd")}";
+			using (var md5 = MD5.Create())
+			{
+				var result = md5.ComputeHash(Encoding.UTF8.GetBytes(normalUserName));
+				var rawMd5 = BitConverter.ToString(result);
+				var a = new AuthServiceModel(username, password, rawMd5);
+				return a;
+			}
+		}
 
+		public bool Verify(int code, string username)
+		{
+			var m = Init(username);
+			return m.Main.Verify(code, 5) || m.Second.Verify(code, 5);
+		}
+	}
+
+	public class AuthServiceModel
+	{
+		public Auth Main { get; set; }
+		public Auth Second { get; set; }
+
+		public AuthServiceModel(string username, string password, string secondPassword = null)
+		{
+			Main = new Auth()
+			{
+				UserName = username,
+				Password = Base32.ToString(Encoding.UTF8.GetBytes(password))
+			};
+			Second = new Auth()
+			{
+				UserName = username,
+				Password = Base32.ToString(Encoding.UTF8.GetBytes(secondPassword ?? password))
+			};
+		}
 	}
 }
