@@ -2,6 +2,8 @@
 using BLL.Interfaces;
 using DAL.Entities.UserInfo;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.User
@@ -36,6 +38,11 @@ namespace TrainSchdule.ViewModels.User
 		///
 		/// </summary>
 		public string Parent { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+		public IEnumerable<string> CompanyTags { get; set; }
 	}
 
 	/// <summary>
@@ -89,6 +96,16 @@ namespace TrainSchdule.ViewModels.User
 		/// 职务生效时间
 		/// </summary>
 		public DateTime? TitleDate { get; set; }
+
+		/// <summary>
+		/// 是否主官
+		/// </summary>
+		public bool IsMajorManager { get; set; }
+
+		/// <summary>
+		/// 职务类别
+		/// </summary>
+		public IEnumerable<string> DutyTags { get; set; }
 	}
 
 	/// <summary>
@@ -110,7 +127,8 @@ namespace TrainSchdule.ViewModels.User
 				{
 					Code = model.Company?.Code,
 					Name = model.Company?.Name,
-					Parent = companiesService.FindParent(model.Company?.Code)?.Name
+					Parent = companiesService.FindParent(model.Company?.Code)?.Name,
+					CompanyTags = model.Company?.Tag?.Split("##")
 				},
 				Duties = model.Duties?.Name
 			};
@@ -128,7 +146,9 @@ namespace TrainSchdule.ViewModels.User
 				Code = model.Duties?.Code,
 				Name = model.Duties?.Name,
 				Title = model.Title?.Name,
-				TitleDate = model.TitleDate
+				TitleDate = model.TitleDate,
+				IsMajorManager = model.Duties?.IsMajorManager ?? false,
+				DutyTags = model.Duties?.Tags?.Split("##")
 			};
 		}
 	}

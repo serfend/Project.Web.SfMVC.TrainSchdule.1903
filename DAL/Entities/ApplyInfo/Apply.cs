@@ -57,9 +57,9 @@ namespace DAL.Entities.ApplyInfo
 		NotSave = 0,
 		NotPublish = 10,
 		Withdrew = 20,
-		Denied = 30,
 		Auditing = 40,
 		AcceptAndWaitAdmin = 50,
+		Denied = 75,
 		Accept = 100,
 	}
 

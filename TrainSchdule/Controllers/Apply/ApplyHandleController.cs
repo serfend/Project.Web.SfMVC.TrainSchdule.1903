@@ -72,7 +72,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ListOfSelf(int pageIndex = 0, int pageSize = 20)
 		{
 			var c = _currentUserService.CurrentUser;
-			var list = _context.Applies.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			var list = _context.Applies.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
@@ -90,7 +90,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20)
 		{
 			var c = _currentUserService.CurrentUser;
-			var list = _context.Applies.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id))).OrderByDescending(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			var list = _context.Applies.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id))).OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
