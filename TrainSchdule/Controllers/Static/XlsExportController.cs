@@ -94,12 +94,14 @@ namespace TrainSchdule.Controllers
 
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
-			var datetime = DateTime.Now.ToString("MMdd");
+			var datetime = DateTime.Now.ToString("yyyyMMddHHmmss");
 			var fileName = $"TS{datetime}-{description}.xlsx";
 			using (var sr = new MemoryStream(fileContent))
 			{
 				var file = new FormFile(sr, 0, fileContent.Length, fileName, fileName);
+
 				var tmpFile = await _fileServices.Upload(file, XlsExportPath, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
+
 				var removeTime = TimeSpan.FromMinutes(10);
 				var jobId = BackgroundJob.Schedule(() => RemoveTempFile(tmpFile.Id.ToString()), removeTime);
 				return new JsonResult(new FileReturnViewModel()
@@ -107,7 +109,7 @@ namespace TrainSchdule.Controllers
 					Data = new FileReturnDataModel()
 					{
 						FileName = fileName,
-						RequestUrl = $"/fileEngine/download?fileid={tmpFile.Id}",
+						RequestUrl = $"/file/download?fileid={tmpFile.Id}",
 						ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
 						Length = tmpFile.Length
 					}
