@@ -18,6 +18,17 @@ namespace TrainSchdule.ViewModels.Apply
 	}
 
 	/// <summary>
+	/// 恢复被删除的申请
+	/// </summary>
+	public class ApplyRestoreViewModel : GoogleAuthViewModel
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public Guid Id { get; set; }
+	}
+
+	/// <summary>
 	///
 	/// </summary>
 	public class RecallCreateViewModel : GoogleAuthViewModel

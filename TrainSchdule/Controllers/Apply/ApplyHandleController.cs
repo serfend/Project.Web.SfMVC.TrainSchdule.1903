@@ -116,10 +116,51 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
-			var managedCompany = _usersService.InMyManage(currentUser, out var totalCount);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
 				Data = apply.ToDetaiDto(_usersService.VocationInfo(apply.BaseInfo.From))
+			});
+		}
+
+		/// <summary>
+		/// 恢复被删除的申请
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public IActionResult RestoreApply([FromForm]ApplyRestoreViewModel model)
+		{
+			var apply = _context.Applies.Where(a => a.Id == model.Id).FirstOrDefault();
+			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			var auditUser = _currentUserService.CurrentUser;
+			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
+					auditUser = _usersService.Get(model.Auth.AuthByUserID);
+				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+			var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, "Root");
+			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			apply.IsRemoved = false;
+			_context.Applies.Update(apply);
+			_context.SaveChanges();
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 查询所有已删除的申请
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult RomovedApply()
+		{
+			var list = _context.Applies.Where(a => a.IsRemoved).ToList();
+			return new JsonResult(new ApplyListViewModel()
+			{
+				Data = new ApplyListDataModel()
+				{
+					List = list?.Select(a => a.ToSummaryDto())
+				}
 			});
 		}
 
