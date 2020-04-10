@@ -1,9 +1,14 @@
 ﻿using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Interfaces.File;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using System;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.File;
+using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.File
 {
@@ -14,14 +19,16 @@ namespace TrainSchdule.Controllers.File
 	public class FileController : Controller
 	{
 		private readonly IFileServices fileServices;
+		private readonly IGoogleAuthService googleAuthService;
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="fileServices"></param>
-		public FileController(IFileServices fileServices)
+		public FileController(IFileServices fileServices, IGoogleAuthService googleAuthService)
 		{
 			this.fileServices = fileServices;
+			this.googleAuthService = googleAuthService;
 		}
 
 		/// <summary>
@@ -35,7 +42,9 @@ namespace TrainSchdule.Controllers.File
 			var file = Guid.Parse(fileid);
 			var f = await Task.Run(() => { return fileServices.Download(file); }).ConfigureAwait(true);
 			if (f == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
-			return File(f.Data, "text/plain");
+			var fileInfo = fileServices.FileInfo(f.Id);
+			new FileExtensionContentTypeProvider().TryGetContentType(fileInfo.Name, out var contentType);
+			return File(f.Data, contentType ?? "text/plain", fileInfo.Name);
 		}
 
 		/// <summary>
@@ -95,6 +104,21 @@ namespace TrainSchdule.Controllers.File
 			{
 				Data = r
 			});
+		}
+
+		/// <summary>
+		/// 查询上传码
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public IActionResult ClientKey([FromBody]FileClientKeySpyViewModel model)
+		{
+			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
+			if (model.Auth?.AuthByUserID != "root") return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!model.Auth?.Verify(googleAuthService, null) ?? false) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var f = fileServices.FileInfo(model.Id);
+			return new JsonResult(new ResponseDataTViewModel<Guid>() { Data = f?.ClientKey ?? Guid.Empty });
 		}
 	}
 }

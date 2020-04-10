@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace DAL.Entities.FileEngine
+namespace DAL.DTO.System
 {
-	public class UserFileInfo : BaseEntity
+	public class FileInfoVDto
 	{
 		/// <summary>
 		/// 文件名
@@ -33,11 +35,6 @@ namespace DAL.Entities.FileEngine
 		/// 文件来源ip
 		/// </summary>
 		public string FromClient { get; set; }
-
-		/// <summary>
-		/// 当文件需要修改或者删除时需要验证身份
-		/// </summary>
-		public Guid ClientKey { get; set; }
 
 		/// <summary>
 		/// 文件是否存在，在创建文件时置为True

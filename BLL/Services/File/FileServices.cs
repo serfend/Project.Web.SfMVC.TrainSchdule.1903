@@ -51,11 +51,15 @@ namespace BLL.Services.File
 				fi = Load(path, filename);
 				if (fi != null)
 				{
-					if (fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-					var prevFile = context.UserFiles.Find(fi.Id);
+					if (fi.Exist && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+					if (fi.Exist)
+					{
+						var prevFile = context.UserFiles.Where(fileInfo => fileInfo.Id == fi.Id).FirstOrDefault();
+						if (prevFile != null) context.UserFiles.Remove(prevFile);
+					}
+
 					var uploadingFile = context.FileUploadStatuses.Where(st => st.FileInfo.Id == fi.Id).FirstOrDefault();
 					if (uploadingFile != null) context.FileUploadStatuses.Remove(uploadingFile);
-					context.UserFiles.Remove(prevFile);
 					context.UserFileInfos.Remove(fi);
 					await context.SaveChangesAsync().ConfigureAwait(true);
 				}
@@ -65,6 +69,8 @@ namespace BLL.Services.File
 					Name = filename,
 					Path = path,
 					Create = DateTime.Now,
+					LastModefy = DateTime.Now,
+					Exist = true,
 					Length = file.Length,
 					FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
 					ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey
@@ -159,6 +165,19 @@ namespace BLL.Services.File
 			var list = context.FileUploadStatuses.Where(s => DateTime.Now.Subtract(s.LastUpdate).TotalMilliseconds > 30).ToList();
 			context.FileUploadStatuses.RemoveRange(list);
 			context.SaveChanges();
+		}
+
+		public bool Remove(UserFileInfo file)
+		{
+			if (file == null) return false;
+			var data = context.UserFiles.Where(f => f.Id == file.Id).FirstOrDefault();
+			if (data == null) return false;
+			context.UserFiles.Remove(data);
+			file.LastModefy = DateTime.Now;
+			file.Exist = false;
+			context.UserFileInfos.Update(file);
+			context.SaveChanges();
+			return true;
 		}
 	}
 }

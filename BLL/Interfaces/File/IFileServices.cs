@@ -51,5 +51,12 @@ namespace BLL.Interfaces.File
 		/// <param name="id"></param>
 		/// <returns></returns>
 		UserFileInfo FileInfo(Guid id);
+
+		/// <summary>
+		/// 刪除文件
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		bool Remove(UserFileInfo file);
 	}
 }
