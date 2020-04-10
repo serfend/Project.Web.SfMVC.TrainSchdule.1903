@@ -90,7 +90,10 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20)
 		{
 			var c = _currentUserService.CurrentUser;
-			var list = _context.Applies.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id))).OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			//.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)))
+			var r = _context.Applies.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
+			r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
+			var list = r.OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
