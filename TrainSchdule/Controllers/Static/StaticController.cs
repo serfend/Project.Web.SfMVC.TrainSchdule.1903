@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.File;
 using DAL.Data;
 using DAL.DTO.Apply;
 using DAL.Entities;
@@ -41,6 +42,7 @@ namespace TrainSchdule.Controllers
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IUsersService _usersService;
 		private readonly ICompaniesService _companiesService;
+		private readonly IFileServices _fileServices;
 
 		/// <summary>
 		///
@@ -54,7 +56,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="usersService"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="httpContext"></param>
-		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext)
+		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
 		{
 			_verifyService = verifyService;
 			_vocationCheckServices = vocationCheckServices;
@@ -65,6 +67,7 @@ namespace TrainSchdule.Controllers
 			_usersService = usersService;
 			_companiesService = companiesService;
 			_httpContext = httpContext;
+			_fileServices = fileServices;
 		}
 
 		/// <summary>

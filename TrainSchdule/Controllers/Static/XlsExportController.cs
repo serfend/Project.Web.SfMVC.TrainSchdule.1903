@@ -1,6 +1,7 @@
 ﻿using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
 using Hangfire;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace TrainSchdule.Controllers
 {
 	public partial class StaticController
 	{
+		private readonly string XlsExportPath = "XlsExportPath";
+
 		/// <summary>
 		/// 依据模板导出申请列表到Xls
 		/// </summary>
@@ -81,9 +84,12 @@ namespace TrainSchdule.Controllers
 		[HttpDelete]
 		public IActionResult RemoveTempFile(string id)
 		{
-			var tmpFile = new FileInfo(GetTempFile(id));
-			tmpFile.Delete();
-			return new JsonResult(ActionStatusMessage.Success);
+			var file = _fileServices.Load(XlsExportPath, id);
+			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (_fileServices.Remove(file))
+				return new JsonResult(ActionStatusMessage.Success);
+			else
+				return new JsonResult(ActionStatusMessage.Fail);
 		}
 
 		/// <summary>
@@ -94,43 +100,36 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult Download(string id)
 		{
-			var tmpFile = new FileInfo(GetTempFile(id));
-			if (!tmpFile.Exists) return Redirect("/#/404");
+			var tmpFile = _fileServices.Load(XlsExportPath, id);
+			if (!tmpFile?.Exist ?? false) return Redirect("/#/404");
 			_httpContext.HttpContext.Session.TryGetValue(id, out var filenameRaw);
 			var filename = Encoding.UTF8.GetString(filenameRaw);
-			using (var f = tmpFile.OpenRead())
-			{
-				var buffer = new byte[f.Length];
-				f.Read(buffer);
-				return File(buffer, "application/octet-stream", filename);
-			}
+			var buffer = _fileServices.Download(tmpFile.Id)?.Data;
+			if (buffer == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			return File(buffer, "application/octet-stream", filename);
 		}
 
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
 			var datetime = DateTime.Now.ToString("MMdd");
 			var fileName = $"TS{datetime}-{description}.xlsx";
-			var guid = Guid.NewGuid().ToString();
-			var tmpFile = new FileInfo(GetTempFile(guid));
-			using (var f = tmpFile.OpenWrite())
+			using (var sr = new MemoryStream(fileContent))
 			{
-				await f.WriteAsync(fileContent);
-			}
-			var removeTime = TimeSpan.FromMinutes(10);
-			_httpContext.HttpContext.Session.Set(guid, Encoding.UTF8.GetBytes(fileName));
-			var jobId = BackgroundJob.Schedule(() => RemoveTempFile(guid), removeTime);
-			return new JsonResult(new FileReturnViewModel()
-			{
-				Data = new FileReturnDataModel()
+				var file = new FormFile(sr, 0, fileContent.Length, fileName, fileName);
+				var tmpFile = await _fileServices.Upload(file, XlsExportPath, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
+				var removeTime = TimeSpan.FromMinutes(10);
+				var jobId = BackgroundJob.Schedule(() => RemoveTempFile(tmpFile.Id.ToString()), removeTime);
+				return new JsonResult(new FileReturnViewModel()
 				{
-					FileName = fileName,
-					RequestUrl = $"/static/download?id={guid}",
-					ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
-					Length = tmpFile.Length
-				}
-			});
+					Data = new FileReturnDataModel()
+					{
+						FileName = fileName,
+						RequestUrl = $"/static/download?id={tmpFile.Id}",
+						ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
+						Length = tmpFile.Length
+					}
+				});
+			}
 		}
-
-		private string GetTempFile(string filename) => Path.Combine(_hostingEnvironment.WebRootPath, "tmp", filename);
 	}
 }
