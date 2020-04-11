@@ -8,6 +8,7 @@
 			public static readonly ApiResult XlsNoData = new ApiResult(51000, "生成的Excel文件无数据");
 			public static readonly ApiResult FileNotExist = new ApiResult(51001, "文件不存在");
 			public static readonly ApiResult CacheIsInvalid = new ApiResult(51002, "断点续传失败，因为缓存已失效");
+			public static readonly ApiResult FileSizeInvalid = new ApiResult(51003, "文件尺寸与要求不符");
 
 			public static class AdminDivision
 			{

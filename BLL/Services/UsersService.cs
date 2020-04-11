@@ -292,12 +292,16 @@ namespace BLL.Services
 				Img = newAvatar.FromBase64ToBytes(),
 				User = targetUser
 			};
-			if (newAvatar != null && avatar.Img.Length <= 1024 * 200)
+			if ( avatar?.Img?.Length <= 1024 * 200)
 			{
 				_context.AppUserDiyAvatars.Add(avatar);
 				targetUser.DiyInfo.Avatar = avatar;
 				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
 				await _context.SaveChangesAsync().ConfigureAwait(true);
+			}
+			else if(avatar?.Img?.Length > 1024 * 200)
+			{
+				throw new FileTooLargeException(1024 * 200, avatar.Img.Length);
 			}
 			return avatar;
 		}
@@ -310,5 +314,28 @@ namespace BLL.Services
 		}
 
 		#endregion Logic
+
+		/// <summary>
+		/// 文件尺寸
+		/// </summary>
+		[Serializable]
+		public class FileTooLargeException : Exception
+		{
+			public FileTooLargeException(int requireSize, int currentSize) : this($"要求尺寸在{Math.Round((double)requireSize / 1000000, 2)}MB以内,实际{Math.Round((double)currentSize / 1000000, 2)}MB")
+			{
+			}
+
+			public FileTooLargeException(string message) : base(message)
+			{
+			}
+
+			public FileTooLargeException(string message, Exception inner) : base(message, inner)
+			{
+			}
+
+			protected FileTooLargeException(
+			  System.Runtime.Serialization.SerializationInfo info,
+			  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+		}
 	}
 }

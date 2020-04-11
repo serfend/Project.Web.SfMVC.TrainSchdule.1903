@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions.Users;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
+using static BLL.Services.UsersService;
 
 namespace TrainSchdule.Controllers
 {
@@ -306,11 +307,18 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		[HttpPost]
-		public IActionResult Avatar([FromBody]ResponseImgDataModel model)
+		public async Task<IActionResult> Avatar([FromBody]ResponseImgDataModel model)
 		{
 			var targetUser = GetCurrentQueryUser(null, out var result);
 			if (result != null) return result;
-			_usersService.UpdateAvatar(targetUser, model.Url);
+			try
+			{
+				await _usersService.UpdateAvatar(targetUser, model.Url).ConfigureAwait(true);
+			}
+			catch (FileTooLargeException ex)
+			{
+				return new JsonResult(new ApiResult(ActionStatusMessage.Static.FileSizeInvalid, ex.Message, true));
+			}
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
