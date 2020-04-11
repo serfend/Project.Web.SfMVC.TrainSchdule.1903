@@ -41,7 +41,7 @@ namespace BLL.Services
 			using (var md5 = MD5.Create())
 			{
 				var result = md5.ComputeHash(Encoding.UTF8.GetBytes(normalUserName));
-				var rawMd5 = BitConverter.ToString(result);
+				var rawMd5 = BitConverter.ToString(result).Replace("-", "").ToLower();
 				var a = new AuthServiceModel(username, password, rawMd5);
 				return a;
 			}
