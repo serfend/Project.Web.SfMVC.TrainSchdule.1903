@@ -70,9 +70,15 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfSelf(int pageIndex = 0, int pageSize = 20)
+		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20)
 		{
-			var c = _currentUserService.CurrentUser;
+			var currentUser = _currentUserService.CurrentUser;
+
+			var c = id == null ? currentUser : _usersService.Get(id);
+			if (id != null && id != currentUser.Id)
+			{
+				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			}
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status).Skip(pageIndex * pageSize).Take(pageSize).ToList();
 			return new JsonResult(new ApplyListViewModel()
 			{
