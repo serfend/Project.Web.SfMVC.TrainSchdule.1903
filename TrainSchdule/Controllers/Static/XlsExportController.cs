@@ -36,7 +36,7 @@ namespace TrainSchdule.Controllers
 			{
 				return new JsonResult(ex.Status);
 			}
-			var list = _context.AppliesDb.Where(a => form.Query.Arrays.Contains(a.Id));
+			var list = _context.AppliesDb.Where(a => form.Query.Arrays.Contains(a.Id)).ToList();
 			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From))));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{list.Count()}条({form.Templete})");
