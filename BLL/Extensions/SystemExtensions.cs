@@ -51,6 +51,7 @@ namespace BLL.Extensions
 		{
 			if (model == null) return null;
 			if (raw == null) raw = new FileInfoVDto();
+			raw.Id = model.Id;
 			raw.Create = model.Create;
 			raw.IsRemoved = model.IsRemoved;
 			raw.IsRemovedDate = model.IsRemovedDate;
