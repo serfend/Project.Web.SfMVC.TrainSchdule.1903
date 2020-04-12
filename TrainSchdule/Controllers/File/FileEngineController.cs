@@ -1,4 +1,5 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions;
+using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.File;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace TrainSchdule.Controllers.File
 			{
 				Data = new FileInfoDataModel()
 				{
-					File = file
+					File = file.ToVdto()
 				}
 			});
 		}

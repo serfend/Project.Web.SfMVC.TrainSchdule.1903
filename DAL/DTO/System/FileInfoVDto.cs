@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DAL.DTO.System
 {
-	public class FileInfoVDto
+	public class FileInfoVDto : BaseEntity
 	{
 		/// <summary>
 		/// 文件名
@@ -35,10 +36,5 @@ namespace DAL.DTO.System
 		/// 文件来源ip
 		/// </summary>
 		public string FromClient { get; set; }
-
-		/// <summary>
-		/// 文件是否存在，在创建文件时置为True
-		/// </summary>
-		public bool Exist { get; set; }
 	}
 }

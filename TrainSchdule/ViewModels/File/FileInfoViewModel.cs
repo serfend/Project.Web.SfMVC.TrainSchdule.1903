@@ -1,4 +1,5 @@
 ﻿using BLL.Helpers;
+using DAL.DTO.System;
 using DAL.Entities.FileEngine;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -26,7 +27,7 @@ namespace TrainSchdule.ViewModels.File
 		/// <summary>
 		///
 		/// </summary>
-		public UserFileInfo File { get; set; }
+		public FileInfoVDto File { get; set; }
 	}
 
 	/// <summary>

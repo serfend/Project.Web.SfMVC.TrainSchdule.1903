@@ -52,7 +52,8 @@ namespace BLL.Extensions
 			if (model == null) return null;
 			if (raw == null) raw = new FileInfoVDto();
 			raw.Create = model.Create;
-			raw.Exist = model.Exist;
+			raw.IsRemoved = model.IsRemoved;
+			raw.IsRemovedDate = model.IsRemovedDate;
 			raw.FromClient = model.FromClient;
 			raw.LastModefy = model.LastModefy;
 			raw.Length = model.Length;

@@ -51,8 +51,8 @@ namespace BLL.Services.File
 				fi = Load(path, filename);
 				if (fi != null)
 				{
-					if (fi.Exist && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-					if (fi.Exist)
+					if (!fi.IsRemoved && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+					if (!fi.IsRemoved)
 					{
 						var prevFile = context.UserFiles.Where(fileInfo => fileInfo.Id == fi.Id).FirstOrDefault();
 						if (prevFile != null) context.UserFiles.Remove(prevFile);
@@ -70,7 +70,6 @@ namespace BLL.Services.File
 					Path = path,
 					Create = DateTime.Now,
 					LastModefy = DateTime.Now,
-					Exist = true,
 					Length = file.Length,
 					FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
 					ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey
@@ -174,7 +173,7 @@ namespace BLL.Services.File
 			if (data == null) return false;
 			context.UserFiles.Remove(data);
 			file.LastModefy = DateTime.Now;
-			file.Exist = false;
+			file.Remove();
 			context.UserFileInfos.Update(file);
 			context.SaveChanges();
 			return true;
