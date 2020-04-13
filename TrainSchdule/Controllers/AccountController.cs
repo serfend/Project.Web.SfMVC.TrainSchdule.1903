@@ -634,7 +634,7 @@ namespace TrainSchdule.Controllers
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
 
-			var invalidAccount = modefyUser.Application.InvalidAccount();
+			var invalidAccount = localUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
 			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
