@@ -30,7 +30,7 @@ namespace BLL.Extensions.ApplyExtensions
 		public static string AuditResult(this ApplyResponseDto model)
 		{
 			if (model == null) return "无审批结果";
-			var remark = model.Remark != null ? $"({model.Remark})" : null;
+			var remark = (model.Remark != null && model.Remark.Length > 0) ? $"({model.Remark})" : null;
 			return $"{model.Status.ToStr()}{remark}";
 		}
 
