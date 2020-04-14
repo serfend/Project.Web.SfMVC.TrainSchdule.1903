@@ -324,7 +324,7 @@ namespace TrainSchdule.Controllers
 			var qrCoder = new MessagingToolkit.QRCode.Codec.QRCodeEncoder();
 			var realName = currentUserService.CurrentUser?.BaseInfo?.RealName;
 			if (realName == null || realName.Length == 0) realName = null;
-			var image = qrCoder.Encode(_authService.Init(currentUserService.CurrentUser?.Id)?.Main?.Password);
+			var image = qrCoder.Encode(_authService.Init(currentUserService.CurrentUser?.Id)?.Main?.QrCodeUrl(realName));
 			using (var ms = new MemoryStream())
 			{
 				image.Save(ms, ImageFormat.Png);
