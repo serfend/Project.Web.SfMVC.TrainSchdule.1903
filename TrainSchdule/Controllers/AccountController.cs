@@ -250,7 +250,8 @@ namespace TrainSchdule.Controllers
 			if (authUser != null)
 			{
 				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-				authUserPermission = _userActionServices.Permission((authUser ?? currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
+				// 允许本人修改本人密码，允许本级以上修改密码
+				authUserPermission = authUser.Id == model.Id || _userActionServices.Permission((authUser ?? currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
 			}
 			if (model.Id != currentUser?.Id && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
