@@ -145,7 +145,8 @@ namespace TrainSchdule.Controllers.Apply
 				case "正休":
 					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
 					if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
-					if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
+					// TODO 改成可以自定义设置天数
+					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
 					if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
 					break;
 
