@@ -46,7 +46,7 @@ namespace TrainSchdule.Controllers.Static
 		{
 			var result = GenerateQrCode(model, out var img);
 			if (result != null) return new JsonResult(result);
-			return new FileContentResult(img, "image/jpge");
+			return new FileContentResult(img, "image/png");
 		}
 
 		/// <summary>
