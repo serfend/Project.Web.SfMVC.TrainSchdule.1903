@@ -16,11 +16,15 @@ namespace BLL.Services
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly ApplicationDbContext _context;
+		private readonly IUserServiceDetail userServiceDetail;
+		private readonly IUsersService usersService;
 
-		public UserActionServices(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context)
+		public UserActionServices(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IUserServiceDetail userServiceDetail, IUsersService usersService)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_context = context;
+			this.userServiceDetail = userServiceDetail;
+			this.usersService = usersService;
 		}
 
 		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
@@ -51,7 +55,7 @@ namespace BLL.Services
 				Status(a, true, $"成功-授权到{targetUserCompanyCode}执行{key?.Name} ");
 				return true;
 			}
-			var u = _context.AppUsers.Where(user => user.Id == permissionUserName).FirstOrDefault();
+			var u = usersService.Get(permissionUserName);
 			if (u != null)
 			{
 				var uc = u.CompanyInfo;
@@ -61,6 +65,11 @@ namespace BLL.Services
 				{
 					Status(a, true, $"成功-单位主官-授权到{targetUserCompanyCode}执行{key?.Name} ");
 					return true;
+				}
+				else
+				{
+					var cmps = userServiceDetail.InMyManage(u, out var totalCount);
+					if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code))) return true;
 				}
 			}
 			return false;
