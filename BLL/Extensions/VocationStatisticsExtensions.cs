@@ -10,15 +10,15 @@ namespace BLL.Extensions
 {
 	public static class VocationStatisticsExtensions
 	{
-		public static void StatisticsInit(ref VocationStatisticsDescription model, ApplicationDbContext context, int currentYear, string statisticsId)
+		public static void StatisticsInit(ref VacationStatisticsDescription model, ApplicationDbContext context, int currentYear, string statisticsId)
 		{
 			if (context == null) return;
 			if (model == null) return;
 			model.StatisticsId = statisticsId;
-			var tmpList = new List<VocationStatisticsDescription>();
+			var tmpList = new List<VacationStatisticsDescription>();
 			foreach (var m in model.Childs)
 			{
-				VocationStatisticsDescription tmp = m;
+				VacationStatisticsDescription tmp = m;
 				StatisticsInit(ref tmp, context, currentYear, statisticsId);
 				tmpList.Add(tmp);
 			}
@@ -27,7 +27,7 @@ namespace BLL.Extensions
 			CaculateChildLevel(ref model);
 		}
 
-		private static void CaculateCurrentLevel(ref VocationStatisticsDescription model, ApplicationDbContext context, int currentYear)
+		private static void CaculateCurrentLevel(ref VacationStatisticsDescription model, ApplicationDbContext context, int currentYear)
 		{
 			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
 			foreach (var a in model.Applies)
@@ -77,23 +77,23 @@ namespace BLL.Extensions
 			model.CurrentLevelStatistics = tmp;
 		}
 
-		private static void CaculateChildLevel(ref VocationStatisticsDescription model)
+		private static void CaculateChildLevel(ref VacationStatisticsDescription model)
 		{
 			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
-			ApplyCountAccess = model.CurrentLevelStatistics.ApplyCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
-			ApplyCountAuditing = model.CurrentLevelStatistics.ApplyCount.Auditing + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Auditing);
-			ApplyCountDeny = model.CurrentLevelStatistics.ApplyCount.Deny + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Deny);
-			ApplyMembersCountAccess = model.CurrentLevelStatistics.ApplyMembersCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Access);
-			ApplyMembersCountAuditing = model.CurrentLevelStatistics.ApplyMembersCount.Auditing + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Auditing);
-			ApplyMembersCountDeny = model.CurrentLevelStatistics.ApplyMembersCount.Deny + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Deny);
-			ApplySumDayCountAccess = model.CurrentLevelStatistics.ApplySumDayCount.Access + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Access);
-			ApplySumDayCountAuditing = model.CurrentLevelStatistics.ApplySumDayCount.Auditing + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Auditing);
-			ApplySumDayCountDeny = model.CurrentLevelStatistics.ApplySumDayCount.Deny + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Deny);
-			MembersCount = model.CurrentLevelStatistics.MembersCount + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersCount);
-			CompleteYearlyVocationCount = model.CurrentLevelStatistics.CompleteYearlyVocationCount + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteYearlyVocationCount);
-			MembersVocationDayLessThanP60 = model.CurrentLevelStatistics.MembersVocationDayLessThanP60 + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersVocationDayLessThanP60);
-			CompleteVocationExpectDayCount = model.CurrentLevelStatistics.CompleteVocationExpectDayCount + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationExpectDayCount);
-			CompleteVocationRealDayCount = model.CurrentLevelStatistics.CompleteVocationRealDayCount + model.Childs.Sum<VocationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationRealDayCount);
+			ApplyCountAccess = model.CurrentLevelStatistics.ApplyCount.Access + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
+			ApplyCountAuditing = model.CurrentLevelStatistics.ApplyCount.Auditing + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Auditing);
+			ApplyCountDeny = model.CurrentLevelStatistics.ApplyCount.Deny + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Deny);
+			ApplyMembersCountAccess = model.CurrentLevelStatistics.ApplyMembersCount.Access + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Access);
+			ApplyMembersCountAuditing = model.CurrentLevelStatistics.ApplyMembersCount.Auditing + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Auditing);
+			ApplyMembersCountDeny = model.CurrentLevelStatistics.ApplyMembersCount.Deny + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyMembersCount.Deny);
+			ApplySumDayCountAccess = model.CurrentLevelStatistics.ApplySumDayCount.Access + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Access);
+			ApplySumDayCountAuditing = model.CurrentLevelStatistics.ApplySumDayCount.Auditing + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Auditing);
+			ApplySumDayCountDeny = model.CurrentLevelStatistics.ApplySumDayCount.Deny + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Deny);
+			MembersCount = model.CurrentLevelStatistics.MembersCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersCount);
+			CompleteYearlyVocationCount = model.CurrentLevelStatistics.CompleteYearlyVocationCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteYearlyVocationCount);
+			MembersVocationDayLessThanP60 = model.CurrentLevelStatistics.MembersVocationDayLessThanP60 + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersVocationDayLessThanP60);
+			CompleteVocationExpectDayCount = model.CurrentLevelStatistics.CompleteVocationExpectDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationExpectDayCount);
+			CompleteVocationRealDayCount = model.CurrentLevelStatistics.CompleteVocationRealDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationRealDayCount);
 
 			VocationStatisticsData tmp = null;
 			InputStatisticsData(ref tmp, ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVocationCount, MembersVocationDayLessThanP60, CompleteVocationExpectDayCount, CompleteVocationRealDayCount);

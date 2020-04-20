@@ -8,6 +8,6 @@ namespace BLL.Interfaces
 {
 	public interface IVacationStatisticsServices
 	{
-		IEnumerable<VocationStatisticsDescription> Query(QueryVacationStatisticsDataModel model);
+		IEnumerable<VacationStatisticsDescription> Query(QueryVacationStatisticsDataModel model);
 	}
 }

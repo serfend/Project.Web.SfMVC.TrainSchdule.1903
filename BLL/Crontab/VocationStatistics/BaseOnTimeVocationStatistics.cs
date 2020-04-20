@@ -64,22 +64,22 @@ namespace TrainSchdule.Crontab
 			};
 			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
 			if (dbStatistics != null) return;
-			VocationStatisticsDescription tmp = statistics.RootCompanyStatistics;
+			VacationStatisticsDescription tmp = statistics.RootCompanyStatistics;
 			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context, statistics.CurrentYear, StatisticsId);
 			statistics.RootCompanyStatistics = tmp;
 			_context.VocationStatistics.Add(statistics);
 			_context.SaveChanges();
 		}
 
-		private VocationStatisticsDescription GenerateStatistics(Company company)
+		private VacationStatisticsDescription GenerateStatistics(Company company)
 		{
 			if (company == null) return null;
-			var statistics = new VocationStatisticsDescription();
+			var statistics = new VacationStatisticsDescription();
 			statistics.Applies = _context.AppliesDb.
 				Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code && a.Create.Value >= Start && a.Create.Value <= End);
 			statistics.Company = company;
 			var companies = _context.Companies.Where<Company>(c => ParentCode(c.Code) == company.Code);
-			var list = new List<VocationStatisticsDescription>();
+			var list = new List<VacationStatisticsDescription>();
 			foreach (var childCompany in companies)
 			{
 				var s = GenerateStatistics(childCompany);

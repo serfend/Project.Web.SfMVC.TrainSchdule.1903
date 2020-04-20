@@ -102,7 +102,7 @@ namespace TrainSchdule.ViewModels.Statistics
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static CurrentLevelStatisticsDataModel ToDetailDataModel(this VocationStatisticsDescription model)
+		public static CurrentLevelStatisticsDataModel ToDetailDataModel(this VacationStatisticsDescription model)
 		{
 			return new CurrentLevelStatisticsDataModel()
 			{
@@ -119,7 +119,7 @@ namespace TrainSchdule.ViewModels.Statistics
 		/// <param name="model"></param>
 		/// <param name="parent"></param>
 		/// <returns></returns>
-		public static NewStatisticsSingleDataModel ToSummaryModel(this VocationStatisticsDescription model, VocationStatistics parent)
+		public static NewStatisticsSingleDataModel ToSummaryModel(this VacationStatisticsDescription model, VocationStatistics parent)
 		{
 			if (parent == null || model == null) return null;
 			return new NewStatisticsSingleDataModel()

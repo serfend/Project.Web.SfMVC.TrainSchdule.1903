@@ -49,7 +49,7 @@ namespace DAL.Data
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<XlsTemplete> XlsTempletes { get; set; }
 		public DbSet<VocationStatistics> VocationStatistics { get; set; }
-		public DbSet<VocationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
+		public DbSet<VacationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
 
 		/// <summary>
 		/// 统计数据值

@@ -25,10 +25,10 @@ namespace DAL.Entities.Vocations
 		/// </summary>
 		public string Description { get; set; }
 
-		public virtual VocationStatisticsDescription RootCompanyStatistics { get; set; }
+		public virtual VacationStatisticsDescription RootCompanyStatistics { get; set; }
 	}
 
-	public class VocationStatisticsDescription : BaseEntity
+	public class VacationStatisticsDescription : BaseEntity
 	{
 		public string StatisticsId { get; set; }
 
@@ -36,7 +36,7 @@ namespace DAL.Entities.Vocations
 		/// 单位下属单位休假情况
 		/// </summary>
 		[NotMapped]
-		public virtual IEnumerable<VocationStatisticsDescription> Childs { get; set; }
+		public virtual IEnumerable<VacationStatisticsDescription> Childs { get; set; }
 
 		/// <summary>
 		/// 单位
