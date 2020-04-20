@@ -1,4 +1,7 @@
 ﻿using BLL.Helpers;
+using BLL.Interfaces;
+using BLL.Interfaces.BBS;
+using BLL.Interfaces.File;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +15,26 @@ namespace TrainSchdule.Controllers.BBS
 	[Route("[controller]/[action]")]
 	public class PostController : Controller
 	{
+		private readonly IPostServices postServices;
+		private readonly IUsersService usersService;
+		private readonly IGoogleAuthService googleAuthService;
+		private readonly IFileServices fileServices;
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="postServices"></param>
+		/// <param name="usersService"></param>
+		/// <param name="googleAuthService"></param>
+		/// <param name="fileServices"></param>
+		public PostController(IPostServices postServices, IUsersService usersService, IGoogleAuthService googleAuthService, IFileServices fileServices)
+		{
+			this.postServices = postServices;
+			this.usersService = usersService;
+			this.googleAuthService = googleAuthService;
+			this.fileServices = fileServices;
+		}
+
 		/// <summary>
 		/// 发布动态
 		/// </summary>

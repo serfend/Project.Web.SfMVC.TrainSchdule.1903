@@ -14,10 +14,12 @@ namespace BLL.Services.ApplyServices
 	public class ApplyAuditStreamServices : IApplyAuditStreamServices
 	{
 		private readonly ApplicationDbContext context;
+		private readonly ICompanyManagerServices companyManagerServices;
 
-		public ApplyAuditStreamServices(ApplicationDbContext context)
+		public ApplyAuditStreamServices(ApplicationDbContext context, ICompanyManagerServices companyManagerServices)
 		{
 			this.context = context;
+			this.companyManagerServices = companyManagerServices;
 		}
 
 		public ApplyAuditStreamNodeAction EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback)
@@ -132,6 +134,7 @@ namespace BLL.Services.ApplyServices
 			if (filter == null || company == null) return null;
 			if (filter.AuditMembers != null && filter.AuditMembers.Any(a => true)) return filter.AuditMembers;
 			var result = context.AppUsers.AsQueryable();
+			var managers = companyManagerServices.GetManagers(company).ToList();
 
 			// 指定单位
 			string target = null;
@@ -172,8 +175,13 @@ namespace BLL.Services.ApplyServices
 				}
 			}
 			else result = result.Where(u => filter.Duties.Any(d => d == u.CompanyInfo.Duties.Code));
-
-			return result.Select(u => u.Id);
+			IEnumerable<string> fitUsers = result.Select(u => u.Id).ToList();
+			if (managers != null)
+			{
+				var m = managers.Select(u => u.User.Id).ToList();
+				fitUsers = fitUsers.Union(m);
+			}
+			return fitUsers;
 		}
 
 		public ApplyAuditStreamNodeAction GetNode(Guid id)

@@ -70,6 +70,8 @@ namespace DAL.Data
 
 		public DbSet<Post> Posts { get; set; }
 		public DbSet<DAL.Entities.BBS.PostContent> PostContents { get; set; }
+		public IQueryable<DAL.Entities.BBS.PostContent> PostContentsDb { get => PostContents.Where(p => !p.IsRemoved); }
+		public DbSet<DAL.Entities.BBS.Like> PostLikes { get; set; }
 
 		public DbSet<GiftCode> GiftCodes { get; set; }
 		public DbSet<DAL.Entities.Game_r3.User> GameR3Users { get; set; }

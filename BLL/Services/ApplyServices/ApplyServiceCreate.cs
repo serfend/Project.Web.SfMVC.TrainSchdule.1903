@@ -137,7 +137,7 @@ namespace BLL.Services.ApplyServices
 				}
 
 				var nextNodeUsrCmp = usrCmp;
-				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n));
+				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n).ToList());
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
 				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.Get(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 

@@ -12,6 +12,17 @@ namespace DAL.Entities.BBS
 
 		public string Title { get; set; }
 		public string Contents { get; set; }
+
+		/// <summary>
+		/// 阅读次数
+		/// </summary>
+		public int ViewCount { get; set; }
+
+		/// <summary>
+		/// 动态图片文件id，通过FileEngine获取对应文件，以##分割
+		/// </summary>
+		public string Images { get; set; }
+
 		public DateTime Create { get; set; }
 
 		/// <summary>

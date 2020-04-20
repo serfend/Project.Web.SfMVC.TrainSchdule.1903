@@ -14,6 +14,7 @@ namespace BLL.Interfaces.BBS
 		/// <param name="content"></param>
 		/// <returns></returns>
 		Post CreatePost(PostContent content);
+
 		/// <summary>
 		/// 创建一个回复
 		/// </summary>
@@ -23,6 +24,18 @@ namespace BLL.Interfaces.BBS
 		/// <param name="title"></param>
 		/// <param name="content"></param>
 		/// <returns></returns>
-		PostContent CreateContent(User createBy, Post targetPost, User ReplyTo, string title, string content);
+		PostContent CreateReply(User createBy, Post targetPost, User ReplyTo, string title, string content);
+
+		/// <summary>
+		/// 删除回复/动态
+		/// </summary>
+		/// <param name="target"></param>
+		void RemoveReply(PostContent target);
+
+		/// <summary>
+		/// 点/取消 赞     回复/动态
+		/// </summary>
+		/// <param name="target"></param>
+		void LikeContent(PostContent target, User CreateBy, bool LikeAction);
 	}
 }

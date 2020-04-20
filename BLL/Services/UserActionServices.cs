@@ -69,7 +69,11 @@ namespace BLL.Services
 				else
 				{
 					var cmps = userServiceDetail.InMyManage(u, out var totalCount);
-					if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code))) return true;
+					if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code)))
+					{
+						Status(a, true, $"成功-单位管理-授权到{targetUserCompanyCode}执行{key?.Name}");
+						return true;
+					}
 				}
 			}
 			return false;
