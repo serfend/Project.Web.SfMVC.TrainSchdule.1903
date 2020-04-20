@@ -101,32 +101,53 @@ namespace BLL.Extensions
 		{
 			maxOnTripTime = 0;
 			description = "本人地址无效，无休假";
-			if (settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
-			maxOnTripTime = 0;
-			description = "工作满20年，驻地假30天。";
-			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;
-			if (workYears > 20 || (workYears == 20 && SystemNowDate().Month >= targetUser?.BaseInfo.Time_Work.Month)) return 30;
-			maxOnTripTime = 1;
+			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
+
 			var title = targetUser.CompanyInfo.Title;
 			if (title != null && title.VacationDay != 0)
 			{
+				maxOnTripTime = 1;
 				description = $"{title.Name}，假期天数{title.VacationDay}天";
 				return title.VacationDay;
 			}
-			description = "未婚，探父母假30天。";
-			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false)) return 30;
+
+			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
+			{
+				description = "未婚，探父母假30天。";
+				maxOnTripTime = 1;
+				return 30;
+			}
+
 			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
 			var dis_parent = !((settle?.Parent == null || (!settle.Parent?.Valid ?? false))) && IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
 			var dis_l_p = !((settle?.LoversParent == null || (!settle.LoversParent?.Valid ?? false))) && IsAllopatry(settle.Lover?.Address, settle.Parent?.Address) || IsAllopatry(settle.LoversParent?.Address, settle.Lover?.Address);//配偶与任意一方家长不在一地
-			description = "已婚且与妻子同地，探父母假20天。";
-			if (!dis_lover) return 20;
 
-			maxOnTripTime = 3;
-			description = "已婚且三方异地，探父母假、探配偶假共计45天。";
-			if (dis_parent && dis_l_p) return 45;
-			maxOnTripTime = 2;
-			description = "已婚且父母、妻子异地但双方父母皆与妻子不异地，探父母假、探配偶假共计40天。";
-			return 40;
+			if (dis_lover && (dis_parent || dis_l_p))
+			{
+				maxOnTripTime = 3;
+				description = "已婚且三方异地，探父母假、探配偶假共计45天。"; return 45;
+			}
+
+			if (dis_lover)
+			{
+				maxOnTripTime = 2;
+				description = "已婚且父母、妻子异地但双方父母皆与妻子不异地，探父母假、探配偶假共计40天。"; return 40;
+			}
+
+			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;
+			if (workYears > 20 || (workYears == 20 && SystemNowDate().Month >= targetUser?.BaseInfo.Time_Work.Month))
+			{
+				maxOnTripTime = 0;
+				description = "工作满20年，驻地假30天。"; return 30;
+			}
+
+			if (!dis_lover)
+			{
+				description = "已婚且与妻子同地，探父母假20天。"; return 20;
+			}
+
+			description = "异常的个人信息，请核实";
+			return 0;
 		}
 
 		private static bool IsAllopatry(AdminDivision d1, AdminDivision d2)
