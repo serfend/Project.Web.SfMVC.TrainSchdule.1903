@@ -45,36 +45,39 @@ namespace BLL.Services.File
 			filename = filename.IsNullOrEmpty() ? file.FileName : filename;
 			if (uploadStatusId == Guid.Empty)
 			{
-				f = new UserFile();
-				context.UserFiles.Add(f);
 				// 判断文件是否已存在，若已存在则先删除
 				fi = Load(path, filename);
+
 				if (fi != null)
 				{
+					f = context.UserFiles.Where(st => st.Id == fi.Id).FirstOrDefault();
 					if (!fi.IsRemoved && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-					if (!fi.IsRemoved)
-					{
-						var prevFile = context.UserFiles.Where(fileInfo => fileInfo.Id == fi.Id).FirstOrDefault();
-						if (prevFile != null) context.UserFiles.Remove(prevFile);
-					}
 
 					var uploadingFile = context.FileUploadStatuses.Where(st => st.FileInfo.Id == fi.Id).FirstOrDefault();
 					if (uploadingFile != null) context.FileUploadStatuses.Remove(uploadingFile);
 					context.UserFileInfos.Remove(fi);
 					await context.SaveChangesAsync().ConfigureAwait(true);
 				}
-				fi = new UserFileInfo()
+				else
 				{
-					Id = f.Id,
-					Name = filename,
-					Path = path,
-					Create = DateTime.Now,
-					LastModefy = DateTime.Now,
-					Length = file.Length,
-					FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
-					ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey
-				};
-				context.UserFileInfos.Add(fi);
+					fi = new UserFileInfo()
+					{
+						Id = f.Id,
+						Name = filename,
+						Path = path,
+						Create = DateTime.Now,
+					};
+				}
+				if (f == null)
+				{
+					f = new UserFile();
+					context.UserFiles.Add(f);
+				}
+				fi.LastModefy = DateTime.Now;
+				fi.Length = file.Length;
+				fi.FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString();
+				fi.ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey;
+				if (fi != null) context.UserFileInfos.Add(fi);
 			}
 			using (var inputStream = file.OpenReadStream())
 			{

@@ -49,6 +49,18 @@ namespace TrainSchdule.Controllers.File
 		}
 
 		/// <summary>
+		/// 通过路由指定文件id进行下载
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[Route("{id}")]
+		[HttpGet]
+		public async Task<IActionResult> StaticFile([FromRoute]string id)
+		{
+			return await Download(id);
+		}
+
+		/// <summary>
 		/// 获取指定文件的信息
 		/// </summary>
 		/// <param name="filepath"></param>
