@@ -10,7 +10,7 @@ using DAL.Entities.UserInfo;
 
 namespace BLL.Services
 {
-	public class CompanyManagerServices: ICompanyManagerServices
+	public class CompanyManagerServices : ICompanyManagerServices
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -32,14 +32,14 @@ namespace BLL.Services
 		public int Edit(CompanyManagers model)
 		{
 			_context.CompanyManagers.Update(model);
-			
+
 			return _context.SaveChanges();
 		}
 
 		public CompanyManagers CreateManagers(CompanyManagerVdto model)
 		{
 			if (model == null) return null;
-			var manager=new CompanyManagers()
+			var manager = new CompanyManagers()
 			{
 				AuthBy = _context.AppUsers.Find(model.AuditById),
 				Company = _context.Companies.Find(model.CompanyCode),
@@ -52,7 +52,7 @@ namespace BLL.Services
 		public CompanyManagers Create(CompanyManagers model)
 		{
 			if (model == null) return null;
-			model.Create=DateTime.Now;
+			model.Create = DateTime.Now;
 			_context.CompanyManagers.Add(model);
 			_context.SaveChanges();
 			return model;
@@ -61,26 +61,20 @@ namespace BLL.Services
 		public int Delete(CompanyManagers model)
 		{
 			_context.CompanyManagers.Remove(model);
-			
+
 			return _context.SaveChanges();
 		}
 
-		/// <summary>
-		/// 通过用户名获取管理员
-		/// </summary>
-		/// <param name="userId"></param>
-		/// <param name="companyCode"></param>
-		/// <returns></returns>
-		public CompanyManagers GetManagerByUC(string userId, string companyCode)
-		{
-			return _context.CompanyManagers.Where(m => m.User.Id == userId).FirstOrDefault(m => m.Company.Code == companyCode);
-		}
-
-		public IEnumerable<User> GetMembers(string code, int page, int pageSize,out int totalCount)
+		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
 		{
 			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderBy(u => u.Application.InvitedBy);
 			totalCount = list.Count();
 			return list.Skip(page * pageSize).Take(pageSize);
+		}
+
+		public IEnumerable<CompanyManagers> GetManagers(string companyCode)
+		{
+			return _context.CompanyManagers.Where(c => c.Company.Code == companyCode);
 		}
 	}
 }
