@@ -6,6 +6,7 @@ using DAL.Entities.Vocations;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -159,16 +160,43 @@ namespace TrainSchdule.Controllers.Statistics
 		}
 
 		/// <summary>
+		///
+		/// </summary>
+		public class CompareStatisticsId : IEqualityComparer<VacationStatisticsDescription>
+		{
+			/// <summary>
+			///
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <returns></returns>
+			public bool Equals(VacationStatisticsDescription x, VacationStatisticsDescription y) => x.StatisticsId == y.StatisticsId;
+
+			/// <summary>
+			///
+			/// </summary>
+			/// <param name="obj"></param>
+			/// <returns></returns>
+			public int GetHashCode(VacationStatisticsDescription obj) => obj.StatisticsId.GetHashCode();
+		}
+
+		/// <summary>
 		/// 单位统计记录
 		/// </summary>
-		/// <param name="companyCode"></param>
+		/// <param name="compainesCode">需要查询的单位代码，以##分割</param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Summary(string companyCode)
+		public IActionResult Summary(string compainesCode)
 		{
-			var cmp = context.Companies.Find(companyCode);
-			if (cmp == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
-			var targetCompanyStatistics = context.VocationStatisticsDescriptions.Where<VacationStatisticsDescription>(v => v.Company.Code == companyCode).OrderBy(v => v.StatisticsId).ToList();
+			var compaines = compainesCode?.Split("##");
+			if (compaines == null || compaines.Length == 0) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			var cmp = new CompareStatisticsId();
+			var targetCompanyStatistics = context.VocationStatisticsDescriptions.
+				Where<VacationStatisticsDescription>(v => compaines.Contains(v.Company.Code))
+				.OrderBy(v => v.StatisticsId)
+				.ToList()
+				.Distinct(cmp)
+				;
 			bool anyChange = false;// 当本级不存在时，删除本级
 			foreach (var item in targetCompanyStatistics) if (item.StatisticsId == null)
 				{
@@ -188,7 +216,7 @@ namespace TrainSchdule.Controllers.Statistics
 			{
 				Data = new NewStatisticsListDataModel()
 				{
-					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VocationStatistics.Find(v.StatisticsId)))
+					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VocationStatistics.Where(s => s.Id == v.StatisticsId).FirstOrDefault()))
 				}
 			});
 		}
