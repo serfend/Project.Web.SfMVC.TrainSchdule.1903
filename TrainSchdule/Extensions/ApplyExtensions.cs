@@ -66,7 +66,8 @@ namespace TrainSchdule.Extensions
 			if (b.StampLeave != null)
 			{
 				var vocationLength = b.VocationLength + (CaculateAdditionalAndTripLength ? (b.OnTripLength + additionalVocationDay) : 0);
-				if (CaculateAdditionalAndTripLength)
+				// 当未享受福利假时才计算法定节假日
+				if (CaculateAdditionalAndTripLength && additionalVocationDay == 0)
 				{
 					b.StampReturn = vocationCheckServices.CrossVocation(b.StampLeave.Value, vocationLength, CaculateAdditionalAndTripLength);
 					List<VocationAdditional> lawVocations = vocationCheckServices.VocationDesc.Select(v => new VocationAdditional()
