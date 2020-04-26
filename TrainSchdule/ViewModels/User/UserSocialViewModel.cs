@@ -3,6 +3,7 @@ using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainSchdule.ViewModels.User
 {
@@ -25,6 +26,7 @@ namespace TrainSchdule.ViewModels.User
 		/// <summary>
 		/// 联系方式
 		/// </summary>
+		[RegularExpression(@"^1[3456789]\d{9}$", ErrorMessage = "手机号格式错误")]
 		public string Phone { get; set; }
 
 		/// <summary>

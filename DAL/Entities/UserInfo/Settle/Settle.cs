@@ -29,21 +29,26 @@ namespace DAL.Entities.UserInfo.Settle
 		/// <summary>
 		/// 本人所在地
 		/// </summary>
+		[AddressCodeOnProvince(false, ErrorMessage = "本人")]
+		[Required(ErrorMessage = "本人所在地需要填写")]
 		public virtual Moment Self { get => self; set => self = value; }
 
 		/// <summary>
 		/// 配偶所在地
 		/// </summary>
+		[AddressCodeOnProvince(false, ErrorMessage = "配偶")]
 		public virtual Moment Lover { get => lover; set => lover = value; }
 
 		/// <summary>
 		/// 父母所在地
 		/// </summary>
+		[AddressCodeOnProvince(false, ErrorMessage = "父母")]
 		public virtual Moment Parent { get => parent; set => parent = value; }
 
 		/// <summary>
 		/// 配偶的父母所在地
 		/// </summary>
+		[AddressCodeOnProvince(false, ErrorMessage = "配偶父母")]
 		public virtual Moment LoversParent { get => loversParent; set => loversParent = value; }
 
 		/// <summary>
