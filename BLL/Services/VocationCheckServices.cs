@@ -52,7 +52,7 @@ namespace BLL.Services
 		public IEnumerable<VocationDescription> GetVocationDates(DateTime date, int length, bool CheckInner)
 		{
 			var endDate = date.AddDays(length);
-			return _context.VocationDescriptions.Where(v => v.Start < endDate)
+			return _context.VocationDescriptions.Where(v => v.Start <= endDate)
 				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VocationDescription()
 				{
 					Name = v.Name,
