@@ -30,7 +30,6 @@ namespace DAL.Entities.UserInfo.Settle
 		/// 本人所在地
 		/// </summary>
 		[AddressCodeOnProvince(false, ErrorMessage = "本人")]
-		[Required(ErrorMessage = "本人所在地需要填写")]
 		public virtual Moment Self { get => self; set => self = value; }
 
 		/// <summary>
