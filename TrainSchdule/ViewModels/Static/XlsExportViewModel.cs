@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.QueryModel;
+using System;
 using System.Collections;
 
 namespace TrainSchdule.ViewModels.Static
@@ -49,7 +50,7 @@ namespace TrainSchdule.ViewModels.Static
 		/// <summary>
 		/// 有效期至
 		/// </summary>
-		public long ValidStamp { get; set; }
+		public DateTime ValidStamp { get; set; }
 
 		/// <summary>
 		/// 长度

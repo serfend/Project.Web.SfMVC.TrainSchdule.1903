@@ -52,10 +52,12 @@ namespace BLL.Extensions
 				}
 			}
 			var companyCode = model.Company.Code;
-			foreach (var member in context.AppUsers.Where<User>(u => u.CompanyInfo.Company.Code == companyCode))
+			var users = context.AppUsers.Where<User>(u => u.CompanyInfo.Company.Code == companyCode);
+			var allUsers = users.ToList(); // 执行查询，取消懒加载
+			foreach (var member in allUsers)
 			{
 				MembersCount++;
-				CompleteVocationExpectDayCount += member.SocialInfo.Settle.PrevYearlyLength;//单位全年应休假天数
+				CompleteVocationExpectDayCount += member.SocialInfo?.Settle?.PrevYearlyLength ?? 0;//单位全年应休假天数
 				var membersApplies = context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == member.Id && a.Create.Value.Year == currentYear);
 				//全年休假天数
 				var memberCompleteVocation = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Accept ? a.RequestInfo.VocationLength : 0);

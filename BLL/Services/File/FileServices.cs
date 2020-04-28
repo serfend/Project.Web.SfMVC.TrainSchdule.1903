@@ -62,7 +62,7 @@ namespace BLL.Services.File
 				{
 					fi = new UserFileInfo()
 					{
-						Id = f.Id,
+						Id = Guid.NewGuid(),
 						Name = filename,
 						Path = path,
 						Create = DateTime.Now,
@@ -70,7 +70,10 @@ namespace BLL.Services.File
 				}
 				if (f == null)
 				{
-					f = new UserFile();
+					f = new UserFile()
+					{
+						Id = fi.Id
+					};
 					context.UserFiles.Add(f);
 				}
 				fi.LastModefy = DateTime.Now;
@@ -174,7 +177,8 @@ namespace BLL.Services.File
 			if (file == null) return false;
 			var data = context.UserFiles.Where(f => f.Id == file.Id).FirstOrDefault();
 			if (data == null) return false;
-			context.UserFiles.Remove(data);
+			data.Remove();
+			context.UserFiles.Update(data);
 			file.LastModefy = DateTime.Now;
 			file.Remove();
 			context.UserFileInfos.Update(file);

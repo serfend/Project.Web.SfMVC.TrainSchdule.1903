@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers
 
 				var tmpFile = await _fileServices.Upload(file, XlsExportPath, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
 
-				var removeTime = TimeSpan.FromMinutes(10);
+				var removeTime = TimeSpan.FromDays(7);
 				var jobId = BackgroundJob.Schedule(() => RemoveTempFile(tmpFile.Id.ToString()), removeTime);
 				return new JsonResult(new FileReturnViewModel()
 				{
@@ -110,7 +110,7 @@ namespace TrainSchdule.Controllers
 					{
 						FileName = fileName,
 						RequestUrl = $"/file/download?fileid={tmpFile.Id}",
-						ValidStamp = (long)(DateTime.UtcNow.Add(removeTime) - new DateTime(1970, 1, 1)).TotalMilliseconds,
+						ValidStamp = DateTime.Now.Add(removeTime),
 						Length = tmpFile.Length
 					}
 				});
