@@ -237,6 +237,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
 		{
@@ -329,8 +330,7 @@ namespace TrainSchdule.Controllers
 			{
 				image.Save(ms, ImageFormat.Png);
 				var img = ms.GetBuffer();
-				HttpContext.Response.Cookies.Append("key", _authService.Code(currentUserService.CurrentUser?.Id).ToString());
-				return new FileContentResult(img, "image/png");
+				return new JsonResult(new { data = new { url = img }, status = 0 });
 			}
 		}
 
