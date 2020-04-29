@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200429103104_settle_vacationLength_record")]
+    partial class settle_vacationLength_record
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -764,29 +766,6 @@ namespace DAL.Migrations
                     b.ToTable("AppUserDiyAvatars");
                 });
 
-            modelBuilder.Entity("DAL.Entities.UserInfo.Settle.AppUsersSettleModefyRecord", b =>
-                {
-                    b.Property<int>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsNewYearInitData");
-
-                    b.Property<double>("Length");
-
-                    b.Property<Guid?>("SettleId");
-
-                    b.Property<DateTime>("UpdateDate");
-
-                    b.HasKey("Code");
-
-                    b.HasIndex("SettleId");
-
-                    b.ToTable("AppUsersSettleModefyRecord");
-                });
-
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -841,6 +820,29 @@ namespace DAL.Migrations
                     b.HasIndex("SelfId");
 
                     b.ToTable("AUserSocialInfoSettles");
+                });
+
+            modelBuilder.Entity("DAL.Entities.UserInfo.Settle.VacationModefyRecord", b =>
+                {
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsNewYearInitData");
+
+                    b.Property<double>("Length");
+
+                    b.Property<Guid?>("SettleId");
+
+                    b.Property<DateTime>("UpdateDate");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("SettleId");
+
+                    b.ToTable("VacationModefyRecord");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Train", b =>
@@ -1658,13 +1660,6 @@ namespace DAL.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("DAL.Entities.UserInfo.Settle.AppUsersSettleModefyRecord", b =>
-                {
-                    b.HasOne("DAL.Entities.UserInfo.Settle.Settle")
-                        .WithMany("PrevYealyLengthHistory")
-                        .HasForeignKey("SettleId");
-                });
-
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>
                 {
                     b.HasOne("DAL.Entities.AdminDivision", "Address")
@@ -1689,6 +1684,13 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.Settle.Moment", "Self")
                         .WithMany()
                         .HasForeignKey("SelfId");
+                });
+
+            modelBuilder.Entity("DAL.Entities.UserInfo.Settle.VacationModefyRecord", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.Settle.Settle")
+                        .WithMany("PrevYealyLengthHistory")
+                        .HasForeignKey("SettleId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Train", b =>

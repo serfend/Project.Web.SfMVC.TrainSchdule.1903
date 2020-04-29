@@ -172,7 +172,7 @@ namespace BLL.Services
 			if (social.Settle?.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
 			if (social.Settle?.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
 			if (social.Settle?.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
-			if (social.Settle != null) social.Settle.PrevYealyLengthHistory = new List<VacationModefyRecord>();
+			if (social.Settle != null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModefyRecord>();
 			return user;
 		}
 

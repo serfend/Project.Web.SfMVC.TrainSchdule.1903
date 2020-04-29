@@ -51,14 +51,9 @@ namespace DAL.Entities.UserInfo.Settle
 		public virtual Moment LoversParent { get => loversParent; set => loversParent = value; }
 
 		/// <summary>
-		/// 本年原始休假天数
-		/// </summary>
-		public int PrevYearlyLength { get; set; }
-
-		/// <summary>
 		/// 全年发生变化的记录
 		/// </summary>
-		public virtual IEnumerable<VacationModefyRecord> PrevYealyLengthHistory { get; set; }
+		public virtual IEnumerable<AppUsersSettleModefyRecord> PrevYealyLengthHistory { get; set; }
 
 		/// <summary>
 		/// 年初因上一年度休事假消耗的天数
@@ -66,7 +61,7 @@ namespace DAL.Entities.UserInfo.Settle
 		public int PrevYearlyComsumeLength { get; set; }
 	}
 
-	public class VacationModefyRecord
+	public class AppUsersSettleModefyRecord
 	{
 		[Key]
 		public int Code { get; set; }
@@ -80,5 +75,15 @@ namespace DAL.Entities.UserInfo.Settle
 		/// 生效时间
 		/// </summary>
 		public DateTime UpdateDate { get; set; }
+
+		/// <summary>
+		/// 本次变动后产生的描述内容
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// 是否是新年初始化的数据
+		/// </summary>
+		public bool IsNewYearInitData { get; set; }
 	}
 }

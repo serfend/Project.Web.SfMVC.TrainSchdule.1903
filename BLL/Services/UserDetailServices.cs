@@ -55,24 +55,36 @@ namespace BLL.Services
 		public UserVocationInfoVDto VocationInfo(User targetUser)
 		{
 			if (targetUser == null) return null;
-			var applies = _context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id && a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept && a.Create.Value.Year == DateTime.Now.AddDays(5).Year && a.RequestInfo.VocationType == "正休").ToList();//仅正休计算天数
-			int nowLength = 0;
-			int nowTimes = 0;
-			int onTripTime = 0;
-			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var lastModefy, out var newModefy, out var maxOnTripTime, out var description);
+			var applies = _context.AppliesDb
+				.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id)
+				.Where(a => a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept)
+				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.AddDays(5).Year)
+				.Where(a => a.RequestInfo.VocationType == "正休").ToList(); // 仅正休计算天数
+
+			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var requireAddRecord, out var maxOnTripTime, out var description);
 			if (yearlyLength < 0) yearlyLength = 0;
-			if (lastModefy == null || (yearlyLength != lastModefy?.Length && lastModefy.UpdateDate != newModefy.UpdateDate) || !targetUser.SocialInfo.Settle.PrevYealyLengthHistory.Any(p => p.UpdateDate.Year == DateTime.Now.AddDays(5).Year))
+			if (requireAddRecord != null)
 			{
-				//当存在当前假期天数与目前最新记录值不一致  或  新的一年到来时，重新计算并更新
-				var list = new List<VacationModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory);
-				list.Add(newModefy);
+				var list = new List<AppUsersSettleModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
+				list.Add(requireAddRecord);
 				targetUser.SocialInfo.Settle.PrevYealyLengthHistory = list;
 				_context.AUserSocialInfoSettles.Update(targetUser.SocialInfo.Settle);
 				_context.SaveChanges();
 			}
+			var vacationInfo = VacationInfoInRange(applies, yearlyLength);
+			vacationInfo.Description = $"{description} {vacationInfo.Description ?? ""}";
+			vacationInfo.MaxTripTimes += maxOnTripTime;
+			return vacationInfo;
+		}
+
+		private UserVocationInfoVDto VacationInfoInRange(IEnumerable<Apply> applies, double yearlyLength)
+		{
 			var userAdditions = new List<VocationAdditional>();
 			var maxOnTripTimeGainForRecall = 0;//应召回而增加路途次数
 			var maxOnTripTimeGainForRecallDescription = "";
+			int nowLength = 0;
+			int nowTimes = 0;
+			int onTripTime = 0;
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
 			{
 				nowLength += a.RequestInfo.VocationLength;
@@ -97,17 +109,17 @@ namespace BLL.Services
 				return true;
 			});
 			if (maxOnTripTimeGainForRecall > 0) maxOnTripTimeGainForRecallDescription = $"因期间被召回{maxOnTripTimeGainForRecall}次，全年可休路途次数相应增加。";
-			var vocationInfo = new UserVocationInfoVDto()
+			var vacationInfo = new UserVocationInfoVDto()
 			{
-				LeftLength = (int)Math.Ceiling(yearlyLength - nowLength),
-				MaxTripTimes = maxOnTripTime + maxOnTripTimeGainForRecall,
+				LeftLength = (int)Math.Floor(yearlyLength - nowLength),
+				MaxTripTimes = maxOnTripTimeGainForRecall,
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
-				YearlyLength = (int)Math.Ceiling(yearlyLength),
-				Description = $"{description}{maxOnTripTimeGainForRecallDescription}",
+				YearlyLength = (int)Math.Floor(yearlyLength),
+				Description = maxOnTripTimeGainForRecallDescription,
 				Additionals = userAdditions
 			};
-			return vocationInfo;
+			return vacationInfo;
 		}
 	}
 }

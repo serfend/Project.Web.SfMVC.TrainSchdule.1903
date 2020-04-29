@@ -3,6 +3,8 @@ using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -28,48 +30,92 @@ namespace BLL.Extensions
 		}
 
 		/// <summary>
-		/// 获取全年总假期，每年25日后，开始统计第二年休假
+		/// 加权计算新长度  新长度=老长度*新长度月份+新长度*(12-新长度月份)  /12
 		/// </summary>
-		/// <param name="settle"></param>
+		/// <param name="records"></param>
+		/// <param name="newDate"></param>
+		/// <param name="newLength"></param>
+		/// <param name="weightDescription"></param>
 		/// <returns></returns>
-		public static double GetYearlyLength(this Settle settle, User TargetUser, out VacationModefyRecord lastModefy, out VacationModefyRecord newModefy, out int maxOnTripTime, out string description)
+		public static double CaculateLengthByWeight(this IEnumerable<AppUsersSettleModefyRecord> records, DateTime newDate, double newLength, out string weightDescription)
 		{
-			var r = settle.GetYearlyLengthInner(TargetUser, out maxOnTripTime, out description);
-			var record = settle?.PrevYealyLengthHistory;
-			var modefyRecord = record.Where(rec => rec.UpdateDate.Year == DateTime.Now.AddDays(5).Year).OrderByDescending(rec => rec.UpdateDate);
-			lastModefy = modefyRecord.FirstOrDefault();
-			newModefy = null;
-			if (lastModefy == null)
+			weightDescription = "";
+			var lastestModefy = records?.FirstOrDefault();
+			if (lastestModefy == null || lastestModefy.UpdateDate.Year < newDate.Year) return newLength;
+
+			var result = ((12 - newDate.Month) * newLength + newDate.Month * lastestModefy.Length) / 12;
+			var weightDescriptionB = new StringBuilder();
+			weightDescriptionB.Append($"因今年发生{records.Count()}次变化，全年假期应加权计算：");
+			weightDescriptionB.Append($"新长度=(老长度*新长度月份+新长度*(12-新长度月份) ) /12=({(int)lastestModefy.Length}*{newDate.Month}+{(int)newLength}*(12-{newDate.Month}))={(int)(result)}");
+			weightDescription = weightDescriptionB.ToString();
+			return result;
+		}
+
+		/// <summary>
+		/// 获取全年总假期，每年12月25日后，开始统计第二年休假
+		/// </summary>
+		/// <param name="settle">用户的家庭情况</param>
+		/// <param name="TargetUser">用户</param>
+		/// <param name="requireToAdd">当需要添加记录时返回非空</param>
+		/// <param name="maxOnTripTime">全年可休几次路途</param>
+		/// <param name="description">全年假期的描述</param>
+		/// <returns></returns>
+		public static double GetYearlyLength(this Settle settle, User TargetUser, out AppUsersSettleModefyRecord requireToAdd, out int maxOnTripTime, out string description)
+		{
+			if (settle == null) throw new ArgumentNullException(nameof(settle));
+			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out maxOnTripTime, out description); // 本次应休假长度
+			var userFinnalModefyDate = TargetUser.CheckUpdateDate(); // 本次用户家庭最后变更时间
+			var vacationModefyRecords = settle.PrevYealyLengthHistory?.OrderByDescending(rec => rec.UpdateDate); // 用户假期变更记录
+			var lastVacationModefy = vacationModefyRecords?.FirstOrDefault(); // 上次假期变更记录
+			var lastFamilyVacationModefy = vacationModefyRecords?.FirstOrDefault(rec => !rec.IsNewYearInitData); // 上次因家庭变更而假期变更记录
+
+			// 通过用户家庭情况变更记录来计算
+
+			// 如果今年已有变更记录
+			if (lastVacationModefy != null && lastVacationModefy.UpdateDate.Year == DateTime.Now.XjxtNow().Year)
 			{
-				newModefy = new VacationModefyRecord()
+				// 本次假期长度同上次，则无更改
+				if (lastVacationModefy.Length == nowVacationLength)
 				{
-					UpdateDate = TargetUser.CheckUpdateDate(),
-					Length = r
-				};
-				return r;
-			}
-			else if (lastModefy.Length != r)
-			{
-				//【政策】如果是今年调整的，那么按比例计算
-				var modefyDate = lastModefy.UpdateDate;
-				var newr = (int)(((12 - modefyDate.Month) * r + modefyDate.Month * lastModefy.Length) / 12);
-				// TODO 后续可能需要减去事假天数 newr -= settle?.PrevYearlyComsumeLength ?? 0;
-				newModefy = new VacationModefyRecord()
-				{
-					Length = newr,
-					UpdateDate = TargetUser.CheckUpdateDate()
-				};
-				var tmpDesc = new StringBuilder(description);
-				tmpDesc.Append($" 假期全年发生{modefyRecord.Count()}次变动，根据政策规定，新的假期为 变动前天数×变动月份÷12 + 变动后天数×(12-变动月份)÷12。");
-				int nowCount = 0, maxCount = modefyRecord.Count();
-				foreach (var m in modefyRecord)
-				{
-					tmpDesc.Append($"[{++nowCount}]{m.UpdateDate.Month}月{m.UpdateDate.Day}日，假期天数为{(int)m.Length}");
-					tmpDesc.Append(nowCount == maxCount ? '。' : '；');
+					description = lastVacationModefy.Description;
+					requireToAdd = null;
+					return nowVacationLength;
 				}
-				r = newr;
+				// 上次是否是新年初始化 或 上次的家庭情况时间不同于本次
+				else if (lastVacationModefy.IsNewYearInitData || lastVacationModefy.UpdateDate != userFinnalModefyDate)
+				{
+					var thisYearModefyRecords = vacationModefyRecords.Where(rec => rec.UpdateDate.Year == DateTime.Now.XjxtNow().Year); // 今年以来的变更记录
+					var newLength = thisYearModefyRecords.CaculateLengthByWeight(userFinnalModefyDate, nowVacationLength, out var weightDescription);
+
+					requireToAdd = new AppUsersSettleModefyRecord()
+					{
+						Description = $"{description} {weightDescription}",
+						IsNewYearInitData = false,
+						Length = newLength,
+						UpdateDate = userFinnalModefyDate
+					};
+					return newLength;
+				}
+				// 否则只是因为加权导致的天数不同而已，返回上次的值即可
+				else
+				{
+					requireToAdd = null;
+					description = lastVacationModefy.Description;
+					return lastVacationModefy.Length;
+				}
 			}
-			return r;
+			// 若今年无变更记录，则创建一条记录
+			else
+			{
+				requireToAdd = new AppUsersSettleModefyRecord()
+				{
+					Description = description,
+					IsNewYearInitData = true,
+					UpdateDate = new DateTime(DateTime.Now.XjxtNow().Year, 1, 1),
+					Length = nowVacationLength
+				};
+				return nowVacationLength;
+			}
 		}
 
 		/// <summary>
@@ -119,10 +165,10 @@ namespace BLL.Extensions
 			}
 
 			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
-			var dis_parent = !((settle?.Parent == null || (!settle.Parent?.Valid ?? false))) && IsAllopatry(settle.Self?.Address, settle.Parent?.Address);//与自己的家长不在一地
+			var dis_parent = !((settle?.Parent == null || (!settle.Parent?.Valid ?? false))) && IsAllopatry(settle.Self?.Address, settle.Parent?.Address); // 与自己的家长不在一地
 			var dis_l_p = !((settle?.LoversParent == null || (!settle.LoversParent?.Valid ?? false))) && IsAllopatry(settle.Lover?.Address, settle.Parent?.Address) || IsAllopatry(settle.LoversParent?.Address, settle.Lover?.Address);//配偶与任意一方家长不在一地
 
-			if (dis_lover && (dis_parent || dis_l_p))
+			if (dis_lover && dis_parent && dis_l_p)
 			{
 				maxOnTripTime = 3;
 				description = "已婚且三方异地，探父母假、探配偶假共计45天。"; return 45;
@@ -131,7 +177,7 @@ namespace BLL.Extensions
 			if (dis_lover)
 			{
 				maxOnTripTime = 2;
-				description = "已婚且父母、妻子异地但双方父母皆与妻子不异地，探父母假、探配偶假共计40天。"; return 40;
+				description = "已婚两方异地，探父母假、探配偶假共计40天。"; return 40;
 			}
 
 			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year + 1;

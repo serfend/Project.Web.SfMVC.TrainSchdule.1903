@@ -120,7 +120,6 @@ namespace TrainSchdule
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), "*/10 * * * *");
 			RecurringJob.AddOrUpdate<R3HandleServices>((a) => a.HandleAllUsersGiftCode(), "*/10 * * * *");//忍3自动化
-			RecurringJob.AddOrUpdate<NewYearVocationUpdateJob>((u) => u.Run(), Cron.Yearly(1, 1, 0, 0));
 			RecurringJob.AddOrUpdate<WeeklyVocationStatistics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday, 0, 0));
 			RecurringJob.AddOrUpdate<MonthlyVocationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
 			RecurringJob.AddOrUpdate<YearlyVocationStatistics>((u) => u.Run(), Cron.Yearly(1, 1, 0));

@@ -112,7 +112,6 @@ namespace TrainSchdule.ViewModels.User
 				Self = settle.Self.ToModel(),
 				Parent = settle.Parent.ToModel(),
 				LoversParent = settle.LoversParent.ToModel(),
-				PrevYearlyLength = settle?.PrevYearlyLength ?? 0
 			};
 		}
 

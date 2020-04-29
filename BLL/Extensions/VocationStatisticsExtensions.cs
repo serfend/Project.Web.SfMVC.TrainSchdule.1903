@@ -57,12 +57,13 @@ namespace BLL.Extensions
 			foreach (var member in allUsers)
 			{
 				MembersCount++;
-				CompleteVocationExpectDayCount += member.SocialInfo?.Settle?.PrevYearlyLength ?? 0;//单位全年应休假天数
+				var memberYearlyLength = (int)member.SocialInfo?.Settle?.PrevYealyLengthHistory?.OrderByDescending(rec => rec.UpdateDate).FirstOrDefault()?.Length;
+				CompleteVocationExpectDayCount += memberYearlyLength; // 单位全年应休假天数
 				var membersApplies = context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == member.Id && a.Create.Value.Year == currentYear);
 				//全年休假天数
 				var memberCompleteVocation = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Accept ? a.RequestInfo.VocationLength : 0);
-				if (memberCompleteVocation >= member.SocialInfo.Settle.PrevYearlyLength) CompleteYearlyVocationCount++;
-				else if (memberCompleteVocation < 0.6f * member.SocialInfo.Settle.PrevYearlyLength) MembersVocationDayLessThanP60++;
+				if (memberCompleteVocation >= memberYearlyLength) CompleteYearlyVocationCount++;
+				else if (memberCompleteVocation < 0.6f * memberYearlyLength) MembersVocationDayLessThanP60++;
 
 				ApplySumDayCountAccess += memberCompleteVocation;
 				ApplySumDayCountDeny = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Denied ? a.RequestInfo.VocationLength : 0);
