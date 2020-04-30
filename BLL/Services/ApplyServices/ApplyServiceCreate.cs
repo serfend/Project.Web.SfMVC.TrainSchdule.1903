@@ -165,7 +165,7 @@ namespace BLL.Services.ApplyServices
 			{
 				case AuditStatus.Withdrew:
 					{
-						if (model.Status == AuditStatus.Auditing)
+						if (model.Status == AuditStatus.Auditing || model.Status == AuditStatus.AcceptAndWaitAdmin)
 						{
 							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
 						}
