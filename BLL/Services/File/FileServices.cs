@@ -109,7 +109,7 @@ namespace BLL.Services.File
 			file.Data = new byte[fileInfo.Length];
 
 			uploadStatus.FileStatus.Add(f);
-			await context.SaveChangesAsync().ConfigureAwait(false);
+			await context.SaveChangesAsync().ConfigureAwait(true);
 
 			try
 			{
@@ -136,7 +136,7 @@ namespace BLL.Services.File
 			{
 				context.UserFiles.Update(file);
 				context.FileUploadStatuses.Update(f);
-				await context.SaveChangesAsync().ConfigureAwait(false);
+				await context.SaveChangesAsync().ConfigureAwait(true);
 			}
 		}
 
