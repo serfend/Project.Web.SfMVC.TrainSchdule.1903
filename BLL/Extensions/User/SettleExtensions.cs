@@ -189,7 +189,16 @@ namespace BLL.Extensions
 
 			if (!dis_lover)
 			{
-				description = "已婚且与妻子同地，探父母假20天。"; return 20;
+				if (dis_l_p)
+				{
+					maxOnTripTime = 1;
+					description = "已婚且与妻子同地，与父母异地，探父母假计20天。"; return 20;
+				}
+				else
+				{
+					maxOnTripTime = 0;
+					description = "已婚且与妻子、父母同地，驻地假计20天。"; return 20;
+				}
 			}
 
 			description = "异常的个人信息，请核实";
