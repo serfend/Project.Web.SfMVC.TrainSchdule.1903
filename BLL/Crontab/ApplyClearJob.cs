@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.Crontab
 {
-	public class ApplyClearJob:ICrontabJob
+	public class ApplyClearJob : ICrontabJob
 	{
 		private IApplyService applyService;
 
@@ -14,10 +14,11 @@ namespace TrainSchdule.Crontab
 		{
 			this.applyService = applyService;
 		}
+
 		public void Run()
 		{
-			applyService.RemoveAllUnSaveApply();
-			applyService.RemoveAllNoneFromUserApply();
+			Task.Run(applyService.RemoveAllUnSaveApply).Wait();
+			Task.Run(applyService.RemoveAllNoneFromUserApply).Wait();
 		}
 	}
 }
