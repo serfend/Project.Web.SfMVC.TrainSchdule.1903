@@ -10,6 +10,7 @@ namespace DAL.DTO.Apply
 		/// </summary>
 		public int Index { get; set; }
 
+		public string AuditingUserId { get; set; }
 		public string AuditingUserRealName { get; set; }
 		public Auditing Status { get; set; }
 		public DateTime? HandleStamp { get; set; }

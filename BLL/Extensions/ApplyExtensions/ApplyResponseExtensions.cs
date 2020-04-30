@@ -39,6 +39,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var b = new ApplyResponseDto()
 			{
 				AuditingUserRealName = model?.AuditingBy?.BaseInfo?.RealName,
+				AuditingUserId = model?.AuditingBy?.Id,
 				Index = model.StepIndex,
 				HandleStamp = model.HandleStamp,
 				Remark = model.Remark,
