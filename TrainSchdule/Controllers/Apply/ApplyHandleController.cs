@@ -79,12 +79,13 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenBy(a => a.Status);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list?.Select(a => a.ToSummaryDto())
+					List = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()?.Select(a => a.ToSummaryDto()),
+					TotalCount = list.Count()
 				}
 			});
 		}
@@ -137,12 +138,13 @@ namespace TrainSchdule.Controllers.Apply
 			}
 
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
-			var list = r.OrderByDescending(a => a.Status).ThenBy(a => a.Create).Skip(pageIndex * pageSize).Take(pageSize).ToList();
+			var list = r.OrderByDescending(a => a.Status).ThenBy(a => a.Create);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list?.Select(a => a.ToSummaryDto())
+					List = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()?.Select(a => a.ToSummaryDto()),
+					TotalCount = list.Count()
 				}
 			});
 		}
