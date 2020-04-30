@@ -82,7 +82,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.AppliesDb
 						 .Where(a => a.Status == AuditStatus.NotSave)
 						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
-			await RemoveApplies(list).ConfigureAwait(false);
+			await RemoveApplies(list).ConfigureAwait(true);
 		}
 
 		public async Task RemoveAllNoneFromUserApply()
@@ -125,20 +125,21 @@ namespace BLL.Services.ApplyServices
 
 			#endregion response
 
-			await _context.SaveChangesAsync().ConfigureAwait(false);
-
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From == null);
-			await RemoveApplies(list).ConfigureAwait(false);
+			await RemoveApplies(list).ConfigureAwait(true);
 		}
 
 		public async Task RemoveApplies(IEnumerable<Apply> list)
 		{
 			if (list == null) return;
+			bool anyRemove = false;
 			foreach (var s in list)
 			{
 				s.Remove();
 				_context.Applies.Update(s);
+				anyRemove = true;
 			}
+			if(anyRemove)
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
