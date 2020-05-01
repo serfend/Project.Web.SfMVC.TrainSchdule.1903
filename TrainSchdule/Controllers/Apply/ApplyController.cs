@@ -131,41 +131,22 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
+		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-
-			var m = model.ToVDTO(_context, _vocationCheckServices, model.VocationType == "正休");
-			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
-			var vocationInfo = _usersService.VocationInfo(targetUser);
-			switch (model.VocationType)
+			var m = model.ToVDTO(_context);
+			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
+			try
 			{
-				case "正休":
-					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) return new JsonResult(ActionStatusMessage.Apply.Request.TripTimesExceed);
-					if (model.VocationLength > vocationInfo.LeftLength) return new JsonResult(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
-					// TODO 改成可以自定义设置天数
-					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
-					if (model.OnTripLength < 0) return new JsonResult(ActionStatusMessage.Apply.Request.Default);
-					break;
-
-				case "事假":
-					m.VocationAdditionals = null;
-					m.OnTripLength = 0;
-					break;
-
-				case "病休":
-					m.VocationAdditionals = null;
-					m.OnTripLength = 0;
-					break;
-
-				default:
-					return new JsonResult(ActionStatusMessage.Apply.Request.InvalidVocationType);
+				var info = await _applyService.SubmitRequestAsync(targetUser, m).ConfigureAwait(true);
+				return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 			}
-			if (m.StampReturn.Value.Year != m.StampLeave.Value.Year) return new JsonResult(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
-			var info = _applyService.SubmitRequest(m);
-			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}
 		}
 
 		/// <summary>

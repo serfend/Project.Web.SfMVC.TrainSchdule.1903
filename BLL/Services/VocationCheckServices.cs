@@ -8,6 +8,7 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using BLL.Extensions;
+using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -65,9 +66,9 @@ namespace BLL.Services
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public DateTime CrossVocation(DateTime start, int length, bool caculateLawVocation)
+		public async Task<DateTime> CrossVocation(DateTime start, int length, bool caculateLawVocation)
 		{
-			VocationDesc = GetVocationDescriptions(start, length, caculateLawVocation);
+			VocationDesc = await GetVocationDescriptions(start, length, caculateLawVocation).ConfigureAwait(true);
 			return EndDate;
 		}
 
@@ -78,7 +79,7 @@ namespace BLL.Services
 		/// <param name="length"></param>
 		/// <param name="caculateLawVocation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
 		/// <returns></returns>
-		public IEnumerable<VocationDescription> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation)
+		public async Task<IEnumerable<VocationDescription>> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation)
 		{
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
 			if (length > 500 || length < 0)
@@ -89,12 +90,16 @@ namespace BLL.Services
 			var list = new List<VocationDescription>();
 			var end = start.AddDays(length);
 			int vocationDay = 0;
-			if (caculateLawVocation)
-				foreach (var description in GetVocationDates(start, length, true))
-				{
-					list.Add(description);
-					vocationDay += description.Length;
-				}
+			await Task.Run(() =>
+			{
+				if (caculateLawVocation)
+					foreach (var description in GetVocationDates(start, length, true))
+					{
+						list.Add(description);
+						vocationDay += description.Length;
+					}
+			}).ConfigureAwait(true);
+
 			EndDate = end.AddDays(vocationDay);
 			VocationDesc = list;
 			return list;

@@ -16,16 +16,18 @@ namespace BLL.Services.ApplyServices
 		#region Fileds
 
 		private readonly ApplicationDbContext _context;
+		private readonly IVocationCheckServices vocationCheckServices;
 
 		#endregion Fileds
 
-		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices, IVocationCheckServices vocationCheckServices)
 		{
 			_context = context;
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			new Configurator()[".xlsx"] = new WorkbookLoader();
 			_applyAuditStreamServices = applyAuditStreamServices;
+			this.vocationCheckServices = vocationCheckServices;
 		}
 
 		public Apply GetById(Guid id) => _context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();

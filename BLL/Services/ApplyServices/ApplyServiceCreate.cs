@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.Vocations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.ApplyServices
@@ -16,28 +18,6 @@ namespace BLL.Services.ApplyServices
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyAuditStreamServices _applyAuditStreamServices;
-
-		public ApplyBaseInfo SubmitBaseInfo(ApplyBaseInfoVdto model)
-		{
-			if (model == null) return null;
-			var m = new ApplyBaseInfo()
-			{
-				Company = _context.Companies.Find(model.Company),
-				Duties = _context.Duties.Find(model.Duties),
-				From = model.From,
-				Social = new UserSocialInfo()
-				{
-					Address = _context.AdminDivisions.Find(model.VocationTargetAddress),
-					AddressDetail = model.VocationTargetAddressDetail,
-					Phone = model.Phone,
-					Settle = model.Settle
-				},
-				CreateTime = DateTime.Now
-			};
-			_context.Add(m);
-			_context.SaveChanges();
-			return m;
-		}
 
 		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
 		{
@@ -53,7 +33,7 @@ namespace BLL.Services.ApplyServices
 					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(true),
 					AddressDetail = model.VocationTargetAddressDetail,
 					Phone = model.Phone,
-					Settle = model.Settle
+					Settle = model.Settle // 此处可能需要静态化处理，但考虑到.History问题，再议
 				},
 				RealName = model.RealName,
 				CompanyName = model.Company,
@@ -66,9 +46,66 @@ namespace BLL.Services.ApplyServices
 			return m;
 		}
 
-		public ApplyRequest SubmitRequest(ApplyRequestVdto model)
+		public async Task<ApplyRequestVdto> CaculateVacation(ApplyRequestVdto model)
 		{
 			if (model == null) return null;
+			bool CaculateAdditionalAndTripLength = model.VocationType == "正休";
+			int additionalVocationDay = 0;
+			model.VocationAdditionals?.All(v => { additionalVocationDay += v.Length; v.Start = DateTime.Now; return true; });
+			if (model.StampLeave != null)
+			{
+				var vocationLength = model.VocationLength + (CaculateAdditionalAndTripLength ? (model.OnTripLength + additionalVocationDay) : 0);
+				// 当未享受福利假时才计算法定节假日
+				if (CaculateAdditionalAndTripLength && additionalVocationDay == 0)
+				{
+					model.StampReturn = await vocationCheckServices.CrossVocation(model.StampLeave.Value, vocationLength, CaculateAdditionalAndTripLength);
+					List<VocationAdditional> lawVocations = vocationCheckServices.VocationDesc.Select(v => new VocationAdditional()
+					{
+						Name = v.Name,
+						Start = v.Start,
+						Length = v.Length,
+						Description = "法定节假日"
+					}).ToList();
+					lawVocations.AddRange(model.VocationAdditionals);
+					model.VocationAdditionals = lawVocations;//执行完crossVocation后已经处于加载完毕状态可直接使用
+				}
+				else model.StampReturn = model.StampLeave.Value.AddDays(vocationLength - 1);
+
+				model.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription(CaculateAdditionalAndTripLength);
+			}
+			return model;
+		}
+
+		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
+		{
+			if (model == null) return null;
+			var vocationInfo = _usersService.VocationInfo(targetUser);
+			model = await CaculateVacation(model).ConfigureAwait(true);
+			switch (model.VocationType)
+			{
+				case "正休":
+					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.TripTimesExceed);
+					if (model.VocationLength > vocationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
+					// TODO 改成可以自定义设置天数
+					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
+					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.Default);
+					break;
+
+				case "事假":
+					model.VocationAdditionals = null;
+					model.OnTripLength = 0;
+					break;
+
+				case "病休":
+					model.VocationAdditionals = null;
+					model.OnTripLength = 0;
+					break;
+
+				default:
+					throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.InvalidVocationType);
+			}
+			// TODO 改成可以自定义是否允许跨年
+			//if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
 			var r = new ApplyRequest()
 			{
 				OnTripLength = model.OnTripLength,
@@ -86,11 +123,6 @@ namespace BLL.Services.ApplyServices
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();
 			return r;
-		}
-
-		public async Task<ApplyRequest> SubmitRequestAsync(ApplyRequestVdto model)
-		{
-			return await Task.Run(() => SubmitRequest(model)).ConfigureAwait(true);
 		}
 
 		public Apply Submit(ApplyVdto model)
