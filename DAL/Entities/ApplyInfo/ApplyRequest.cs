@@ -32,9 +32,26 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public virtual IEnumerable<VocationAdditional> AdditialVocations { get; set; }
 
+		/// <summary>
+		/// 休假地点
+		/// </summary>
 		public virtual AdminDivision VocationPlace { get; set; }
+
+		/// <summary>
+		/// 休假地点（详细地址）
+		/// </summary>
 		public string VocationPlaceName { get; set; }
+
+		/// <summary>
+		/// 休假原因（用户设置）
+		/// </summary>
 		public string Reason { get; set; }
+
+		/// <summary>
+		/// 创建时用户的全年休假情况
+		/// </summary>
+		public string VacationDescription { get; set; }
+
 		public DateTime CreateTime { get; set; }
 		public Transportation ByTransportation { get; set; }
 	}

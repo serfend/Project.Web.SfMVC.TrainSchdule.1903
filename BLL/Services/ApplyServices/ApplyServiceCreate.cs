@@ -79,13 +79,13 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			var vocationInfo = _usersService.VocationInfo(targetUser);
+			var vacationInfo = _usersService.VocationInfo(targetUser);
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			switch (model.VocationType)
 			{
 				case "正休":
-					if (model.OnTripLength > 0 && vocationInfo.MaxTripTimes <= vocationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.TripTimesExceed);
-					if (model.VocationLength > vocationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vocationInfo.LeftLength}天"));
+					if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.TripTimesExceed);
+					if (model.VocationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vacationInfo.LeftLength}天"));
 					// TODO 改成可以自定义设置天数
 					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
 					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.Default);
@@ -118,7 +118,8 @@ namespace BLL.Services.ApplyServices
 				VocationType = model.VocationType,
 				CreateTime = DateTime.Now,
 				ByTransportation = model.ByTransportation,
-				AdditialVocations = model.VocationAdditionals
+				AdditialVocations = model.VocationAdditionals,
+				VacationDescription = vacationInfo.Description
 			};
 			_context.ApplyRequests.Add(r);
 			_context.SaveChanges();

@@ -14,9 +14,21 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public virtual DAL.Entities.UserInfo.User From { get; set; }
 
+		/// <summary>
+		/// 声请人单位情况
+		/// </summary>
 		public virtual Company Company { get; set; }
+
+		/// <summary>
+		/// 申请人职务情况
+		/// </summary>
 		public virtual Duties Duties { get; set; }
+
+		/// <summary>
+		/// 申请人家庭情况
+		/// </summary>
 		public virtual UserSocialInfo Social { get; set; }
+
 		public DateTime CreateTime { get; set; }
 
 		/// <summary>

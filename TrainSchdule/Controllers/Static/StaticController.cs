@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
@@ -80,9 +81,9 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
-		public IActionResult VocationDate(DateTime start, int length, bool caculateLawVocation)
+		public async Task<IActionResult> VocationDate(DateTime start, int length, bool caculateLawVocation)
 		{
-			var list = _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation);
+			var list = await _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation).ConfigureAwait(true);
 			return new JsonResult(new VocationDescriptionViewModel()
 			{
 				Data = new VocationDescriptionDataModel()

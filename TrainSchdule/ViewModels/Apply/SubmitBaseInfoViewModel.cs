@@ -30,22 +30,22 @@ namespace TrainSchdule.ViewModels.Apply
 		public string Duties { get; set; }
 
 		/// <summary>
-		/// 休假去向
+		/// 家庭地址
 		/// </summary>
 		public int VocationTargetAddress { get; set; }
 
 		/// <summary>
-		///
+		///家庭地址（详细地址）
 		/// </summary>
 		public string VocationTargetAddressDetail { get; set; }
 
 		/// <summary>
-		///
+		/// 联系方式
 		/// </summary>
 		public string Phone { get; set; }
 
 		/// <summary>
-		///
+		/// 家庭情况
 		/// </summary>
 		public Settle Settle { get; set; }
 	}
