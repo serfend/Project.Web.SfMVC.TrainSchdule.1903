@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Extensions
 {
+	/// <summary>
+	/// 头像
+	/// </summary>
 	public static class AvatarExtensions
 	{
 		/// <summary>
@@ -30,6 +33,13 @@ namespace BLL.Extensions
 
 		public static string AvatarRawPath { get; set; } = "images/avatar/";
 
+		/// <summary>
+		/// 创建临时头像文件
+		/// </summary>
+		/// <param name="realName"></param>
+		/// <param name="gender"></param>
+		/// <param name="rootPath"></param>
+		/// <returns></returns>
 		public static Avatar CreateTempAvatar(this string realName, GenderEnum gender, string rootPath)
 		{
 			if (realName == null) realName = "无名"; else realName = realName.Substring(0, 1);
