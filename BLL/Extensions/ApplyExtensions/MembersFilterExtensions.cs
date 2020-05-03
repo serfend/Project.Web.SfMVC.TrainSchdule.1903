@@ -9,10 +9,10 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class MembersFilterExtensions
 	{
-		public static MembersFilter ToModel(this MembersFilterDto model)
+		public static TResult ToModel<TResult>(this MembersFilterDto model) where TResult : IMembersFilter, new()
 		{
-			if (model == null) return null;
-			return new MembersFilter()
+			if (model == null) return default;
+			return new TResult()
 			{
 				AuditMembers = string.Join("##", model.AuditMembers),
 				AuditMembersCount = model.AuditMembersCount,
@@ -26,7 +26,7 @@ namespace BLL.Extensions.ApplyExtensions
 			};
 		}
 
-		public static MembersFilterDto ToDtoModel(this MembersFilter model)
+		public static MembersFilterDto ToDtoModel(this IMembersFilter model)
 		{
 			if (model == null) return null;
 			return new MembersFilterDto()

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class ApplyAuditStreamSolutionRule : MembersFilter
+	public class ApplyAuditStreamSolutionRule : IMembersFilter
 	{
 		[Key]
 		public Guid Id { get; set; }
@@ -37,6 +37,15 @@ namespace DAL.Entities.ApplyInfo
 		public virtual ApplyAuditStream Solution { get; set; }
 
 		public DateTime Create { get; set; }
+		public string Duties { get; set; }
+		public string DutiesTags { get; set; }
+		public DutiesIsMajor DutyIsMajor { get; set; }
+		public string Companies { get; set; }
+		public string CompanyRefer { get; set; }
+		public string CompanyTags { get; set; }
+		public string CompanyCodeLength { get; set; }
+		public string AuditMembers { get; set; }
+		public int AuditMembersCount { get; set; }
 	}
 
 	/// <summary>
@@ -65,7 +74,7 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 单个审批节点，通过Filter选出需要进行审批的成员
 	/// </summary>
-	public class ApplyAuditStreamNodeAction : MembersFilter
+	public class ApplyAuditStreamNodeAction : IMembersFilter
 	{
 		[Key]
 		public Guid Id { get; set; }
@@ -82,57 +91,79 @@ namespace DAL.Entities.ApplyInfo
 		public string Description { get; set; }
 
 		public DateTime Create { get; set; }
+		public string Duties { get; set; }
+		public string DutiesTags { get; set; }
+		public DutiesIsMajor DutyIsMajor { get; set; }
+		public string Companies { get; set; }
+		public string CompanyRefer { get; set; }
+		public string CompanyTags { get; set; }
+		public string CompanyCodeLength { get; set; }
+		public int AuditMembersCount { get; set; }
+		public string AuditMembers { get; set; }
+	}
+
+	public class BaseMembersFilter : IMembersFilter
+	{
+		public string Duties { get; set; }
+		public string DutiesTags { get; set; }
+		public DutiesIsMajor DutyIsMajor { get; set; }
+		public string Companies { get; set; }
+		public string CompanyRefer { get; set; }
+		public string CompanyTags { get; set; }
+		public string CompanyCodeLength { get; set; }
+		public string AuditMembers { get; set; }
+		public int AuditMembersCount { get; set; }
 	}
 
 	/// <summary>
 	/// 通过条件设置，筛选出符合条件的人
 	/// </summary>
-	public class MembersFilter
+	public interface IMembersFilter
 	{
 		/// <summary>
 		/// 职务范围,int类型，以##分割
 		/// </summary>
-		public virtual string Duties { get; set; }
+		string Duties { get; set; }
 
 		/// <summary>
 		/// 职务类型范围，以##分割
 		/// </summary>
-		public string DutiesTags { get; set; }
+		string DutiesTags { get; set; }
 
 		/// <summary>
 		/// 职务主官选择
 		/// </summary>
-		public DutiesIsMajor DutyIsMajor { get; set; }
+		DutiesIsMajor DutyIsMajor { get; set; }
 
 		/// <summary>
 		/// 单位范围，以##分割
 		/// </summary>
-		public virtual string Companies { get; set; }
+		string Companies { get; set; }
 
 		/// <summary>
 		/// 可以设置为self或parent或null，当设置非null，则Companies字段失效
 		/// </summary>
-		public string CompanyRefer { get; set; }
+		string CompanyRefer { get; set; }
 
 		/// <summary>
 		/// 可以设置单位类型，用于区分各类单位，以##分割
 		/// </summary>
-		public string CompanyTags { get; set; }
+		string CompanyTags { get; set; }
 
 		/// <summary>
 		/// 可以设置单位代码长度进行筛选，int类型 以##分割
 		/// </summary>
-		public string CompanyCodeLength { get; set; }
+		string CompanyCodeLength { get; set; }
 
 		/// <summary>
 		/// 设置本节点需要审批的成员数量
 		/// </summary>
-		public int AuditMembersCount { get; set; }
+		int AuditMembersCount { get; set; }
 
 		/// <summary>
 		/// 精确设置需要审批的人，当设置此属性，其他设置均失效，以##分割
 		/// </summary>
-		public string AuditMembers { get; set; }
+		string AuditMembers { get; set; }
 	}
 
 	public enum DutiesIsMajor

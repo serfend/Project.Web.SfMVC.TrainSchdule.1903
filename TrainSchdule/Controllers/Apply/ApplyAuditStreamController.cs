@@ -110,7 +110,7 @@ namespace TrainSchdule.Controllers.Apply
 			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 
-			var r = applyAuditStreamServices.NewNode(model.Filter.ToModel(), model.Name, model.Description);
+			var r = applyAuditStreamServices.NewNode(model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.Description);
 			if (DateTime.Now.Subtract(r.Create).TotalSeconds > 10) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.AlreadyExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -136,7 +136,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
 			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
-			model.Filter.ToModel().ToApplyAuditStreamNodeAction(n);
+			model.Filter.ToModel<ApplyAuditStreamNodeAction>().ToApplyAuditStreamNodeAction(n);
 			n.Description = model.Description;
 			n.Create = n.Create;
 			n.Name = model.Name;
@@ -417,7 +417,7 @@ namespace TrainSchdule.Controllers.Apply
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
 			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 
-			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel(), model.Name, model.Description, model.Priority, model.Enable);
+			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.Description, model.Priority, model.Enable);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -448,7 +448,7 @@ namespace TrainSchdule.Controllers.Apply
 			result = CheckPermission(auditUser, n.ToDtoModel());
 			if (result.Status == 0)
 			{
-				model.Filter.ToModel().ToApplyAuditStreamSolutionRule(n);
+				model.Filter.ToModel<ApplyAuditStreamSolutionRule>().ToApplyAuditStreamSolutionRule(n);
 				n.Description = model.Description;
 				n.Create = n.Create;
 				n.Priority = model.Priority;
