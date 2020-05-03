@@ -9,6 +9,10 @@
 			public static readonly ApiResult FileNotExist = new ApiResult(51001, "文件不存在");
 			public static readonly ApiResult CacheIsInvalid = new ApiResult(51002, "断点续传失败，因为缓存已失效");
 			public static readonly ApiResult FileSizeInvalid = new ApiResult(51003, "文件尺寸与要求不符");
+			public static readonly ApiResult ResourceAllReadyExist = new ApiResult(51004, "资源已经存在");
+			public static readonly ApiResult ResourceNotExist = new ApiResult(51005, "资源不存在");
+			public static readonly ApiResult FileAllReadyExist = new ApiResult(51006, "文件已存在");
+			public static readonly ApiResult ResourceOutofSize = new ApiResult(51007, "资源尺寸不符");
 
 			public static class AdminDivision
 			{

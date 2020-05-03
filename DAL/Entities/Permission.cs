@@ -41,6 +41,12 @@ namespace DAL.Entities
 		{
 			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的编辑权限");
 		}
+
+		public static class Resources
+		{
+			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "资源的编辑权限");
+			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址的编辑权限");
+		}
 	}
 
 	public class PermissionDescription

@@ -2,12 +2,14 @@
 using System.IO;
 using BLL.Interfaces;
 using BLL.Interfaces.BBS;
+using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
 using BLL.Interfaces.ZX;
 using BLL.Services;
 using BLL.Services.ApplyServices;
 using BLL.Services.BBS;
+using BLL.Services.Common;
 using BLL.Services.File;
 using BLL.Services.GameR3;
 using BLL.Services.ZX;
@@ -86,6 +88,7 @@ namespace TrainSchdule
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
 			services.AddScoped<ISignInServices, SignInServices>();
 			services.AddScoped<IFileServices, FileServices>();
+			services.AddScoped<IDWZServices, DWZServices>();
 			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamServices>();
 
 			//单例

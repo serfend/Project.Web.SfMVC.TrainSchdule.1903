@@ -1,6 +1,7 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.BBS;
+using DAL.Entities.Common;
 using DAL.Entities.FileEngine;
 using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
@@ -9,6 +10,7 @@ using DAL.Entities.Vocations;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using User = DAL.Entities.UserInfo.User;
 
@@ -82,6 +84,9 @@ namespace DAL.Data
 		public DbSet<UserFileInfo> UserFileInfos { get; set; }
 		public DbSet<FileUploadStatus> FileUploadStatuses { get; set; }
 		public DbSet<UploadCache> UploadCaches { get; set; }
+		public DbSet<ShortUrl> CommonShortUrl { get; set; }
+		public IQueryable<ShortUrl> CommonShortUrlDb => CommonShortUrl.Where(c => !c.IsRemoved).Where(c => c.Expire > DateTime.Now);
+		public DbSet<ShortUrlStatistics> CommonShortUrlStatistics { get; set; }
 
 		#endregion Properties
 
@@ -102,6 +107,7 @@ namespace DAL.Data
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
+			builder.Entity<ShortUrl>().HasIndex(s => s.Key);
 		}
 
 		#endregion Logic

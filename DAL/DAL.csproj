@@ -15,6 +15,10 @@
     <Compile Remove="Migrations\20191227153323_new_CompanyUserTitle2.Designer.cs" />
     <Compile Remove="Migrations\20200316022738_logRemote.cs" />
     <Compile Remove="Migrations\20200316022738_logRemote.Designer.cs" />
+    <Compile Remove="Migrations\20200502170225_support_shortUrl.cs" />
+    <Compile Remove="Migrations\20200502170225_support_shortUrl.Designer.cs" />
+    <Compile Remove="Migrations\20200502171524_support_shorturl.cs" />
+    <Compile Remove="Migrations\20200502171524_support_shorturl.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,5 +28,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTO\Common\" />
   </ItemGroup>
 </Project>

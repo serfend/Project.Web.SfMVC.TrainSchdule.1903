@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200503020930_support_shortUrl")]
+    partial class support_shortUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -452,13 +454,9 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("UrlId");
 
-                    b.Property<string>("ViewById");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UrlId");
-
-                    b.HasIndex("ViewById");
 
                     b.ToTable("CommonShortUrlStatistics");
                 });
@@ -1671,10 +1669,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.Common.ShortUrl", "Url")
                         .WithMany()
                         .HasForeignKey("UrlId");
-
-                    b.HasOne("DAL.Entities.UserInfo.User", "ViewBy")
-                        .WithMany()
-                        .HasForeignKey("ViewById");
                 });
 
             modelBuilder.Entity("DAL.Entities.CompanyManagers", b =>
