@@ -33,7 +33,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				if (model == null) return new JsonResult(ActionStatusMessage.Apply.Default);
+				if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Default);
 
 				if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 				var auditUser = _currentUserService.CurrentUser;
@@ -133,7 +133,7 @@ namespace TrainSchdule.Controllers.Apply
 							r = r.Where(a => a.NowAuditStep != null).Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页该我审批的
 							break;
 						}
-					default: return new JsonResult(ActionStatusMessage.Apply.Operation.Default);
+					default: return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Default);
 				}
 			}
 
@@ -160,7 +160,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			Guid.TryParse(id, out var aId);
 			var apply = _applyService.GetById(aId);
-			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			apply.ApplyAllAuditStep = apply.ApplyAllAuditStep.OrderBy(s => s.Index);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
@@ -177,7 +177,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult RestoreApply([FromForm]ApplyRestoreViewModel model)
 		{
 			var apply = _context.Applies.Where(a => a.Id == model.Id).FirstOrDefault();
-			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			var auditUser = _currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -257,7 +257,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult RecallOrder(Guid id)
 		{
 			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
-			if (recall == null) return new JsonResult(ActionStatusMessage.Apply.Recall.NotExist);
+			if (recall == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.NotExist);
 			var apply = _context.AppliesDb.Where(a => a.RecallId == id).FirstOrDefault();
 			return new JsonResult(new RecallViewModel()
 			{

@@ -120,7 +120,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
 		public IActionResult GetUserIdByRealName(string realName)
 		{
-			if (realName == null) return new JsonResult(ActionStatusMessage.User.NoId);
+			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
 			var users = _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
 			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName)).ToList();
 			return new JsonResult(new UserSummariesViewModel()
@@ -142,10 +142,10 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
 		public IActionResult GetUserIdByCid(string cid)
 		{
-			if (cid == null) return new JsonResult(ActionStatusMessage.User.NoId);
-			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.User.NotCrrectCid);
+			if (cid == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
+			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.UserMessage.NotCrrectCid);
 			var user = _context.AppUsers.FirstOrDefault(u => u.BaseInfo.Cid == cid);
-			if (user == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (user == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
 				Data = new UserBaseInfoWithIdDataModel()
@@ -207,7 +207,7 @@ namespace TrainSchdule.Controllers
 			var currentId = id ?? currentUserService.CurrentUser.Id;
 			if (currentId == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = _usersService.Get(currentId);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permission = targetUser.Application.Permission;
 			return new JsonResult(new QueryPermissionsOutViewModel() { Data = permission.GetRegionList() });
 		}
@@ -223,9 +223,9 @@ namespace TrainSchdule.Controllers
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -245,7 +245,7 @@ namespace TrainSchdule.Controllers
 			var cid = model.Id;
 			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 			var targetUser = _usersService.Get(model?.Id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
 			bool authUserPermission = false;
 			if (authUser != null)
@@ -302,14 +302,14 @@ namespace TrainSchdule.Controllers
 		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.AuthKey = model.NewKey;
 			var success = _usersService.Edit(targetUser);
-			if (!success) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (!success) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -366,7 +366,7 @@ namespace TrainSchdule.Controllers
 				var cid = model.UserName;
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
-				if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+				if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 				var accountType = targetUser.Application.InvalidAccount();
 				if (accountType == BLL.Extensions.UserExtensions.AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
 				if (accountType == BLL.Extensions.UserExtensions.AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
@@ -409,7 +409,7 @@ namespace TrainSchdule.Controllers
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var statusME = new Dictionary<string, ApiResult>();
 
 			foreach (var u in model.Data?.Id)
@@ -443,7 +443,7 @@ namespace TrainSchdule.Controllers
 			try
 			{
 				var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-				if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+				if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 				await RemoveSingle(model.Id, authByUser);
 			}
 			catch (ActionStatusMessageException ex)
@@ -457,9 +457,9 @@ namespace TrainSchdule.Controllers
 		{
 			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "");
 			var targetUser = _usersService.Get(id);
-			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist);
+			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			_userActionServices.Status(actionRecord, true);
 		}
 
@@ -476,7 +476,7 @@ namespace TrainSchdule.Controllers
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var targetUser = _usersService.Get(model.Id);
-			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 
 			if (_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var app = targetUser.Application;
@@ -566,7 +566,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult AuthUserRegister([FromBody]AuthUserRegisterDataModel model)
 		{
 			var targetUser = _usersService.Get(model.UserName);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			if (targetUser.Application.InvitedBy != null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
 			var currentUser = currentUserService.CurrentUser;
 			var canAuthRank = _usersService.CheckAuthorizedToUser(currentUser, targetUser);
@@ -628,11 +628,11 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		private async Task ModefySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
 		{
-			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
+			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
-			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
+			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
 
 			var invalidAccount = localUser.Application.InvalidAccount();
@@ -650,14 +650,14 @@ namespace TrainSchdule.Controllers
 
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
 		{
-			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NoId);
+			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var regUser = _usersService.Get(model.Application.UserName);
 			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
-			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
+			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.Get(user.UserName);

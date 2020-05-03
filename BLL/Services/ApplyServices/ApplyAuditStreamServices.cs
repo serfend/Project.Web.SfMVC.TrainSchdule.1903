@@ -58,7 +58,7 @@ namespace BLL.Services.ApplyServices
 			return fitRule.OrderByDescending(a => a.Priority).FirstOrDefault();
 		}
 
-		public ApplyAuditStreamNodeAction NewNode(MembersFilter filter, string name, string description = null)
+		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string description = null)
 		{
 			var prev = context.ApplyAuditStreamNodeActions.Where(a => a.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -100,7 +100,7 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, MembersFilter filter, string name, string description = null, int priority = 0, bool enable = false)
+		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string description = null, int priority = 0, bool enable = false)
 		{
 			var prev = context.ApplyAuditStreamSolutionRules.Where(r => r.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -128,7 +128,7 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public IEnumerable<string> GetToAuditMembers(string company, MembersFilter filterRaw)
+		public IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filterRaw)
 		{
 			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;

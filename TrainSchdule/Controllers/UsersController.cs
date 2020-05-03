@@ -83,7 +83,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null)
 			{
-				result = new JsonResult(ActionStatusMessage.User.NotExist);
+				result = new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 				return null;
 			}
 			result = null;

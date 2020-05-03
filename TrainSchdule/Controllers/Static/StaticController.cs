@@ -57,6 +57,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="usersService"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="httpContext"></param>
+		/// <param name="fileServices"></param>
 		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
 		{
 			_verifyService = verifyService;

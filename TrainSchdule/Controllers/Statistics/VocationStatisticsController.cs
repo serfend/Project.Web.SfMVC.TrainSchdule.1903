@@ -68,7 +68,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(VacationStatisticsViewModel), 0)]
-		public IActionResult DetailsList([FromBody]QueryVacationStatisticsDataModel model)
+		public IActionResult DetailsList([FromBody]QueryVacationStatisticsViewModel model)
 		{
 			var result = _vacationStatisticsServices.Query(model);
 			return new JsonResult(new VacationStatisticsDescriptionsViewModel()
@@ -91,7 +91,7 @@ namespace TrainSchdule.Controllers.Statistics
 		{
 			if (!model.Auth.Verify(authService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
-			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
 			if (!_userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
@@ -126,7 +126,7 @@ namespace TrainSchdule.Controllers.Statistics
 		{
 			if (!model.Auth.Verify(authService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
-			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
 			if (!_userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var parent = context.VocationStatistics.Find(model.Data.StatisticsId);
@@ -189,7 +189,7 @@ namespace TrainSchdule.Controllers.Statistics
 		public IActionResult Summary(string compainesCode)
 		{
 			var compaines = compainesCode?.Split("##");
-			if (compaines == null || compaines.Length == 0) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			if (compaines == null || compaines.Length == 0) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			var cmp = new CompareStatisticsId();
 			var targetCompanyStatistics = context.VocationStatisticsDescriptions.
 				Where<VacationStatisticsDescription>(v => compaines.Contains(v.Company.Code))

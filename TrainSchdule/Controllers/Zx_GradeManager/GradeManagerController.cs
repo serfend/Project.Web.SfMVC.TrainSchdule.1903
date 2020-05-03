@@ -53,7 +53,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		{
 			if (!model.Auth.Verify(googleAuthService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
-			if (actionUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			if (!userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Grade.Subject, Operation.Update, actionUser.Id, "")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			phyGradeServices.AddSubject(model.Subject);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -125,10 +125,10 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <returns></returns>
 		private ApiResult GetResult(ref PhySingleGradeDataModel model)
 		{
-			if (model?.User == null) return ActionStatusMessage.User.NoId;
+			if (model?.User == null) return ActionStatusMessage.UserMessage.NoId;
 
 			var baseUser = model.User.UserName == null ? model.User.User : usersService.Get(model.User.UserName)?.BaseInfo;
-			if (baseUser == null) return (ActionStatusMessage.User.NotExist);
+			if (baseUser == null) return (ActionStatusMessage.UserMessage.NotExist);
 			foreach (var subject in model.Subjects)
 			{
 				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject, baseUser);

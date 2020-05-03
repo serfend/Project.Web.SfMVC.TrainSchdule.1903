@@ -28,7 +28,7 @@ namespace TrainSchdule.Controllers
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var list = _usersService.InMyManage(targetUser, out var totalCount).Select(c => c.ToDto(_companiesService));
 			return new JsonResult(new UserManageRangeViewModel()
 			{
@@ -54,13 +54,13 @@ namespace TrainSchdule.Controllers
 			if (model.Auth == null || !model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (authUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetUser = _usersService.Get(id);
 			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var manages = _companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.User.Id == targetUser.Id).FirstOrDefault();
-			; if (manage == null) return new JsonResult(ActionStatusMessage.Company.Manager.NotExist);
+			; if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.NotExist);
 			var unused = _companyManagerServices.Delete(manage);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -80,12 +80,12 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var targetUser = _usersService.Get(id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permit = _userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var manages = _companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.User.Id == targetUser.Id).FirstOrDefault();
-			if (manage != null) return new JsonResult(ActionStatusMessage.Company.Manager.Existed);
+			if (manage != null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Existed);
 			var dto = new CompanyManagerVdto()
 			{
 				AuditById = model.Auth.AuthByUserID,
@@ -93,7 +93,7 @@ namespace TrainSchdule.Controllers
 				UserId = model.Id
 			};
 			manage = _companyManagerServices.CreateManagers(dto);
-			if (manage == null) return new JsonResult(ActionStatusMessage.Company.Manager.Default);
+			if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Default);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 	}

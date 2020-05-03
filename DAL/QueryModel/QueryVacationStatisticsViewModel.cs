@@ -1,6 +1,6 @@
 ﻿namespace DAL.QueryModel
 {
-	public class QueryVacationStatisticsDataModel
+	public class QueryVacationStatisticsViewModel
 	{
 		public QueryByString CompanyId { get; set; }
 

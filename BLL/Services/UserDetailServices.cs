@@ -98,7 +98,7 @@ namespace BLL.Services
 					//不论用户是否休路途，均应该增加一次路途
 					maxOnTripTimeGainForRecall++;
 					var order = _context.RecallOrders.Find(a.RecallId);
-					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Recall.IdRecordButNoData);
+					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.IdRecordButNoData);
 					//此处减去召回时间应注意是否在福利假内部
 					var dayComsumeBeforeRecall = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
 					var containsLawVacations = _vocationCheckServices.GetVocationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();

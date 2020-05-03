@@ -18,7 +18,7 @@ namespace BLL.Services
 			_context = context;
 		}
 
-		public IEnumerable<VacationStatisticsDescription> Query(QueryVacationStatisticsDataModel model)
+		public IEnumerable<VacationStatisticsDescription> Query(QueryVacationStatisticsViewModel model)
 		{
 			if (model == null) return null;
 			var list = _context.VocationStatisticsDescriptions.AsQueryable();

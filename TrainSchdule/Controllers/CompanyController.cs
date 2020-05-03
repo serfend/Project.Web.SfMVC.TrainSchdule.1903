@@ -56,7 +56,7 @@ namespace TrainSchdule.Controllers
 			var currentUser = _currentUserService.CurrentUser;
 			name = name ?? currentUser?.CompanyInfo?.Duties.Name;
 			var duty = _context.Duties.Where(d => d.Name == name).FirstOrDefault();
-			if (duty == null) return new JsonResult(ActionStatusMessage.Company.Duty.NotExist);
+			if (duty == null) return new JsonResult(ActionStatusMessage.CompanyMessage.DutyMessage.NotExist);
 			var r = duty.ToDataModel();
 			return new JsonResult(new DutyViewModel()
 			{
@@ -153,7 +153,7 @@ namespace TrainSchdule.Controllers
 		{
 			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
 			var list = _companiesService.GetCompanyManagers(id);
-			if (list == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			if (list == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			return new JsonResult(new CompanyManagerViewModel()
 			{
 				Data = new CompanyManagerDataModel()

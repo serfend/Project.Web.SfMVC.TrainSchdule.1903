@@ -105,7 +105,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var userModel = new SubmitBaseInfoViewModel()
 			{//重写前端传回的数据
 				Id = model.Id,
@@ -135,7 +135,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(_context);
 			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			try
@@ -170,12 +170,12 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			catch (NoAuditStreamRuleFitException)
 			{
-				return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NoAuditStreamRuleFit);
+				return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NoAuditStreamRuleFit);
 			}
-			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.Crash);
-			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoRequestInfo);
-			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.Apply.Operation.Submit.NoBaseInfo);
-			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.Company.NotExist);
+			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
+			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
+			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
+			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
@@ -193,13 +193,13 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
-			if (authByUser == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.GetById(id);
-			if (apply == null) return new JsonResult(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = _userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请", false, ActionRank.Danger);
-			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) return new JsonResult(ActionStatusMessage.Apply.Operation.StatusInvalid.CanNotDelete);
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
 			await _applyService.Delete(apply);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);

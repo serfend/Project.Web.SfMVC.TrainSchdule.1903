@@ -33,7 +33,7 @@ namespace BLL.Extensions
 		/// <summary>
 		/// 18位身份证号码验证
 		/// </summary>
-		private bool CheckIDCard18(string idNumber)
+		private static bool CheckIDCard18(string idNumber)
 		{
 			long n = 0;
 			if (long.TryParse(idNumber.Remove(17), out n) == false
@@ -72,7 +72,7 @@ namespace BLL.Extensions
 		/// <summary>
 		/// 16位身份证号码验证
 		/// </summary>
-		private bool CheckIDCard15(string idNumber)
+		private static bool CheckIDCard15(string idNumber)
 		{
 			long n = 0;
 			if (long.TryParse(idNumber, out n) == false || n < Math.Pow(10, 14))

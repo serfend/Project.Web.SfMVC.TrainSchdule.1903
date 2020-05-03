@@ -5,7 +5,7 @@ namespace BLL.Helpers
 {
 	public static partial class ActionStatusMessage
 	{
-		public static class Apply
+		public static class ApplyMessage
 		{
 			public static readonly ApiResult Default = new ApiResult(40000, "申请发生未知错误");
 			public static readonly ApiResult NotExist = new ApiResult(42000, "申请不存在");

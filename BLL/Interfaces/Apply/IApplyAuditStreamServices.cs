@@ -8,11 +8,11 @@ namespace BLL.Interfaces
 {
 	public interface IApplyAuditStreamServices : IApplyAuditStreamRepositoryServices
 	{
-		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, MembersFilter filter, string name, string description = null, int priority = 0, bool enable = false);
+		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string description = null, int priority = 0, bool enable = false);
 
 		ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string description = null);
 
-		ApplyAuditStreamNodeAction NewNode(MembersFilter filter, string name, string description = null);
+		ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string description = null);
 
 		ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback = null);
 
@@ -34,6 +34,6 @@ namespace BLL.Interfaces
 		/// <param name="company"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		IEnumerable<string> GetToAuditMembers(string company, MembersFilter filter);
+		IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filter);
 	}
 }

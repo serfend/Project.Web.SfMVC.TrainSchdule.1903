@@ -22,13 +22,6 @@ namespace BLL.Extensions
 			return result.Length == 0 ? null : result;
 		}
 
-		private class VacationUpdate
-		{
-			public int Month { get; set; }
-			public int Day { get; set; }
-			public string Description { get; set; }
-		}
-
 		/// <summary>
 		/// 加权计算新长度  新长度=老长度*新长度月份+新长度*(12-新长度月份)  /12
 		/// </summary>

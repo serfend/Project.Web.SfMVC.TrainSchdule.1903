@@ -2,7 +2,7 @@
 {
 	public static partial class ActionStatusMessage
 	{
-		public static class User
+		public static class UserMessage
 		{
 			public static readonly ApiResult Default = new ApiResult(20000, "用户发生未知错误");
 			public static readonly ApiResult NotExist = new ApiResult(21000, "用户不存在");

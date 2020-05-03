@@ -81,7 +81,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.GetById(gid);
-			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.Apply.NotExist);
+			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
 			if (currentUser == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var action = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");

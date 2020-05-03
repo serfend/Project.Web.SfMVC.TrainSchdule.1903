@@ -11,12 +11,11 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 {
 	public static class ApplyAuditStreamSolutionRuleExtensions
 	{
-		public static ApplyAuditStreamSolutionRule ToApplyAuditStreamSolutionRule(this MembersFilter model, ApplyAuditStreamSolutionRule raw = null)
+		public static ApplyAuditStreamSolutionRule ToApplyAuditStreamSolutionRule(this IMembersFilter model, ApplyAuditStreamSolutionRule raw = null)
 		{
 			if (model == null) return null;
 			if (raw == null) raw = new ApplyAuditStreamSolutionRule();
 			raw.AuditMembers = model.AuditMembers;
-			raw.AuditMembersCount = model.AuditMembersCount;
 			raw.Companies = model.Companies;
 			raw.CompanyCodeLength = model.CompanyCodeLength;
 			raw.CompanyRefer = model.CompanyRefer;

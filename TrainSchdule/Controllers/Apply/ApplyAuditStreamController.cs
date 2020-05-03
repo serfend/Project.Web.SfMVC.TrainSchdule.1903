@@ -32,6 +32,16 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IUserActionServices userActionServices;
 		private readonly ICompaniesService companiesService;
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="applyAuditStreamServices"></param>
+		/// <param name="context"></param>
+		/// <param name="googleAuthService"></param>
+		/// <param name="usersService"></param>
+		/// <param name="currentUserService"></param>
+		/// <param name="userActionServices"></param>
+		/// <param name="companiesService"></param>
 		public ApplyAuditStreamController(IApplyAuditStreamServices applyAuditStreamServices, ApplicationDbContext context, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices, ICompaniesService companiesService)
 		{
 			this.applyAuditStreamServices = applyAuditStreamServices;
@@ -45,7 +55,7 @@ namespace TrainSchdule.Controllers.Apply
 
 		private ApiResult CheckPermission(DAL.Entities.UserInfo.User u, MembersFilterDto filter)
 		{
-			if (u == null) return (ActionStatusMessage.User.NotExist);
+			if (u == null) return (ActionStatusMessage.UserMessage.NotExist);
 			// 如果要新增相对，则需要管理员权限
 			if (filter?.CompanyRefer != null || filter?.CompanyCodeLength?.Count() > 0 || filter?.CompanyTags?.Count() > 0)
 				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root"))
@@ -70,7 +80,7 @@ namespace TrainSchdule.Controllers.Apply
 			var validNode = nodes.Where(no => no.CompanyRefer == null).FirstOrDefault();
 			if (validNode == null) validNode = nodes.FirstOrDefault();
 			if (validNode != null)
-				result = CheckPermission(u, ((MembersFilter)validNode).ToDtoModel());
+				result = CheckPermission(u, ((IMembersFilter)validNode).ToDtoModel());
 			return result;
 		}
 
@@ -95,13 +105,13 @@ namespace TrainSchdule.Controllers.Apply
 			}
 
 			var checkExist = applyAuditStreamServices.EditNode(model.Name);
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.AlreadyExist);
 
 			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 
 			var r = applyAuditStreamServices.NewNode(model.Filter.ToModel(), model.Name, model.Description);
-			if (DateTime.Now.Subtract(r.Create).TotalSeconds > 10) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.AlreadyExist);
+			if (DateTime.Now.Subtract(r.Create).TotalSeconds > 10) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.AlreadyExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -125,7 +135,7 @@ namespace TrainSchdule.Controllers.Apply
 			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
-			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
+			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
 			model.Filter.ToModel().ToApplyAuditStreamNodeAction(n);
 			n.Description = model.Description;
 			n.Create = n.Create;
@@ -146,7 +156,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult GetStreamNode(string name)
 		{
 			var r = applyAuditStreamServices.EditNode(name);
-			if (r == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
+			if (r == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
 			return new JsonResult(new StreamNodeViewModel()
 			{
 				Data = new StreamNodeDataModel()
@@ -187,7 +197,7 @@ namespace TrainSchdule.Controllers.Apply
 				var n = applyAuditStreamServices.EditNode(name);
 				if (n != null)
 				{
-					result = CheckPermission(auditUser, ((MembersFilter)n).ToDtoModel());
+					result = CheckPermission(auditUser, ((IMembersFilter)n).ToDtoModel());
 					if (result.Status == 0)
 					{
 						context.ApplyAuditStreamNodeActions.Remove(n);
@@ -195,7 +205,7 @@ namespace TrainSchdule.Controllers.Apply
 					}
 				}
 				else
-					return new JsonResult(ActionStatusMessage.Apply.AuditStream.Node.NotExist);
+					return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
 			}
 			catch (Exception ex)
 			{
@@ -246,7 +256,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(model.Name);
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.AlreadyExist);
 
 			var r = applyAuditStreamServices.NewSolution(list, model.Name, model.Description);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -290,7 +300,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			var node = applyAuditStreamServices.GetSolution(model.Id);
 
-			if (node == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 			node.Description = model.Description;
 			node.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
 			node.Name = model.Name;
@@ -310,7 +320,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(name);
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 			return new JsonResult(new StreamSolutionViewModel()
 			{
 				Data = new StreamSolutionDataModel()
@@ -350,7 +360,7 @@ namespace TrainSchdule.Controllers.Apply
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(name);
 
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 
 			var nStr = (checkExist.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : checkExist.Nodes.Split("##");
 			var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
@@ -400,12 +410,12 @@ namespace TrainSchdule.Controllers.Apply
 
 				return false;
 			});
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.AlreadyExist);
 			if (result.Status != 0) return new JsonResult(result);
 
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
-			if (solution == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 
 			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel(), model.Name, model.Description, model.Priority, model.Enable);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -432,9 +442,9 @@ namespace TrainSchdule.Controllers.Apply
 			ApiResult result = null;
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
-			if (solution == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolution.NotExist);
+			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
 			var n = applyAuditStreamServices.GetRule(model.Id);
-			if (n == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
+			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
 			result = CheckPermission(auditUser, n.ToDtoModel());
 			if (result.Status == 0)
 			{
@@ -464,7 +474,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			ApplyAuditStreamSolutionRule checkExist = null;
 			applyAuditStreamServices.EditSolutionRule(name, (n) => { checkExist = n; return false; });
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
 			return new JsonResult(new StreamSolutionRuleViewModel()
 			{
 				Data = new StreamSolutionRuleDataModel()
@@ -514,7 +524,7 @@ namespace TrainSchdule.Controllers.Apply
 				return false;
 			});
 			if (result != null && result.Status != 0) return new JsonResult(result);
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.Apply.AuditStream.StreamSolutionRule.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

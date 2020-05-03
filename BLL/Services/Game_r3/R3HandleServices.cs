@@ -72,7 +72,7 @@ namespace BLL.Services.GameR3
 		{
 			if (code == null) return null;
 			var u = await UpdateUser(user).ConfigureAwait(true);
-			if (u.NickName == null) throw new ActionStatusMessageException(ActionStatusMessage.User.NotExist, $"忍忍{user.GameId}不存在");
+			if (u.NickName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist, $"忍忍{user.GameId}不存在");
 			var prevCode = context.GiftCodes.Where(g => g.Code == code.Code).FirstOrDefault();
 			if (prevCode != null) return prevCode;
 			code.ShareBy = $"{u.Level} {u.NickName}";

@@ -10,7 +10,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 {
 	public static class ApplyAuditStreamNodeActionExtensions
 	{
-		public static ApplyAuditStreamNodeAction ToApplyAuditStreamNodeAction(this MembersFilter model, ApplyAuditStreamNodeAction raw = null)
+		public static ApplyAuditStreamNodeAction ToApplyAuditStreamNodeAction(this IMembersFilter model, ApplyAuditStreamNodeAction raw = null)
 		{
 			if (model == null) return null;
 			if (raw == null) raw = new ApplyAuditStreamNodeAction();
@@ -47,7 +47,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			return raw;
 		}
 
-		public static ApplyAuditStreamNodeActionVDto ToNodeVDtoModel(this ApplyAuditStreamNodeActionDto model, IUsersService userServices, ICompaniesService companiesService, ApplyAuditStreamNodeActionVDto raw=null)
+		public static ApplyAuditStreamNodeActionVDto ToNodeVDtoModel(this ApplyAuditStreamNodeActionDto model, IUsersService userServices, ICompaniesService companiesService, ApplyAuditStreamNodeActionVDto raw = null)
 		{
 			if (model == null) return null;
 			if (raw == null) raw = new ApplyAuditStreamNodeActionVDto();

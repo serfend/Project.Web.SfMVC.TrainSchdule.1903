@@ -84,11 +84,11 @@ namespace BLL.Services.ApplyServices
 			switch (model.VocationType)
 			{
 				case "正休":
-					if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.TripTimesExceed);
-					if (model.VocationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Apply.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vacationInfo.LeftLength}天"));
+					if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
+					if (model.VocationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vacationInfo.LeftLength}天"));
 					// TODO 改成可以自定义设置天数
 					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
-					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.Default);
+					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.Default);
 					break;
 
 				case "事假":
@@ -102,7 +102,7 @@ namespace BLL.Services.ApplyServices
 					break;
 
 				default:
-					throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.InvalidVocationType);
+					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVocationType);
 			}
 			// TODO 改成可以自定义是否允许跨年
 			//if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
@@ -200,10 +200,10 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.Auditing || model.Status == AuditStatus.AcceptAndWaitAdmin)
 						{
-							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
+							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
 						}
-						else if (model.Status == AuditStatus.Denied) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Withdrew.AuditBeenDenied);
-						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnAuditingStatus);
+						else if (model.Status == AuditStatus.Denied) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Withdrew.AuditBeenDenied);
+						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnAuditingStatus);
 						break;//撤回
 					}
 				case AuditStatus.NotPublish:
@@ -211,7 +211,7 @@ namespace BLL.Services.ApplyServices
 						if (model.Status == AuditStatus.NotSave)
 						{
 						}
-						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnNotSaveStatus);
+						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnNotSaveStatus);
 						break;//保存
 					}
 				case AuditStatus.Auditing:
@@ -220,11 +220,11 @@ namespace BLL.Services.ApplyServices
 						{
 							model.NowAuditStep = model.ApplyAllAuditStep.FirstOrDefault();
 						}
-						else throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.StatusInvalid.NotOnPublishable);
+						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnPublishable);
 
 						break;//发布
 					}
-				default: throw new ActionStatusMessageException(ActionStatusMessage.Apply.Operation.Invalid); ;//不支持其他
+				default: throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Invalid); ;//不支持其他
 			}
 
 			model.Status = status;
@@ -256,14 +256,14 @@ namespace BLL.Services.ApplyServices
 		/// <returns></returns>
 		private ApiResult AuditSingle(ApplyAuditNodeVdto model, User AuditUser)
 		{
-			if (model.Apply == null) return ActionStatusMessage.Apply.NotExist;
+			if (model.Apply == null) return ActionStatusMessage.ApplyMessage.NotExist;
 			var nowStep = model.Apply.NowAuditStep;
 			List<ApplyAuditStep> allStep = new List<ApplyAuditStep>(model.Apply.ApplyAllAuditStep);
 			// 审批未发布时 不可进行审批
-			if (nowStep == null) return ActionStatusMessage.Apply.Operation.Audit.BeenAuditOrNotReceived;
+			if (nowStep == null) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAuditOrNotReceived;
 			// 待审批人无当前用户时，返回无效
-			if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.NoYourAuditStream;
-			if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.Apply.Operation.Audit.BeenAudit;
+			if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.NoYourAuditStream;
+			if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAudit;
 			// 当审批的申请为未发布的申请时，将其发布
 			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);

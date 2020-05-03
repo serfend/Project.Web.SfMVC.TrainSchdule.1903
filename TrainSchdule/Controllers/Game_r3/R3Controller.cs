@@ -57,7 +57,7 @@ namespace TrainSchdule.Controllers.Game_r3
 			}
 			else
 			{
-				return new JsonResult(ActionStatusMessage.User.NotExist);
+				return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		public async Task<IActionResult> HandleCode(string userid, string code)
 		{
 			var u = await gameR3Services.UpdateUser(new DAL.Entities.Game_r3.User() { GameId = userid });
-			if (u.NickName == null) return new JsonResult(ActionStatusMessage.User.NotExist);
+			if (u.NickName == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var c = await gameR3Services.ShareCode(u.User, new DAL.Entities.Game_r3.GiftCode() { Code = code });
 			var r = await gameR3Services.HandleCode(u.User, c);
 			return new JsonResult(r.StatusDescription == null ? ActionStatusMessage.Success : new ApiResult() { Message = r.StatusDescription, Status = -1 });
@@ -142,7 +142,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		public async Task<IActionResult> GiftCodeHistory(string userid, string code, int pageIndex = 0, int pageSize = 20)
 		{
 			pageSize = pageSize > 20 ? 20 : pageSize <= 0 ? 1 : pageSize;
-			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.User.Default);
+			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.UserMessage.Default);
 			var list = await r3UsersServices.GainGiftCodeHistory(userid, code, pageIndex, pageSize).ConfigureAwait(true);
 			return new JsonResult(new UserGiftCodeGainHistoryViewModel()
 			{
@@ -166,7 +166,7 @@ namespace TrainSchdule.Controllers.Game_r3
 		public async Task<IActionResult> Members(int pageIndex = 0, int pageSize = 20)
 		{
 			pageSize = pageSize > 20 ? 20 : pageSize;
-			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.User.Default);
+			if (pageSize <= 0) return new JsonResult(ActionStatusMessage.UserMessage.Default);
 			var users = await r3UsersServices.Members(pageIndex, pageSize).ConfigureAwait(true);
 			return new JsonResult(new UsersViewModel()
 			{

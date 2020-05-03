@@ -52,7 +52,7 @@ namespace TrainSchdule.Crontab
 		public void Run()
 		{
 			var rootCompany = _context.Companies.Find(CompanyCode);
-			if (rootCompany == null) throw new ActionStatusMessageException(ActionStatusMessage.Company.NotExist);
+			if (rootCompany == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var statistics = new VocationStatistics()
 			{
 				Start = Start,
