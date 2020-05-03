@@ -58,7 +58,7 @@ namespace BLL.Helpers
 			return Convert.ToBase64String(signatureBytes);
 		}
 
-		#endregion
+		#endregion 使用私钥签名
 
 		#region 使用公钥验证签名
 
@@ -78,7 +78,7 @@ namespace BLL.Helpers
 			return verify;
 		}
 
-		#endregion
+		#endregion 使用公钥验证签名
 
 		#region 解密
 
@@ -93,16 +93,16 @@ namespace BLL.Helpers
 			try
 			{
 				var dec = _privateKeyRsaProvider.Decrypt(Convert.FromBase64String(cipherText), RSAEncryptionPadding.Pkcs1);
-				result= Encoding.UTF8.GetString(dec);
+				result = Encoding.UTF8.GetString(dec);
 			}
-			catch (Exception )
+			catch (Exception)
 			{
 				return null;
 			}
 			return result;
 		}
 
-		#endregion
+		#endregion 解密
 
 		#region 加密
 
@@ -115,7 +115,7 @@ namespace BLL.Helpers
 			return Convert.ToBase64String(_publicKeyRsaProvider.Encrypt(Encoding.UTF8.GetBytes(text), RSAEncryptionPadding.Pkcs1));
 		}
 
-		#endregion
+		#endregion 加密
 
 		#region 使用私钥创建RSA实例
 
@@ -160,7 +160,7 @@ namespace BLL.Helpers
 			return rsa;
 		}
 
-		#endregion
+		#endregion 使用私钥创建RSA实例
 
 		#region 使用公钥创建RSA实例
 
@@ -253,15 +253,14 @@ namespace BLL.Helpers
 
 					return rsa;
 				}
-
 			}
 		}
 
-		#endregion
+		#endregion 使用公钥创建RSA实例
 
 		#region 导入密钥算法
 
-		private int GetIntegerSize(BinaryReader binr)
+		private static int GetIntegerSize(BinaryReader binr)
 		{
 			byte bt = 0;
 			int count = 0;
@@ -293,7 +292,7 @@ namespace BLL.Helpers
 			return count;
 		}
 
-		private bool CompareBytearrays(byte[] a, byte[] b)
+		private static bool CompareBytearrays(byte[] a, byte[] b)
 		{
 			if (a.Length != b.Length)
 				return false;
@@ -307,8 +306,7 @@ namespace BLL.Helpers
 			return true;
 		}
 
-		#endregion
-
+		#endregion 导入密钥算法
 	}
 
 	/// <summary>
@@ -320,6 +318,7 @@ namespace BLL.Helpers
 		/// SHA1
 		/// </summary>
 		RSA = 0,
+
 		/// <summary>
 		/// RSA2 密钥长度至少为2048
 		/// SHA256
