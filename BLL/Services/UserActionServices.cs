@@ -1,6 +1,8 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Extensions.CreateClientInfo;
+using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
+using DAL.Entities.Common;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
@@ -30,18 +32,13 @@ namespace BLL.Services
 		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
 		{
 			var context = _httpContextAccessor.HttpContext;
-			var ua = new UserAction()
-			{
-				Date = DateTime.Now,
-				Device = context.Request.Headers["Device"],
-				UA = context.Request.Headers["User-Agent"],
-				Operation = operation,
-				UserName = username,
-				Ip = context.Connection.RemoteIpAddress.ToString(),
-				Success = success,
-				Description = description,
-				Rank = rank
-			};
+			var ua = context.ClientInfo<UserAction>();
+			ua.Date = DateTime.Now;
+			ua.Operation = operation;
+			ua.UserName = username;
+			ua.Success = success;
+			ua.Description = description;
+			ua.Rank = rank;
 			_context.UserActions.Add(ua);
 			_context.SaveChanges();
 			return ua;
@@ -61,7 +58,7 @@ namespace BLL.Services
 				var uc = u.CompanyInfo;
 				var ud = uc.Duties.IsMajorManager;
 				var ucmp = uc.Company.Code;
-				if (targetUserCompanyCode.StartsWith(ucmp) && ud)
+				if ((targetUserCompanyCode == null || targetUserCompanyCode.StartsWith(ucmp)) && ud)
 				{
 					Status(a, true, $"成功-单位主官-授权到{targetUserCompanyCode}执行{key?.Name} ");
 					return true;
@@ -69,7 +66,8 @@ namespace BLL.Services
 				else
 				{
 					var cmps = userServiceDetail.InMyManage(u, out var totalCount);
-					if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code)))
+					if (targetUserCompanyCode == null && totalCount > 0) return true;
+					else if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code)))
 					{
 						Status(a, true, $"成功-单位管理-授权到{targetUserCompanyCode}执行{key?.Name}");
 						return true;

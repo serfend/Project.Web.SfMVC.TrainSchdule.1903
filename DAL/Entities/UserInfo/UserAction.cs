@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DAL.Entities.Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ namespace DAL.Entities.UserInfo
 		Disaster = 0
 	}
 
-	public class UserAction : BaseEntity
+	public class UserAction : BaseEntity, ICreateClientInfo
 	{
 		public string UserName { get; set; }
 
@@ -34,21 +35,6 @@ namespace DAL.Entities.UserInfo
 		public DateTime Date { get; set; }
 
 		/// <summary>
-		/// 操作时使用的ip
-		/// </summary>
-		public string Ip { get; set; }
-
-		/// <summary>
-		/// 通过接口类型判断用户所用的终端类型
-		/// </summary>
-		public string Device { get; set; }
-
-		/// <summary>
-		/// 用户浏览器UserAgent
-		/// </summary>
-		public string UA { get; set; }
-
-		/// <summary>
 		/// 操作是否成功
 		/// </summary>
 		public bool Success { get; set; }
@@ -57,6 +43,10 @@ namespace DAL.Entities.UserInfo
 		/// 操作描述
 		/// </summary>
 		public string Description { get; set; }
+
+		public string Ip { get; set; }
+		public string Device { get; set; }
+		public string UA { get; set; }
 	}
 
 	public enum UserOperation
