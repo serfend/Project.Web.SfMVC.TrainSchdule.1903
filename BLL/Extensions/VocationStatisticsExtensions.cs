@@ -58,8 +58,8 @@ namespace BLL.Extensions
 			{
 				MembersCount++;
 				var history = member.SocialInfo?.Settle?.PrevYealyLengthHistory;
-				var memberYearlyLength = (int) history?.OrderByDescending(rec => rec.UpdateDate).FirstOrDefault()?.Length;
-				
+				var memberYearlyLength = ((int?)history?.OrderByDescending(rec => rec.UpdateDate).FirstOrDefault()?.Length) ?? 0;
+
 				CompleteVocationExpectDayCount += memberYearlyLength; // 单位全年应休假天数
 				var membersApplies = context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == member.Id && a.Create.Value.Year == currentYear);
 				//全年休假天数
