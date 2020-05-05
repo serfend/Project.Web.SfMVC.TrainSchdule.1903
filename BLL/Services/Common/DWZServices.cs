@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BLL.Services.Common
 {
@@ -27,12 +28,12 @@ namespace BLL.Services.Common
 			this.httpContextAccessor = httpContextAccessor;
 		}
 
-		public ShortUrl Create(User createBy, string target, DateTime Expire, string key)
+		public async Task<ShortUrl> Create(User createBy, string target, DateTime Expire, string key)
 		{
 			if (target == null) throw new ArgumentNullException(nameof(target));
 			if (createBy == null) throw new ArgumentNullException(nameof(createBy));
 			if (key != null && key.Length > 255) throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceOutofSize);
-			var checkExist = Load(key);
+			var checkExist = await Load(key).ConfigureAwait(true);
 			if (checkExist != null) throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceAllReadyExist);
 			var httpContext = httpContextAccessor.HttpContext;
 			var m = httpContext.ClientInfo<ShortUrl>();
@@ -49,45 +50,51 @@ namespace BLL.Services.Common
 				{
 					var s1 = sha1.ComputeHash(Encoding.UTF8.GetBytes(target));
 					result = BitConverter.ToString(s1).Replace("-", "").ToLower().Substring(0, 6);
-					checkExist = Load(result);
+					checkExist = await Load(result).ConfigureAwait(true);
 					if (checkExist != null)
 					{
 						if (checkExist.Target == target) return checkExist;
 						else throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceAllReadyExist);
 					}
 				};
-
 				m.Key = result;
 			}
-			context.CommonShortUrl.Add(m);
-			context.SaveChanges();
+			await Task.Run(() =>
+			{
+				context.CommonShortUrl.Add(m);
+				context.SaveChanges();
+			}).ConfigureAwait(false);
+
 			return m;
 		}
 
-		public string Open(ShortUrl model, User ViewUser)
+		public async Task<string> Open(ShortUrl model, User ViewUser)
 		{
 			if (model == null) return null;
-			var open = httpContextAccessor.HttpContext.ClientInfo<ShortUrlStatistics>();
-			open.Create = DateTime.Now;
-			open.Url = model;
-			open.ViewBy = ViewUser;
-			context.CommonShortUrlStatistics.Add(open);
-			context.SaveChanges();
+			await Task.Run(() =>
+			{
+				var open = httpContextAccessor.HttpContext.ClientInfo<ShortUrlStatistics>();
+				open.Create = DateTime.Now;
+				open.Url = model;
+				open.ViewBy = ViewUser;
+				context.CommonShortUrlStatistics.Add(open);
+				context.SaveChanges();
+			}).ConfigureAwait(true);
 			return model.Target;
 		}
 
-		public ShortUrl Load(string key)
+		public async Task<ShortUrl> Load(string key)
 		{
 			if (key.IsNullOrEmpty()) return null;
 			var m = context.CommonShortUrlDb.Where(c => c.Key == key).FirstOrDefault();
-			return m;
+
+			return await Task.FromResult<ShortUrl>(m).ConfigureAwait(true);
 		}
 
-		public IEnumerable<ShortUrl> Query(QueryDwzViewModel model, out int totalCount)
+		public async Task<Tuple<IEnumerable<ShortUrl>, int>> Query(QueryDwzViewModel model)
 		{
 			if (model == null)
 			{
-				totalCount = 0;
 				return null;
 			}
 			var res = context.CommonShortUrlDb;
@@ -97,34 +104,34 @@ namespace BLL.Services.Common
 			if (model.Key != null) res = res.Where(s => s.Key == model.Key.Value);
 			if (model.Target != null) res = res.Where(s => s.Target.Contains(model.Target.Value));
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
-
-			res = res.SplitPage(model.Pages, out totalCount);
-			return res.ToList();
+			res = res.OrderByDescending(s => s.Create);
+			var result = await res.SplitPage(model.Pages).ConfigureAwait(true);
+			return new Tuple<IEnumerable<ShortUrl>, int>(result.Item1, result.Item2);
 		}
 
-		public void Remove(ShortUrl model)
+		public async Task Remove(ShortUrl model)
 		{
 			if (model == null) return;
 			model.Remove();
 			context.CommonShortUrl.Update(model);
-			context.SaveChanges();
+			await Task.Run(() =>
+			{
+				context.SaveChanges();
+			}).ConfigureAwait(true);
 		}
 
-		public IEnumerable<ShortUrlStatistics> QueryStatistics(ShortUrl shortUrl, QueryDwzStatisticsViewModel model, out int totalCount)
+		public async Task<Tuple<IEnumerable<ShortUrlStatistics>, int>> QueryStatistics(ShortUrl shortUrl, QueryDwzStatisticsViewModel model)
 		{
 			if (model == null)
-			{
-				totalCount = 0;
 				return null;
-			}
 			var res = context.CommonShortUrlStatistics.Where(s => s.Url.Id == shortUrl.Id);
 			if (model.Create != null) res = res.Where(s => s.Create > model.Create.Start).Where(s => s.Create < model.Create.End);
 			if (model.ViewBy != null) res = res.Where(s => s.ViewBy.Id == model.ViewBy.Value);
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
-
-			res = res.SplitPage(model.Pages, out totalCount);
-			return res.ToList();
+			res = res.OrderByDescending(s => s.Create);
+			var result = await res.SplitPage(model.Pages).ConfigureAwait(true);
+			return await Task.FromResult(new Tuple<IEnumerable<ShortUrlStatistics>, int>(result.Item1.ToList(), result.Item2)).ConfigureAwait(true);
 		}
 	}
 }

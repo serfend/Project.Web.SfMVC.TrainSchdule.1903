@@ -50,12 +50,13 @@ namespace TrainSchdule.Controllers
 		[Route("s/{url}")]
 		[AllowAnonymous]
 		[HttpGet]
-		public IActionResult RedirectDwz([FromRoute]string url)
+		public async Task<IActionResult> RedirectDwz([FromRoute]string url)
 		{
-			var m = dWZServices.Load(url);
-			var c = currentUserService.CurrentUser;
+			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
-			return Redirect(dWZServices.Open(m, c));
+			var c = currentUserService.CurrentUser;
+			dWZServices.Open(m, c);
+			return Redirect(m.Target);
 		}
 
 		/// <summary>
@@ -65,10 +66,10 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[Route("s/{url}")]
 		[HttpDelete]
-		public IActionResult RemoveDwz([FromRoute] string url)
+		public async Task<IActionResult> RemoveDwz([FromRoute] string url)
 		{
 			var c = currentUserService.CurrentUser;
-			var m = dWZServices.Load(url);
+			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
 			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.Company.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -83,9 +84,11 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[Route("Static/ShortUrl/Query")]
 		[HttpPost]
-		public IActionResult QueryDwz([FromBody]QueryDwzViewModel model)
+		public async Task<IActionResult> QueryDwz([FromBody]QueryDwzViewModel model)
 		{
-			var list = dWZServices.Query(model, out var totalCount);
+			var result = await dWZServices.Query(model).ConfigureAwait(true);
+			var list = result.Item1;
+			var totalCount = result.Item2;
 			return new JsonResult(new ShortUrlsViewModel()
 			{
 				Data = new ShortUrlsDataModel()
@@ -103,14 +106,14 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("Static/ShortUrl/Create")]
-		public IActionResult Create([FromBody]ShortUrlCreateDataModel model)
+		public async Task<IActionResult> Create([FromBody]ShortUrlCreateDataModel model)
 		{
 			var c = currentUserService.CurrentUser;
 			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Create, c.Id, null);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			try
 			{
-				var m = dWZServices.Create(c, model.Target, model.Expire, model.Key);
+				var m = await dWZServices.Create(c, model.Target, model.Expire, model.Key).ConfigureAwait(true);
 				return new JsonResult(new ShortUrlViewModel()
 				{
 					Data = m.ToDataModel()
@@ -130,13 +133,15 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[Route("s/{key}/Statistics")]
 		[HttpPost]
-		public IActionResult QueryStatistics([FromRoute] string key, [FromBody]QueryDwzStatisticsViewModel model)
+		public async Task<IActionResult> QueryStatistics([FromRoute] string key, [FromBody]QueryDwzStatisticsViewModel model)
 		{
 			var c = currentUserService.CurrentUser;
-			var m = dWZServices.Load(key);
+			var m = await dWZServices.Load(key).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
 			if (!userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Query, c.Id, m.CreateBy.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var statistics = dWZServices.QueryStatistics(m, model, out var totalCount);
+			var result = await dWZServices.QueryStatistics(m, model).ConfigureAwait(true);
+			var statistics = result.Item1;
+			var totalCount = result.Item2;
 			return new JsonResult(new ShortUrlStatisticsViewModel()
 			{
 				Data = new ShortUrlStatisticsDataModel()
