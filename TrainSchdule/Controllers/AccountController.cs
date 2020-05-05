@@ -97,7 +97,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult UserAction(int page, int pageSize = 20)
 		{
 			var currentUser = currentUserService.CurrentUser;
-			var list = _context.UserActions.Where(u => u.UserName == currentUser.Id);
+			var list = _context.UserActionsDb.Where(u => u.UserName == currentUser.Id);
 			var count = list.Count();
 			list = list.Skip(page * pageSize).Take(pageSize);
 			return new JsonResult(new UserActionViewModel()

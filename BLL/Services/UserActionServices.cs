@@ -82,7 +82,7 @@ namespace BLL.Services
 			return await Task.Run(() =>
 			{
 				if (model == null) return null;
-				var r = _context.UserActions.AsQueryable();
+				var r = _context.UserActionsDb.AsQueryable();
 				if (model.UserName?.Value != null) r = r.Where(h => h.UserName == (model.UserName.Value));
 				if (model.Date?.Start != null && model.Date?.End != null)
 				{

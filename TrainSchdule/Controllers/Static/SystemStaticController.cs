@@ -1,4 +1,5 @@
 ﻿using BLL.Helpers;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -137,13 +138,36 @@ namespace TrainSchdule.Controllers
 		{
 			var location = _context.AdminDivisions.Find(code);
 			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
-			var list = _context.AdminDivisions.Where(a => a.ParentCode == code);
-			var totalCount = list.Count();
+			var u = _currentUserService.CurrentUser;
+			var list = _context.AdminDivisions.Where(a => a.ParentCode == code).ToList();
+			var result = new List<AdminDivision>(list.Count);
+			// 根据当前登录用户的家庭情况选择顺序
+			if (u != null)
+			{
+				var firstResult = new List<AdminDivision>(4);
+				var uSettle = u.SocialInfo.Settle;
+				var uSelf = uSettle?.Self?.Address?.Code ?? -1;
+				var uParent = uSettle?.Parent?.Address?.Code ?? -1;
+				var uLover = uSettle?.Lover?.Address?.Code ?? -1;
+				var uLoverParent = uSettle?.LoversParent?.Address?.Code ?? -1;
+				var targets = new List<int>() { uSelf, uParent, uLover, uLoverParent };
+				foreach (var l in list)
+				{
+					if (targets.Any(c => c - l.Code < 10000)) firstResult.Add(l);
+					else result.Add(l);
+				}
+				if (firstResult.Count > 0)
+				{
+					firstResult.AddRange(result);
+					result = firstResult;
+				}
+			}
+			var totalCount = result.Count;
 			return new JsonResult(new LocationChildrenViewModel()
 			{
 				Data = new LocationChildrenDataModel()
 				{
-					List = list.Select(t => t.ToDataModel()),
+					List = result.Select(t => t.ToDataModel()),
 					TotalCount = totalCount
 				}
 			});

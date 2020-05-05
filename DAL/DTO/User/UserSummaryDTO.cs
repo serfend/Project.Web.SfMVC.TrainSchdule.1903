@@ -75,8 +75,6 @@ namespace DAL.DTO.User
 		/// </summary>
 		public DateTime? UserTitleDate { get; set; }
 
-		public UserAction LastLogin { get; set; }
-
 		/// <summary>
 		/// 邀请人
 		/// </summary>

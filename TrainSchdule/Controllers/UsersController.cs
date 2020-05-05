@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions.Users;
+using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
 using static BLL.Services.UsersService;
@@ -214,10 +215,31 @@ namespace TrainSchdule.Controllers
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (result != null) return result;
 			var data = targetUser.ToSummaryDto();
-			data.LastLogin = _context.UserActions.Where(u => u.UserName == id).Where(u => u.Operation == UserOperation.Login).Where(u => u.Success == true).OrderByDescending(u => u.Date).FirstOrDefault();
 			return new JsonResult(new UserSummaryViewModel()
 			{
 				Data = data
+			});
+		}
+
+		/// <summary>
+		/// 上次登录
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[AllowAnonymous]
+		[HttpGet]
+		public IActionResult LastLogin(string id)
+		{
+			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (result != null) return result;
+			var data = _context.UserActionsDb.Where(u => u.UserName == id).Where(u => u.Operation == UserOperation.Login).Where(u => u.Success == true).OrderByDescending(u => u.Date).ToList();
+			return new JsonResult(new UserActionReportViewModel()
+			{
+				Data = new UserActionDataModel()
+				{
+					List = data,
+					TotalCount = data.Count
+				}
 			});
 		}
 

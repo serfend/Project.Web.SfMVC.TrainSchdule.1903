@@ -68,6 +68,12 @@ namespace DAL.Data
 
 		public DbSet<Subject> Subjects { get; set; }
 		public DbSet<Standard> Standards { get; set; }
+
+		/// <summary>
+		/// 近90天的数据
+		/// </summary>
+		public IQueryable<UserAction> UserActionsDb { get => UserActions.Where(u => u.Date > DateTime.Today.AddDays(-90)); }
+
 		public DbSet<UserAction> UserActions { get; set; }
 
 		public DbSet<Post> Posts { get; set; }
@@ -108,6 +114,7 @@ namespace DAL.Data
 		{
 			base.OnModelCreating(builder);
 			builder.Entity<ShortUrl>().HasIndex(s => s.Key);
+			builder.Entity<UserAction>().HasIndex(s => s.Date);
 		}
 
 		#endregion Logic
