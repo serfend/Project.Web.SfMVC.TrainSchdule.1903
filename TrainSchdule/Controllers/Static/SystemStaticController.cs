@@ -162,6 +162,8 @@ namespace TrainSchdule.Controllers
 					result = firstResult;
 				}
 			}
+			else
+				result = list;
 			var totalCount = result.Count;
 			return new JsonResult(new LocationChildrenViewModel()
 			{
