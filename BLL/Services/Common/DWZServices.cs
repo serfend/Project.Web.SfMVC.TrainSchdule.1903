@@ -71,15 +71,12 @@ namespace BLL.Services.Common
 		public async Task<string> Open(ShortUrl model, User ViewUser)
 		{
 			if (model == null) return null;
-			await Task.Run(() =>
-			{
-				var open = httpContextAccessor.HttpContext.ClientInfo<ShortUrlStatistics>();
-				open.Create = DateTime.Now;
-				open.Url = model;
-				open.ViewBy = ViewUser;
-				context.CommonShortUrlStatistics.Add(open);
-				context.SaveChanges();
-			}).ConfigureAwait(true);
+			var open = httpContextAccessor.HttpContext.ClientInfo<ShortUrlStatistics>();
+			open.Create = DateTime.Now;
+			open.Url = model;
+			open.ViewBy = ViewUser;
+			context.CommonShortUrlStatistics.Add(open);
+			await context.SaveChangesAsync().ConfigureAwait(true);
 			return model.Target;
 		}
 
@@ -114,10 +111,7 @@ namespace BLL.Services.Common
 			if (model == null) return;
 			model.Remove();
 			context.CommonShortUrl.Update(model);
-			await Task.Run(() =>
-			{
-				context.SaveChanges();
-			}).ConfigureAwait(true);
+			await context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
 		public async Task<Tuple<IEnumerable<ShortUrlStatistics>, int>> QueryStatistics(ShortUrl shortUrl, QueryDwzStatisticsViewModel model)

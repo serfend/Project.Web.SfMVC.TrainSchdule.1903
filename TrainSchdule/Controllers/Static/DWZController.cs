@@ -1,11 +1,14 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.Common;
+using BLL.Services.Common;
 using DAL.Entities;
+using DAL.Entities.Common;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,17 +49,24 @@ namespace TrainSchdule.Controllers
 		/// 短网址
 		/// </summary>
 		/// <param name="url"></param>
+		/// <param name="dwzInnerServices"></param>
 		/// <returns></returns>
 		[Route("s/{url}")]
 		[AllowAnonymous]
 		[HttpGet]
-		public async Task<IActionResult> RedirectDwz([FromRoute]string url)
+		public async Task<IActionResult> RedirectDwz([FromRoute]string url, [FromServices] IDWZServices dwzInnerServices)
 		{
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
-			var c = currentUserService.CurrentUser;
-			dWZServices.Open(m, c);
+			// Record(m); // 此处异步不会等待，所以服务器直接返回的同时把db清理了，导致Record方法报错
+			dwzInnerServices.Open(m, currentUserService.CurrentUser);
 			return Redirect(m.Target);
+		}
+
+		private async Task Record(ShortUrl m)
+		{
+			var c = currentUserService.CurrentUser;
+			await dWZServices.Open(m, c).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -73,7 +83,7 @@ namespace TrainSchdule.Controllers
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
 			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.Company.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			dWZServices.Remove(m);
+			await dWZServices.Remove(m).ConfigureAwait(false);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
