@@ -61,10 +61,54 @@ namespace DAL.Entities.ApplyInfo
 		AcceptAndWaitAdmin = 50,
 		Denied = 75,
 		Accept = 100,
+		Cancel = 120
+	}
+
+	public class ActionByUserItem
+	{
+		public ActionByUserItem(string name, string alias, string type, string description)
+		{
+			Name = name;
+			Alias = alias;
+			Type = type;
+			Description = description;
+		}
+
+		/// <summary>
+		/// 按钮id
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// 按钮名称
+		/// </summary>
+		public string Alias { get; set; }
+
+		/// <summary>
+		/// 按钮类型
+		/// </summary>
+		public string Type { get; set; }
+
+		/// <summary>
+		/// 描述
+		/// </summary>
+		public string Description { get; set; }
 	}
 
 	public class AuditStatusMessage
 	{
+		public AuditStatusMessage()
+		{
+		}
+
+		public AuditStatusMessage(int code, string message, string desc, string color)
+		{
+			Code = code;
+			Message = message;
+			Desc = desc;
+			Color = color;
+		}
+
 		public int Code { get; set; }
 		public string Message { get; set; }
 		public string Desc { get; set; }

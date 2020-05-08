@@ -88,7 +88,8 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
-					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic
+					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic,
+					Actions = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.ActionDic
 				}
 			});
 		}

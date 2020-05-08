@@ -223,6 +223,14 @@ namespace BLL.Services.ApplyServices
 
 						break;//发布
 					}
+				case AuditStatus.Cancel:
+					{
+						if (model.Status == AuditStatus.Accept)
+						{
+						}
+						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnAccept);
+						break; // 作废
+					}
 				default: throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Invalid); ;//不支持其他
 			}
 

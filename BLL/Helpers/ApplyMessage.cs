@@ -43,6 +43,7 @@ namespace BLL.Helpers
 					public static readonly ApiResult NotOnAuditingStatus = new ApiResult(43520, "当前申请不处于审核中状态");
 					public static readonly ApiResult NotOnNotSaveStatus = new ApiResult(43530, "当前申请不处于未保存状态");
 					public static readonly ApiResult CanNotDelete = new ApiResult(43540, "当前申请已受理，不可删除");
+					public static readonly ApiResult NotOnAccept = new ApiResult(43550, "当前申请不处于已通过状态");
 				}
 
 				public static class Audit

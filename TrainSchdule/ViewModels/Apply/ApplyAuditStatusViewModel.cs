@@ -24,5 +24,10 @@ namespace TrainSchdule.ViewModels.Apply
 		///
 		/// </summary>
 		public Dictionary<int, AuditStatusMessage> List { get; set; }
+
+		/// <summary>
+		/// 用户操作
+		/// </summary>
+		public Dictionary<string, ActionByUserItem> Actions { get; set; }
 	}
 }

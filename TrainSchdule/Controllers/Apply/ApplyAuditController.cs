@@ -78,6 +78,27 @@ namespace TrainSchdule.Controllers.Apply
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
+		/// <summary>
+		/// 作废申请
+		/// </summary>
+		/// <param name="id">申请的id</param>
+		/// <returns></returns>
+		[HttpPut]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), 0)]
+		public IActionResult Cancel(string id)
+		{
+			try
+			{
+				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Cancel));
+			}
+			catch (ActionStatusMessageException e)
+			{
+				return new JsonResult(e.Status);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
 		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply> callBack)
 		{
 			Guid.TryParse(id, out var gid);
