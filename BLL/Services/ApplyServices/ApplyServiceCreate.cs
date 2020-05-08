@@ -200,7 +200,6 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.Auditing || model.Status == AuditStatus.AcceptAndWaitAdmin)
 						{
-							if (model.Response.Any(r => r.Status == Auditing.Accept)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Withdrew.AuditBeenAcceptedByOneCompany);
 						}
 						else if (model.Status == AuditStatus.Denied) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Withdrew.AuditBeenDenied);
 						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnAuditingStatus);

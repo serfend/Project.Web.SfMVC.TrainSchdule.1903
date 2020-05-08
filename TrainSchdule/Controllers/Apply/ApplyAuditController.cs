@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using BLL.Helpers;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -84,15 +85,12 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.NotExist);
 			var currentUser = _currentUserService.CurrentUser;
 			if (currentUser == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var action = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.CreateApply, apply.BaseInfo.From.Id, $"通过{currentUser.BaseInfo?.RealName}:{currentUser.Id}操作申请状态");
+
 			if (apply.BaseInfo.From.Id != currentUser?.Id)
 			{
-				// 当不是本人时，如果本级管理则也可以操作
-				var targetUserCompanyParentCode = apply.BaseInfo.From.CompanyInfo.Company.Code;
-				var currentUserManages = _usersService.InMyManage(currentUser, out var totalCount);
-				if (currentUserManages.All(c => c.Code != targetUserCompanyParentCode)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default); ;
+				var permit = _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code);
+				if (!permit) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			_userActionServices.Status(action, true);
 			callBack.Invoke(apply);
 		}
 
