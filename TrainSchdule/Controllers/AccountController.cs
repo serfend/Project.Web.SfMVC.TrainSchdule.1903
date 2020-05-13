@@ -241,21 +241,31 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
 		{
-			var currentUser = currentUserService.CurrentUser;
+			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
+
+			// 身份证转id
 			var cid = model.Id;
 			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
+
+			// 目标用户权限判断
+			var currentUser = currentUserService.CurrentUser;
 			var targetUser = _usersService.Get(model?.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var authUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authUser = currentUser;
 			bool authUserPermission = false;
-			if (authUser != null)
+			if (model.Auth.AuthByUserID != null)
 			{
+				authUser = _usersService.Get(model.Auth.AuthByUserID);
+				if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				// 允许本人修改本人密码，允许本级以上修改密码
-				authUserPermission = authUser.Id == model.Id || _userActionServices.Permission((authUser ?? currentUser).Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
+				authUserPermission = authUser.Id == model.Id;
 			}
-			if (model.Id != currentUser?.Id && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
+			if (authUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			authUserPermission |= _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
+			if (!authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+
+			// 密码修改判断
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 
 			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(cid, model.ConfirmNewPassword);
@@ -271,7 +281,7 @@ namespace TrainSchdule.Controllers
 			_context.Users.Update(appUser);
 			targetUser.BaseInfo.PasswordModefy = true;
 			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync().ConfigureAwait(false);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -322,16 +332,10 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(Image), 0)]
 		public IActionResult AuthKey()
 		{
-			var qrCoder = new MessagingToolkit.QRCode.Codec.QRCodeEncoder();
 			var realName = currentUserService.CurrentUser?.BaseInfo?.RealName;
 			if (realName == null || realName.Length == 0) realName = null;
-			var image = qrCoder.Encode(_authService.Init(currentUserService.CurrentUser?.Id)?.Main?.QrCodeUrl(realName));
-			using (var ms = new MemoryStream())
-			{
-				image.Save(ms, ImageFormat.Png);
-				var img = ms.GetBuffer();
-				return new JsonResult(new { data = new { url = img }, status = 0 });
-			}
+			var url = _authService.Init(currentUserService.CurrentUser?.Id)?.Main?.QrCodeUrl(realName);
+			return new JsonResult(new { data = new { url }, status = 0 });
 		}
 
 		/// <summary>
@@ -617,8 +621,6 @@ namespace TrainSchdule.Controllers
 			});
 		}
 
-		#endregion Rest
-
 		/// <summary>
 		/// 修改用户信息，只要当前登录的或者授权登录的为目标用户的上级，则可修改
 		/// </summary>
@@ -694,5 +696,7 @@ namespace TrainSchdule.Controllers
 			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
 			if (anyCodeInvalid != null) ModelState.AddModelError("家庭情况", $"无效的行政区划:{anyCodeInvalid}");
 		}
+
+		#endregion Rest
 	}
 }
