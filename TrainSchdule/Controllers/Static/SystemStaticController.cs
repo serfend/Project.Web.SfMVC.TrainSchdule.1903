@@ -140,6 +140,13 @@ namespace TrainSchdule.Controllers
 			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
 			var u = _currentUserService.CurrentUser;
 			var list = _context.AdminDivisions.Where(a => a.ParentCode == code).ToList();
+			int divider = 1;
+			while (divider < 1000000 && code % 10 == 0)
+			{
+				divider *= 10;
+				code /= 10;
+			}
+			divider /= 100;
 			var result = new List<AdminDivision>(list.Count);
 			// 根据当前登录用户的家庭情况选择顺序
 			if (u != null)
@@ -153,7 +160,11 @@ namespace TrainSchdule.Controllers
 				var targets = new List<int>() { uSelf, uParent, uLover, uLoverParent };
 				foreach (var l in list)
 				{
-					if (targets.Any(c => c - l.Code < 10000)) firstResult.Add(l);
+					if (targets.Any(c => Math.Abs(c - l.Code) < divider))
+					{
+						firstResult.Add(l);
+						HttpContext.Response.Headers["X-Priority"] += $" {l.Code}";
+					}
 					else result.Add(l);
 				}
 				if (firstResult.Count > 0)
