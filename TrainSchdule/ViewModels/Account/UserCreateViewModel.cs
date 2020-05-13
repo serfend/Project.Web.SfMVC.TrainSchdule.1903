@@ -74,7 +74,7 @@ namespace TrainSchdule.ViewModels.Account
 		/// 输入密码
 		/// </summary>
 		[Required(ErrorMessage = "未输入密码")]
-		[StringLength(32, ErrorMessage = "非法的{0}", MinimumLength = 8)]
+		[StringLength(32, ErrorMessage = "密码长度过短，需8位及以上", MinimumLength = 8)]
 		public string Password { get; set; }
 
 		/// <summary>
