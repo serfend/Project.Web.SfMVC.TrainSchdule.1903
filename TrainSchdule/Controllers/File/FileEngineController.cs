@@ -61,6 +61,20 @@ namespace TrainSchdule.Controllers.File
 		}
 
 		/// <summary>
+		/// 通过路径获取文件
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="filename"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<IActionResult> FromPath(string path, string filename)
+		{
+			var file = await Task.Run(() => { return fileServices.Load(path, filename); }).ConfigureAwait(true);
+			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			return await Download(file.Id.ToString()).ConfigureAwait(false);
+		}
+
+		/// <summary>
 		/// 获取指定文件的信息
 		/// </summary>
 		/// <param name="filepath"></param>
