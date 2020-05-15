@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Static;
@@ -183,6 +184,24 @@ namespace TrainSchdule.Controllers
 					List = result.Select(t => t.ToDataModel()),
 					TotalCount = totalCount
 				}
+			});
+		}
+
+		/// <summary>
+		/// 返回查询状态
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public IActionResult QueryStatus([FromBody]string content)
+		{
+			var request = HttpContext.Request;
+			return new JsonResult(new
+			{
+				Header = request.Headers,
+				Query = request.Query,
+				Cookies = request.Cookies,
+				Body = content,
+				Path = request.PathBase
 			});
 		}
 	}

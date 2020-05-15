@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels.Static;
 
 namespace TrainSchdule.Controllers
@@ -109,7 +110,7 @@ namespace TrainSchdule.Controllers
 					Data = new FileReturnDataModel()
 					{
 						FileName = fileName,
-						RequestUrl = $"/file/download?fileid={tmpFile.Id}",
+						RequestUrl = tmpFile.DownloadUrl(),
 						ValidStamp = DateTime.Now.Add(removeTime),
 						Length = tmpFile.Length
 					}

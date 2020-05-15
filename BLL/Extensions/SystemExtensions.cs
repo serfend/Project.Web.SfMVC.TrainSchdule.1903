@@ -38,17 +38,20 @@ namespace BLL.Extensions
 		/// <returns></returns>
 		public static string FromCipperToString(this string cipper, string username)
 		{
+			string md5Str = username.ToMd5();
+			var rsa = new RsaHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
+			var decryptStr = rsa.Decrypt(cipper);
+			if (decryptStr == null || decryptStr.Length <= md5Str.Length ||
+				DateTime.Now.ToString("yyyyMMdd") != decryptStr.Substring(0, 8) ||
+				decryptStr.Substring(decryptStr.Length - md5Str.Length, md5Str.Length) != md5Str) return null;
+			return decryptStr.Substring(8, decryptStr.Length - 8 - md5Str.Length);
+		}
+
+		public static string ToMd5(this string raw)
+		{
 			using (var md5 = MD5.Create())
 			{
-				var result = md5.ComputeHash(Encoding.UTF8.GetBytes(username));
-				var rawMd5 = BitConverter.ToString(result);
-				string md5Str = rawMd5.Replace("-", "");
-				var rsa = new RsaHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
-				var decryptStr = rsa.Decrypt(cipper);
-				if (decryptStr == null || decryptStr.Length <= md5Str.Length ||
-					DateTime.Now.ToString("yyyyMMdd") != decryptStr.Substring(0, 8) ||
-					decryptStr.Substring(decryptStr.Length - md5Str.Length, md5Str.Length) != md5Str.ToLower()) return null;
-				return decryptStr.Substring(8, decryptStr.Length - 8 - md5Str.Length);
+				return BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(raw))).Replace("-", "").ToLower();
 			}
 		}
 
