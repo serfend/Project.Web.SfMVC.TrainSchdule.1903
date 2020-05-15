@@ -152,14 +152,14 @@ namespace BLL.Services.ApplyServices
 			var usrCmp = user.CompanyInfo.Company.Code;
 			// 初始化审批流
 			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
-			if (rule == null) throw new NoAuditStreamRuleFitException();
+			if (rule == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist, "无合适规则", true));
 			model.ApplyAuditStreamSolutionRule = rule;
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
 				var n = _context.ApplyAuditStreamNodeActions.Where(a => a.Name == nStr).FirstOrDefault();
-				if (n == null) throw new NodeNotExistException($"无效的节点：{nStr}");
+				if (n == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist, $"无效的节点：{nStr}", true));
 
 				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
 				if (modelApplyAllAuditStep.Count > 0)
@@ -311,45 +311,5 @@ namespace BLL.Services.ApplyServices
 			_context.SaveChanges();
 			return ActionStatusMessage.Success;
 		}
-	}
-
-	[Serializable]
-	public class NoAuditStreamRuleFitException : Exception
-	{
-		public NoAuditStreamRuleFitException() : base("没有合适的审批流方案")
-		{
-		}
-
-		public NoAuditStreamRuleFitException(string message) : base(message)
-		{
-		}
-
-		public NoAuditStreamRuleFitException(string message, Exception inner) : base(message, inner)
-		{
-		}
-
-		protected NoAuditStreamRuleFitException(
-		  System.Runtime.Serialization.SerializationInfo info,
-		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-	}
-
-	[Serializable]
-	public class NodeNotExistException : Exception
-	{
-		public NodeNotExistException() : base("节点未找到")
-		{
-		}
-
-		public NodeNotExistException(string message) : base(message)
-		{
-		}
-
-		public NodeNotExistException(string message, Exception inner) : base(message, inner)
-		{
-		}
-
-		protected NodeNotExistException(
-		  System.Runtime.Serialization.SerializationInfo info,
-		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 	}
 }

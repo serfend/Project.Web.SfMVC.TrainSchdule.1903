@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities.ApplyInfo;
@@ -58,19 +59,12 @@ namespace BLL.Services.ApplyServices
 			if (item == null) return null;
 			_context.Applies.Add(item);
 			if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
-				DateTime.Now) return null;
+				DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
 			if (item.BaseInfo.From.Application.ApplicationSetting != null)
 				item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime = DateTime.Now;
 
 			_context.AppUsers.Update(item.BaseInfo.From);
 			_context.SaveChanges();
-			return item;
-		}
-
-		public async Task<Apply> CreateAsync(Apply item)
-		{
-			await _context.Applies.AddAsync(item).ConfigureAwait(true);
-			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return item;
 		}
 

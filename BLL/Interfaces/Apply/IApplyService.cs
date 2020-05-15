@@ -41,11 +41,6 @@ namespace BLL.Interfaces
 		/// </summary>
 		Apply Create(Apply item);
 
-		/// <summary>
-		/// 异步创建申请.
-		/// </summary>
-		Task<Apply> CreateAsync(Apply item);
-
 		bool Edit(string id, Action<Apply> editCallBack);
 
 		Task<bool> EditAsync(string id, Action<Apply> editCallBack);
