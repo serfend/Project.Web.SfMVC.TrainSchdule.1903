@@ -169,11 +169,11 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				apply = _applyService.Submit(dto);
 			}
-			catch (NoAuditStreamRuleFitException)
+			catch (ActionStatusMessageException ex)
 			{
-				return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NoAuditStreamRuleFit);
+				return new JsonResult(ex.Status);
 			}
-			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
+			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Default);
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
 			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
 			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
