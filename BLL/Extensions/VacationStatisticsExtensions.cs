@@ -1,14 +1,14 @@
 ﻿using DAL.Data;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BLL.Extensions
 {
-	public static class VocationStatisticsExtensions
+	public static class VacationStatisticsExtensions
 	{
 		public static void StatisticsInit(ref VacationStatisticsDescription model, ApplicationDbContext context, int currentYear, string statisticsId)
 		{
@@ -29,7 +29,7 @@ namespace BLL.Extensions
 
 		private static void CaculateCurrentLevel(ref VacationStatisticsDescription model, ApplicationDbContext context, int currentYear)
 		{
-			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
+			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVacationCount = 0, MembersVacationDayLessThanP60 = 0, CompleteVacationExpectDayCount = 0, CompleteVacationRealDayCount = 0;
 			foreach (var a in model.Applies)
 			{
 				if (a.Status == AuditStatus.NotPublish || a.Status == AuditStatus.NotSave || a.Status == AuditStatus.Withdrew) continue;
@@ -42,8 +42,8 @@ namespace BLL.Extensions
 					else if (a.Status == AuditStatus.Accept)
 					{
 						ApplyCountAccess++;
-						var stampReturn = a.RequestInfo.StampLeave.Value.AddDays(a.RequestInfo.VocationLength) > DateTime.Now ? DateTime.Now : a.RequestInfo.StampReturn.Value;//截止今日
-						CompleteVocationRealDayCount += stampReturn.Subtract(a.RequestInfo.StampLeave.Value).Days;//时间段内休假天数
+						var stampReturn = a.RequestInfo.StampLeave.Value.AddDays(a.RequestInfo.VacationLength) > DateTime.Now ? DateTime.Now : a.RequestInfo.StampReturn.Value;//截止今日
+						CompleteVacationRealDayCount += stampReturn.Subtract(a.RequestInfo.StampLeave.Value).Days;//时间段内休假天数
 					}
 					else
 					{
@@ -60,16 +60,16 @@ namespace BLL.Extensions
 				var history = member.SocialInfo?.Settle?.PrevYealyLengthHistory;
 				var memberYearlyLength = ((int?)history?.OrderByDescending(rec => rec.UpdateDate).FirstOrDefault()?.Length) ?? 0;
 
-				CompleteVocationExpectDayCount += memberYearlyLength; // 单位全年应休假天数
+				CompleteVacationExpectDayCount += memberYearlyLength; // 单位全年应休假天数
 				var membersApplies = context.AppliesDb.Where<Apply>(a => a.BaseInfo.From.Id == member.Id && a.Create.Value.Year == currentYear);
 				//全年休假天数
-				var memberCompleteVocation = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Accept ? a.RequestInfo.VocationLength : 0);
-				if (memberCompleteVocation >= memberYearlyLength) CompleteYearlyVocationCount++;
-				else if (memberCompleteVocation < 0.6f * memberYearlyLength) MembersVocationDayLessThanP60++;
+				var memberCompleteVacation = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Accept ? a.RequestInfo.VacationLength : 0);
+				if (memberCompleteVacation >= memberYearlyLength) CompleteYearlyVacationCount++;
+				else if (memberCompleteVacation < 0.6f * memberYearlyLength) MembersVacationDayLessThanP60++;
 
-				ApplySumDayCountAccess += memberCompleteVocation;
-				ApplySumDayCountDeny = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Denied ? a.RequestInfo.VocationLength : 0);
-				ApplySumDayCountAuditing = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Auditing ? a.RequestInfo.VocationLength : 0);
+				ApplySumDayCountAccess += memberCompleteVacation;
+				ApplySumDayCountDeny = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Denied ? a.RequestInfo.VacationLength : 0);
+				ApplySumDayCountAuditing = membersApplies.Sum<Apply>(a => a.Status == AuditStatus.Auditing ? a.RequestInfo.VacationLength : 0);
 
 				membersApplies = model.Applies.Where<Apply>(a => a.BaseInfo.From
 				  .Id == member.Id);
@@ -77,14 +77,14 @@ namespace BLL.Extensions
 				if (membersApplies.Any<Apply>(a => a.Status == AuditStatus.Denied)) ApplyMembersCountDeny++;
 				if (membersApplies.Any<Apply>(a => a.Status == AuditStatus.Auditing)) ApplyMembersCountAuditing++;
 			}
-			VocationStatisticsData tmp = null;
-			InputStatisticsData(ref tmp, ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVocationCount, MembersVocationDayLessThanP60, CompleteVocationExpectDayCount, CompleteVocationRealDayCount);
+			VacationStatisticsData tmp = null;
+			InputStatisticsData(ref tmp, ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVacationCount, MembersVacationDayLessThanP60, CompleteVacationExpectDayCount, CompleteVacationRealDayCount);
 			model.CurrentLevelStatistics = tmp;
 		}
 
 		private static void CaculateChildLevel(ref VacationStatisticsDescription model)
 		{
-			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVocationCount = 0, MembersVocationDayLessThanP60 = 0, CompleteVocationExpectDayCount = 0, CompleteVocationRealDayCount = 0;
+			int ApplyCountAccess = 0, ApplyCountAuditing = 0, ApplyCountDeny = 0, ApplyMembersCountAccess = 0, ApplyMembersCountAuditing = 0, ApplyMembersCountDeny = 0, ApplySumDayCountAccess = 0, ApplySumDayCountAuditing = 0, ApplySumDayCountDeny = 0, MembersCount = 0, CompleteYearlyVacationCount = 0, MembersVacationDayLessThanP60 = 0, CompleteVacationExpectDayCount = 0, CompleteVacationRealDayCount = 0;
 			ApplyCountAccess = model.CurrentLevelStatistics.ApplyCount.Access + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Access);
 			ApplyCountAuditing = model.CurrentLevelStatistics.ApplyCount.Auditing + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Auditing);
 			ApplyCountDeny = model.CurrentLevelStatistics.ApplyCount.Deny + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplyCount.Deny);
@@ -95,43 +95,43 @@ namespace BLL.Extensions
 			ApplySumDayCountAuditing = model.CurrentLevelStatistics.ApplySumDayCount.Auditing + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Auditing);
 			ApplySumDayCountDeny = model.CurrentLevelStatistics.ApplySumDayCount.Deny + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.ApplySumDayCount.Deny);
 			MembersCount = model.CurrentLevelStatistics.MembersCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersCount);
-			CompleteYearlyVocationCount = model.CurrentLevelStatistics.CompleteYearlyVocationCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteYearlyVocationCount);
-			MembersVocationDayLessThanP60 = model.CurrentLevelStatistics.MembersVocationDayLessThanP60 + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersVocationDayLessThanP60);
-			CompleteVocationExpectDayCount = model.CurrentLevelStatistics.CompleteVocationExpectDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationExpectDayCount);
-			CompleteVocationRealDayCount = model.CurrentLevelStatistics.CompleteVocationRealDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVocationRealDayCount);
+			CompleteYearlyVacationCount = model.CurrentLevelStatistics.CompleteYearlyVacationCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteYearlyVacationCount);
+			MembersVacationDayLessThanP60 = model.CurrentLevelStatistics.MembersVacationDayLessThanP60 + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.MembersVacationDayLessThanP60);
+			CompleteVacationExpectDayCount = model.CurrentLevelStatistics.CompleteVacationExpectDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVacationExpectDayCount);
+			CompleteVacationRealDayCount = model.CurrentLevelStatistics.CompleteVacationRealDayCount + model.Childs.Sum<VacationStatisticsDescription>(v => v.IncludeChildLevelStatistics.CompleteVacationRealDayCount);
 
-			VocationStatisticsData tmp = null;
-			InputStatisticsData(ref tmp, ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVocationCount, MembersVocationDayLessThanP60, CompleteVocationExpectDayCount, CompleteVocationRealDayCount);
+			VacationStatisticsData tmp = null;
+			InputStatisticsData(ref tmp, ApplyCountAccess, ApplyCountAuditing, ApplyCountDeny, ApplyMembersCountAccess, ApplyMembersCountAuditing, ApplyMembersCountDeny, ApplySumDayCountAccess, ApplySumDayCountAuditing, ApplySumDayCountDeny, MembersCount, CompleteYearlyVacationCount, MembersVacationDayLessThanP60, CompleteVacationExpectDayCount, CompleteVacationRealDayCount);
 			model.IncludeChildLevelStatistics = tmp;
 		}
 
-		private static void InputStatisticsData(ref VocationStatisticsData model, int ApplyCountAccess, int ApplyCountAuditing, int ApplyCountDeny, int ApplyMembersCountAccess, int ApplyMembersCountAuditing, int ApplyMembersCountDeny, int ApplySumDayCountAccess, int ApplySumDayCountAuditing, int ApplySumDayCountDeny, int MembersCount, int CompleteYearlyVocationCount, int MembersVocationDayLessThanP60, int CompleteVocationExpectDayCount, int CompleteVocationRealDayCount)
+		private static void InputStatisticsData(ref VacationStatisticsData model, int ApplyCountAccess, int ApplyCountAuditing, int ApplyCountDeny, int ApplyMembersCountAccess, int ApplyMembersCountAuditing, int ApplyMembersCountDeny, int ApplySumDayCountAccess, int ApplySumDayCountAuditing, int ApplySumDayCountDeny, int MembersCount, int CompleteYearlyVacationCount, int MembersVacationDayLessThanP60, int CompleteVacationExpectDayCount, int CompleteVacationRealDayCount)
 		{
-			model = new VocationStatisticsData()
+			model = new VacationStatisticsData()
 			{
-				ApplyCount = new VocationStatisticsDescriptionDataStatusCount()
+				ApplyCount = new VacationStatisticsDescriptionDataStatusCount()
 				{
 					Access = ApplyCountAccess,
 					Auditing = ApplyCountAuditing,
 					Deny = ApplyCountDeny
 				},
-				ApplyMembersCount = new VocationStatisticsDescriptionDataStatusCount()
+				ApplyMembersCount = new VacationStatisticsDescriptionDataStatusCount()
 				{
 					Access = ApplyMembersCountAccess,
 					Auditing = ApplyMembersCountAuditing,
 					Deny = ApplyMembersCountDeny
 				},
-				ApplySumDayCount = new VocationStatisticsDescriptionDataStatusCount()
+				ApplySumDayCount = new VacationStatisticsDescriptionDataStatusCount()
 				{
 					Access = ApplySumDayCountAccess,
 					Auditing = ApplySumDayCountAuditing,
 					Deny = ApplySumDayCountDeny
 				},
 				MembersCount = MembersCount,
-				CompleteYearlyVocationCount = CompleteYearlyVocationCount,
-				MembersVocationDayLessThanP60 = MembersVocationDayLessThanP60,
-				CompleteVocationExpectDayCount = CompleteVocationExpectDayCount,
-				CompleteVocationRealDayCount = CompleteVocationRealDayCount
+				CompleteYearlyVacationCount = CompleteYearlyVacationCount,
+				MembersVacationDayLessThanP60 = MembersVacationDayLessThanP60,
+				CompleteVacationExpectDayCount = CompleteVacationExpectDayCount,
+				CompleteVacationRealDayCount = CompleteVacationRealDayCount
 			};
 		}
 	}

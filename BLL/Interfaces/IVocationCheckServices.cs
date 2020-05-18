@@ -6,9 +6,9 @@ using DAL.Entities;
 
 namespace BLL.Interfaces
 {
-	public interface IVocationCheckServices
+	public interface IVacationCheckServices
 	{
-		void AddDescription(VocationDescription model);
+		void AddDescription(VacationDescription model);
 
 		/// <summary>
 		/// 获取范围内所有的节假日
@@ -17,7 +17,7 @@ namespace BLL.Interfaces
 		/// <param name="length"></param>
 		/// <param name="CheckInner">是否检查实际包含假期的长度 例如1.1-1.3元旦，从1.2-1.12只能算2天假期</param>
 		/// <returns></returns>
-		IEnumerable<VocationDescription> GetVocationDates(DateTime targetDate, int length, bool CheckInner);
+		IEnumerable<VacationDescription> GetVacationDates(DateTime targetDate, int length, bool CheckInner);
 
 		/// <summary>
 		/// 判断从指定日期开始，跳过法定节假日会到何时
@@ -25,7 +25,7 @@ namespace BLL.Interfaces
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		Task<DateTime> CrossVocation(DateTime start, int length, bool caculateLawVocation);
+		Task<DateTime> CrossVacation(DateTime start, int length, bool caculateLawVacation);
 
 		/// <summary>
 		/// 获取从指定日期开始，跳过法定节假日包含的情况
@@ -33,9 +33,9 @@ namespace BLL.Interfaces
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		Task<IEnumerable<VocationDescription>> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation);
+		Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation);
 
 		DateTime EndDate { get; }
-		IEnumerable<VocationDescription> VocationDesc { get; set; }
+		IEnumerable<VacationDescription> VacationDesc { get; set; }
 	}
 }

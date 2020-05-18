@@ -1,6 +1,8 @@
-﻿using DAL.Entities.Vocations;
+﻿using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.ApplyInfo
 {
@@ -20,27 +22,32 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 正休长度
 		/// </summary>
-		public int VocationLength { get; set; }
+		[Column("VocationLength")]
+		public int VacationLength { get; set; }
 
 		/// <summary>
 		/// 休假类别
 		/// </summary>
-		public string VocationType { get; set; }
+		[Column("VocationType")]
+		public string VacationType { get; set; }
 
 		/// <summary>
 		/// 福利假，包含法定节假日自动计算
 		/// </summary>
-		public virtual IEnumerable<VocationAdditional> AdditialVocations { get; set; }
+		[Column("AdditialVocations")]
+		public virtual IEnumerable<VacationAdditional> AdditialVacations { get; set; }
 
 		/// <summary>
 		/// 休假地点
 		/// </summary>
-		public virtual AdminDivision VocationPlace { get; set; }
+		[Column("VocationPlace")]
+		public virtual AdminDivision VacationPlace { get; set; }
 
 		/// <summary>
 		/// 休假地点（详细地址）
 		/// </summary>
-		public string VocationPlaceName { get; set; }
+		[Column("VocationPlaceName")]
+		public string VacationPlaceName { get; set; }
 
 		/// <summary>
 		/// 休假原因（用户设置）

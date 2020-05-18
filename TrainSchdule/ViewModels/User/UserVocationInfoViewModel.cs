@@ -6,11 +6,11 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	/// 用户休假信息
 	/// </summary>
-	public class UserVocationInfoViewModel : ApiResult
+	public class UserVacationInfoViewModel : ApiResult
 	{
 		/// <summary>
 		///
 		/// </summary>
-		public UserVocationInfoVDto Data { get; set; }
+		public UserVacationInfoVDto Data { get; set; }
 	}
 }

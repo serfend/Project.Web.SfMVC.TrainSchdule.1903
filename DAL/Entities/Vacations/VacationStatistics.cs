@@ -4,9 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace DAL.Entities.Vocations
+namespace DAL.Entities.Vacations
 {
-	public class VocationStatistics
+	[Table("VocationStatistics")]
+	public class VacationStatistics
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -28,6 +29,7 @@ namespace DAL.Entities.Vocations
 		public virtual VacationStatisticsDescription RootCompanyStatistics { get; set; }
 	}
 
+	[Table("VocationStatisticsDescriptions")]
 	public class VacationStatisticsDescription : BaseEntity
 	{
 		public string StatisticsId { get; set; }
@@ -52,15 +54,16 @@ namespace DAL.Entities.Vocations
 		/// <summary>
 		/// 单位本级数据
 		/// </summary>
-		public virtual VocationStatisticsData CurrentLevelStatistics { get; set; }
+		public virtual VacationStatisticsData CurrentLevelStatistics { get; set; }
 
 		/// <summary>
 		/// 包含子单位数据
 		/// </summary>
-		public virtual VocationStatisticsData IncludeChildLevelStatistics { get; set; }
+		public virtual VacationStatisticsData IncludeChildLevelStatistics { get; set; }
 	}
 
-	public class VocationStatisticsData : BaseEntity
+	[Table("VocationStatisticsDatas")]
+	public class VacationStatisticsData : BaseEntity
 	{
 		/// <summary>
 		/// 单位本级人员数量<see cref="单位人员总数"/>
@@ -70,40 +73,41 @@ namespace DAL.Entities.Vocations
 		/// <summary>
 		/// 已完成全年休假指标的人数<see cref="休满假数（率）"/>
 		/// </summary>
-		public int CompleteYearlyVocationCount { get; set; }
+		public int CompleteYearlyVacationCount { get; set; }
 
 		/// <summary>
 		/// 应当休假总天数<see cref="应（实）休总天数"/>
 		/// </summary>
-		public int CompleteVocationExpectDayCount { get; set; }
+		public int CompleteVacationExpectDayCount { get; set; }
 
 		/// <summary>
 		/// 实际休假总天数<see cref="应（实）休总天数"/>
 		/// </summary>
-		public int CompleteVocationRealDayCount { get; set; }
+		public int CompleteVacationRealDayCount { get; set; }
 
 		/// <summary>
 		/// 休假率低于60%人员数<see cref="休假率低于60%数"/>
 		/// </summary>
-		public int MembersVocationDayLessThanP60 { get; set; }
+		public int MembersVacationDayLessThanP60 { get; set; }
 
 		/// <summary>
 		/// 新增申请的数量
 		/// </summary>
-		public virtual VocationStatisticsDescriptionDataStatusCount ApplyCount { get; set; }
+		public virtual VacationStatisticsDescriptionDataStatusCount ApplyCount { get; set; }
 
 		/// <summary>
 		/// 新增申请的人数
 		/// </summary>
-		public virtual VocationStatisticsDescriptionDataStatusCount ApplyMembersCount { get; set; }
+		public virtual VacationStatisticsDescriptionDataStatusCount ApplyMembersCount { get; set; }
 
 		/// <summary>
 		/// 申请天数
 		/// </summary>
-		public virtual VocationStatisticsDescriptionDataStatusCount ApplySumDayCount { get; set; }
+		public virtual VacationStatisticsDescriptionDataStatusCount ApplySumDayCount { get; set; }
 	}
 
-	public class VocationStatisticsDescriptionDataStatusCount : BaseEntity
+	[Table("VocationStatisticsDescriptionDataStatusCounts")]
+	public class VacationStatisticsDescriptionDataStatusCount : BaseEntity
 	{
 		public int Access { get; set; }
 		public int Deny { get; set; }

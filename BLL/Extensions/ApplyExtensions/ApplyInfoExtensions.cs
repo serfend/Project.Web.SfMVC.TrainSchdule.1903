@@ -12,7 +12,7 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVocationInfoVDto info)
+		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVacationInfoVDto info)
 		{
 			if (model == null) return null;
 			var b = new ApplyDetailDto()
@@ -32,7 +32,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
 				RecallId = model.RecallId,
-				UserVocationDescription = info
+				UserVacationDescription = info
 			};
 			return b;
 		}

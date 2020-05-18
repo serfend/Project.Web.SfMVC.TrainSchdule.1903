@@ -6,7 +6,7 @@ using DAL.Entities.FileEngine;
 using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -50,21 +50,21 @@ namespace DAL.Data
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<XlsTemplete> XlsTempletes { get; set; }
-		public DbSet<VocationStatistics> VocationStatistics { get; set; }
-		public DbSet<VacationStatisticsDescription> VocationStatisticsDescriptions { get; set; }
+		public DbSet<VacationStatistics> VacationStatistics { get; set; }
+		public DbSet<VacationStatisticsDescription> VacationStatisticsDescriptions { get; set; }
 
 		/// <summary>
 		/// 统计数据值
 		/// </summary>
-		public DbSet<VocationStatisticsData> VocationStatisticsDatas { get; set; }
+		public DbSet<VacationStatisticsData> VacationStatisticsDatas { get; set; }
 
 		/// <summary>
 		/// 统计数据值的具体值
 		/// </summary>
-		public DbSet<VocationStatisticsDescriptionDataStatusCount> VocationStatisticsDescriptionDataStatusCounts { get; set; }
+		public DbSet<VacationStatisticsDescriptionDataStatusCount> VacationStatisticsDescriptionDataStatusCounts { get; set; }
 
-		public DbSet<VocationDescription> VocationDescriptions { get; set; }
-		public DbSet<VocationAdditional> VocationAdditionals { get; set; }
+		public DbSet<VacationDescription> VacationDescriptions { get; set; }
+		public DbSet<VacationAdditional> VacationAdditionals { get; set; }
 
 		public DbSet<Subject> Subjects { get; set; }
 		public DbSet<Standard> Standards { get; set; }

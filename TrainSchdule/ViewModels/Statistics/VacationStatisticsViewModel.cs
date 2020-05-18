@@ -1,5 +1,5 @@
 ﻿using BLL.Helpers;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System.Collections.Generic;
 
 namespace TrainSchdule.ViewModels.Statistics

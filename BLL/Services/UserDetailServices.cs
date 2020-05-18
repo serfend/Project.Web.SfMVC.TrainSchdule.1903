@@ -6,7 +6,7 @@ using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,14 +52,14 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <returns></returns>
-		public UserVocationInfoVDto VocationInfo(User targetUser)
+		public UserVacationInfoVDto VacationInfo(User targetUser)
 		{
 			if (targetUser == null) return null;
 			var applies = _context.AppliesDb
 				.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.AddDays(5).Year)
-				.Where(a => a.RequestInfo.VocationType == "正休").ToList(); // 仅正休计算天数
+				.Where(a => a.RequestInfo.VacationType == "正休").ToList(); // 仅正休计算天数
 
 			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var requireAddRecord, out var maxOnTripTime, out var description);
 			if (yearlyLength < 0) yearlyLength = 0;
@@ -77,9 +77,9 @@ namespace BLL.Services
 			return vacationInfo;
 		}
 
-		private UserVocationInfoVDto VacationInfoInRange(IEnumerable<Apply> applies, double yearlyLength)
+		private UserVacationInfoVDto VacationInfoInRange(IEnumerable<Apply> applies, double yearlyLength)
 		{
-			var userAdditions = new List<VocationAdditional>();
+			var userAdditions = new List<VacationAdditional>();
 			var maxOnTripTimeGainForRecall = 0;//应召回而增加路途次数
 			var maxOnTripTimeGainForRecallDescription = "";
 			int nowLength = 0;
@@ -87,10 +87,10 @@ namespace BLL.Services
 			int onTripTime = 0;
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
 			{
-				nowLength += a.RequestInfo.VocationLength;
+				nowLength += a.RequestInfo.VacationLength;
 				if (a.RequestInfo.OnTripLength > 0) onTripTime++;
 				nowTimes++;
-				userAdditions.AddRange(a.RequestInfo.AdditialVocations);
+				userAdditions.AddRange(a.RequestInfo.AdditialVacations);
 
 				//处理被召回的假期
 				if (a.RecallId != null)
@@ -101,7 +101,7 @@ namespace BLL.Services
 					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.IdRecordButNoData);
 					//此处减去召回时间应注意是否在福利假内部
 					var dayComsumeBeforeRecall = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
-					var containsLawVacations = _vocationCheckServices.GetVocationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
+					var containsLawVacations = _vacationCheckServices.GetVacationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
 					var containsLawVacationsLength = containsLawVacations.Sum(v => v.Length);
 					var realComsumeMainVacation = dayComsumeBeforeRecall - containsLawVacationsLength - a.RequestInfo.OnTripLength;
 					if (realComsumeMainVacation > 0) nowLength -= realComsumeMainVacation;
@@ -109,7 +109,7 @@ namespace BLL.Services
 				return true;
 			});
 			if (maxOnTripTimeGainForRecall > 0) maxOnTripTimeGainForRecallDescription = $"因期间被召回{maxOnTripTimeGainForRecall}次，全年可休路途次数相应增加。";
-			var vacationInfo = new UserVocationInfoVDto()
+			var vacationInfo = new UserVacationInfoVDto()
 			{
 				LeftLength = (int)Math.Floor(yearlyLength - nowLength),
 				MaxTripTimes = maxOnTripTimeGainForRecall,

@@ -2,7 +2,7 @@
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,7 +20,7 @@ namespace TrainSchdule.Controllers.Statistics
 	/// 休假情况统计
 	/// </summary>
 	[Route("[controller]/[action]")]
-	public class VocationStatisticsController : Controller
+	public class VacationStatisticsController : Controller
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IGoogleAuthService authService;
@@ -36,7 +36,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="usersService"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="vacationStatisticsServices"></param>
-		public VocationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices)
+		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices)
 		{
 			this.context = context;
 			this.authService = authService;
@@ -94,7 +94,7 @@ namespace TrainSchdule.Controllers.Statistics
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
 			if (!_userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var baseQuery = new BaseOnTimeVocationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
+			var baseQuery = new BaseOnTimeVacationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
 			{
 				CompanyCode = model.Data.CompanyCode ?? "A",
 				Description = model.Data.Description ?? "用户创建的未知原因查询"
@@ -129,13 +129,13 @@ namespace TrainSchdule.Controllers.Statistics
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
 			if (!_userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var parent = context.VocationStatistics.Find(model.Data.StatisticsId);
+			var parent = context.VacationStatistics.Find(model.Data.StatisticsId);
 			if (parent == null) return new JsonResult(ActionStatusMessage.Statistics.NotExist);
 
-			var entity = context.VocationStatisticsDescriptions.Where(v => v.StatisticsId == model.Data.StatisticsId && v.Company.Code == model.Data.CompanyCode).FirstOrDefault();
+			var entity = context.VacationStatisticsDescriptions.Where(v => v.StatisticsId == model.Data.StatisticsId && v.Company.Code == model.Data.CompanyCode).FirstOrDefault();
 			RemoveStatisticsDescription(entity);
-			var leftCount = context.VocationStatisticsDescriptions.Count(v => v.StatisticsId == model.Data.StatisticsId);
-			if (leftCount == 0) context.VocationStatistics.Remove(parent);
+			var leftCount = context.VacationStatisticsDescriptions.Count(v => v.StatisticsId == model.Data.StatisticsId);
+			if (leftCount == 0) context.VacationStatistics.Remove(parent);
 			await context.SaveChangesAsync();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -145,18 +145,18 @@ namespace TrainSchdule.Controllers.Statistics
 			if (entity == null) return;
 			foreach (var item in entity.Childs) RemoveStatisticsDescription(item);
 			var i = entity.IncludeChildLevelStatistics;
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
-			context.VocationStatisticsDatas.Remove(i);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
+			context.VacationStatisticsDatas.Remove(i);
 
 			i = entity.CurrentLevelStatistics;
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
-			context.VocationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
-			context.VocationStatisticsDatas.Remove(i);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
+			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
+			context.VacationStatisticsDatas.Remove(i);
 
-			context.VocationStatisticsDescriptions.Remove(entity);
+			context.VacationStatisticsDescriptions.Remove(entity);
 		}
 
 		/// <summary>
@@ -191,7 +191,7 @@ namespace TrainSchdule.Controllers.Statistics
 			var compaines = compainesCode?.Split("##");
 			if (compaines == null || compaines.Length == 0) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			var cmp = new CompareStatisticsId();
-			var targetCompanyStatistics = context.VocationStatisticsDescriptions.
+			var targetCompanyStatistics = context.VacationStatisticsDescriptions.
 				Where<VacationStatisticsDescription>(v => compaines.Contains(v.Company.Code))
 				.OrderBy(v => v.StatisticsId)
 				.ToList()
@@ -205,10 +205,10 @@ namespace TrainSchdule.Controllers.Statistics
 				}
 			if (anyChange)
 			{
-				foreach (var vs in context.VocationStatistics)
+				foreach (var vs in context.VacationStatistics)
 				{
-					var leftCount = context.VocationStatisticsDescriptions.Count(v => v.StatisticsId == vs.Id);
-					if (leftCount == 0) context.VocationStatistics.Remove(vs);
+					var leftCount = context.VacationStatisticsDescriptions.Count(v => v.StatisticsId == vs.Id);
+					if (leftCount == 0) context.VacationStatistics.Remove(vs);
 				}
 				context.SaveChanges();
 			}
@@ -216,7 +216,7 @@ namespace TrainSchdule.Controllers.Statistics
 			{
 				Data = new NewStatisticsListDataModel()
 				{
-					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VocationStatistics.Where(s => s.Id == v.StatisticsId).FirstOrDefault()))
+					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VacationStatistics.Where(s => s.Id == v.StatisticsId).FirstOrDefault()))
 				}
 			});
 		}

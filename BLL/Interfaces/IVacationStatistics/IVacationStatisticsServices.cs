@@ -1,4 +1,4 @@
-﻿using DAL.Entities.Vocations;
+﻿using DAL.Entities.Vacations;
 using DAL.QueryModel;
 using System;
 using System.Collections.Generic;

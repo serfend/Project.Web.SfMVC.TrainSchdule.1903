@@ -6,7 +6,7 @@ namespace TrainSchdule.Crontab
 	/// <summary>
 	/// 每年休假情况统计
 	/// </summary>
-	public class YearlyVocationStatistics : BaseOnTimeVocationStatistics
+	public class YearlyVacationStatistics : BaseOnTimeVacationStatistics
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ namespace TrainSchdule.Crontab
 		public static DateTime Start { get => start; set => start = value; }
 		public static DateTime End { get => end; set => end = value; }
 
-		public YearlyVocationStatistics(ApplicationDbContext context) : base(context, Start, End, $"Year{Start.Year}")
+		public YearlyVacationStatistics(ApplicationDbContext context) : base(context, Start, End, $"Year{Start.Year}")
 		{
 			_context = context;
 		}

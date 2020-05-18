@@ -134,7 +134,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService,BLL.Interfaces.IVocationCheckServices)">
+        <member name="M:TrainSchdule.Controllers.Apply.ApplyController.#ctor(BLL.Interfaces.IUsersService,BLL.Interfaces.ICurrentUserService,BLL.Interfaces.IApplyService,BLL.Interfaces.ICompaniesService,BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IGoogleAuthService,BLL.Interfaces.IVacationCheckServices)">
             <summary>
             </summary>
             <param name="usersService"></param>
@@ -144,7 +144,7 @@
             <param name="verifyService"></param>
             <param name="context"></param>
             <param name="authService"></param>
-            <param name="vocationCheckServices"></param>
+            <param name="vacationCheckServices"></param>
         </member>
         <member name="M:TrainSchdule.Controllers.Apply.ApplyController.AllStatus">
             <summary>
@@ -264,12 +264,12 @@
             <summary>
             </summary>
         </member>
-        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompaniesService)">
+        <member name="M:TrainSchdule.Controllers.StaticController.#ctor(BLL.Interfaces.IVerifyService,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVacationCheckServices,Microsoft.AspNetCore.Hosting.IHostingEnvironment,BLL.Interfaces.IApplyService,BLL.Interfaces.IUsersService,BLL.Interfaces.ICompaniesService)">
             <summary>
             </summary>
             <param name="verifyService"></param>
             <param name="context"></param>
-            <param name="vocationCheckServices"></param>
+            <param name="vacationCheckServices"></param>
             <param name="hostingEnvironment"></param>
             <param name="applyService"></param>
             <param name="usersService"></param>
@@ -302,7 +302,7 @@
             <param name="code"></param>
             <returns></returns>
         </member>
-        <member name="M:TrainSchdule.Controllers.StaticController.VocationDate(System.DateTime,System.Int32)">
+        <member name="M:TrainSchdule.Controllers.StaticController.VacationDate(System.DateTime,System.Int32)">
             <summary>
             获取法定节假日情况
             </summary>
@@ -408,12 +408,12 @@
             <param name="usersService"></param>
             <returns></returns>
         </member>
-        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVocationCheckServices)">
+        <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel,DAL.Data.ApplicationDbContext,BLL.Interfaces.IVacationCheckServices)">
             <summary>
             </summary>
             <param name="model"></param>
             <param name="context"></param>
-            <param name="vocationCheckServices"></param>
+            <param name="vacationCheckServices"></param>
             <returns></returns>
         </member>
         <member name="M:TrainSchdule.Extensions.ApplyExtensions.ToVDTO(TrainSchdule.ViewModels.Apply.SubmitApplyViewModel)">
@@ -931,7 +931,7 @@
             离队时间
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationLength">
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VacationLength">
             <summary>
             休假时长
             </summary>
@@ -941,12 +941,12 @@
             路途时间
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationType">
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VacationType">
             <summary>
             休假类型
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VocationPlace">
+        <member name="P:TrainSchdule.ViewModels.Apply.SubmitRequestInfoViewModel.VacationPlace">
             <summary>
             休假去向
             </summary>
@@ -1075,34 +1075,34 @@
             <summary>
             </summary>
         </member>
-        <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel">
+        <member name="T:TrainSchdule.ViewModels.Static.VacationDescriptionViewModel">
             <summary>
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionViewModel.Data">
+        <member name="P:TrainSchdule.ViewModels.Static.VacationDescriptionViewModel.Data">
             <summary>
             </summary>
         </member>
-        <member name="T:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel">
+        <member name="T:TrainSchdule.ViewModels.Static.VacationDescriptionDataModel">
             <summary>
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.Descriptions">
+        <member name="P:TrainSchdule.ViewModels.Static.VacationDescriptionDataModel.Descriptions">
             <summary>
             期间经历的节假日
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.VocationDays">
+        <member name="P:TrainSchdule.ViewModels.Static.VacationDescriptionDataModel.VacationDays">
             <summary>
             休假中法定节假日天数
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.StartDate">
+        <member name="P:TrainSchdule.ViewModels.Static.VacationDescriptionDataModel.StartDate">
             <summary>
             休假开始时间
             </summary>
         </member>
-        <member name="P:TrainSchdule.ViewModels.Static.VocationDescriptionDataModel.EndDate">
+        <member name="P:TrainSchdule.ViewModels.Static.VacationDescriptionDataModel.EndDate">
             <summary>
             休假预计结束时间
             </summary>

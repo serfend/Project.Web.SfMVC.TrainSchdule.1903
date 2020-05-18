@@ -23,7 +23,7 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <returns></returns>
-		UserVocationInfoVDto VocationInfo(User targetUser);
+		UserVacationInfoVDto VacationInfo(User targetUser);
 
 		/// <summary>
 		/// 更新头像

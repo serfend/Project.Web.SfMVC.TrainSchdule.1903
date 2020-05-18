@@ -1,5 +1,5 @@
 ﻿using DAL.Entities.ApplyInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -33,7 +33,7 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 休假时长
 		/// </summary>
 		[Required(ErrorMessage = "休假时长未填写")]
-		public int VocationLength { get; set; }
+		public int VacationLength { get; set; }
 
 		/// <summary>
 		/// 路途时间
@@ -45,18 +45,18 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 休假类型
 		/// </summary>
 		[Required(ErrorMessage = "休假类别未填写")]
-		public string VocationType { get; set; }
+		public string VacationType { get; set; }
 
 		/// <summary>
 		/// 休假去向
 		/// </summary>
 		[Required(ErrorMessage = "休假去向未填写")]
-		public int VocationPlace { get; set; }
+		public int VacationPlace { get; set; }
 
 		/// <summary>
 		/// 休假详细地址
 		/// </summary>
-		public string VocationPlaceName { get; set; }
+		public string VacationPlaceName { get; set; }
 
 		/// <summary>
 		/// 休假原因
@@ -66,6 +66,6 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 用户需要休的福利假列表
 		/// </summary>
-		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }
+		public IEnumerable<VacationAdditional> VacationAdditionals { get; set; }
 	}
 }

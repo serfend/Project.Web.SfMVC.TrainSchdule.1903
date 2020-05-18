@@ -1,4 +1,4 @@
-﻿using DAL.Entities.Vocations;
+﻿using DAL.Entities.Vacations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,7 +7,7 @@ namespace DAL.DTO.User
 	/// <summary>
 	///
 	/// </summary>
-	public class UserVocationInfoVDto
+	public class UserVacationInfoVDto
 	{
 		/// <summary>
 		/// 全年总天数
@@ -45,6 +45,6 @@ namespace DAL.DTO.User
 		/// </summary>
 		public string Description { get; set; }
 
-		public IEnumerable<VocationAdditional> Additionals { get; set; }
+		public IEnumerable<VacationAdditional> Additionals { get; set; }
 	}
 }

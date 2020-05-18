@@ -3,7 +3,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
 using DAL.Entities.UserInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +30,8 @@ namespace TrainSchdule.Extensions
 				Duties = model.Duties,
 				From = usersService.Get(model.Id),
 				//TODO 【Future unnecessary】可能可以利用为休假去向
-				//VocationTargetAddress=model.VocationTargetAddress,
-				//VocationTargetAddressDetail=model.VocationTargetAddressDetail,
+				//VacationTargetAddress=model.VacationTargetAddress,
+				//VacationTargetAddressDetail=model.VacationTargetAddressDetail,
 				Phone = model.Phone,
 				RealName = model.RealName,
 				Settle = model.Settle
@@ -52,12 +52,12 @@ namespace TrainSchdule.Extensions
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
-				VocationLength = model.VocationLength,
-				VocationPlace = context.AdminDivisions.Find(model.VocationPlace),
-				VocationPlaceName = model.VocationPlaceName,
-				VocationType = model.VocationType,
+				VacationLength = model.VacationLength,
+				VacationPlace = context.AdminDivisions.Find(model.VacationPlace),
+				VacationPlaceName = model.VacationPlaceName,
+				VacationType = model.VacationType,
 				ByTransportation = model.ByTransportation,
-				VocationAdditionals = model.VocationAdditionals
+				VacationAdditionals = model.VacationAdditionals
 			};
 			return b;
 		}

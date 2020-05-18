@@ -1,11 +1,13 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Entities.Vocations
+namespace DAL.Entities.Vacations
 {
 	/// <summary>
 	/// 额外假期
 	/// </summary>
-	public class VocationAdditional : BaseEntity
+	[Table("VocationAdditionals")]
+	public class VacationAdditional : BaseEntity
 	{
 		/// <summary>
 		/// 假期名称

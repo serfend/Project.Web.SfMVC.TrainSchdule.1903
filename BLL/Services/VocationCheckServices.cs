@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-	public class VocationCheckServices : IVocationCheckServices
+	public class VacationCheckServices : IVacationCheckServices
 	{
 		private readonly ApplicationDbContext _context;
 
-		public VocationCheckServices(ApplicationDbContext context)
+		public VacationCheckServices(ApplicationDbContext context)
 		{
 			_context = context;
 		}
 
-		public void AddDescription(VocationDescription model)
+		public void AddDescription(VacationDescription model)
 		{
-			_context.VocationDescriptions.Add(model);
+			_context.VacationDescriptions.Add(model);
 			_context.SaveChanges();
 		}
 
@@ -34,11 +34,11 @@ namespace BLL.Services
 		/// <param name="length"></param>
 		/// <param name="CheckInner">是否检查实际包含假期的长度 例如1.1-1.3元旦，从1.2-1.12只能算2天假期</param>
 		/// <returns></returns>
-		public IEnumerable<VocationDescription> GetVocationDates(DateTime date, int length, bool CheckInner)
+		public IEnumerable<VacationDescription> GetVacationDates(DateTime date, int length, bool CheckInner)
 		{
 			var endDate = date.AddDays(length);
-			return _context.VocationDescriptions.Where(v => v.Start <= endDate)
-				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VocationDescription()
+			return _context.VacationDescriptions.Where(v => v.Start <= endDate)
+				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VacationDescription()
 				{
 					Name = v.Name,
 					Length = CheckInner ? GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length)) : v.Length,
@@ -50,13 +50,13 @@ namespace BLL.Services
 		/// 当用户本应休假日期进入了假期范围，则应添加整个范围
 		/// </summary>
 		/// <param name="userNormalDateStart"></param>
-		/// <param name="vocationStart"></param>
+		/// <param name="vacationStart"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		private int GetCrossDay(DateTime userNormalDateStart, DateTime userNormalDateEnd, DateTime vocationStart, DateTime vocationEnd)
+		private int GetCrossDay(DateTime userNormalDateStart, DateTime userNormalDateEnd, DateTime vacationStart, DateTime vacationEnd)
 		{
-			if (userNormalDateStart <= vocationStart && userNormalDateEnd >= vocationStart) return vocationEnd.Subtract(vocationStart).Days;
-			if (userNormalDateStart > vocationStart && userNormalDateStart <= vocationEnd) return vocationEnd.Subtract(userNormalDateStart).Days;
+			if (userNormalDateStart <= vacationStart && userNormalDateEnd >= vacationStart) return vacationEnd.Subtract(vacationStart).Days;
+			if (userNormalDateStart > vacationStart && userNormalDateStart <= vacationEnd) return vacationEnd.Subtract(userNormalDateStart).Days;
 			return 0;
 		}
 
@@ -66,9 +66,9 @@ namespace BLL.Services
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public async Task<DateTime> CrossVocation(DateTime start, int length, bool caculateLawVocation)
+		public async Task<DateTime> CrossVacation(DateTime start, int length, bool caculateLawVacation)
 		{
-			VocationDesc = await GetVocationDescriptions(start, length, caculateLawVocation).ConfigureAwait(true);
+			VacationDesc = await GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(true);
 			return EndDate;
 		}
 
@@ -77,9 +77,9 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="start"></param>
 		/// <param name="length"></param>
-		/// <param name="caculateLawVocation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
+		/// <param name="caculateLawVacation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
 		/// <returns></returns>
-		public async Task<IEnumerable<VocationDescription>> GetVocationDescriptions(DateTime start, int length, bool caculateLawVocation)
+		public async Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation)
 		{
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
 			if (length > 500 || length < 0)
@@ -87,25 +87,25 @@ namespace BLL.Services
 				EndDate = start;
 				return null;
 			}
-			var list = new List<VocationDescription>();
+			var list = new List<VacationDescription>();
 			var end = start.AddDays(length);
-			int vocationDay = 0;
+			int vacationDay = 0;
 			await Task.Run(() =>
 			{
-				if (caculateLawVocation)
-					foreach (var description in GetVocationDates(start, length, true))
+				if (caculateLawVacation)
+					foreach (var description in GetVacationDates(start, length, true))
 					{
 						list.Add(description);
-						vocationDay += description.Length;
+						vacationDay += description.Length;
 					}
 			}).ConfigureAwait(true);
 
-			EndDate = end.AddDays(vocationDay);
-			VocationDesc = list;
+			EndDate = end.AddDays(vacationDay);
+			VacationDesc = list;
 			return list;
 		}
 
 		public DateTime EndDate { get; private set; }
-		public IEnumerable<VocationDescription> VocationDesc { get; set; }
+		public IEnumerable<VacationDescription> VacationDesc { get; set; }
 	}
 }

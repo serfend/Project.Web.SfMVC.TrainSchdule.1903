@@ -67,10 +67,10 @@ namespace BLL.Helpers
 				// 可能为补充休假
 				public static readonly ApiResult OutOfDate = new ApiResult(44100, "申请的离队时间不可早于当前时间");
 
-				public static readonly ApiResult NoEnoughVocation = new ApiResult(44200, "剩余休假天数不足");
+				public static readonly ApiResult NoEnoughVacation = new ApiResult(44200, "剩余休假天数不足");
 				public static readonly ApiResult TripTimesExceed = new ApiResult(44300, "剩余可休路途次数不足");
-				public static readonly ApiResult VocationLengthTooShort = new ApiResult(44400, "休假正休天数过少");
-				public static readonly ApiResult InvalidVocationType = new ApiResult(44500, "无效的休假类型");
+				public static readonly ApiResult VacationLengthTooShort = new ApiResult(44400, "休假正休天数过少");
+				public static readonly ApiResult InvalidVacationType = new ApiResult(44500, "无效的休假类型");
 				public static readonly ApiResult NotPermitCrossYear = new ApiResult(44600, "不允许跨年休假");
 			}
 
@@ -82,7 +82,7 @@ namespace BLL.Helpers
 				public static readonly ApiResult RecallByNotSame = new ApiResult(46200, "召回人和终审人不一致");
 				public static readonly ApiResult Crash = new ApiResult(46300, "休假已存在召回记录");
 				public static readonly ApiResult IdRecordButNoData = new ApiResult(46400, "用户休假申请的召回id存在，但无此召回的详细信息");
-				public static readonly ApiResult RecallTimeLateThanVocation = new ApiResult(46500, "召回时间不可晚于（等于）休假结束时间");
+				public static readonly ApiResult RecallTimeLateThanVacation = new ApiResult(46500, "召回时间不可晚于（等于）休假结束时间");
 				public static readonly ApiResult RecallTimeEarlyThanNow = new ApiResult(46600, "召回时间不可早于当前时间");
 			}
 

@@ -38,7 +38,7 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ex.Status);
 			}
 			var list = _context.AppliesDb.Where(a => form.Query.Arrays.Contains(a.Id)).ToList();
-			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VocationInfo(a.BaseInfo.From))));
+			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(_usersService.VacationInfo(a.BaseInfo.From))));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{list.Count()}条({form.Templete})");
 		}
@@ -63,7 +63,7 @@ namespace TrainSchdule.Controllers
 			}
 			var singleApply = _context.AppliesDb.Where(a => a.Id == form.Query.Value).FirstOrDefault();
 			if (singleApply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
-			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VocationInfo(singleApply.BaseInfo?.From)));
+			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(_usersService.VacationInfo(singleApply.BaseInfo?.From)));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.Static.XlsNoData);
 			return await ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
 		}

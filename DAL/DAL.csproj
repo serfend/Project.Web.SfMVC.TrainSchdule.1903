@@ -19,6 +19,14 @@
     <Compile Remove="Migrations\20200502170225_support_shortUrl.Designer.cs" />
     <Compile Remove="Migrations\20200502171524_support_shorturl.cs" />
     <Compile Remove="Migrations\20200502171524_support_shorturl.Designer.cs" />
+    <Compile Remove="Migrations\20200518085328_fixDictation_vocation.cs" />
+    <Compile Remove="Migrations\20200518085328_fixDictation_vocation.Designer.cs" />
+    <Compile Remove="Migrations\20200518085832_fixDictation_vocation.cs" />
+    <Compile Remove="Migrations\20200518085832_fixDictation_vocation.Designer.cs" />
+    <Compile Remove="Migrations\20200518090247_fixDictation_vocation.cs" />
+    <Compile Remove="Migrations\20200518090247_fixDictation_vocation.Designer.cs" />
+    <Compile Remove="Migrations\20200518092034_fixDictation_vocation.cs" />
+    <Compile Remove="Migrations\20200518092034_fixDictation_vocation.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

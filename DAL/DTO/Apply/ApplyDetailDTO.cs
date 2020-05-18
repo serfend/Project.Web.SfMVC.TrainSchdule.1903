@@ -53,6 +53,6 @@ namespace DAL.DTO.Apply
 		/// <summary>
 		/// 用户全年假期描述
 		/// </summary>
-		public UserVocationInfoVDto UserVocationDescription { get; set; }
+		public UserVacationInfoVDto UserVacationDescription { get; set; }
 	}
 }

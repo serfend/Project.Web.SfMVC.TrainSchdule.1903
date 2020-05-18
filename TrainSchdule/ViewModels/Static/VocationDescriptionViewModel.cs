@@ -8,28 +8,28 @@ namespace TrainSchdule.ViewModels.Static
 	/// <summary>
 	///
 	/// </summary>
-	public class VocationDescriptionViewModel : ApiResult
+	public class VacationDescriptionViewModel : ApiResult
 	{
 		/// <summary>
 		///
 		/// </summary>
-		public VocationDescriptionDataModel Data { get; set; }
+		public VacationDescriptionDataModel Data { get; set; }
 	}
 
 	/// <summary>
 	///
 	/// </summary>
-	public class VocationDescriptionDataModel
+	public class VacationDescriptionDataModel
 	{
 		/// <summary>
 		/// 期间经历的节假日
 		/// </summary>
-		public IEnumerable<VocationDescription> Descriptions { get; set; }
+		public IEnumerable<VacationDescription> Descriptions { get; set; }
 
 		/// <summary>
 		/// 休假中法定节假日天数
 		/// </summary>
-		public int VocationDays { get; set; }
+		public int VacationDays { get; set; }
 
 		/// <summary>
 		/// 休假开始时间

@@ -33,7 +33,7 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyService _applyService;
-		private readonly IVocationCheckServices _vocationCheckServices;
+		private readonly IVacationCheckServices _vacationCheckServices;
 		private readonly ApplicationDbContext _context;
 		private readonly ICompaniesService _companiesService;
 		private readonly IVerifyService _verifyService;
@@ -48,7 +48,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="usersService"></param>
 		/// <param name="currentUserService"></param>
 		/// <param name="applyService"></param>
-		/// <param name="vocationCheckServices"></param>
+		/// <param name="vacationCheckServices"></param>
 		/// <param name="context"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="verifyService"></param>
@@ -56,12 +56,12 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="recallOrderServices"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="hostingEnvironment"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			_applyService = applyService;
-			_vocationCheckServices = vocationCheckServices;
+			_vacationCheckServices = vacationCheckServices;
 			_context = context;
 			_companiesService = companiesService;
 			_verifyService = verifyService;
@@ -115,8 +115,8 @@ namespace TrainSchdule.Controllers.Apply
 				Phone = model.Phone ?? targetUser.SocialInfo.Phone,
 				RealName = targetUser.BaseInfo.RealName,
 				Settle = targetUser.SocialInfo.Settle,
-				VocationTargetAddress = model.VocationTargetAddress,
-				VocationTargetAddressDetail = model.VocationTargetAddressDetail,
+				VacationTargetAddress = model.VacationTargetAddress,
+				VacationTargetAddressDetail = model.VacationTargetAddressDetail,
 			};
 			var m = userModel.ToVDTO(_usersService);
 			m.CreateBy = _currentUserService.CurrentUser;
@@ -138,7 +138,7 @@ namespace TrainSchdule.Controllers.Apply
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(_context);
-			if (m.VocationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
+			if (m.VacationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
 			try
 			{
 				var info = await _applyService.SubmitRequestAsync(targetUser, m).ConfigureAwait(true);
@@ -199,7 +199,7 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(id);
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var ua = _userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VocationLength}天休假申请", false, ActionRank.Danger);
+			var ua = _userActionServices.Log(UserOperation.RemoveApply, apply.BaseInfo.From.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请", false, ActionRank.Danger);
 			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
 			await _applyService.Delete(apply);
 			_userActionServices.Status(ua, true);

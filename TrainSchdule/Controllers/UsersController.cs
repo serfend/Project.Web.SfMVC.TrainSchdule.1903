@@ -308,17 +308,17 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		[ProducesResponseType(typeof(UserVocationInfoViewModel), 0)]
+		[ProducesResponseType(typeof(UserVacationInfoViewModel), 0)]
 		[AllowAnonymous]
 		[HttpGet]
-		public IActionResult Vocation(string id)
+		public IActionResult Vacation(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var vocationInfo = _usersService.VocationInfo(targetUser);
-			return new JsonResult(new UserVocationInfoViewModel()
+			var vacationInfo = _usersService.VacationInfo(targetUser);
+			return new JsonResult(new UserVacationInfoViewModel()
 			{
-				Data = vocationInfo
+				Data = vacationInfo
 			});
 		}
 

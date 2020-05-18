@@ -1,6 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 
@@ -14,15 +14,15 @@ namespace DAL.DTO.Apply
 		/// <summary>
 		/// 本次休假中跨越的假期的描述
 		/// </summary>
-		public string VocationDescriptions { get; set; }
+		public string VacationDescriptions { get; set; }
 
 		public int OnTripLength { get; set; }
-		public int VocationLength { get; set; }
-		public string VocationType { get; set; }
-		public AdminDivision VocationPlace { get; set; }
-		public string VocationPlaceName { get; set; }
+		public int VacationLength { get; set; }
+		public string VacationType { get; set; }
+		public AdminDivision VacationPlace { get; set; }
+		public string VacationPlaceName { get; set; }
 		public string Reason { get; set; }
 		public Transportation ByTransportation { get; set; }
-		public IEnumerable<VocationAdditional> VocationAdditionals { get; set; }
+		public IEnumerable<VacationAdditional> VacationAdditionals { get; set; }
 	}
 }

@@ -32,12 +32,12 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 家庭地址
 		/// </summary>
-		public int VocationTargetAddress { get; set; }
+		public int VacationTargetAddress { get; set; }
 
 		/// <summary>
 		///家庭地址（详细地址）
 		/// </summary>
-		public string VocationTargetAddressDetail { get; set; }
+		public string VacationTargetAddressDetail { get; set; }
 
 		/// <summary>
 		/// 联系方式

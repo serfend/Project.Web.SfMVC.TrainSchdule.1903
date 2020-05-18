@@ -94,7 +94,7 @@ namespace BLL.Services.ApplyServices
 			//寻找所有没有创建申请且不是今天创建的 请求信息
 			var request = _context.ApplyRequests.Where(r => DateTime.Now.Day != r.CreateTime.Day).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
 			//删除这些请求信息的福利信息
-			foreach (var r in request) _context.VocationAdditionals.RemoveRange(r.AdditialVocations);
+			foreach (var r in request) _context.VacationAdditionals.RemoveRange(r.AdditialVacations);
 			//删除这些请求信息
 			_context.ApplyRequests.RemoveRange(request);
 
@@ -153,9 +153,9 @@ namespace BLL.Services.ApplyServices
 					default: return value;
 				}
 			}).ToList();
-			list.Add(new ParameterRenderer("RequestInfo_VocationDescription", model.RequestInfo.RequestInfoVocationDescription()));
-			list.Add(new ParameterRenderer("RequestInfo_VocationTotalLength", model.RequestInfo.VocationTotalLength()));
-			list.Add(new ParameterRenderer("UserVocationInfo_DetailDescription", model.UserVocationDescription.VocationDescription()));
+			list.Add(new ParameterRenderer("RequestInfo_VacationDescription", model.RequestInfo.RequestInfoVacationDescription()));
+			list.Add(new ParameterRenderer("RequestInfo_VacationTotalLength", model.RequestInfo.VacationTotalLength()));
+			list.Add(new ParameterRenderer("UserVacationInfo_DetailDescription", model.UserVacationDescription.VacationDescription()));
 			list.Add(new ParameterRenderer("Social_IsMarried", model.Social.Settle.Lover.Valid ? "已婚" : "未婚"));
 
 			var sheetRenderers = new SheetRenderer[]
@@ -172,29 +172,29 @@ namespace BLL.Services.ApplyServices
 			if (list.Count == 0) return null;
 			var mapList = new List<ParameterRenderer<ApplyDetailDto>>()
 			{
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_LeftLength", t => t.UserVocationDescription?.LeftLength),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_MaxTripTimes", t => t.UserVocationDescription?.MaxTripTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_NowTimes", t => t.UserVocationDescription?.NowTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_OnTripTimes", t => t.UserVocationDescription?.OnTripTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_YearlyLength", t => t.UserVocationDescription?.YearlyLength),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_Description", t => t.UserVocationDescription?.Description),
-				new ParameterRenderer<ApplyDetailDto>("UserVocationInfo_VocationDescription", t => t.UserVocationDescription?.VocationDescription()),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_LeftLength", t => t.UserVacationDescription?.LeftLength),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_MaxTripTimes", t => t.UserVacationDescription?.MaxTripTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_NowTimes", t => t.UserVacationDescription?.NowTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_OnTripTimes", t => t.UserVacationDescription?.OnTripTimes),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_YearlyLength", t => t.UserVacationDescription?.YearlyLength),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_Description", t => t.UserVacationDescription?.Description),
+				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_VacationDescription", t => t.UserVacationDescription?.VacationDescription()),
 
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationTotalLength",
-					t => t.RequestInfo.VocationTotalLength()),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationDescription",
-					t => t.RequestInfo.RequestInfoVocationDescription()),
+				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationTotalLength",
+					t => t.RequestInfo.VacationTotalLength()),
+				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationDescription",
+					t => t.RequestInfo.RequestInfoVacationDescription()),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_OnTripLength", t => t.RequestInfo?.OnTripLength),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampLeave", t => t.RequestInfo?.StampLeave),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampReturn", t => t.RequestInfo?.StampReturn),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationLength", t => t.RequestInfo?.VocationLength),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationType", t => t.RequestInfo?.VocationType),
+				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationLength", t => t.RequestInfo?.VacationLength),
+				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationType", t => t.RequestInfo?.VacationType),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_ByTransportation",
 					t => t.RequestInfo?.ByTransportation),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_CreateTime", t => t.RequestInfo?.CreateTime),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_Reason", t => t.RequestInfo?.Reason),
 				new ParameterRenderer<ApplyDetailDto>("RequestInfo_Id", t => t.RequestInfo?.Id),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VocationPlace", t => t.RequestInfo?.VocationPlace.Name),
+				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationPlace", t => t.RequestInfo?.VacationPlace.Name),
 				new ParameterRenderer<ApplyDetailDto>("Base_Company", t => t.Base?.CompanyName),
 				new ParameterRenderer<ApplyDetailDto>("Base_Duties", t => t.Base?.DutiesName),
 				new ParameterRenderer<ApplyDetailDto>("Base_Title", t => t.Base?.UserTitle),

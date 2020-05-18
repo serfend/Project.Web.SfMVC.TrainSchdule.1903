@@ -8,7 +8,7 @@ using BLL.Interfaces;
 using DAL.DTO.Apply;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.ApplyServices
@@ -30,8 +30,8 @@ namespace BLL.Services.ApplyServices
 				CreateBy = model.CreateBy,
 				Social = new UserSocialInfo()
 				{
-					Address = await _context.AdminDivisions.FindAsync(model.VocationTargetAddress).ConfigureAwait(true),
-					AddressDetail = model.VocationTargetAddressDetail,
+					Address = await _context.AdminDivisions.FindAsync(model.VacationTargetAddress).ConfigureAwait(true),
+					AddressDetail = model.VacationTargetAddressDetail,
 					Phone = model.Phone,
 					Settle = model.Settle // 此处可能需要静态化处理，但考虑到.History问题，再议
 				},
@@ -49,29 +49,29 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequestVdto> CaculateVacation(ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			bool CaculateAdditionalAndTripLength = model.VocationType == "正休";
-			int additionalVocationDay = 0;
-			model.VocationAdditionals?.All(v => { additionalVocationDay += v.Length; v.Start = DateTime.Now; return true; });
+			bool CaculateAdditionalAndTripLength = model.VacationType == "正休";
+			int additionalVacationDay = 0;
+			model.VacationAdditionals?.All(v => { additionalVacationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (model.StampLeave != null)
 			{
-				var vocationLength = model.VocationLength + (CaculateAdditionalAndTripLength ? (model.OnTripLength + additionalVocationDay) : 0);
+				var vacationLength = model.VacationLength + (CaculateAdditionalAndTripLength ? (model.OnTripLength + additionalVacationDay) : 0);
 				// 当未享受福利假时才计算法定节假日
-				if (CaculateAdditionalAndTripLength && additionalVocationDay == 0)
+				if (CaculateAdditionalAndTripLength && additionalVacationDay == 0)
 				{
-					model.StampReturn = await vocationCheckServices.CrossVocation(model.StampLeave.Value, vocationLength, CaculateAdditionalAndTripLength);
-					List<VocationAdditional> lawVocations = vocationCheckServices.VocationDesc.Select(v => new VocationAdditional()
+					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, CaculateAdditionalAndTripLength);
+					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
 						Start = v.Start,
 						Length = v.Length,
 						Description = "法定节假日"
 					}).ToList();
-					lawVocations.AddRange(model.VocationAdditionals);
-					model.VocationAdditionals = lawVocations;//执行完crossVocation后已经处于加载完毕状态可直接使用
+					lawVacations.AddRange(model.VacationAdditionals);
+					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
 				}
-				else model.StampReturn = model.StampLeave.Value.AddDays(vocationLength - 1);
+				else model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
 
-				model.VocationDescriptions = vocationCheckServices.VocationDesc.CombineVocationDescription(CaculateAdditionalAndTripLength);
+				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription(CaculateAdditionalAndTripLength);
 			}
 			return model;
 		}
@@ -79,30 +79,30 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			var vacationInfo = _usersService.VocationInfo(targetUser);
+			var vacationInfo = _usersService.VacationInfo(targetUser);
 			model = await CaculateVacation(model).ConfigureAwait(true);
-			switch (model.VocationType)
+			switch (model.VacationType)
 			{
 				case "正休":
 					if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
-					if (model.VocationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVocation.Status, $"已无足够假期可以使用，超出{model.VocationLength - vacationInfo.LeftLength}天"));
+					if (model.VacationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVacation.Status, $"已无足够假期可以使用，超出{model.VacationLength - vacationInfo.LeftLength}天"));
 					// TODO 改成可以自定义设置天数
-					//if (model.VocationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VocationLengthTooShort);
+					//if (model.VacationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VacationLengthTooShort);
 					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.Default);
 					break;
 
 				case "事假":
-					model.VocationAdditionals = null;
+					model.VacationAdditionals = null;
 					model.OnTripLength = 0;
 					break;
 
 				case "病休":
-					model.VocationAdditionals = null;
+					model.VacationAdditionals = null;
 					model.OnTripLength = 0;
 					break;
 
 				default:
-					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVocationType);
+					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
 			}
 			// TODO 改成可以自定义是否允许跨年
 			//if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
@@ -112,13 +112,13 @@ namespace BLL.Services.ApplyServices
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
 				StampReturn = model.StampReturn,
-				VocationLength = model.VocationLength,
-				VocationPlace = model.VocationPlace,
-				VocationPlaceName = model.VocationPlaceName,
-				VocationType = model.VocationType,
+				VacationLength = model.VacationLength,
+				VacationPlace = model.VacationPlace,
+				VacationPlaceName = model.VacationPlaceName,
+				VacationType = model.VacationType,
 				CreateTime = DateTime.Now,
 				ByTransportation = model.ByTransportation,
-				AdditialVocations = model.VocationAdditionals,
+				AdditialVacations = model.VacationAdditionals,
 				VacationDescription = vacationInfo.Description
 			};
 			_context.ApplyRequests.Add(r);

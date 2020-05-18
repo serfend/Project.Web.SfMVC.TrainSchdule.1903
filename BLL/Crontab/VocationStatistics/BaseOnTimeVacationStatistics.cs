@@ -3,7 +3,7 @@ using BLL.Helpers;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
-using DAL.Entities.Vocations;
+using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +14,11 @@ namespace TrainSchdule.Crontab
 	/// <summary>
 	/// 对一段时间的休假情况进行统计并存入到数据库
 	/// </summary>
-	public class BaseOnTimeVocationStatistics : ICrontabJob
+	public class BaseOnTimeVacationStatistics : ICrontabJob
 	{
 		private readonly ApplicationDbContext _context;
 
-		public BaseOnTimeVocationStatistics(ApplicationDbContext context, DateTime start, DateTime end, string statisticsId = null)
+		public BaseOnTimeVacationStatistics(ApplicationDbContext context, DateTime start, DateTime end, string statisticsId = null)
 		{
 			_context = context;
 			Start = start;
@@ -53,7 +53,7 @@ namespace TrainSchdule.Crontab
 		{
 			var rootCompany = _context.Companies.Find(CompanyCode);
 			if (rootCompany == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var statistics = new VocationStatistics()
+			var statistics = new VacationStatistics()
 			{
 				Start = Start,
 				End = End,
@@ -62,12 +62,12 @@ namespace TrainSchdule.Crontab
 				Description = Description,
 				RootCompanyStatistics = GenerateStatistics(rootCompany)
 			};
-			var dbStatistics = _context.VocationStatistics.Find(statistics.Id);
+			var dbStatistics = _context.VacationStatistics.Find(statistics.Id);
 			if (dbStatistics != null) return;
 			VacationStatisticsDescription tmp = statistics.RootCompanyStatistics;
-			VocationStatisticsExtensions.StatisticsInit(ref tmp, _context, statistics.CurrentYear, StatisticsId);
+			VacationStatisticsExtensions.StatisticsInit(ref tmp, _context, statistics.CurrentYear, StatisticsId);
 			statistics.RootCompanyStatistics = tmp;
-			_context.VocationStatistics.Add(statistics);
+			_context.VacationStatistics.Add(statistics);
 			_context.SaveChanges();
 		}
 

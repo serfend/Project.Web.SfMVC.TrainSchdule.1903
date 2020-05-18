@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace DAL.DTO.System
 {
-	public class VocationDateDto
+	public class VacationDateDto
 	{
-		public IEnumerable<VocationDescription> Descriptions { get; set; }
-		public int VocationDays { get; set; }
+		public IEnumerable<VacationDescription> Descriptions { get; set; }
+		public int VacationDays { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 	}

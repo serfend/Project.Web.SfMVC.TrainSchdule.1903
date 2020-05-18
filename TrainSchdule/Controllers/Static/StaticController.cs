@@ -35,7 +35,7 @@ namespace TrainSchdule.Controllers
 	public partial class StaticController : Controller
 	{
 		private readonly IVerifyService _verifyService;
-		private readonly IVocationCheckServices _vocationCheckServices;
+		private readonly IVacationCheckServices _vacationCheckServices;
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
 		private readonly IHostingEnvironment _hostingEnvironment;
@@ -49,7 +49,7 @@ namespace TrainSchdule.Controllers
 		///
 		/// </summary>
 		/// <param name="verifyService"></param>
-		/// <param name="vocationCheckServices"></param>
+		/// <param name="vacationCheckServices"></param>
 		/// <param name="context"></param>
 		/// <param name="applyService"></param>
 		/// <param name="hostingEnvironment"></param>
@@ -58,10 +58,10 @@ namespace TrainSchdule.Controllers
 		/// <param name="companiesService"></param>
 		/// <param name="httpContext"></param>
 		/// <param name="fileServices"></param>
-		public StaticController(IVerifyService verifyService, IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
+		public StaticController(IVerifyService verifyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
 		{
 			_verifyService = verifyService;
-			_vocationCheckServices = vocationCheckServices;
+			_vacationCheckServices = vacationCheckServices;
 			_context = context;
 			_applyService = applyService;
 			_hostingEnvironment = hostingEnvironment;
@@ -77,22 +77,22 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="start">开始日期</param>
 		/// <param name="length">长度</param>
-		/// <param name="caculateLawVocation">是否计算法定节假日</param>
+		/// <param name="caculateLawVacation">是否计算法定节假日</param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(VocationDescriptionDataModel), 0)]
-		public async Task<IActionResult> VocationDate(DateTime start, int length, bool caculateLawVocation)
+		[ProducesResponseType(typeof(VacationDescriptionDataModel), 0)]
+		public async Task<IActionResult> VacationDate(DateTime start, int length, bool caculateLawVacation)
 		{
-			var list = await _vocationCheckServices.GetVocationDescriptions(start, length, caculateLawVocation).ConfigureAwait(true);
-			return new JsonResult(new VocationDescriptionViewModel()
+			var list = await _vacationCheckServices.GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(true);
+			return new JsonResult(new VacationDescriptionViewModel()
 			{
-				Data = new VocationDescriptionDataModel()
+				Data = new VacationDescriptionDataModel()
 				{
 					Descriptions = list,
-					EndDate = _vocationCheckServices.EndDate,
+					EndDate = _vacationCheckServices.EndDate,
 					StartDate = start,
-					VocationDays = _vocationCheckServices.EndDate.Subtract(start).Days
+					VacationDays = _vacationCheckServices.EndDate.Subtract(start).Days
 				}
 			});
 		}

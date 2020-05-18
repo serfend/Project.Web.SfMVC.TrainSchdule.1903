@@ -15,8 +15,8 @@ namespace DAL.DTO.Apply
 		/// <summary>
 		/// 休假去向
 		/// </summary>
-		public int VocationTargetAddress { get; set; }
+		public int VacationTargetAddress { get; set; }
 
-		public string VocationTargetAddressDetail { get; set; }
+		public string VacationTargetAddressDetail { get; set; }
 	}
 }

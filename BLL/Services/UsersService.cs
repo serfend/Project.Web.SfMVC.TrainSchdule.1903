@@ -34,7 +34,7 @@ namespace BLL.Services
 
 		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
-		private readonly IVocationCheckServices _vocationCheckServices;
+		private readonly IVacationCheckServices _vacationCheckServices;
 
 		#endregion Fields
 
@@ -43,11 +43,11 @@ namespace BLL.Services
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UsersService"/>.
 		/// </summary>
-		public UsersService(IVocationCheckServices vocationCheckServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+		public UsersService(IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
 			_context = context;
 			_hostingEnvironment = hostingEnvironment;
-			_vocationCheckServices = vocationCheckServices;
+			_vacationCheckServices = vacationCheckServices;
 		}
 
 		#endregion .ctors
@@ -292,14 +292,14 @@ namespace BLL.Services
 				Img = newAvatar.FromBase64ToBytes(),
 				User = targetUser
 			};
-			if ( avatar?.Img?.Length <= 1024 * 200)
+			if (avatar?.Img?.Length <= 1024 * 200)
 			{
 				_context.AppUserDiyAvatars.Add(avatar);
 				targetUser.DiyInfo.Avatar = avatar;
 				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
 				await _context.SaveChangesAsync().ConfigureAwait(true);
 			}
-			else if(avatar?.Img?.Length > 1024 * 200)
+			else if (avatar?.Img?.Length > 1024 * 200)
 			{
 				throw new FileTooLargeException(1024 * 200, avatar.Img.Length);
 			}
