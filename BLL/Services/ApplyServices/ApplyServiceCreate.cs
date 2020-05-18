@@ -268,6 +268,7 @@ namespace BLL.Services.ApplyServices
 			List<ApplyAuditStep> allStep = new List<ApplyAuditStep>(model.Apply.ApplyAllAuditStep);
 			// 审批未发布时 不可进行审批
 			if (nowStep == null) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAuditOrNotReceived;
+			if (model.Apply.Status != AuditStatus.AcceptAndWaitAdmin && model.Apply.Status != AuditStatus.Auditing) return ActionStatusMessage.ApplyMessage.Operation.Audit.NotOnAudingStatus;
 			// 待审批人无当前用户时，返回无效
 			if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.NoYourAuditStream;
 			if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAudit;

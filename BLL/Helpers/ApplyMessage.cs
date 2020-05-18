@@ -52,6 +52,7 @@ namespace BLL.Helpers
 					public static readonly ApiResult NotExist = new ApiResult(43620, "不存在的审核流程");
 					public static readonly ApiResult NoYourAuditStream = new ApiResult(43630, "无当前审批阶段的审批权限");
 					public static readonly ApiResult BeenAuditOrNotReceived = new ApiResult(43640, "已审核或未收到审核");
+					public static readonly ApiResult NotOnAudingStatus = new ApiResult(43650, "申请不处于审核状态中");
 				}
 
 				public static class Save
