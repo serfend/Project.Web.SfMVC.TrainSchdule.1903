@@ -17,6 +17,7 @@ using TrainSchdule.Extensions;
 using DAL.QueryModel;
 using TrainSchdule.ViewModels;
 using DAL.Entities.ApplyInfo;
+using BLL.Extensions.Common;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -72,20 +73,21 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpGet]
 		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20)
 		{
+			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var currentUser = _currentUserService.CurrentUser;
-
 			var c = id == null ? currentUser : _usersService.Get(id);
 			if (id != null && id != currentUser.Id)
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
+			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()?.Select(a => a.ToSummaryDto()),
-					TotalCount = list.Count()
+					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
+					TotalCount = result.Item2
 				}
 			});
 		}
@@ -101,6 +103,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpGet]
 		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, string actionStatus = null)
 		{
+			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var c = _currentUserService.CurrentUser;
 			var statusArr = status?.Split("##")?.Select(i => Convert.ToInt32(i));
 			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
@@ -123,12 +126,14 @@ namespace TrainSchdule.Controllers.Apply
 						}
 					case "unreceive":
 						{
+							r = r.Where(a => a.Status == AuditStatus.AcceptAndWaitAdmin || a.Status == AuditStatus.Auditing); // 当前处于审批中的
 							r = r.Where(a => a.Response.All(res => res.AuditingBy.Id != c.Id)); // 我没有进行审批的
 							r = r.Where(a => a.NowAuditStep != null).Where(a => !a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页不该我审批的
 							break;
 						}
 					case "received":
 						{
+							r = r.Where(a => a.Status == AuditStatus.AcceptAndWaitAdmin || a.Status == AuditStatus.Auditing); // 当前处于审批中的
 							r = r.Where(a => a.Response.All(res => res.AuditingBy.Id != c.Id)); // 我没有进行审批的
 							r = r.Where(a => a.NowAuditStep != null).Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页该我审批的
 							break;
@@ -139,12 +144,13 @@ namespace TrainSchdule.Controllers.Apply
 
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Status).ThenByDescending(a => a.Create);
+			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new ApplyListDataModel()
 				{
-					List = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()?.Select(a => a.ToSummaryDto()),
-					TotalCount = list.Count()
+					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
+					TotalCount = result.Item2
 				}
 			});
 		}
