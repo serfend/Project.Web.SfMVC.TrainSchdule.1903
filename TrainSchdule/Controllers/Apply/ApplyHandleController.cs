@@ -134,8 +134,8 @@ namespace TrainSchdule.Controllers.Apply
 					case "received":
 						{
 							r = r.Where(a => a.Status == AuditStatus.AcceptAndWaitAdmin || a.Status == AuditStatus.Auditing); // 当前处于审批中的
-							r = r.Where(a => a.Response.All(res => res.AuditingBy.Id != c.Id)); // 我没有进行审批的
 							r = r.Where(a => a.NowAuditStep != null).Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id)); // 并且当前页该我审批的
+							r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id)); // 并且当前我没有审核的
 							break;
 						}
 					default: return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Default);
