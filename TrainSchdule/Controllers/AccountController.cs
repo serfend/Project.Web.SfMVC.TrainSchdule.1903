@@ -121,7 +121,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult GetUserIdByRealName(string realName)
 		{
 			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
-			var users = _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
+			var users = realName.ToLower() == "admin" ? new List<User>() { _usersService.Get("root") } : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
 			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName)).ToList();
 			return new JsonResult(new UserSummariesViewModel()
 			{
