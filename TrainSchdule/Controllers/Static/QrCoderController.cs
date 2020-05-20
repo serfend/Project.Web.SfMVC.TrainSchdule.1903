@@ -34,8 +34,15 @@ namespace TrainSchdule.Controllers
 			var fileName = $"{fileNameRaw.ToMd5()}";
 			var imgFileName = $"{fileName}.jpg";
 			var svgFileName = $"{fileName}.svg";
-			var iconFile = model.Icon?.FileName != null ? _fileServices.Load(QRCodePath, model.Icon?.FileName) : null;
-			var iconFileRaw = iconFile != null ? _fileServices.Download(iconFile.Id) : null;
+			UserFile iconFileRaw = null;
+			if (model.Icon?.FileName != null)
+			{
+				Guid.TryParse(model.Icon.FileName, out var fid);
+				if (fid != null)
+				{
+					iconFileRaw = _fileServices.Download(fid);
+				}
+			}
 
 			Bitmap icon = null;
 			if (iconFileRaw != null)
