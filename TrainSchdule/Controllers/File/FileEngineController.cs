@@ -5,6 +5,7 @@ using BLL.Interfaces.File;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.File;
@@ -70,7 +71,10 @@ namespace TrainSchdule.Controllers.File
 		[HttpGet]
 		public async Task<IActionResult> FromPath(string path, string filename)
 		{
-			var file = await Task.Run(() => { return fileServices.Load(path, filename); }).ConfigureAwait(true);
+			var file = await Task.Run(() =>
+			{
+				return fileServices.Load(path, filename);
+			}).ConfigureAwait(true);
 			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
 			return await Download(file.Id.ToString()).ConfigureAwait(false);
 		}
@@ -84,13 +88,59 @@ namespace TrainSchdule.Controllers.File
 		[HttpGet]
 		public async Task<IActionResult> Load(string filepath, string filename)
 		{
-			var file = await Task.Run(() => { return fileServices.Load(filepath, filename); }).ConfigureAwait(true);
+			var file = await Task.Run(() =>
+			{
+				return fileServices.Load(filepath, filename);
+			}).ConfigureAwait(true);
 			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
 			return new JsonResult(new FileInfoViewModel()
 			{
 				Data = new FileInfoDataModel()
 				{
 					File = file.ToVdto()
+				}
+			});
+		}
+
+		/// <summary>
+		/// 获取子文件夹
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult Folders(string path, int pageSize = 20, int pageIndex = 0)
+		{
+			var result = fileServices.Folders(path, new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
+			return new JsonResult(new FoldersViewModel()
+			{
+				Data = new FoldersDataModel()
+				{
+					Folders = result?.Item1,
+					TotalCount = result?.Item2 ?? 0
+				}
+			});
+		}
+
+		/// <summary>
+		/// 获取文件夹下的文件
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <returns></returns>
+
+		[HttpGet]
+		public IActionResult FolderFiles(string path, int pageSize = 20, int pageIndex = 0)
+		{
+			var result = fileServices.FolderFiles(path, new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
+			return new JsonResult(new FileInfosViewModel()
+			{
+				Data = new FileInfosDataModel()
+				{
+					Files = result?.Item1?.ToList()?.Select(f => f.ToVdto()),
+					TotalCount = result?.Item2 ?? 0
 				}
 			});
 		}

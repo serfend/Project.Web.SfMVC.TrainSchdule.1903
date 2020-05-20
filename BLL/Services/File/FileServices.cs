@@ -1,8 +1,10 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions.Common;
+using BLL.Helpers;
 using BLL.Interfaces.File;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities.FileEngine;
+using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -35,7 +37,77 @@ namespace BLL.Services.File
 
 		public UserFileInfo FileInfo(Guid id) => context.UserFileInfos.Find(id);
 
-		public UserFileInfo Load(string path, string filename) => context.UserFileInfos.Where(c => c.Path == path).Where(c => c.Name == filename).FirstOrDefault();
+		public Tuple<IQueryable<UserFileInfo>, int> FolderFiles(string filepath, QueryByPage pages)
+		{
+			var node = GetNode(filepath, false, null);
+			var list = context.UserFileInfos.AsQueryable();
+
+			if (node == null)
+				list = list.Where(f => f.Parent == null);
+			else
+				list = list.Where(f => f.Parent.Id == node.Id);
+			list = list.Where(f => f.Name != null).OrderByDescending(f => f.Create);
+			return list.SplitPage<UserFileInfo>(pages).Result;
+		}
+
+		public Tuple<IEnumerable<string>, int> Folders(string filepath, QueryByPage pages)
+		{
+			var node = GetNode(filepath, false, null);
+			var list = context.UserFileInfos.AsQueryable();
+			if (node == null)
+				list = list.Where(f => f.Parent == null);
+			else
+				list = list.Where(f => f.Parent.Id == node.Id);
+			list = list.Where(f => f.Name == null).OrderByDescending(f => f.Create);
+			var result = list.SplitPage(pages).Result;
+			return new Tuple<IEnumerable<string>, int>(result.Item1.Select(c => c.Path), result.Item2);
+		}
+
+		public UserFileInfo GetNode(string path, bool mkdWhenNotExist = false, UserFileInfo current = null)
+		{
+			if (path == null) return current;
+			var exactPath = path.Trim('/');
+			if (path.IsNullOrEmpty()) return null;
+			var list = current == null ?
+				context.UserFileInfos.Where(f => f.Parent == null)
+				: context.UserFileInfos.Where(f => f.Parent != null && f.Parent.Id == current.Id);
+			var paths = exactPath.Split('/');
+			var next = list.Where(f => f.Path == paths[0]).FirstOrDefault();
+			if (next == null && mkdWhenNotExist)
+			{
+				next = new UserFileInfo()
+				{
+					Path = paths[0],
+					Parent = current,
+					Create = DateTime.Now,
+				};
+				context.UserFileInfos.Add(next);
+				context.SaveChanges();
+			}
+			if (next == null) return null;
+			if (paths.Length > 1) return GetNode(exactPath.Substring(paths[0].Length + 1), mkdWhenNotExist, next);
+			return next;
+		}
+
+		public UserFileInfo LoadFromCurrentPath(string filename, UserFileInfo current)
+		{
+			var result = context.UserFileInfos.AsQueryable();
+			if (current == null)
+				result = result.Where(c => c.Parent == null);
+			else
+				result = result.Where(c => c.Parent != null && c.Parent.Id == current.Id);
+			result = result.Where(c => c.Name == filename);
+			return result.FirstOrDefault();
+		}
+
+		public UserFileInfo Load(string path, string filename)
+		{
+			var node = GetNode(path, false);
+			var result = LoadFromCurrentPath(filename, node);
+			// 兼容老版本文件（文件自身带Path）
+			if (result == null) result = context.UserFileInfos.Where(f => f.Parent == null).Where(f => f.Path == path).Where(f => f.Name == filename).FirstOrDefault();
+			return result;
+		}
 
 		public async Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId, Guid clientKey)
 		{
@@ -43,10 +115,11 @@ namespace BLL.Services.File
 			UserFile f = null;
 			UserFileInfo fi = null;
 			filename = filename.IsNullOrEmpty() ? file.FileName : filename;
+			var currentNode = GetNode(path, true, null);
 			if (uploadStatusId == Guid.Empty)
 			{
 				// 判断文件是否已存在，若已存在则先删除
-				fi = Load(path, filename);
+				fi = LoadFromCurrentPath(filename, currentNode);
 
 				if (fi != null)
 				{
@@ -64,7 +137,8 @@ namespace BLL.Services.File
 					{
 						Id = Guid.NewGuid(),
 						Name = filename,
-						Path = path,
+						Parent = currentNode,
+						Path = null,
 						Create = DateTime.Now,
 					};
 				}

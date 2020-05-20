@@ -77,22 +77,6 @@ namespace TrainSchdule.Controllers
 			return tempFile.FullName;
 		}
 
-		/// <summary>
-		/// 删除临时文件
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[HttpDelete]
-		public IActionResult RemoveTempFile(string id)
-		{
-			var file = _fileServices.Load(XlsExportPath, id);
-			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
-			if (_fileServices.Remove(file))
-				return new JsonResult(ActionStatusMessage.Success);
-			else
-				return new JsonResult(ActionStatusMessage.Fail);
-		}
-
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
 			var datetime = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -100,11 +84,8 @@ namespace TrainSchdule.Controllers
 			using (var sr = new MemoryStream(fileContent))
 			{
 				var file = new FormFile(sr, 0, fileContent.Length, fileName, fileName);
-
 				var tmpFile = await _fileServices.Upload(file, XlsExportPath, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
-
 				var removeTime = TimeSpan.FromDays(7);
-				var jobId = BackgroundJob.Schedule(() => RemoveTempFile(tmpFile.Id.ToString()), removeTime);
 				return new JsonResult(new FileReturnViewModel()
 				{
 					Data = new FileReturnDataModel()

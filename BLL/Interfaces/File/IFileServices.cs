@@ -1,8 +1,10 @@
 ﻿using DAL.Entities.FileEngine;
+using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +23,31 @@ namespace BLL.Interfaces.File
 		/// <returns></returns>
 		Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId, Guid clientKey);
 
+		/// <summary>
+		/// 获取文件夹下的文件列表
+		/// </summary>
+		/// <param name="filepath"></param>
+		/// <param name="pages"></param>
+		/// <returns></returns>
+		Tuple<IQueryable<UserFileInfo>, int> FolderFiles(string filepath, QueryByPage pages);
+
+		/// <summary>
+		/// 通过路径获取文件节点，不存在的路径将会被创建
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="mkdWhenNotExist"></param>
+		/// <param name="current">当前所在节点</param>
+		/// <returns></returns>
+		UserFileInfo GetNode(string path, bool mkdWhenNotExist, UserFileInfo current);
+
+		/// <summary>
+		/// 获取文件夹的子文件夹
+		/// </summary>
+		/// <param name="filepath"></param>
+		/// <param name="pages"></param>
+		/// <returns></returns>
+		Tuple<IEnumerable<string>, int> Folders(string filepath, QueryByPage pages);
+
 		void RemoveTimeoutUploadStatus();
 
 		/// <summary>
@@ -30,12 +57,20 @@ namespace BLL.Interfaces.File
 		UploadCache Stauts();
 
 		/// <summary>
+		/// 获取文件信息（currentId不可为null）
+		/// </summary>
+		/// <param name="filename"></param>
+		/// <param name="current">需要指定当前父目录，调用GetNode</param>
+		/// <returns></returns>
+
+		UserFileInfo LoadFromCurrentPath(string filename, UserFileInfo current);
+
+		/// <summary>
 		/// 获取文件信息
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-
 		UserFileInfo Load(string path, string filename);
 
 		/// <summary>

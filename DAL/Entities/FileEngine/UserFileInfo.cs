@@ -30,6 +30,11 @@ namespace DAL.Entities.FileEngine
 		public string Path { get; set; }
 
 		/// <summary>
+		/// 父文件夹（文件=id=f.Parent.id&&path=f.path）
+		/// </summary>
+		public virtual UserFileInfo Parent { get; set; }
+
+		/// <summary>
 		/// 文件来源ip
 		/// </summary>
 		public string FromClient { get; set; }

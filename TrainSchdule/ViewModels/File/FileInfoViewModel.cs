@@ -22,12 +22,68 @@ namespace TrainSchdule.ViewModels.File
 	/// <summary>
 	///
 	/// </summary>
+	public class FoldersViewModel : ApiResult
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public FoldersDataModel Data { get; set; }
+	}
+
+	/// <summary>
+	/// 文件列表信息
+	/// </summary>
+	public class FileInfosViewModel : ApiResult
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public FileInfosDataModel Data { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
 	public class FileInfoDataModel
 	{
 		/// <summary>
 		///
 		/// </summary>
 		public FileInfoVDto File { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class FileInfosDataModel
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public IEnumerable<FileInfoVDto> Files { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+
+		public int TotalCount { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class FoldersDataModel
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public IEnumerable<string> Folders { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+
+		public int TotalCount { get; set; }
 	}
 
 	/// <summary>
