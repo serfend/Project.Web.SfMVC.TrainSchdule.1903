@@ -35,7 +35,7 @@ namespace BLL.Services
 			if (order.RecallBy == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (!(apply.ApplyAllAuditStep.LastOrDefault()?.MembersAcceptToAudit.Split("##").Contains(order.RecallBy.Id) ?? false)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallByNotSame);
 			if (apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeLateThanVacation);
-			if (order.ReturnStramp <= DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeEarlyThanNow);
+			if (order.ReturnStramp < apply.RequestInfo.StampLeave) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeEarlyThanVacationLeaveStamp);
 			_context.RecallOrders.Add(order);
 			apply.RecallId = order.Id;
 			_context.Applies.Update(apply);

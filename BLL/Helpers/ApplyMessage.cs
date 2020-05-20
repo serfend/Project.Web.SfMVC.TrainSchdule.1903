@@ -84,7 +84,7 @@ namespace BLL.Helpers
 				public static readonly ApiResult Crash = new ApiResult(46300, "休假已存在召回记录");
 				public static readonly ApiResult IdRecordButNoData = new ApiResult(46400, "用户休假申请的召回id存在，但无此召回的详细信息");
 				public static readonly ApiResult RecallTimeLateThanVacation = new ApiResult(46500, "召回时间不可晚于（等于）休假结束时间");
-				public static readonly ApiResult RecallTimeEarlyThanNow = new ApiResult(46600, "召回时间不可早于当前时间");
+				public static readonly ApiResult RecallTimeEarlyThanVacationLeaveStamp = new ApiResult(46600, "召回时间不可早于离队时间");
 			}
 
 			public static class AuditStream
