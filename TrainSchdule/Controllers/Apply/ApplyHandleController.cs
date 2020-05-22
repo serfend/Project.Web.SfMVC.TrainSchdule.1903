@@ -46,10 +46,10 @@ namespace TrainSchdule.Controllers.Apply
 				}
 
 				// 检查查询的单位范围，如果范围是空，则需要root权限
-				var permitCompaines = model.CreateCompany?.Value ?? "Root";
+				var permitCompanies = model.CreateCompany?.Value ?? "Root";
 
-				var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, permitCompaines);
-				if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{permitCompaines}的权限"));
+				var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, permitCompanies);
+				if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{permitCompanies}的权限"));
 				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{

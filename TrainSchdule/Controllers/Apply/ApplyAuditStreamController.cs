@@ -60,12 +60,12 @@ namespace TrainSchdule.Controllers.Apply
 			if (filter?.CompanyRefer != null || filter?.CompanyCodeLength?.Count() > 0 || filter?.CompanyTags?.Count() > 0)
 				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root"))
 					return (ActionStatusMessage.Account.Auth.Invalid.Default);
-			var targetCompaines = filter?.Companies;
-			if ((targetCompaines?.Count() ?? 0) == 0)
+			var targetCompanies = filter?.Companies;
+			if ((targetCompanies?.Count() ?? 0) == 0)
 			{
 				if (u.Id != "Root") return new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, "通用规则需要管理员权限");
 			}
-			foreach (var targetCompany in targetCompaines)
+			foreach (var targetCompany in targetCompanies)
 			{
 				var permit = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, targetCompany);
 				if (!permit) return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{targetCompany}的权限"));

@@ -183,16 +183,16 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <summary>
 		/// 单位统计记录
 		/// </summary>
-		/// <param name="compainesCode">需要查询的单位代码，以##分割</param>
+		/// <param name="companiesCode">需要查询的单位代码，以##分割</param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Summary(string compainesCode)
+		public IActionResult Summary(string companiesCode)
 		{
-			var compaines = compainesCode?.Split("##");
-			if (compaines == null || compaines.Length == 0) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
+			var companies = companiesCode?.Split("##");
+			if (companies == null || companies.Length == 0) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			var cmp = new CompareStatisticsId();
 			var targetCompanyStatistics = context.VacationStatisticsDescriptions.
-				Where<VacationStatisticsDescription>(v => compaines.Contains(v.Company.Code))
+				Where<VacationStatisticsDescription>(v => companies.Contains(v.Company.Code))
 				.OrderBy(v => v.StatisticsId)
 				.ToList()
 				.Distinct(cmp)
