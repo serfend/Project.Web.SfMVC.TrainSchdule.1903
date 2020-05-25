@@ -26,7 +26,7 @@ namespace BLL.Extensions.Common
 				return model.Count();
 			}).ConfigureAwait(true);
 			if (pages.PageSize <= 0 || pages.PageIndex < 0) return new Tuple<IQueryable<TSource>, int>(model.Where(f => false), 0);
-			var res = model.Skip(pages.PageIndex * pages.PageSize).Take(pages.PageSize);
+			var res = pages.PageSize < 0 ? model : model.Skip(pages.PageIndex * pages.PageSize).Take(pages.PageSize);
 			return new Tuple<IQueryable<TSource>, int>(res, totalCount);
 		}
 	}
