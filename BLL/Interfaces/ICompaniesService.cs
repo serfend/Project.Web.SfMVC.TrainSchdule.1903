@@ -30,14 +30,19 @@ namespace BLL.Interfaces
 		/// </summary>
 		Company GetById(string Code);
 
-		Company FindParent(string Code);
-
 		/// <summary>
 		/// 找到所有子单位
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
 		IEnumerable<Company> FindAllChild(string code);
+
+		/// <summary>
+		/// 获取父单位
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
+		Company FindParent(string code);
 
 		/// <summary>
 		/// 新增一个单位

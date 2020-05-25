@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BLL.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
@@ -9,8 +11,10 @@ using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.Company;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers
 {
@@ -73,20 +77,20 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
+		public async Task<IActionResult> DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			name = name ?? currentUser?.CompanyInfo?.Duties.Name ?? "";
-			var dutiesQuery = _context.Duties.Where(d => d.Name.Contains(name) && d.Name != "NotSet").ToList();
-			var totalCount = dutiesQuery.Count();
-			var duties = dutiesQuery;//.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(DutiesEqualComparer.GetInstance());
+			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet").Where(d => d.Name.Contains(name));
+			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
+			var data = new EntitiesListDataModel<DutyDataModel>()
+			{
+				List = result.Item1.Select(d => d.ToDataModel()),
+				TotalCount = result.Item2
+			};
 			return new JsonResult(new DutiesViewModel()
 			{
-				Data = new DutiesDataModel()
-				{
-					List = duties.Select(d => d.ToDataModel()),
-					TotalCount = totalCount
-				}
+				Data = data
 			});
 		}
 
@@ -98,20 +102,20 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
+		public async Task<IActionResult> TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			name = name ?? currentUser?.CompanyInfo?.Title?.Name ?? "";
-			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name.Contains(name) && d.Name != "NotSet").ToList();
-			var totalCount = dutiesQuery.Count();
-			var duties = dutiesQuery;//.Skip(pageIndex * pageNum).Take(pageNum).ToList().Distinct(UserTitleCompareer.GetInstance());
+			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet").Where(d => d.Name.Contains(name));
+			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
+			var data = new EntitiesListDataModel<UserTitleDataModel>()
+			{
+				List = result.Item1.Select(d => d.ToDataModel()),
+				TotalCount = result.Item2
+			};
 			return new JsonResult(new UserTitlesViewModel()
 			{
-				Data = new UserTitlesDataModel()
-				{
-					List = duties.Select(d => d.ToDataModel()),
-					TotalCount = totalCount
-				}
+				Data = data
 			});
 		}
 
@@ -121,23 +125,26 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult CompanyChild(string id)
+		public async Task<IActionResult> CompanyChild(string id)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			id = id ?? currentUser?.CompanyInfo?.Company?.Code;
-			List<Company> list;
-			if (id == null) id = "root";
-			list = _companiesService.FindAllChild(id).ToList();
-			if (currentUser != null && id == "root")
+			var list = _companiesService.FindAllChild(id)?.ToDictionary(c => c.Code) ?? new Dictionary<string, Company>();
+			int totalCount = list.Count;
+			var manageCount = 0;
+			if (currentUser != null && (new List<string>() { null, "", "root" }.Contains(id)))
 			{
-				var mymanage = _usersService.InMyManage(currentUser, out var totalCount);
-				list.AddRange(mymanage);
+				var mymanage_result = await _usersService.InMyManage(currentUser);
+				manageCount = mymanage_result.Item2;
+				foreach (var c in mymanage_result.Item1)
+					if (!list.TryAdd(c.Code, c)) manageCount--;
 			}
 			return new JsonResult(new AllChildViewModel()
 			{
-				Data = new AllChildDataModel()
+				Data = new EntitiesListDataModel<CompanyChildDataModel>()
 				{
-					List = list.Select(c => c.ToCompanyModel())
+					List = list.Values.OrderByDescending(c => c.Priority).Select(c => c.ToCompanyModel()),
+					TotalCount = totalCount + manageCount
 				}
 			});
 		}

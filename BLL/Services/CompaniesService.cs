@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
@@ -45,17 +46,25 @@ namespace BLL.Services
 
 		public IEnumerable<Company> FindAllChild(string code)
 		{
-			if (code.ToLower() == "root") return _context.Companies.Where(x => x.Code.Length == 1).ToList();
-			return _context.Companies.Where(x => ParentCode(x.Code) == code).ToList();
+			var list = _context.Companies.AsQueryable();
+			if (code.IsNullOrEmpty() || code.ToLower() == "root") list = list.Where(x => x.Code.Length == 1);
+			else
+			{
+				var childCodeLength = code.Length + 1;
+				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => x.Code.Substring(0, childCodeLength - 1) == code);
+			}
+			return list.OrderByDescending(x => x.Priority).ToList();
 		}
 
 		public Company FindParent(string code)
 		{
-			var parent = ParentCode(code);
-			return _context.Companies.Find(parent);
+			if (code == null) return null;
+			var list = _context.Companies.AsQueryable();
+			var parentCodeLength = code.Length - 1;
+			var parentCode = code.Substring(0, parentCodeLength);
+			list = list.Where(x => x.Code == parentCode);
+			return list.FirstOrDefault();
 		}
-
-		private string ParentCode(string code) => (code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
 
 		public Company Create(string name, string code)
 		{

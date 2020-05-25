@@ -15,6 +15,11 @@ namespace DAL.Entities
 		public string Name { get; set; }
 
 		/// <summary>
+		/// 优先级
+		/// </summary>
+		public int Priority { get; set; }
+
+		/// <summary>
 		/// 单位标识，用于进行分组，以##分割
 		/// </summary>
 		public string Tag { get; set; }
