@@ -10,6 +10,8 @@ namespace BLL.Extensions.Common
 {
 	public static class SplitPageExtensions
 	{
+		public static async Task<Tuple<IQueryable<TSource>, int>> SplitPage<TSource>(this IQueryable<TSource> model, int pageIndex = 0, int pageSize = 20) => await model.SplitPage(new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize }).ConfigureAwait(true);
+
 		public static async Task<Tuple<IQueryable<TSource>, int>> SplitPage<TSource>(this IQueryable<TSource> model, QueryByPage pages)
 		{
 			if (model == null)
