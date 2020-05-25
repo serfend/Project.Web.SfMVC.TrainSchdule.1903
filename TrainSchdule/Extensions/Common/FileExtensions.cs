@@ -1,4 +1,6 @@
-﻿using DAL.Entities.FileEngine;
+﻿using BLL.Interfaces.File;
+using Castle.Core.Internal;
+using DAL.Entities.FileEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace TrainSchdule.Extensions.Common
 	public static class FileExtensions
 	{
 		private const string fileDownloadPathById = "/file/download?fileid=";
-		private const string fileDownloadPathByStatic = "/file/";
+		private const string fileDownloadPathByStatic = "/file/staticFile/";
 		private const string fileDownloadPathByPath = "/file/fromPath";
 
 		/// <summary>
@@ -48,7 +50,8 @@ namespace TrainSchdule.Extensions.Common
 			switch (downloadType)
 			{
 				case DownloadType.ByPath:
-					return $"{fileDownloadPathByPath}?path={file?.Path}&filename={file?.Name}";
+
+					return $"{fileDownloadPathByPath}?path={file.FullPath()}&filename={file?.Name}";
 
 				case DownloadType.ById:
 					return $"{fileDownloadPathById}{file?.Id}";
@@ -59,6 +62,18 @@ namespace TrainSchdule.Extensions.Common
 				default:
 					throw new ArgumentOutOfRangeException(nameof(downloadType));
 			}
+		}
+
+		/// <summary>
+		/// 获取绝对路径
+		/// </summary>
+		/// <param name="file"></param>
+		/// <param name="nowPath"></param>
+		/// <returns></returns>
+		public static string FullPath(this UserFileInfo file, string nowPath = "")
+		{
+			var currentNode = file.Path.IsNullOrEmpty() ? null : $"{file.Path}/";
+			return file == null ? nowPath : $"{FullPath(file.Parent)}{currentNode}{nowPath}";
 		}
 	}
 }

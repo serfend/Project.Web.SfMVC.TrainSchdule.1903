@@ -91,7 +91,7 @@ namespace TrainSchdule.Controllers
 					Data = new FileReturnDataModel()
 					{
 						FileName = fileName,
-						RequestUrl = tmpFile.DownloadUrl(),
+						RequestUrl = tmpFile.DownloadUrl(FileExtensions.DownloadType.ByStatic),
 						ValidStamp = DateTime.Now.Add(removeTime),
 						Length = tmpFile.Length
 					}

@@ -90,7 +90,7 @@ namespace TrainSchdule.Controllers
 		{
 			var result = GenerateQrCodeImg(model, out var img, out var svg);
 			if (result != null) return new JsonResult(result);
-			return Redirect(img.DownloadUrl());
+			return Redirect(img.DownloadUrl(FileExtensions.DownloadType.ByStatic));
 		}
 
 		/// <summary>
@@ -108,8 +108,8 @@ namespace TrainSchdule.Controllers
 				Data = new QrCodeDataModel()
 				{
 					Data = model.Data,
-					Img = img.DownloadUrl(),
-					Svg = svg.DownloadUrl()
+					Img = img.DownloadUrl(FileExtensions.DownloadType.ByStatic),
+					Svg = svg.DownloadUrl(FileExtensions.DownloadType.ByStatic)
 				}
 			});
 		}
