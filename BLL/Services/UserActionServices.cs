@@ -65,9 +65,9 @@ namespace BLL.Services
 				}
 				else
 				{
-					var cmps = userServiceDetail.InMyManage(u, out var totalCount);
-					if (targetUserCompanyCode == null && totalCount > 0) return true;
-					else if (totalCount > 0 && cmps.Any(c => targetUserCompanyCode.StartsWith(c.Code)))
+					var results = userServiceDetail.InMyManage(u).Result;
+					if (targetUserCompanyCode == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
+					else if (results.Item2 > 0 && results.Item1.Any(c => targetUserCompanyCode.StartsWith(c.Code)))
 					{
 						Status(a, true, $"成功-单位管理-授权到{targetUserCompanyCode}执行{key?.Name}");
 						return true;

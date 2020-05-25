@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using System.Collections.Generic;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Company
 {
@@ -11,23 +12,7 @@ namespace TrainSchdule.ViewModels.Company
 		/// <summary>
 		///
 		/// </summary>
-		public UserTitlesDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	/// 返回职务等级列表
-	/// </summary>
-	public class UserTitlesDataModel
-	{
-		/// <summary>
-		/// 当前查询的分页中的数据
-		/// </summary>
-		public IEnumerable<UserTitleDataModel> List { get; set; }
-
-		/// <summary>
-		/// 当前查询的总数
-		/// </summary>
-		public int TotalCount { get; set; }
+		public EntitiesListDataModel<UserTitleDataModel> Data { get; set; }
 	}
 
 	/// <summary>

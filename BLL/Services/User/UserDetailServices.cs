@@ -10,6 +10,7 @@ using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -24,27 +25,31 @@ namespace BLL.Services
 		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
 		public int CheckAuthorizedToUser(User authUser, User modefyUser)
 		{
-			var myManages = InMyManage(authUser, out var totalCount)?.ToList();
-			if (myManages == null || myManages.Count == 0) return -1;
+			var result = InMyManage(authUser).Result;
+			var myManages = result.Item1.ToList();
+			if (result.Item2 == 0) return -1;
 			if (modefyUser == null) return 1;
 			var targetCompany = modefyUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			return myManages.Max(m => targetCompany.StartsWith(m.Code) ? targetCompany.Length - m.Code.Length : -1);
 		}
 
-		public IEnumerable<Company> InMyManage(User user, out int totalCount)
+		public async Task<Tuple<IEnumerable<Company>, int>> InMyManage(User user)
 		{
-			totalCount = 0;
+			int totalCount = 0;
 			var list = new List<Company>();
-
-			if (user == null || user.CompanyInfo?.Company == null) return list;
-			list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
-			// 所在单位的主管拥有此单位的管理权
-			var companyCode = user.CompanyInfo.Company.Code;
-
-			if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode)) list.Add(user.CompanyInfo.Company);
-			totalCount = list == null ? 0 : list.Count;
-			return list;
+			if (user?.CompanyInfo?.Company == null)
+			{
+				list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
+				// 所在单位的主管拥有此单位的管理权
+				var companyCode = user.CompanyInfo.Company.Code;
+				if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode))
+				{
+					list.Add(user.CompanyInfo.Company);
+				}
+				totalCount = list.Count;
+			}
+			return new Tuple<IEnumerable<Company>, int>(list, totalCount);
 		}
 
 		/// <summary>

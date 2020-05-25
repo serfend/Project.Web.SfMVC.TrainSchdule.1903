@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.Crontab;
 using TrainSchdule.ViewModels.Statistics;
+using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Statistics
@@ -73,9 +74,10 @@ namespace TrainSchdule.Controllers.Statistics
 			var result = _vacationStatisticsServices.Query(model);
 			return new JsonResult(new VacationStatisticsDescriptionsViewModel()
 			{
-				Data = new VacationStatisticsDescriptionsDataModel()
+				Data = new EntitiesListDataModel<VacationStatisticsDescription>()
 				{
-					List = result
+					List = result.Item1,
+					TotalCount = result.Item2
 				}
 			});
 		}
@@ -160,27 +162,6 @@ namespace TrainSchdule.Controllers.Statistics
 		}
 
 		/// <summary>
-		///
-		/// </summary>
-		public class CompareStatisticsId : IEqualityComparer<VacationStatisticsDescription>
-		{
-			/// <summary>
-			///
-			/// </summary>
-			/// <param name="x"></param>
-			/// <param name="y"></param>
-			/// <returns></returns>
-			public bool Equals(VacationStatisticsDescription x, VacationStatisticsDescription y) => x.StatisticsId == y.StatisticsId;
-
-			/// <summary>
-			///
-			/// </summary>
-			/// <param name="obj"></param>
-			/// <returns></returns>
-			public int GetHashCode(VacationStatisticsDescription obj) => obj.StatisticsId.GetHashCode();
-		}
-
-		/// <summary>
 		/// 单位统计记录
 		/// </summary>
 		/// <param name="companiesCode">需要查询的单位代码，以##分割</param>
@@ -190,33 +171,17 @@ namespace TrainSchdule.Controllers.Statistics
 		{
 			var companies = companiesCode?.Split("##");
 			if (companies == null || companies.Length == 0) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
-			var cmp = new CompareStatisticsId();
-			var targetCompanyStatistics = context.VacationStatisticsDescriptions.
+			var statisticsIds = context.VacationStatisticsDescriptions.
 				Where<VacationStatisticsDescription>(v => companies.Contains(v.Company.Code))
-				.OrderBy(v => v.StatisticsId)
-				.ToList()
-				.Distinct(cmp)
-				;
-			bool anyChange = false;// 当本级不存在时，删除本级
-			foreach (var item in targetCompanyStatistics) if (item.StatisticsId == null)
-				{
-					anyChange = true;
-					RemoveStatisticsDescription(item);
-				}
-			if (anyChange)
-			{
-				foreach (var vs in context.VacationStatistics)
-				{
-					var leftCount = context.VacationStatisticsDescriptions.Count(v => v.StatisticsId == vs.Id);
-					if (leftCount == 0) context.VacationStatistics.Remove(vs);
-				}
-				context.SaveChanges();
-			}
+				.Select(v => v.StatisticsId).Distinct()
+				.ToList();
+			var list = statisticsIds.Select(v => new NewStatisticsSingleDataModel(v, context.VacationStatistics.Where(s => s.Id == v).FirstOrDefault()));
 			return new JsonResult(new NewStatisticsListViewModel()
 			{
-				Data = new NewStatisticsListDataModel()
+				Data = new EntitiesListDataModel<NewStatisticsSingleDataModel>()
 				{
-					List = targetCompanyStatistics.Select(v => v.ToSummaryModel(context.VacationStatistics.Where(s => s.Id == v.StatisticsId).FirstOrDefault()))
+					List = list,
+					TotalCount = list.Count()
 				}
 			});
 		}

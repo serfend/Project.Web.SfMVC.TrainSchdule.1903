@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using System.Collections.Generic;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Company
 {
@@ -11,18 +12,7 @@ namespace TrainSchdule.ViewModels.Company
 		/// <summary>
 		///
 		/// </summary>
-		public AllChildDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	///
-	/// </summary>
-	public class AllChildDataModel
-	{
-		/// <summary>
-		///
-		/// </summary>
-		public IEnumerable<CompanyChildDataModel> List { get; set; }
+		public EntitiesListDataModel<CompanyChildDataModel> Data { get; set; }
 	}
 
 	/// <summary>

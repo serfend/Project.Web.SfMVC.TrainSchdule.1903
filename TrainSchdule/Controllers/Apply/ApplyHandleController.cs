@@ -18,6 +18,7 @@ using DAL.QueryModel;
 using TrainSchdule.ViewModels;
 using DAL.Entities.ApplyInfo;
 using BLL.Extensions.Common;
+using System.Threading.Tasks;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -53,7 +54,7 @@ namespace TrainSchdule.Controllers.Apply
 				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{
-					Data = new ApplyListDataModel()
+					Data = new EntitiesListDataModel<ApplySummaryDto>()
 					{
 						List = list,
 						TotalCount = totalCount
@@ -86,7 +87,7 @@ namespace TrainSchdule.Controllers.Apply
 			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{
-				Data = new ApplyListDataModel()
+				Data = new EntitiesListDataModel<ApplySummaryDto>()
 				{
 					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
 					TotalCount = result.Item2
@@ -149,7 +150,7 @@ namespace TrainSchdule.Controllers.Apply
 			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{
-				Data = new ApplyListDataModel()
+				Data = new EntitiesListDataModel<ApplySummaryDto>()
 				{
 					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
 					TotalCount = result.Item2
@@ -206,14 +207,16 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult RomovedApply()
+		public async Task<IActionResult> RomovedApply(int pageIndex = 0, int pageSize = 20)
 		{
-			var list = _context.Applies.Where(a => a.IsRemoved).ToList();
+			var list = _context.Applies.Where(a => a.IsRemoved).OrderByDescending(a => a.IsRemovedDate);
+			var result = await list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
 			return new JsonResult(new ApplyListViewModel()
 			{
-				Data = new ApplyListDataModel()
+				Data = new EntitiesListDataModel<ApplySummaryDto>()
 				{
-					List = list?.Select(a => a.ToSummaryDto())
+					List = result.Item1.ToList().Select(c => c.ToSummaryDto()),
+					TotalCount = result.Item2
 				}
 			});
 		}

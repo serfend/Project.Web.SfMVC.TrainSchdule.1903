@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.Vacations;
 using System.Collections.Generic;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Statistics
 {
@@ -23,17 +24,6 @@ namespace TrainSchdule.ViewModels.Statistics
 		/// <summary>
 		///
 		/// </summary>
-		public VacationStatisticsDescriptionsDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	///
-	/// </summary>
-	public class VacationStatisticsDescriptionsDataModel
-	{
-		/// <summary>
-		///
-		/// </summary>
-		public IEnumerable<VacationStatisticsDescription> List { get; set; }
+		public EntitiesListDataModel<VacationStatisticsDescription> Data { get; set; }
 	}
 }

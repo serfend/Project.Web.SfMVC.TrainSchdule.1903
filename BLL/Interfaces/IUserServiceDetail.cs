@@ -14,9 +14,8 @@ namespace BLL.Interfaces
 		/// 用户为主管的单位
 		/// </summary>
 		/// <param name="user"></param>
-		/// <param name="totalCount"></param>
 		/// <returns></returns>
-		IEnumerable<Company> InMyManage(User user, out int totalCount);
+		Task<Tuple<IEnumerable<Company>, int>> InMyManage(User user);
 
 		/// <summary>
 		/// 获取用户的休假概况

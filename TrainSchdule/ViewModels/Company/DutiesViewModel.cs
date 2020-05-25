@@ -17,23 +17,7 @@ namespace TrainSchdule.ViewModels.Company
 		/// <summary>
 		///
 		/// </summary>
-		public DutiesDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	/// 返回职务列表
-	/// </summary>
-	public class DutiesDataModel
-	{
-		/// <summary>
-		/// 当前查询的分页中的数据
-		/// </summary>
-		public IEnumerable<DutyDataModel> List { get; set; }
-
-		/// <summary>
-		/// 当前查询的总数
-		/// </summary>
-		public int TotalCount { get; set; }
+		public EntitiesListDataModel<DutyDataModel> Data { get; set; }
 	}
 
 	/// <summary>

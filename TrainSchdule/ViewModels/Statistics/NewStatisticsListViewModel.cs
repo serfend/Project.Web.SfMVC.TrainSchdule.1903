@@ -4,6 +4,7 @@ using DAL.DTO.Company;
 using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.ViewModels.Statistics
 {
@@ -15,18 +16,7 @@ namespace TrainSchdule.ViewModels.Statistics
 		/// <summary>
 		///
 		/// </summary>
-		public NewStatisticsListDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	///
-	/// </summary>
-	public class NewStatisticsListDataModel
-	{
-		/// <summary>
-		///
-		/// </summary>
-		public IEnumerable<NewStatisticsSingleDataModel> List { get; set; }
+		public EntitiesListDataModel<NewStatisticsSingleDataModel> Data { get; set; }
 	}
 
 	/// <summary>
@@ -34,6 +24,19 @@ namespace TrainSchdule.ViewModels.Statistics
 	/// </summary>
 	public class NewStatisticsSingleDataModel
 	{
+		/// <summary>
+		/// 通过id和统计初始化
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="parent"></param>
+		public NewStatisticsSingleDataModel(string id, VacationStatistics parent)
+		{
+			Id = id;
+			Start = parent?.Start ?? DateTime.MinValue;
+			End = parent?.End ?? DateTime.MinValue;
+			Description = parent?.Description;
+		}
+
 		/// <summary>
 		///
 		/// </summary>
@@ -90,45 +93,5 @@ namespace TrainSchdule.ViewModels.Statistics
 		///
 		/// </summary>
 		public CurrentLevelStatisticsDataModel Data { get; set; }
-	}
-
-	/// <summary>
-	///
-	/// </summary>
-	public static class NewStatisticsExtensions
-	{
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public static CurrentLevelStatisticsDataModel ToDetailDataModel(this VacationStatisticsDescription model)
-		{
-			return new CurrentLevelStatisticsDataModel()
-			{
-				Company = model.Company.ToDto(),
-				StatisticsId = model.StatisticsId,
-				CurrentLevelStatistics = model.CurrentLevelStatistics,
-				IncludeChildLevelStatistics = model.IncludeChildLevelStatistics
-			};
-		}
-
-		/// <summary>
-		/// 获取概略统计信息
-		/// </summary>
-		/// <param name="model"></param>
-		/// <param name="parent"></param>
-		/// <returns></returns>
-		public static NewStatisticsSingleDataModel ToSummaryModel(this VacationStatisticsDescription model, VacationStatistics parent)
-		{
-			if (parent == null || model == null) return null;
-			return new NewStatisticsSingleDataModel()
-			{
-				Id = model.StatisticsId,
-				Start = parent.Start,
-				End = parent.End,
-				Description = parent.Description
-			};
-		}
 	}
 }
