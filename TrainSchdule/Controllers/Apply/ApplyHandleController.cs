@@ -80,7 +80,9 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
+			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id);
+
+			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{
@@ -143,7 +145,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
-			var list = r.OrderByDescending(a => a.Status).ThenByDescending(a => a.Create);
+			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()
 			{

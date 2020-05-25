@@ -10,6 +10,7 @@ using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions;
 using DAL.QueryModel;
 using System.Threading.Tasks;
+using BLL.Extensions.Common;
 
 namespace BLL.Services.ApplyServices
 {
@@ -64,16 +65,15 @@ namespace BLL.Services.ApplyServices
 			{
 				list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
-			list = list.OrderByDescending(a => a.Status).ThenBy(a => a.BaseInfo.Company.Code);
+			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
 			{
 				PageIndex = 0,
 				PageSize = 20
 			};
-			if (model.Pages != null) list = list.Skip(model.Pages.PageIndex * model.Pages.PageSize).Take(model.Pages.PageSize);
-			var result = list.ToList();
-			totalCount = result.Count;
-			return result;
+			var result = list.SplitPage(model.Pages).Result;
+			totalCount = result.Item2;
+			return result.Item1;
 		}
 
 		public async Task RemoveAllUnSaveApply()
@@ -139,8 +139,8 @@ namespace BLL.Services.ApplyServices
 				_context.Applies.Update(s);
 				anyRemove = true;
 			}
-			if(anyRemove)
-			await _context.SaveChangesAsync().ConfigureAwait(true);
+			if (anyRemove)
+				await _context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
 		public byte[] ExportExcel(string templete, ApplyDetailDto model)
