@@ -18,6 +18,28 @@ namespace TrainSchdule.ViewModels.Company
 	/// <summary>
 	///
 	/// </summary>
+	public class CompaniesManagerViewModel : ApiResult
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public CompaniesManagerDataModel Data { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class CompaniesManagerDataModel
+	{
+		/// <summary>
+		/// 单位code : 单位管理
+		/// </summary>
+		public Dictionary<string, CompanyManagerDataModel> Companies { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
 	public class CompanyManagerDataModel
 	{
 		/// <summary>

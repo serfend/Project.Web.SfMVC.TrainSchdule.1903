@@ -174,6 +174,7 @@ namespace BLL.Services.ApplyServices
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
 				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.Get(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 
+				var firstMemberCompany = _context.Companies.Where(c => c.Code == nextNodeUsrCmp).FirstOrDefault();
 				var item = new ApplyAuditStep()
 				{
 					Index = stepIndex++,
@@ -181,7 +182,8 @@ namespace BLL.Services.ApplyServices
 					MembersFitToAudit = nextNodeFitMembers,
 					RequireMembersAcceptCount = n.AuditMembersCount,
 					Name = n.Name,
-					FirstMemberCompanyName = _context.Companies.Where(c => c.Code == nextNodeUsrCmp).FirstOrDefault()?.Name
+					FirstMemberCompanyName = firstMemberCompany?.Name,
+					FirstMemberCompanyCode = firstMemberCompany?.Code
 				};
 				modelApplyAllAuditStep.Add(item);
 			}

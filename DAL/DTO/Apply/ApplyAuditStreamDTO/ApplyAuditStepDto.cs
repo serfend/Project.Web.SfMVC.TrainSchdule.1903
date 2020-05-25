@@ -36,5 +36,10 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 		/// 为了便于观察，展示首个审批人的单位
 		/// </summary>
 		public string FirstMemberCompanyName { get; set; }
+
+		/// <summary>
+		/// 为了便于观察，展示首个审批人的单位
+		/// </summary>
+		public string FirstMemberCompanyCode { get; set; }
 	}
 }

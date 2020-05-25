@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BLL.Extensions;
 using BLL.Helpers;
@@ -160,6 +161,33 @@ namespace TrainSchdule.Controllers
 				{
 					List = list.Select(u => u.ToSummaryDto())
 				}
+			});
+		}
+
+		/// <summary>
+		/// 获取多个单位的管理
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(CompaniesManagerDataModel), 0)]
+		public IActionResult CompaniesManagers(string ids)
+		{
+			var companiesCode = ids?.Split("##") ?? Array.Empty<string>();
+			companiesCode.Distinct();
+			var cmps = new Dictionary<string, CompanyManagerDataModel>();
+			foreach (var c in companiesCode)
+			{
+				cmps.Add(c, new CompanyManagerDataModel()
+				{
+					List = _companiesService.GetCompanyManagers(c)?.Select(u => u.ToSummaryDto())
+				});
+			}
+			var result = new CompaniesManagerDataModel() { Companies = cmps };
+			return new JsonResult(new CompaniesManagerViewModel()
+			{
+				Data = result
 			});
 		}
 

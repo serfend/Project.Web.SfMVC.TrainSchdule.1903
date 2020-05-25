@@ -19,7 +19,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				RequireMembersAcceptCount = model.RequireMembersAcceptCount,
 				Index = model.Index,
 				Name = model.Name,
-				FirstMemberCompanyName = model.FirstMemberCompanyName
+				FirstMemberCompanyName = model.FirstMemberCompanyName,
+				FirstMemberCompanyCode = model.FirstMemberCompanyCode
 			};
 		}
 	}
