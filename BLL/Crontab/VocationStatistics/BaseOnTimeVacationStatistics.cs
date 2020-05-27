@@ -1,5 +1,6 @@
 ﻿using BLL.Extensions;
 using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -17,10 +18,12 @@ namespace TrainSchdule.Crontab
 	public class BaseOnTimeVacationStatistics : ICrontabJob
 	{
 		private readonly ApplicationDbContext _context;
+		private readonly ICompaniesService companiesService;
 
-		public BaseOnTimeVacationStatistics(ApplicationDbContext context, DateTime start, DateTime end, string statisticsId = null)
+		public BaseOnTimeVacationStatistics(ApplicationDbContext context, ICompaniesService companiesService, DateTime start, DateTime end, string statisticsId = null)
 		{
 			_context = context;
+			this.companiesService = companiesService;
 			Start = start;
 			End = end;
 			StatisticsId = statisticsId ?? $"{Start.ToString("yyyyMMdd")}_{End.ToString("yyyyMMdd")}";
@@ -64,9 +67,7 @@ namespace TrainSchdule.Crontab
 			};
 			var dbStatistics = _context.VacationStatistics.Find(statistics.Id);
 			if (dbStatistics != null) return;
-			VacationStatisticsDescription tmp = statistics.RootCompanyStatistics;
-			VacationStatisticsExtensions.StatisticsInit(ref tmp, _context, statistics.CurrentYear, StatisticsId);
-			statistics.RootCompanyStatistics = tmp;
+			statistics.RootCompanyStatistics.StatisticsInit(_context, statistics.CurrentYear, StatisticsId); ;
 			_context.VacationStatistics.Add(statistics);
 			_context.SaveChanges();
 		}
@@ -74,11 +75,16 @@ namespace TrainSchdule.Crontab
 		private VacationStatisticsDescription GenerateStatistics(Company company)
 		{
 			if (company == null) return null;
-			var statistics = new VacationStatisticsDescription();
-			statistics.Applies = _context.AppliesDb.
-				Where<Apply>(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code && a.Create.Value >= Start && a.Create.Value <= End);
-			statistics.Company = company;
-			var companies = _context.Companies.Where<Company>(c => ParentCode(c.Code) == company.Code);
+			var statistics = new VacationStatisticsDescription
+			{
+				Applies = _context.AppliesDb
+				.Where(a => a.Create.Value >= Start)
+				.Where(a => a.Create.Value <= End)
+				.Where(a => a.Status == AuditStatus.Accept) // 仅关注通过的
+				.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code == company.Code),
+				Company = company
+			};
+			var companies = companiesService.FindAllChild(company.Code);
 			var list = new List<VacationStatisticsDescription>();
 			foreach (var childCompany in companies)
 			{
@@ -88,7 +94,5 @@ namespace TrainSchdule.Crontab
 			statistics.Childs = list;
 			return statistics;
 		}
-
-		private static string ParentCode(string code) => (code != null && code.Length > 1) ? code.Substring(0, code.Length - 1) : null;
 	}
 }

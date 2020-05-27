@@ -15,6 +15,9 @@ namespace TrainSchdule.Crontab
 			this.applyService = applyService;
 		}
 
+		/// <summary>
+		/// 清除失效的申请
+		/// </summary>
 		public void Run()
 		{
 			Task.Run(applyService.RemoveAllUnSaveApply).Wait();
