@@ -105,8 +105,8 @@ namespace BLL.Services.File
 			var node = GetNode(path, false);
 			// 兼容老版本文件（文件自身带Path）
 			var result = node == null ?
-				context.UserFileInfosDb.Where(f => f.Parent == null).Where(f => f.Path == path).Where(f => f.Name == filename).FirstOrDefault()
-				: LoadFromCurrentPath(filename, node);
+				null : LoadFromCurrentPath(filename, node);
+			if (result == null) result = context.UserFileInfosDb.Where(f => f.Parent == null).Where(f => f.Path == path).Where(f => f.Name == filename).FirstOrDefault();
 			return result;
 		}
 
