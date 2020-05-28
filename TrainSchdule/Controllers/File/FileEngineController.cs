@@ -2,6 +2,7 @@
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.File;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System;
@@ -18,6 +19,7 @@ namespace TrainSchdule.Controllers.File
 	/// <summary>
 	/// 文件助手
 	/// </summary>
+
 	[Route("[controller]/[action]")]
 	public class FileController : Controller
 	{
@@ -112,6 +114,7 @@ namespace TrainSchdule.Controllers.File
 		/// <param name="pageSize"></param>
 		/// <param name="pageIndex"></param>
 		/// <returns></returns>
+		[Authorize]
 		[HttpGet]
 		public IActionResult Folders(string path, int pageSize = 20, int pageIndex = 0)
 		{
@@ -133,7 +136,7 @@ namespace TrainSchdule.Controllers.File
 		/// <param name="pageSize"></param>
 		/// <param name="pageIndex"></param>
 		/// <returns></returns>
-
+		[Authorize]
 		[HttpGet]
 		public IActionResult FolderFiles(string path, int pageSize = 20, int pageIndex = 0)
 		{
