@@ -28,6 +28,7 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IUsersService usersService;
 		private readonly IUserActionServices _userActionServices;
 		private readonly IVacationStatisticsServices _vacationStatisticsServices;
+		private readonly ICompaniesService companiesService;
 
 		/// <summary>
 		///
@@ -37,13 +38,15 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="usersService"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="vacationStatisticsServices"></param>
-		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices)
+		/// <param name="companiesService"></param>
+		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices, ICompaniesService companiesService)
 		{
 			this.context = context;
 			this.authService = authService;
 			this.usersService = usersService;
 			_userActionServices = userActionServices;
 			_vacationStatisticsServices = vacationStatisticsServices;
+			this.companiesService = companiesService;
 		}
 
 		/// <summary>
@@ -96,7 +99,7 @@ namespace TrainSchdule.Controllers.Statistics
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetCompany = context.Companies.Find(model.Data.CompanyCode);
 			if (!_userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, actionUser.Id, targetCompany.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var baseQuery = new BaseOnTimeVacationStatistics(context, model.Data.Start, model.Data.End, model.Data.StatisticsId)
+			var baseQuery = new BaseOnTimeVacationStatistics(context, companiesService, model.Data.Start, model.Data.End, model.Data.StatisticsId)
 			{
 				CompanyCode = model.Data.CompanyCode ?? "A",
 				Description = model.Data.Description ?? "用户创建的未知原因查询"
@@ -147,15 +150,9 @@ namespace TrainSchdule.Controllers.Statistics
 			if (entity == null) return;
 			foreach (var item in entity.Childs) RemoveStatisticsDescription(item);
 			var i = entity.IncludeChildLevelStatistics;
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
 			context.VacationStatisticsDatas.Remove(i);
 
 			i = entity.CurrentLevelStatistics;
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyCount);
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplyMembersCount);
-			context.VacationStatisticsDescriptionDataStatusCounts.Remove(i.ApplySumDayCount);
 			context.VacationStatisticsDatas.Remove(i);
 
 			context.VacationStatisticsDescriptions.Remove(entity);

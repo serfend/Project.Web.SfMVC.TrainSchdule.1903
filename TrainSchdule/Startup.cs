@@ -121,13 +121,8 @@ namespace TrainSchdule
 
 		private void ConfigureHangfireServices()
 		{
-			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), "*/10 * * * *");
-			RecurringJob.AddOrUpdate<R3HandleServices>((a) => a.HandleAllUsersGiftCode(), "*/10 * * * *");//忍3自动化
-			RecurringJob.AddOrUpdate<WeeklyVacationStatistics>((u) => u.Run(), Cron.Weekly(DayOfWeek.Saturday, 0, 0));
-			RecurringJob.AddOrUpdate<MonthlyVacationStatstics>((u) => u.Run(), Cron.Monthly(1, 0, 0));
-			RecurringJob.AddOrUpdate<YearlyVacationStatistics>((u) => u.Run(), Cron.Yearly(1, 1, 0));
-			RecurringJob.AddOrUpdate<SeasonlyVacationStatistics>((u) => u.Run(), "0 0 1 1,4,7,10 *");
-			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), "*/10 * * * *"); // 自动删除失效的文件上传状态
+			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), Cron.Daily);
+			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
 		}
 
 		/// <summary>

@@ -29,7 +29,6 @@ namespace DAL.Entities.Vacations
 		public virtual VacationStatisticsDescription RootCompanyStatistics { get; set; }
 	}
 
-	[Table("VocationStatisticsDescriptions")]
 	public class VacationStatisticsDescription : BaseEntity
 	{
 		public string StatisticsId { get; set; }
@@ -62,7 +61,6 @@ namespace DAL.Entities.Vacations
 		public virtual VacationStatisticsData IncludeChildLevelStatistics { get; set; }
 	}
 
-	[Table("VocationStatisticsDatas")]
 	public class VacationStatisticsData : BaseEntity
 	{
 		/// <summary>
@@ -93,25 +91,16 @@ namespace DAL.Entities.Vacations
 		/// <summary>
 		/// 新增申请的数量
 		/// </summary>
-		public virtual VacationStatisticsDescriptionDataStatusCount ApplyCount { get; set; }
+		public int ApplyCount { get; set; }
 
 		/// <summary>
 		/// 新增申请的人数
 		/// </summary>
-		public virtual VacationStatisticsDescriptionDataStatusCount ApplyMembersCount { get; set; }
+		public int ApplyMembersCount { get; set; }
 
 		/// <summary>
 		/// 申请天数
 		/// </summary>
-		public virtual VacationStatisticsDescriptionDataStatusCount ApplySumDayCount { get; set; }
-	}
-
-	[Table("VocationStatisticsDescriptionDataStatusCounts")]
-	public class VacationStatisticsDescriptionDataStatusCount : BaseEntity
-	{
-		public int Access { get; set; }
-		public int Deny { get; set; }
-		public int Auditing { get; set; }
-		public int Sum { get => Access + Deny + Auditing; }
+		public int ApplySumDayCount { get; set; }
 	}
 }
