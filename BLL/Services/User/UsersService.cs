@@ -71,12 +71,12 @@ namespace BLL.Services
 			if (id == null) return null;
 			if (id.ToLower() == "root") return new User()
 			{
-				Id = "Root",
+				Id = "root",
 				Application = new UserApplicationInfo()
 				{
 					Permission = new Permissions()
 					{
-						Role = "Admin"
+						Role = "admin"
 					}
 				},
 				BaseInfo = new UserBaseInfo()
@@ -87,20 +87,22 @@ namespace BLL.Services
 				{
 					Company = new Company()
 					{
-						Name = "Root"
+						Name = "系统管理",
+						Code = "root"
 					},
 					Duties = new Duties()
 					{
-						Name = "Root"
+						Name = "系统管理",
+						Code = 0
 					}
 				},
 				SocialInfo = new UserSocialInfo()
 				{
 					Address = new AdminDivision(),
+					Id = Guid.Empty
 				}
 			};
-			var user = _context.AppUsers.Find(id);
-
+			var user = _context.AppUsers.Where(u => u.Id == id).FirstOrDefault();
 			return user;
 		}
 
@@ -294,10 +296,13 @@ namespace BLL.Services
 			};
 			if (avatar?.Img?.Length <= 1024 * 200)
 			{
-				_context.AppUserDiyAvatars.Add(avatar);
-				targetUser.DiyInfo.Avatar = avatar;
-				_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
-				await _context.SaveChangesAsync().ConfigureAwait(true);
+				if (targetUser.DiyInfo != null)
+				{
+					_context.AppUserDiyAvatars.Add(avatar);
+					targetUser.DiyInfo.Avatar = avatar;
+					_context.AppUserDiyInfos.Update(targetUser.DiyInfo);
+					await _context.SaveChangesAsync().ConfigureAwait(true);
+				}
 			}
 			else if (avatar?.Img?.Length > 1024 * 200)
 			{
