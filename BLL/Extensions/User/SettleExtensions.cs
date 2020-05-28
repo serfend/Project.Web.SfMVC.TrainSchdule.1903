@@ -45,18 +45,21 @@ namespace BLL.Extensions
 		}
 
 		/// <summary>
-		/// 获取全年总假期，每年12月25日后，开始统计第二年休假
+		///  获取全年总假期，每年12月25日后，开始统计第二年休假
 		/// </summary>
-		/// <param name="settle">用户的家庭情况</param>
-		/// <param name="TargetUser">用户</param>
+		/// <param name="settle"></param>
+		/// <param name="TargetUser"></param>
+		/// <returns>
+		/// double 结果
 		/// <param name="requireToAdd">当需要添加记录时返回非空</param>
 		/// <param name="maxOnTripTime">全年可休几次路途</param>
 		/// <param name="description">全年假期的描述</param>
-		/// <returns></returns>
-		public static double GetYearlyLength(this Settle settle, User TargetUser, out AppUsersSettleModefyRecord requireToAdd, out int maxOnTripTime, out string description)
+		/// </returns>
+		public static Tuple<double, AppUsersSettleModefyRecord, int, string> GetYearlyLength(this Settle settle, User TargetUser)
 		{
 			if (settle == null) throw new ArgumentNullException(nameof(settle));
-			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out maxOnTripTime, out description); // 本次应休假长度
+			AppUsersSettleModefyRecord requireToAdd;
+			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out int maxOnTripTime, out string description); // 本次应休假长度
 			var userFinnalModefyDate = TargetUser.CheckUpdateDate(); // 本次用户家庭最后变更时间
 			var vacationModefyRecords = settle.PrevYealyLengthHistory?.OrderByDescending(rec => rec.UpdateDate); // 用户假期变更记录
 			var lastVacationModefy = vacationModefyRecords?.FirstOrDefault(); // 上次假期变更记录
@@ -72,7 +75,7 @@ namespace BLL.Extensions
 				{
 					description = lastVacationModefy.Description;
 					requireToAdd = null;
-					return nowVacationLength;
+					return new Tuple<double, AppUsersSettleModefyRecord, int, string>(nowVacationLength, requireToAdd, maxOnTripTime, description);
 				}
 				// 上次是否是新年初始化 或 上次的家庭情况时间不同于本次
 				else if (lastVacationModefy.IsNewYearInitData || lastVacationModefy.UpdateDate != userFinnalModefyDate)
@@ -87,14 +90,14 @@ namespace BLL.Extensions
 						Length = newLength,
 						UpdateDate = userFinnalModefyDate
 					};
-					return newLength;
+					return new Tuple<double, AppUsersSettleModefyRecord, int, string>(newLength, requireToAdd, maxOnTripTime, description);
 				}
 				// 否则只是因为加权导致的天数不同而已，返回上次的值即可
 				else
 				{
 					requireToAdd = null;
 					description = lastVacationModefy.Description;
-					return lastVacationModefy.Length;
+					return new Tuple<double, AppUsersSettleModefyRecord, int, string>(lastVacationModefy.Length, requireToAdd, maxOnTripTime, description);
 				}
 			}
 			// 若今年无变更记录，则创建一条记录
@@ -107,7 +110,7 @@ namespace BLL.Extensions
 					UpdateDate = new DateTime(DateTime.Now.XjxtNow().Year, 1, 1),
 					Length = nowVacationLength
 				};
-				return nowVacationLength;
+				return new Tuple<double, AppUsersSettleModefyRecord, int, string>(nowVacationLength, requireToAdd, maxOnTripTime, description);
 			}
 		}
 

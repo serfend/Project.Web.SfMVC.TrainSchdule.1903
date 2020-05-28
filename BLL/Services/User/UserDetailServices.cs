@@ -66,8 +66,9 @@ namespace BLL.Services
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.AddDays(5).Year)
 				.Where(a => a.RequestInfo.VacationType == "正休").ToList(); // 仅正休计算天数
 
-			var yearlyLength = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser, out var requireAddRecord, out var maxOnTripTime, out var description);
-			if (yearlyLength < 0) yearlyLength = 0;
+			var r = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser);
+			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;
+			var yearlyLength = r.Item1 < 0 ? 0 : r.Item1;
 			if (requireAddRecord != null)
 			{
 				var list = new List<AppUsersSettleModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
