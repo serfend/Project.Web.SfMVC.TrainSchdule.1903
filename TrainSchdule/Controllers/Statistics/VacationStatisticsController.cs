@@ -3,6 +3,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.VacationsStatistics;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -149,12 +150,8 @@ namespace TrainSchdule.Controllers.Statistics
 		{
 			if (entity == null) return;
 			foreach (var item in entity.Childs) RemoveStatisticsDescription(item);
-			var i = entity.IncludeChildLevelStatistics;
-			context.VacationStatisticsDatas.Remove(i);
-
-			i = entity.CurrentLevelStatistics;
-			context.VacationStatisticsDatas.Remove(i);
-
+			var i = entity.Data;
+			context.VacationStatisticsDatas.RemoveRange(i);
 			context.VacationStatisticsDescriptions.Remove(entity);
 		}
 

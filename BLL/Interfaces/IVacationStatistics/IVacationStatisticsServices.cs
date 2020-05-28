@@ -1,4 +1,5 @@
 ﻿using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.VacationsStatistics;
 using DAL.QueryModel;
 using System;
 using System.Collections.Generic;

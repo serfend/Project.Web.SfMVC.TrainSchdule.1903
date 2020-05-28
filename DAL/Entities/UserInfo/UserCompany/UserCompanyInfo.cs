@@ -23,6 +23,9 @@ namespace DAL.Entities.UserInfo
 		public DateTime? TitleDate { get; set; }
 	}
 
+	/// <summary>
+	/// 职务等级
+	/// </summary>
 	public class UserCompanyTitle
 	{
 		[Key]
@@ -42,5 +45,10 @@ namespace DAL.Entities.UserInfo
 		/// 职务等级对应的休假天数（专用）
 		/// </summary>
 		public int VacationDay { get; set; }
+
+		/// <summary>
+		/// 职务等级类别，用于统计中进行分类（专用）
+		/// </summary>
+		public string TitleType { get; set; }
 	}
 }

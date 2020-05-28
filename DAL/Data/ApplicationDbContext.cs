@@ -7,6 +7,7 @@ using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.VacationsStatistics;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +57,7 @@ namespace DAL.Data
 		/// <summary>
 		/// 统计数据值
 		/// </summary>
-		public DbSet<VacationStatisticsData> VacationStatisticsDatas { get; set; }
+		public DbSet<VacationStatisticsDescriptionData> VacationStatisticsDatas { get; set; }
 
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationAdditional> VacationAdditionals { get; set; }

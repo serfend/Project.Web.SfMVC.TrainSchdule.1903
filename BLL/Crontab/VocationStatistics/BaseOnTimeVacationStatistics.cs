@@ -5,6 +5,7 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.VacationsStatistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace TrainSchdule.Crontab
 			};
 			var dbStatistics = _context.VacationStatistics.Find(statistics.Id);
 			if (dbStatistics != null) return;
-			statistics.RootCompanyStatistics.StatisticsInit(_context, statistics.CurrentYear, StatisticsId); ;
+			statistics.RootCompanyStatistics.InitStatisticsInit(_context, statistics.CurrentYear, StatisticsId); ;
 			_context.VacationStatistics.Add(statistics);
 			_context.SaveChanges();
 		}

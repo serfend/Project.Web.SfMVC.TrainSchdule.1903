@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.VacationsStatistics;
 using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 
