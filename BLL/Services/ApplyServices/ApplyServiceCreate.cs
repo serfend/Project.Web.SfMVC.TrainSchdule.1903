@@ -193,7 +193,7 @@ namespace BLL.Services.ApplyServices
 			model.Response = new List<ApplyResponse>();
 		}
 
-		public void ModifyAuditStatus(Apply model, AuditStatus status)
+		public void ModifyAuditStatus(Apply model, AuditStatus status, string authUser = null)
 		{
 			if (model == null) return;
 			switch (status)
@@ -229,6 +229,12 @@ namespace BLL.Services.ApplyServices
 					{
 						if (model.Status == AuditStatus.Accept)
 						{
+							var lastLevel = model.ApplyAllAuditStep.LastOrDefault();
+							if (lastLevel != null)
+							{
+								var userFit = lastLevel.MembersFitToAudit.Split("##");
+								if (!userFit.Contains(authUser)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Cancel.CancelByNotSame);
+							}
 						}
 						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnAccept);
 						break; // 作废

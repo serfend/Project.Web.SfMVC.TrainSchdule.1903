@@ -27,7 +27,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish));
+				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish, u));
 			}
 			catch (ActionStatusMessageException e)
 			{
@@ -48,7 +48,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing));
+				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing, u));
 			}
 			catch (ActionStatusMessageException e)
 			{
@@ -69,7 +69,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew));
+				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.Withdrew, u));
 			}
 			catch (ActionStatusMessageException e)
 			{
@@ -90,7 +90,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x) => _applyService.ModifyAuditStatus(x, AuditStatus.Cancel));
+				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.Cancel, u));
 			}
 			catch (ActionStatusMessageException e)
 			{
@@ -99,7 +99,7 @@ namespace TrainSchdule.Controllers.Apply
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply> callBack)
+		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply, string> callBack)
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.GetById(gid);
@@ -112,7 +112,7 @@ namespace TrainSchdule.Controllers.Apply
 				var permit = _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code);
 				if (!permit) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			callBack.Invoke(apply);
+			callBack.Invoke(apply, currentUser.Id);
 		}
 
 		/// <summary>

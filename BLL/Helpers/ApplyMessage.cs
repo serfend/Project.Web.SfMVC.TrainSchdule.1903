@@ -59,6 +59,11 @@ namespace BLL.Helpers
 				{
 					public static readonly ApiResult AllReadySave = new ApiResult(43710, "当前申请处于保存状态");
 				}
+
+				public static class Cancel
+				{
+					public static readonly ApiResult CancelByNotSame = new ApiResult(43810, "操作人和终审人不一致");
+				}
 			}
 
 			public static class Request

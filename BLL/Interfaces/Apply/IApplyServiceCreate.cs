@@ -24,7 +24,13 @@ namespace BLL.Interfaces
 		/// <param name="model"></param>
 		void InitAuditStream(Apply model);
 
-		void ModifyAuditStatus(Apply model, AuditStatus status);
+		/// <summary>
+		/// 修改休假状态
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="status"></param>
+		/// <param name="authUser"></param>
+		void ModifyAuditStatus(Apply model, AuditStatus status, string authUser = null);
 
 		IEnumerable<ApiResult> Audit(ApplyAuditVdto models);
 	}
