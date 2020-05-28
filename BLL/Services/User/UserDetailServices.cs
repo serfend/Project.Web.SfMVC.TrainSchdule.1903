@@ -38,7 +38,7 @@ namespace BLL.Services
 		{
 			int totalCount = 0;
 			var list = new List<Company>();
-			if (user?.CompanyInfo?.Company == null)
+			if (user?.CompanyInfo?.Company != null)
 			{
 				list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
 				// 所在单位的主管拥有此单位的管理权

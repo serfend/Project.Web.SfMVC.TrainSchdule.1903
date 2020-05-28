@@ -137,7 +137,14 @@ namespace TrainSchdule.Controllers
 				var mymanage_result = await _usersService.InMyManage(currentUser);
 				manageCount = mymanage_result.Item2;
 				foreach (var c in mymanage_result.Item1)
-					if (!list.TryAdd(c.Code, c)) manageCount--;
+				{
+					c.Name = $"*{c.Name}";
+					if (!list.TryAdd(c.Code, c))
+					{
+						manageCount--;
+						list[c.Code] = c;
+					}
+				}
 			}
 			return new JsonResult(new AllChildViewModel()
 			{
