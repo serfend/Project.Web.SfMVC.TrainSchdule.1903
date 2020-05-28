@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.File;
 using TrainSchdule.ViewModels.System;
@@ -93,11 +94,13 @@ namespace TrainSchdule.Controllers.File
 				return fileServices.Load(filepath, filename);
 			}).ConfigureAwait(true);
 			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			var result = file.ToVdto();
+			if (result.Path == null) result.Path = file.FullPath();
 			return new JsonResult(new FileInfoViewModel()
 			{
 				Data = new FileInfoDataModel()
 				{
-					File = file.ToVdto()
+					File = result
 				}
 			});
 		}
@@ -197,6 +200,25 @@ namespace TrainSchdule.Controllers.File
 			if (!model.Auth?.Verify(googleAuthService, null) ?? false) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var f = fileServices.FileInfo(model.Id);
 			return new JsonResult(new ResponseDataTViewModel<Guid>() { Data = f?.ClientKey ?? Guid.Empty });
+		}
+
+		/// <summary>
+		/// 删除指定文件
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="filename"></param>
+		/// <param name="clientKey"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		public IActionResult Remove(string path, string filename, string clientKey)
+		{
+			var file = fileServices.Load(path, filename);
+			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			var guid = Guid.Parse(clientKey);
+			if (file.ClientKey != guid) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (fileServices.Remove(file))
+				return new JsonResult(ActionStatusMessage.Success);
+			return new JsonResult(ActionStatusMessage.Fail);
 		}
 	}
 }

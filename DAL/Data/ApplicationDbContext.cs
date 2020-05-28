@@ -58,11 +58,6 @@ namespace DAL.Data
 		/// </summary>
 		public DbSet<VacationStatisticsData> VacationStatisticsDatas { get; set; }
 
-		/// <summary>
-		/// 统计数据值的具体值
-		/// </summary>
-		public DbSet<VacationStatisticsDescriptionDataStatusCount> VacationStatisticsDescriptionDataStatusCounts { get; set; }
-
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationAdditional> VacationAdditionals { get; set; }
 
@@ -88,6 +83,7 @@ namespace DAL.Data
 		public DbSet<SignIn> SignIns { get; set; }
 		public DbSet<UserFile> UserFiles { get; set; }
 		public DbSet<UserFileInfo> UserFileInfos { get; set; }
+		public IQueryable<UserFileInfo> UserFileInfosDb => UserFileInfos.Where(c => !c.IsRemoved);
 		public DbSet<FileUploadStatus> FileUploadStatuses { get; set; }
 		public DbSet<UploadCache> UploadCaches { get; set; }
 		public DbSet<ShortUrl> CommonShortUrl { get; set; }

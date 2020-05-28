@@ -72,8 +72,10 @@ namespace TrainSchdule.Extensions.Common
 		/// <returns></returns>
 		public static string FullPath(this UserFileInfo file, string nowPath = "")
 		{
-			var currentNode = file.Path.IsNullOrEmpty() ? null : $"{file.Path}/";
-			return file == null ? nowPath : $"{FullPath(file.Parent)}{currentNode}{nowPath}";
+			if (file == null) return nowPath;
+			var currentNode = file.Path.IsNullOrEmpty() ? null : $"/{file.Path}";
+			var nodePath = nowPath.IsNullOrEmpty() ? null : $"/{nowPath}";
+			return file == null ? nowPath : $"{file.Parent.FullPath()}{currentNode}{nodePath}";
 		}
 	}
 }

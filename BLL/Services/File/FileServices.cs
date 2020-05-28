@@ -33,9 +33,9 @@ namespace BLL.Services.File
 			this.httpContext = httpContext;
 		}
 
-		public UserFile Download(Guid id) => context.UserFiles.Find(id);
+		public UserFile Download(Guid id) => context.UserFiles.Where(f => f.Id == id).FirstOrDefault();
 
-		public UserFileInfo FileInfo(Guid id) => context.UserFileInfos.Find(id);
+		public UserFileInfo FileInfo(Guid id) => context.UserFileInfosDb.Where(f => f.Id == id).FirstOrDefault();
 
 		public Tuple<IQueryable<UserFileInfo>, int> FolderFiles(string filepath, QueryByPage pages)
 		{
@@ -43,7 +43,7 @@ namespace BLL.Services.File
 			var list = context.UserFileInfos.AsQueryable();
 
 			if (node == null)
-				list = list.Where(f => f.Parent == null);
+				list = list.Where(f => f.Parent == null).Where(f => f.Path == filepath);
 			else
 				list = list.Where(f => f.Parent.Id == node.Id);
 			list = list.Where(f => f.Name != null).OrderByDescending(f => f.Create);
@@ -69,8 +69,8 @@ namespace BLL.Services.File
 			var exactPath = path.Trim('/');
 			if (path.IsNullOrEmpty()) return null;
 			var list = current == null ?
-				context.UserFileInfos.Where(f => f.Parent == null)
-				: context.UserFileInfos.Where(f => f.Parent != null && f.Parent.Id == current.Id);
+				context.UserFileInfosDb.Where(f => f.Parent == null)
+				: context.UserFileInfosDb.Where(f => f.Parent != null).Where(f => f.Parent.Id == current.Id);
 			var paths = exactPath.Split('/');
 			var next = list.Where(f => f.Path == paths[0]).FirstOrDefault();
 			if (next == null && mkdWhenNotExist)
@@ -103,11 +103,14 @@ namespace BLL.Services.File
 		public UserFileInfo Load(string path, string filename)
 		{
 			var node = GetNode(path, false);
-			var result = LoadFromCurrentPath(filename, node);
 			// 兼容老版本文件（文件自身带Path）
-			if (result == null) result = context.UserFileInfos.Where(f => f.Parent == null).Where(f => f.Path == path).Where(f => f.Name == filename).FirstOrDefault();
+			var result = node == null ?
+				context.UserFileInfosDb.Where(f => f.Parent == null).Where(f => f.Path == path).Where(f => f.Name == filename).FirstOrDefault()
+				: LoadFromCurrentPath(filename, node);
 			return result;
 		}
+
+		private static readonly object fileLock = new object();
 
 		public async Task<UserFileInfo> Upload(IFormFile file, string path, string filename, Guid uploadStatusId, Guid clientKey)
 		{
@@ -119,42 +122,45 @@ namespace BLL.Services.File
 			if (uploadStatusId == Guid.Empty)
 			{
 				// 判断文件是否已存在，若已存在则先删除
-				fi = LoadFromCurrentPath(filename, currentNode);
+				lock (fileLock)
+				{
+					fi = LoadFromCurrentPath(filename, currentNode);
 
-				if (fi != null)
-				{
-					f = context.UserFiles.Where(st => st.Id == fi.Id).FirstOrDefault();
-					if (!fi.IsRemoved && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+					if (fi != null)
+					{
+						f = context.UserFiles.Where(st => st.Id == fi.Id).FirstOrDefault();
+						if (!fi.IsRemoved && fi.ClientKey != clientKey) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 
-					var uploadingFile = context.FileUploadStatuses.Where(st => st.FileInfo.Id == fi.Id).FirstOrDefault();
-					if (uploadingFile != null) context.FileUploadStatuses.Remove(uploadingFile);
-					context.UserFileInfos.Remove(fi);
-					await context.SaveChangesAsync().ConfigureAwait(true);
-				}
-				else
-				{
-					fi = new UserFileInfo()
+						var uploadingFile = context.FileUploadStatuses.Where(st => st.FileInfo.Id == fi.Id).FirstOrDefault();
+						if (uploadingFile != null) context.FileUploadStatuses.Remove(uploadingFile);
+						context.UserFileInfos.Remove(fi);
+						context.SaveChanges();
+					}
+					else
 					{
-						Id = Guid.NewGuid(),
-						Name = filename,
-						Parent = currentNode,
-						Path = null,
-						Create = DateTime.Now,
-					};
-				}
-				if (f == null)
-				{
-					f = new UserFile()
+						fi = new UserFileInfo()
+						{
+							Id = Guid.NewGuid(),
+							Name = filename,
+							Parent = currentNode,
+							Path = null,
+							Create = DateTime.Now,
+						};
+					}
+					if (f == null)
 					{
-						Id = fi.Id
-					};
-					context.UserFiles.Add(f);
+						f = new UserFile()
+						{
+							Id = fi.Id
+						};
+						context.UserFiles.Add(f);
+					}
+					fi.LastModefy = DateTime.Now;
+					fi.Length = file.Length;
+					fi.FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString();
+					fi.ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey;
+					if (fi != null) context.UserFileInfos.Add(fi);
 				}
-				fi.LastModefy = DateTime.Now;
-				fi.Length = file.Length;
-				fi.FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString();
-				fi.ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey;
-				if (fi != null) context.UserFileInfos.Add(fi);
 			}
 			using (var inputStream = file.OpenReadStream())
 			{
@@ -239,6 +245,9 @@ namespace BLL.Services.File
 			return item;
 		}
 
+		/// <summary>
+		/// 自动删除失效的文件上传状态
+		/// </summary>
 		public void RemoveTimeoutUploadStatus()
 		{
 			var list = context.FileUploadStatuses.Where(s => DateTime.Now.Subtract(s.LastUpdate).TotalMilliseconds > 30).ToList();
@@ -253,7 +262,6 @@ namespace BLL.Services.File
 			if (data == null) return false;
 			data.Remove();
 			context.UserFiles.Update(data);
-			file.LastModefy = DateTime.Now;
 			file.Remove();
 			context.UserFileInfos.Update(file);
 			context.SaveChanges();
