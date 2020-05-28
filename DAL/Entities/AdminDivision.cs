@@ -23,6 +23,9 @@ namespace DAL.Entities
 		/// 海淀区
 		/// </summary>
 		public string ShortName { get; set; }
+
+		public double Longtitude { get; set; }
+		public double Latitude { get; set; }
 	}
 
 	/// <summary>
