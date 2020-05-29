@@ -50,7 +50,7 @@ namespace BLL.Extensions.ApplyExtensions
 				RecallId = model.RecallId,
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
-				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "旧版本方式审批"
+				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "未知的审批方式"
 			};
 			return b;
 		}
