@@ -33,6 +33,9 @@ namespace DAL.Data
 		public DbSet<UserSocialInfo> AppUserSocialInfos { get; set; }
 		public DbSet<Settle> AUserSocialInfoSettles { get; set; }
 		public DbSet<Moment> AppUserSocialInfoSettleMoments { get; set; }
+		public DbSet<AppUsersSettleModefyRecord> AppUsersSettleModefyRecord { get; set; }
+		public IQueryable<AppUsersSettleModefyRecord> AppUsersSettleModefyRecordDb => AppUsersSettleModefyRecord.ToExistDbSet();
+
 		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
 		public DbSet<Avatar> AppUserDiyAvatars { get; set; }
 		public DbSet<Company> Companies { get; set; }
@@ -68,13 +71,13 @@ namespace DAL.Data
 		/// <summary>
 		/// 近90天的数据
 		/// </summary>
-		public IQueryable<UserAction> UserActionsDb { get => UserActions.Where(u => u.Date > DateTime.Today.AddDays(-90)); }
+		public IQueryable<UserAction> UserActionsDb => UserActions.Where(u => u.Date > DateTime.Today.AddDays(-90));
 
 		public DbSet<UserAction> UserActions { get; set; }
 
 		public DbSet<Post> Posts { get; set; }
 		public DbSet<DAL.Entities.BBS.PostContent> PostContents { get; set; }
-		public IQueryable<DAL.Entities.BBS.PostContent> PostContentsDb { get => PostContents.Where(p => !p.IsRemoved); }
+		public IQueryable<DAL.Entities.BBS.PostContent> PostContentsDb => PostContents.ToExistDbSet();
 		public DbSet<DAL.Entities.BBS.Like> PostLikes { get; set; }
 
 		public DbSet<GiftCode> GiftCodes { get; set; }
@@ -84,11 +87,11 @@ namespace DAL.Data
 		public DbSet<SignIn> SignIns { get; set; }
 		public DbSet<UserFile> UserFiles { get; set; }
 		public DbSet<UserFileInfo> UserFileInfos { get; set; }
-		public IQueryable<UserFileInfo> UserFileInfosDb => UserFileInfos.Where(c => !c.IsRemoved);
+		public IQueryable<UserFileInfo> UserFileInfosDb => UserFileInfos.ToExistDbSet();
 		public DbSet<FileUploadStatus> FileUploadStatuses { get; set; }
 		public DbSet<UploadCache> UploadCaches { get; set; }
 		public DbSet<ShortUrl> CommonShortUrl { get; set; }
-		public IQueryable<ShortUrl> CommonShortUrlDb => CommonShortUrl.Where(c => !c.IsRemoved).Where(c => c.Expire > DateTime.Now);
+		public IQueryable<ShortUrl> CommonShortUrlDb => CommonShortUrl.ToExistDbSet().Where(c => c.Expire > DateTime.Now);
 		public DbSet<ShortUrlStatistics> CommonShortUrlStatistics { get; set; }
 
 		#endregion Properties

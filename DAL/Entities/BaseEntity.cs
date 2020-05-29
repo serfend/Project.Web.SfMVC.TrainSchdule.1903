@@ -11,7 +11,7 @@ namespace DAL.Entities
 		/// <summary>
 		/// Gets and sets id.
 		/// </summary>
-		public Guid Id { get; set; }
+		public virtual Guid Id { get; set; }
 
 		/// <summary>
 		/// 使用软删除

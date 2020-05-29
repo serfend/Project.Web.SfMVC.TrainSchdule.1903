@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Services;
 using System;
 
@@ -44,5 +45,12 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <param name="currentUserId"></param>
 		/// <returns></returns>
 		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId) => model?.AuthByUserID == currentUserId || (model != null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
+
+		/// <summary>
+		/// 授权失败
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public static ApiResult PermitDenied(this GoogleAuthDataModel model) => ActionStatusMessage.Account.Auth.Invalid.Default;
 	}
 }

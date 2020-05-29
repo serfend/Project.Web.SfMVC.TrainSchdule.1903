@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.UserInfo.Settle
 {
@@ -61,8 +62,14 @@ namespace DAL.Entities.UserInfo.Settle
 		public int PrevYearlyComsumeLength { get; set; }
 	}
 
-	public class AppUsersSettleModefyRecord
+	public class AppUsersSettleModefyRecord : BaseEntity
 	{
+		/// <summary>
+		/// 不使用id
+		/// </summary>
+		[NotMapped]
+		public override Guid Id { get; set; }
+
 		[Key]
 		public int Code { get; set; }
 
