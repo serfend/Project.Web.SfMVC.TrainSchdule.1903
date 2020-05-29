@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.Settle;
 using Microsoft.AspNetCore.Http;
 
 namespace BLL.Interfaces
@@ -47,5 +48,22 @@ namespace BLL.Interfaces
 		/// <param name="requireAuthRank"></param>
 		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
 		int CheckAuthorizedToUser(User authUser, User modefyUser);
+
+		/// <summary>
+		/// 获取指定用户的家庭情况变更记录并进行修改
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="Callback"></param>
+		/// <returns></returns>
+		IEnumerable<AppUsersSettleModefyRecord> ModefyUserSettleModefyRecord(User user, Action<IEnumerable<AppUsersSettleModefyRecord>> Callback = null);
+
+		/// <summary>
+		/// 获取指定家庭变更记录并进行修改
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="Callback"></param>
+		/// <param name="isDelete"></param>
+		/// <returns></returns>
+		AppUsersSettleModefyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModefyRecord> Callback = null, bool isDelete = false);
 	}
 }
