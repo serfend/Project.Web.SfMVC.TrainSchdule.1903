@@ -36,20 +36,24 @@ namespace BLL.Services
 
 		public async Task<Tuple<IEnumerable<Company>, int>> InMyManage(User user)
 		{
-			int totalCount = 0;
-			var list = new List<Company>();
-			if (user?.CompanyInfo?.Company != null)
-			{
-				list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
-				// 所在单位的主管拥有此单位的管理权
-				var companyCode = user.CompanyInfo.Company.Code;
-				if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode))
-				{
-					list.Add(user.CompanyInfo.Company);
-				}
-				totalCount = list.Count;
-			}
-			return new Tuple<IEnumerable<Company>, int>(list, totalCount);
+			var result = await Task.Run(() =>
+			 {
+				 int totalCount = 0;
+				 var list = new List<Company>();
+				 if (user?.CompanyInfo?.Company != null)
+				 {
+					 list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
+					 // 所在单位的主管拥有此单位的管理权
+					 var companyCode = user.CompanyInfo.Company.Code;
+					 if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode))
+					 {
+						 list.Add(user.CompanyInfo.Company);
+					 }
+					 totalCount = list.Count;
+				 }
+				 return new Tuple<IEnumerable<Company>, int>(list, totalCount);
+			 }).ConfigureAwait(false);
+			return result;
 		}
 
 		/// <summary>
@@ -126,6 +130,39 @@ namespace BLL.Services
 				Additionals = userAdditions
 			};
 			return vacationInfo;
+		}
+
+		public IEnumerable<AppUsersSettleModefyRecord> ModefyUserSettleModefyRecord(User user, Action<IEnumerable<AppUsersSettleModefyRecord>> Callback = null)
+		{
+			if (user == null) return null;
+			var records = user.SocialInfo.Settle.PrevYealyLengthHistory;
+			if (Callback != null)
+			{
+				Callback(records);
+				user.SocialInfo.Settle.PrevYealyLengthHistory = records;
+				_context.AUserSocialInfoSettles.Update(user.SocialInfo.Settle);
+				_context.SaveChanges();
+			}
+			return records;
+		}
+
+		public AppUsersSettleModefyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModefyRecord> Callback = null, bool isDelete = false)
+		{
+			var record = _context.AppUsersSettleModefyRecordDb.Where(r => r.Code == code).FirstOrDefault();
+			if (Callback != null || isDelete)
+			{
+				Callback?.Invoke(record);
+				if (isDelete)
+				{
+					record.Remove();
+					var settlePre = _context.AUserSocialInfoSettles.Where(s => s.PrevYealyLengthHistory.Any(rec => rec.Code == code)).FirstOrDefault();
+					settlePre.PrevYealyLengthHistory = settlePre.PrevYealyLengthHistory.Where(rec => rec.Code != code).ToList();
+					_context.AUserSocialInfoSettles.Update(settlePre);
+				}
+				_context.AppUsersSettleModefyRecord.Update(record);
+				_context.SaveChanges();
+			}
+			return record;
 		}
 	}
 }

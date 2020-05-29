@@ -33,6 +33,7 @@ namespace TrainSchdule.Controllers
 
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
+		private readonly IUserServiceDetail userServiceDetail;
 		private readonly ICompaniesService _companiesService;
 		private readonly IApplyService _applyService;
 		private readonly IGoogleAuthService _authService;
@@ -49,6 +50,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="usersService"></param>
 		/// <param name="currentUserService"></param>
+		/// <param name="userServiceDetail"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="applyService"></param>
 		/// <param name="authService"></param>
@@ -56,10 +58,11 @@ namespace TrainSchdule.Controllers
 		/// <param name="userActionServices"></param>
 		/// <param name="context"></param>
 		/// <param name="hostingEnvironment"></param>
-		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
+			this.userServiceDetail = userServiceDetail;
 			_companiesService = companiesService;
 			_applyService = applyService;
 			_authService = authService;

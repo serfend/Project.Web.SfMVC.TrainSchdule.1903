@@ -3,11 +3,14 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Company;
 using DAL.Entities;
+using DAL.Entities.UserInfo.Settle;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.User;
+using TrainSchdule.ViewModels.User.Social;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers
@@ -95,6 +98,74 @@ namespace TrainSchdule.Controllers
 			};
 			manage = _companyManagerServices.CreateManagers(dto);
 			if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Default);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 获取用户的家庭变更情况
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[Route("Social")]
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult SocialModefyRecord(string id)
+		{
+			var userid = id ?? _currentUserService.CurrentUser?.Id;
+			var u = _usersService.Get(id);
+			if (u == null) return new JsonResult(id == null ? ActionStatusMessage.Account.Auth.Invalid.NotLogin : ActionStatusMessage.UserMessage.NotExist);
+			var records = userServiceDetail.ModefyUserSettleModefyRecord(u);
+			return new JsonResult(new SettleModefyRecordViewModel()
+			{
+				Data = new SettleModefyRecordDataModel()
+				{
+					Records = records.OrderByDescending(r => r.UpdateDate)
+				}
+			});
+		}
+
+		/// <summary>
+		/// 获取指定记录
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
+		[Route("Social")]
+		[HttpGet]
+		public IActionResult SingleSocialModefyRecord(int code)
+		{
+			var record = userServiceDetail.ModefySettleModeyRecord(code);
+			if (record == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			return new JsonResult(new SingleSettleModefyRecordViewModel()
+			{
+				Data = new SingleSettleModefyRecordDataModel()
+				{
+					Record = record
+				}
+			});
+		}
+
+		/// <summary>
+		/// 修改指定记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[Route("Social")]
+		[HttpPost]
+		public IActionResult SingleSocialModefyRecord([FromBody]ModefySingleSettleModefyRecordViewModel model)
+		{
+			var currentUser = _currentUserService.CurrentUser;
+			if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(model.Auth.PermitDenied());
+			var newR = model.Record;
+			if (newR == null) return new JsonResult(newR.NotExist());
+			var recod = userServiceDetail.ModefySettleModeyRecord(newR.Code, (r) =>
+			  {
+				  if (r == null) return;
+				  r.IsNewYearInitData = newR.IsNewYearInitData;
+				  r.UpdateDate = newR.UpdateDate;
+				  r.Length = newR.Length;
+				  r.Description = newR.Description;
+			  }, model.Record.IsRemoved);
+			if (recod == null) return new JsonResult(recod.NotExist());
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 	}
