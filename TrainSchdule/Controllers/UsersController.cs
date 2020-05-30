@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrainSchdule.Extensions.Users;
+using TrainSchdule.Extensions.Users.Social;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.ViewModels.Verify;
@@ -26,7 +27,7 @@ namespace TrainSchdule.Controllers
 	/// 用户管理
 	/// </summary>
 	[Authorize]
-	[Route("[controller]/[action]")]
+	[Route("[controller]")]
 	public partial class UsersController : Controller
 	{
 		#region Fields
@@ -102,6 +103,7 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserApplicationInfoViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Application(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -120,6 +122,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult DiyInfo(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -139,6 +142,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpPost]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult DiyInfo(string id, [FromBody] UserDiyInfoModefyModel model)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -159,13 +163,14 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Social(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
 			return new JsonResult(new UserSocialViewModel()
 			{
-				Data = targetUser.SocialInfo.ToDataModel()
+				Data = targetUser.SocialInfo.ToDto()
 			});
 		}
 
@@ -177,6 +182,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserDutiesViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Duties(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -195,6 +201,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserCompanyInfoViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Company(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -213,6 +220,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserSummaryViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Summary(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -231,6 +239,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[AllowAnonymous]
 		[HttpGet]
+		[Route("[action]")]
 		public IActionResult LastLogin(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -254,6 +263,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserBaseInfoViewModel), 0)]
+		[Route("[action]")]
 		public IActionResult Base(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -277,6 +287,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[HttpGet]
 		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
+		[Route("[action]")]
 		public IActionResult AuditStream(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -314,6 +325,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(UserVacationInfoViewModel), 0)]
 		[AllowAnonymous]
 		[HttpGet]
+		[Route("[action]")]
 		public IActionResult Vacation(string id)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
@@ -332,6 +344,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		[HttpPost]
+		[Route("[action]")]
 		public async Task<IActionResult> Avatar([FromBody]ResponseImgDataModel model)
 		{
 			var targetUser = GetCurrentQueryUser(null, out var result);
@@ -356,6 +369,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(AvatarViewModel), 0)]
 		[HttpGet]
+		[Route("[action]")]
 		public async Task<IActionResult> Avatar(string userId, string avatarId)
 		{
 			Avatar avatar = null;
@@ -388,6 +402,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[AllowAnonymous]
 		[HttpGet]
+		[Route("[action]")]
 		public IActionResult Avatars(string userid, DateTime start)
 		{
 			var list = _usersService.QueryAvatar(userid, start);

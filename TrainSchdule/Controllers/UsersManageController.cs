@@ -27,6 +27,7 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserManageRangeDataModel), 0)]
+		[Route("[action]")]
 		public IActionResult OnMyManage(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
@@ -51,6 +52,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpDelete]
 		[AllowAnonymous]
+		[Route("[action]")]
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
@@ -77,6 +79,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
+		[Route("[action]")]
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model, string mdzz)
 		{
@@ -106,8 +109,8 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		[Route("Social")]
 		[HttpGet]
+		[Route("Social/UserModefyRecord")]
 		[AllowAnonymous]
 		public IActionResult SocialModefyRecord(string id)
 		{
@@ -129,8 +132,8 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		[Route("Social")]
 		[HttpGet]
+		[Route("Social/ModefyRecord")]
 		public IActionResult SingleSocialModefyRecord(int code)
 		{
 			var record = userServiceDetail.ModefySettleModeyRecord(code);
@@ -149,8 +152,8 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[Route("Social")]
 		[HttpPost]
+		[Route("Social/ModefyRecord")]
 		public IActionResult SingleSocialModefyRecord([FromBody]ModefySingleSettleModefyRecordViewModel model)
 		{
 			var currentUser = _currentUserService.CurrentUser;
