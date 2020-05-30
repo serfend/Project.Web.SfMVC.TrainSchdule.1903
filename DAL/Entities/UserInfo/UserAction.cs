@@ -60,6 +60,7 @@ namespace DAL.Entities.UserInfo
 		CreateApply = 16,
 		RemoveApply = 17,
 		AuditApply = 18,
+		ModefyApply = 19,
 		Permission = 32,
 		FromUserReport = 64
 	}

@@ -105,7 +105,7 @@ namespace BLL.Services
 		{
 			if (action == null) return null;
 			action.Success = success;
-			action.Description = description ?? action.Description;
+			action.Description = $"{action.Description} {description}";
 			_context.UserActions.Update(action);
 			_context.SaveChanges();
 			return action;

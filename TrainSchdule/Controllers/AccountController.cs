@@ -362,7 +362,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
 		{
-			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "");
+			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
 			if (ModelState.IsValid)
 			{
 				var r = model.Verify.Verify(_verifyService);
@@ -459,7 +459,7 @@ namespace TrainSchdule.Controllers
 
 		private async Task RemoveSingle(string id, User authByUser)
 		{
-			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "");
+			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "", false, ActionRank.Danger);
 			var targetUser = _usersService.Get(id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -626,16 +626,16 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="model">修改实体</param>
 		/// <param name="authByUser"></param>
-		/// <param name="modefyDescription"></param>
+		/// <param name="modefyDescription">备注</param>
 		/// <returns></returns>
 		private async Task ModefySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
 			// 获取需要修改的目标用户
-			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
+			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var modefyUser = await _usersService.ModefyAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), false);
+			var modefyUser = await _usersService.ModefyAsync(model.ToModel(authByUser.Id, _context.AdminDivisions), false);
 
 			var invalidAccount = localUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
@@ -654,13 +654,13 @@ namespace TrainSchdule.Controllers
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var regUser = _usersService.Get(model.Application.UserName);
-			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "");
+			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "", false, ActionRank.Warning);
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var user = await _usersService.CreateAsync(model.ToDTO(authByUser.Id, _context.AdminDivisions), model.Password);
+			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.Get(user.UserName);
 			CheckCurrentUserData(toRegisterUser);
