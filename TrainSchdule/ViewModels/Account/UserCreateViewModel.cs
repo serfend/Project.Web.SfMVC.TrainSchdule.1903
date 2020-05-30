@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using DAL.DTO.User.Social;
+using DAL.Entities.UserInfo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TrainSchdule.ViewModels.User;
@@ -100,7 +101,7 @@ namespace TrainSchdule.ViewModels.Account
 		///
 		/// </summary>
 		[Required(ErrorMessage = "未输入家庭情况")]
-		public UserSocialDataModel Social { get; set; }
+		public SocialDto Social { get; set; }
 
 		/// <summary>
 		///

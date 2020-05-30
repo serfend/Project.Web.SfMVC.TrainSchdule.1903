@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TrainSchdule.ViewModels.Account;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.User;
+using TrainSchdule.Extensions.Users.Social;
 
 namespace TrainSchdule.Extensions
 {
@@ -21,7 +22,7 @@ namespace TrainSchdule.Extensions
 		/// <param name="invitedBy"></param>
 		/// <param name="db"></param>
 		/// <returns></returns>
-		public static User ToDTO(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> db)
+		public static User ToModel(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> db)
 		{
 			if (model == null) return null;
 			var u = new User()
@@ -45,7 +46,7 @@ namespace TrainSchdule.Extensions
 				},
 				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,
-				SocialInfo = model.Social?.ToModel(),
+				SocialInfo = model.Social?.ToModel(db),
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
 				DiyInfo = model.Diy?.ToModel()
 			};

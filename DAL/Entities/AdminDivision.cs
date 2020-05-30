@@ -1,4 +1,5 @@
 ﻿using Castle.Core.Internal;
+using DAL.DTO.User.Social;
 using DAL.Entities.UserInfo.Settle;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -48,7 +49,7 @@ namespace DAL.Entities
 
 		public override bool IsValid(object value)
 		{
-			var vmodel = value as Moment;
+			var vmodel = value as MomentDto;
 			if (vmodel == null) return true;
 
 			if (!vmodel.Valid)
