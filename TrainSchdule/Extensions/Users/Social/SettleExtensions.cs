@@ -37,17 +37,18 @@ namespace TrainSchdule.Extensions.Users.Social
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="db"></param>
+		/// <param name="raw"></param>
 		/// <returns></returns>
-		public static Settle ToModel(this SettleDto model, DbSet<AdminDivision> db)
+		public static Settle ToModel(this SettleDto model, DbSet<AdminDivision> db, Settle raw = null)
 		{
-			if (model == null) return null;
-			return new Settle()
-			{
-				Lover = model.Lover.ToModel(db),
-				LoversParent = model.LoversParent.ToModel(db),
-				Parent = model.Parent.ToModel(db),
-				Self = model.Self.ToModel(db)
-			};
+			if (model == null) return raw;
+			if (raw == null) raw = new Settle();
+
+			raw.Lover = model.Lover.ToModel(db, raw.Lover);
+			raw.LoversParent = model.LoversParent.ToModel(db, raw.LoversParent);
+			raw.Parent = model.Parent.ToModel(db, raw.Parent);
+			raw.Self = model.Self.ToModel(db, raw.Self);
+			return raw;
 		}
 	}
 }

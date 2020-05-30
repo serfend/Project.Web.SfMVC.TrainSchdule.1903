@@ -29,6 +29,7 @@ namespace DAL.Entities
 		{
 			public static PermissionDescription Application = new PermissionDescription("User.Application", "用户的密码、安全码等敏感信息");
 			public static PermissionDescription BaseInfo = new PermissionDescription("User.BaseInfo", "用户的基本信息");
+			public static PermissionDescription SocialInfo = new PermissionDescription("User.SocialInfo", "用户的家庭情况信息");
 		}
 
 		public static class Apply

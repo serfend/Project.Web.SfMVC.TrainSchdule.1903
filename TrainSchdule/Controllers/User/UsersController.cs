@@ -156,25 +156,6 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
-		/// 社会信息
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[AllowAnonymous]
-		[HttpGet]
-		[ProducesResponseType(typeof(UserSocialViewModel), 0)]
-		[Route("[action]")]
-		public IActionResult Social(string id)
-		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
-			return new JsonResult(new UserSocialViewModel()
-			{
-				Data = targetUser.SocialInfo.ToDto()
-			});
-		}
-
-		/// <summary>
 		/// 职务信息
 		/// </summary>
 		/// <param name="id"></param>

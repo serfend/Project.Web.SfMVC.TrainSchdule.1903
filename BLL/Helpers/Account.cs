@@ -33,6 +33,8 @@
 					public static readonly ApiResult SystemAllReadyValid = new ApiResult(12430, "用户的注册申请已被审批");
 					public static readonly ApiResult SystemInvalid = new ApiResult(12440, "用户未被授权使用系统");
 					public static readonly ApiResult SystemAllReadyInvalid = new ApiResult(12450, "用户的注册申请已被退回，需重新注册");
+					public static readonly ApiResult AuthUserNotExist = new ApiResult(12460, "无效的授权人 - 不存在");
+					public static readonly ApiResult AuthUserNotSet = new ApiResult(12470, "无效的授权人 - 未设置");
 				}
 			}
 

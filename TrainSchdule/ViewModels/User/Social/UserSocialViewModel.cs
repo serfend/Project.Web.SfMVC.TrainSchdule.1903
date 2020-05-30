@@ -5,6 +5,7 @@ using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using System;
 using System.ComponentModel.DataAnnotations;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.User
 {
@@ -17,5 +18,33 @@ namespace TrainSchdule.ViewModels.User
 		/// 社会情况信息
 		/// </summary>
 		public SocialDto Data { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class UserSocialSettleModefyViewModel : GoogleAuthViewModel
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public UserSocialSettleDataModel Data { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class UserSocialSettleDataModel
+	{
+		/// <summary>
+		/// 用户id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+
+		public SettleDto Settle { get; set; }
 	}
 }

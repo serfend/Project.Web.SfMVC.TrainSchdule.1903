@@ -16,18 +16,19 @@ namespace TrainSchdule.Extensions.Users.Social
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="db"></param>
+		/// <param name="raw"></param>
 		/// <returns></returns>
-		public static Moment ToModel(this MomentDto model, DbSet<AdminDivision> db)
+		public static Moment ToModel(this MomentDto model, DbSet<AdminDivision> db, Moment raw = null)
 		{
-			var tmp = new Moment()
-			{
-				Address = db.Where(a => a.Code == model.Address.Code).FirstOrDefault(),
-				AddressDetail = model.AddressDetail,
-				Date = model.Date,
-				Valid = model.Valid
-			};
+			if (model == null) return raw;
+			if (raw == null) raw = new Moment();
+
+			raw.Address = db.Where(a => a.Code == model.Address.Code).FirstOrDefault();
+			raw.AddressDetail = model.AddressDetail;
+			raw.Date = model.Date;
+			raw.Valid = model.Valid;
 			//if (tmp.Address == null || tmp.Date.Year < 1900 || tmp.AddressDetail == "") return null;
-			return tmp;
+			return raw;
 		}
 
 		/// <summary>
