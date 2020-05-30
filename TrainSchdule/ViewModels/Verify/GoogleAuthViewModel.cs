@@ -47,6 +47,41 @@ namespace TrainSchdule.ViewModels.Verify
 		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId) => model?.AuthByUserID == currentUserId || (model != null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
 
 		/// <summary>
+		/// 获取授权人
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="authService"></param>
+		/// <param name="currentUserId"></param>
+		/// <returns></returns>
+		public static string AuthUser(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId)
+		{
+			var result = currentUserId;
+			if (model?.AuthByUserID != null)
+			{
+				if (!model.Verify(authService, result)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				result = model.AuthByUserID;
+			}
+			if (result == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Permission.AuthUserNotSet);
+			return result;
+		}
+
+		/// <summary>
+		/// 获取授权人本人
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="authService"></param>
+		/// <param name="usersService"></param>
+		/// <param name="currentUserId"></param>
+		/// <returns></returns>
+		public static DAL.Entities.UserInfo.User AuthUser(this GoogleAuthDataModel model, IGoogleAuthService authService, IUsersService usersService, string currentUserId)
+		{
+			var u = model.AuthUser(authService, currentUserId);
+			var user = usersService.Get(u);
+			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Permission.AuthUserNotExist);
+			return user;
+		}
+
+		/// <summary>
 		/// 授权失败
 		/// </summary>
 		/// <param name="model"></param>
