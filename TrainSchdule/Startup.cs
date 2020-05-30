@@ -159,7 +159,10 @@ namespace TrainSchdule
 				options.User.RequireUniqueEmail = true;
 			});
 			AddApplicationServices(services);
-			services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+			services.AddMvc(option =>
+			{
+				option.Filters.Add<ActionStatusMessageExceptionFilter>();
+			}).AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)
