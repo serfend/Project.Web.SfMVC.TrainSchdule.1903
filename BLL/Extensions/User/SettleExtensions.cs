@@ -145,16 +145,15 @@ namespace BLL.Extensions
 			description = "本人地址无效，无休假";
 			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
 
-			var title = targetUser.CompanyInfo.Title;
-			if (title != null && title.VacationDay != 0)
-			{
-				maxOnTripTime = 1;
-				description = $"{title.Name}，假期天数{title.VacationDay}天";
-				return title.VacationDay;
-			}
-
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
 			{
+				var title = targetUser.CompanyInfo.Title;
+				if (title != null && title.VacationDay != 0)
+				{
+					maxOnTripTime = 1;
+					description = $"未婚，且职务为{title.Name}，假期天数{title.VacationDay}天";
+					return title.VacationDay;
+				}
 				description = "未婚，探父母假30天。";
 				maxOnTripTime = 1;
 				return 30;
