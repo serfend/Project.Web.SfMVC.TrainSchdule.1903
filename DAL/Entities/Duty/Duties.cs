@@ -24,5 +24,10 @@ namespace DAL.Entities
 		/// 职务标签，以##分割
 		/// </summary>
 		public string Tags { get; set; }
+
+		/// <summary>
+		/// 人员类别用于统计时使用
+		/// </summary>
+		public string Type { get; set; }
 	}
 }
