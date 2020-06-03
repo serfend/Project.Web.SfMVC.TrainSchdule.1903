@@ -200,7 +200,7 @@ namespace DAL.Entities
 
 		public static bool Check(this Permissions permissions, PermissionDescription key, Operation operation, string targetUserCompanyCode)
 		{
-			if (permissions.Role == "Admin") return true;
+			if (permissions.Role.ToLower() == "admin") return true;
 			var dic = GetRegion(permissions, key);
 			if (dic == null) return false;
 			IEnumerable<string> list;

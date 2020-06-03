@@ -72,10 +72,12 @@ namespace TrainSchdule.Controllers
 		public IActionResult SingleSocialModefyRecord([FromBody]ModefySingleSettleModefyRecordViewModel model)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(model.Auth.PermitDenied());
+			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);
+			if (authUser.Id != "root") return new JsonResult(model.Auth.PermitDenied());
 			var newR = model.Record;
 			if (newR == null) return new JsonResult(newR.NotExist());
-			var recod = userServiceDetail.ModefySettleModeyRecord(newR.Code, (r) =>
+
+			var record = userServiceDetail.ModefySettleModeyRecord(newR.Code, (r) =>
 			{
 				if (r == null) return;
 				r.IsNewYearInitData = newR.IsNewYearInitData;
@@ -83,7 +85,8 @@ namespace TrainSchdule.Controllers
 				r.Length = newR.Length;
 				r.Description = newR.Description;
 			}, model.Record.IsRemoved);
-			if (recod == null) return new JsonResult(recod.NotExist());
+			if (record == null) return new JsonResult(record.NotExist());
+
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
