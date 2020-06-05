@@ -21,14 +21,15 @@ namespace BLL.Services.VacationStatistics
 
 		public IEnumerable<StatisticsApplyComplete> CaculateCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
+			if (companyCode == null) return new List<StatisticsApplyComplete>();
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsCompleteApplies.AsQueryable();
 			var pDate = vStart.Date;
-			var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
 			var result = new List<StatisticsApplyComplete>();
 			bool hasChange = false;
 			while (pDate < vEnd)
 			{
+				var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
 				var applies = GetCurrentApplies(companyCode).Where(a => a.RequestInfo.StampLeave.HasValue).Where(a => a.RequestInfo.StampLeave.Value >= pDate).Where(a => a.RequestInfo.StampLeave.Value <= pDateEnd);
 				var r = GetTargetStatistics(companyCode, pDate, db, applies);
 				result.AddRange(r.Item1);
@@ -45,17 +46,18 @@ namespace BLL.Services.VacationStatistics
 
 		public IEnumerable<StatisticsApplyNew> CaculateNewApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
+			if (companyCode == null) return new List<StatisticsApplyNew>();
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsNewApplies.AsQueryable();
 			var applies = GetCurrentApplies(companyCode);
 			var recallDb = _context.RecallOrders;
 
 			var pDate = vStart.Date;
-			var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
 			var result = new List<StatisticsApplyNew>();
 			bool hasChange = false;
 			while (pDate < vEnd)
 			{
+				var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
 				var target = applies.Where(
 				a =>
 				(a.RecallId != null
