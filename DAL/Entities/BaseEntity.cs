@@ -2,6 +2,16 @@
 
 namespace DAL.Entities
 {
+	public interface IHasIntId
+	{
+		int Id { get; set; }
+	}
+
+	public interface IHasGuidId
+	{
+		Guid Id { get; set; }
+	}
+
 	/// <summary>
 	/// Base class for entities.
 	/// Contains <see cref="Id"/> property.

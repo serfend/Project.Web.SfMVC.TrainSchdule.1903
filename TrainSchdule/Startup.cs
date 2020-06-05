@@ -5,6 +5,7 @@ using BLL.Interfaces.BBS;
 using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
+using BLL.Interfaces.IVacationStatistics;
 using BLL.Interfaces.ZX;
 using BLL.Services;
 using BLL.Services.ApplyServices;
@@ -12,6 +13,7 @@ using BLL.Services.BBS;
 using BLL.Services.Common;
 using BLL.Services.File;
 using BLL.Services.GameR3;
+using BLL.Services.VacationStatistics;
 using BLL.Services.ZX;
 using DAL.Data;
 using DAL.Entities.UserInfo;
@@ -84,6 +86,8 @@ namespace TrainSchdule
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IUserActionServices, UserActionServices>();
 			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
+			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
+
 			services.AddScoped<IGameR3Services, R3HandleServices>();
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
 			services.AddScoped<ISignInServices, SignInServices>();

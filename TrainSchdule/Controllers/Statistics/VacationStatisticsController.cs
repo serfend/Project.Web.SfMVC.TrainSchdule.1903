@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.IVacationStatistics;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Vacations;
@@ -22,7 +23,7 @@ namespace TrainSchdule.Controllers.Statistics
 	/// 休假情况统计
 	/// </summary>
 	[Route("[controller]/[action]")]
-	public class VacationStatisticsController : Controller
+	public partial class VacationStatisticsController : Controller
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IGoogleAuthService authService;
@@ -30,6 +31,7 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IUserActionServices _userActionServices;
 		private readonly IVacationStatisticsServices _vacationStatisticsServices;
 		private readonly ICompaniesService companiesService;
+		private readonly IStatisrticsAppliesServices statisrticsAppliesServices;
 
 		/// <summary>
 		///
@@ -40,7 +42,8 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="userActionServices"></param>
 		/// <param name="vacationStatisticsServices"></param>
 		/// <param name="companiesService"></param>
-		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices, ICompaniesService companiesService)
+		/// <param name="statisrticsAppliesServices"></param>
+		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, IVacationStatisticsServices vacationStatisticsServices, ICompaniesService companiesService, IStatisrticsAppliesServices statisrticsAppliesServices)
 		{
 			this.context = context;
 			this.authService = authService;
@@ -48,6 +51,7 @@ namespace TrainSchdule.Controllers.Statistics
 			_userActionServices = userActionServices;
 			_vacationStatisticsServices = vacationStatisticsServices;
 			this.companiesService = companiesService;
+			this.statisrticsAppliesServices = statisrticsAppliesServices;
 		}
 
 		/// <summary>
