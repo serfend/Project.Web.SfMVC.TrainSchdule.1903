@@ -98,7 +98,7 @@ namespace TrainSchdule.ViewModels.Common
 		/// <param name="model"></param>
 		/// <param name="raw"></param>
 		/// <returns></returns>
-		public static ApplicationUpdateRecord ToModel(this ApplicationUpdateRecordUpdateDataModel model, ApplicationUpdateRecord raw)
+		public static ApplicationUpdateRecord ToModel(this SingleRecord model, ApplicationUpdateRecord raw)
 		{
 			if (model == null) return null;
 			if (raw == null) raw = new ApplicationUpdateRecord();
