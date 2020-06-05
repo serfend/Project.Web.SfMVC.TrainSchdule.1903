@@ -24,14 +24,27 @@ namespace BLL.Services.VacationStatistics
 			if (companyCode == null) return new List<StatisticsApplyComplete>();
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsCompleteApplies.AsQueryable();
+			var recallDb = _context.RecallOrders;
+
 			var pDate = vStart.Date;
 			var result = new List<StatisticsApplyComplete>();
 			bool hasChange = false;
+			var applies = GetCurrentApplies(companyCode);
 			while (pDate < vEnd)
 			{
 				var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
-				var applies = GetCurrentApplies(companyCode).Where(a => a.RequestInfo.StampLeave.HasValue).Where(a => a.RequestInfo.StampLeave.Value >= pDate).Where(a => a.RequestInfo.StampLeave.Value <= pDateEnd);
-				var r = GetTargetStatistics(companyCode, pDate, db, applies);
+				var thisDayApplies = applies.Where(
+				a =>
+				(a.RecallId != null
+				&& recallDb.Where(rec => rec.Id == a.Id).First().ReturnStramp >= pDate
+				&& recallDb.Where(rec => rec.Id == a.Id).First().ReturnStramp <= pDateEnd)
+				||
+				(a.RecallId == null
+				&& a.RequestInfo.StampReturn.HasValue
+				&& a.RequestInfo.StampReturn.Value >= pDate
+				&& a.RequestInfo.StampReturn.Value <= pDateEnd)
+				);
+				var r = GetTargetStatistics(companyCode, pDate, db, thisDayApplies);
 				result.AddRange(r.Item1);
 				if (r.Item2)
 				{
@@ -50,7 +63,6 @@ namespace BLL.Services.VacationStatistics
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsNewApplies.AsQueryable();
 			var applies = GetCurrentApplies(companyCode);
-			var recallDb = _context.RecallOrders;
 
 			var pDate = vStart.Date;
 			var result = new List<StatisticsApplyNew>();
@@ -58,18 +70,8 @@ namespace BLL.Services.VacationStatistics
 			while (pDate < vEnd)
 			{
 				var pDateEnd = pDate.AddDays(1).AddMilliseconds(-1);
-				var target = applies.Where(
-				a =>
-				(a.RecallId != null
-				&& recallDb.Find(a.Id).ReturnStramp >= pDate
-				&& recallDb.Find(a.Id).ReturnStramp <= pDateEnd)
-				||
-				(a.RecallId == null
-				&& a.RequestInfo.StampReturn.HasValue
-				&& a.RequestInfo.StampReturn.Value >= pDate
-				&& a.RequestInfo.StampReturn.Value <= pDateEnd)
-				);
-				var r = GetTargetStatistics(companyCode, pDate, db, applies);
+				var thisDayApplies = applies.Where(a => a.RequestInfo.StampLeave.HasValue).Where(a => a.RequestInfo.StampLeave.Value >= pDate).Where(a => a.RequestInfo.StampLeave.Value <= pDateEnd);
+				var r = GetTargetStatistics(companyCode, pDate, db, thisDayApplies);
 				result.AddRange(r.Item1);
 				if (r.Item2)
 				{
