@@ -17,6 +17,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="from"></param>
 		/// <param name="to"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> AppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
@@ -36,6 +37,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="from"></param>
 		/// <param name="to"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public async Task<IActionResult> AppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);

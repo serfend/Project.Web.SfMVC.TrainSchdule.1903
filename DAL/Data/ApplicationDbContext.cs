@@ -56,6 +56,9 @@ namespace DAL.Data
 		public DbSet<GainGiftCode> GainGiftCodeHistory { get; set; }
 		public DbSet<SignIn> SignIns { get; set; }
 
+		public DbSet<ApplicationUpdateRecord> ApplicationUpdateRecords { get; set; }
+		public IQueryable<ApplicationUpdateRecord> ApplicationUpdateRecordsDb => ApplicationUpdateRecords.Where(r => !r.IsRemoved);
+
 		#endregion Properties
 
 		#region .ctors
@@ -77,6 +80,7 @@ namespace DAL.Data
 			base.OnModelCreating(builder);
 			builder.Entity<ShortUrl>().HasIndex(s => s.Key);
 			builder.Entity<UserAction>().HasIndex(s => s.Date);
+			builder.Entity<ApplicationUpdateRecord>().HasIndex(s => s.Create);
 		}
 
 		#endregion Logic
