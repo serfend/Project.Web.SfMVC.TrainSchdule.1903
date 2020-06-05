@@ -74,21 +74,24 @@ namespace TrainSchdule.Controllers.Static
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var authBy = model.Auth.AuthUser(authService, currentUserService.CurrentUser?.Id);
 			if (authBy != "root") return new JsonResult(model.Auth.PermitDenied());
-			var m = model.Data;
-			var r = context.ApplicationUpdateRecordsDb.Where(rec => rec.Version == m.Version).FirstOrDefault();
-			bool isAdd = false;
-			if (r == null)
+			var mList = model.Data.List;
+			foreach (var m in mList)
 			{
-				if (m.IsRemoved) return new JsonResult(r.NotExist());
-				r = new ApplicationUpdateRecord();
-				isAdd = true;
+				var r = context.ApplicationUpdateRecordsDb.Where(rec => rec.Version == m.Version).FirstOrDefault();
+				bool isAdd = false;
+				if (r == null)
+				{
+					if (m.IsRemoved) return new JsonResult(r.NotExist());
+					r = new ApplicationUpdateRecord();
+					isAdd = true;
+				}
+				r = m.ToModel(r);
+				if (m.IsRemoved) r.Remove();
+				if (isAdd)
+					context.ApplicationUpdateRecords.Add(r);
+				else
+					context.ApplicationUpdateRecords.Update(r);
 			}
-			r = m.ToModel(r);
-			if (m.IsRemoved) r.Remove();
-			if (isAdd)
-				context.ApplicationUpdateRecords.Add(r);
-			else
-				context.ApplicationUpdateRecords.Update(r);
 			context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
 		}

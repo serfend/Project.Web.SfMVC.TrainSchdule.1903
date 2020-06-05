@@ -54,6 +54,17 @@ namespace TrainSchdule.ViewModels.Common
 	public class ApplicationUpdateRecordUpdateDataModel
 	{
 		/// <summary>
+		///
+		/// </summary>
+		public IEnumerable<SingleRecord> List { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public class SingleRecord
+	{
+		/// <summary>
 		/// 主键 版本号
 		/// </summary>
 		[Required]
