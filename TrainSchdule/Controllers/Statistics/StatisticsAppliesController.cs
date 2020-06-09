@@ -18,7 +18,8 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="to"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> AppliesTargetNew(string companyCode, DateTime from, DateTime to)
+		[Route("AppliesTargetNew")]
+		public async Task<IActionResult> GetAppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
 			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyNew>()
@@ -38,7 +39,50 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="to"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> AppliesTargetComplete(string companyCode, DateTime from, DateTime to)
+		[Route("AppliesTargetComplete")]
+		public async Task<IActionResult> GetAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
+		{
+			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
+			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyComplete>()
+			{
+				Data = new StatisticsAppliesDataModel<StatisticsApplyComplete>()
+				{
+					List = r
+				}
+			});
+		}
+
+		/// <summary>
+		/// 删除指定单位（包含下级）的新增休假去向统计
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		[Route("AppliesTargetNew")]
+		public async Task<IActionResult> RemoveAppliesTargetNew(string companyCode, DateTime from, DateTime to)
+		{
+			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
+			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyNew>()
+			{
+				Data = new StatisticsAppliesDataModel<StatisticsApplyNew>()
+				{
+					List = r
+				}
+			});
+		}
+
+		/// <summary>
+		/// 删除指定单位（包含下级）的已完成休假去向统计
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		[Route("AppliesTargetComplete")]
+		public async Task<IActionResult> RemoveAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
 			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyComplete>()

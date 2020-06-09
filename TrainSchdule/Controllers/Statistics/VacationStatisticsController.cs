@@ -22,7 +22,7 @@ namespace TrainSchdule.Controllers.Statistics
 	/// <summary>
 	/// 休假情况统计
 	/// </summary>
-	[Route("[controller]/[action]")]
+	[Route("[controller]")]
 	public partial class VacationStatisticsController : Controller
 	{
 		private readonly ApplicationDbContext context;
@@ -61,6 +61,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpGet]
 		[ProducesResponseType(typeof(DateWeekOfYearViewModel), 0)]
+		[Route("WhichWeekInYear")]
 		public IActionResult WhichWeekInYear(DateTime value)
 		{
 			var result = new GregorianCalendar().GetWeekOfYear(value, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday) + 1;
@@ -77,6 +78,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(VacationStatisticsViewModel), 0)]
+		[Route("DetailsList")]
 		public IActionResult DetailsList([FromBody]QueryVacationStatisticsViewModel model)
 		{
 			var result = _vacationStatisticsServices.Query(model);
@@ -97,6 +99,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
+		[Route("Detail")]
 		public async Task<IActionResult> Detail([FromBody]NewStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -132,6 +135,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[HttpDelete]
 		[ProducesResponseType(typeof(ApiResult), 0)]
+		[Route("Detail")]
 		public async Task<IActionResult> Detail([FromBody]DeleteStatisticsViewModel model)
 		{
 			if (!model.Auth.Verify(authService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -165,6 +169,7 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="companiesCode">需要查询的单位代码，以##分割</param>
 		/// <returns></returns>
 		[HttpGet]
+		[Route("Summary")]
 		public IActionResult Summary(string companiesCode)
 		{
 			var companies = companiesCode?.Split("##");
