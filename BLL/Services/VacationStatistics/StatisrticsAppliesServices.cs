@@ -36,8 +36,8 @@ namespace BLL.Services.VacationStatistics
 				var thisDayApplies = applies.Where(
 				a =>
 				(a.RecallId != null
-				&& recallDb.Where(rec => rec.Id == a.Id).First().ReturnStramp >= pDate
-				&& recallDb.Where(rec => rec.Id == a.Id).First().ReturnStramp <= pDateEnd)
+				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStramp >= pDate
+				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStramp <= pDateEnd)
 				||
 				(a.RecallId == null
 				&& a.RequestInfo.StampReturn.HasValue
