@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DAL.Entities.Vacations.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DAL.Entities.Vacations.VacationsStatistics
+namespace DAL.Entities.Vacations
 {
-	public class VacationStatisticsDescriptionData : BaseEntity
+	public class StatisticsAppliesProcess : BaseEntity, IDateStatistics
 	{
 		/// <summary>
 		/// 按职务类别分类统计<see cref="DAL.Entities.UserInfo.UserCompanyTitle.TitleType"/>
@@ -37,18 +38,20 @@ namespace DAL.Entities.Vacations.VacationsStatistics
 		public int MembersVacationDayLessThanP60 { get; set; }
 
 		/// <summary>
-		/// 申请通过的数量
+		/// 有效申请的数量
 		/// </summary>
 		public int ApplyCount { get; set; }
 
 		/// <summary>
-		/// 申请通过的人数
+		/// 有效申请的人数
 		/// </summary>
 		public int ApplyMembersCount { get; set; }
 
 		/// <summary>
-		/// 申请通过的天数
+		/// 有效申请的天数（申请通过的天数-召回减少的天数）
 		/// </summary>
 		public int ApplySumDayCount { get; set; }
+
+		public DateTime Target { get; set; }
 	}
 }

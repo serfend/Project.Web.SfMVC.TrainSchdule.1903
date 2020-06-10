@@ -85,7 +85,6 @@ namespace TrainSchdule
 			services.AddScoped<IEmailSender, EmailSender>();
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IUserActionServices, UserActionServices>();
-			services.AddScoped<IVacationStatisticsServices, VacationStatisticsServices>();
 			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
 
 			services.AddScoped<IGameR3Services, R3HandleServices>();

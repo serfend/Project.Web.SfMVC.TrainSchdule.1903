@@ -8,13 +8,11 @@ using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vacations;
 using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
-using DAL.Entities.Vacations.VacationsStatistics;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using User = DAL.Entities.UserInfo.User;
 
 namespace DAL.Data
 {
