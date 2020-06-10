@@ -22,6 +22,7 @@ namespace BLL.Services.VacationStatistics
 		public IEnumerable<StatisticsApplyComplete> CaculateCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
 			if (companyCode == null) return new List<StatisticsApplyComplete>();
+			if (vEnd.Subtract(vStart).TotalDays > 1200) vStart = vEnd.Subtract(TimeSpan.FromDays(1200));
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsCompleteApplies.AsQueryable();
 			var recallDb = _context.RecallOrders;
@@ -60,6 +61,7 @@ namespace BLL.Services.VacationStatistics
 		public IEnumerable<StatisticsApplyNew> CaculateNewApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
 			if (companyCode == null) return new List<StatisticsApplyNew>();
+			if (vEnd.Subtract(vStart).TotalDays > 1200) vStart = vEnd.Subtract(TimeSpan.FromDays(1200));
 			vEnd = EndDateNotEarlyThanNow(vEnd);
 			var db = _context.StatisticsNewApplies.AsQueryable();
 			var applies = GetCurrentApplies(companyCode);
