@@ -4,6 +4,7 @@ using BLL.Interfaces.IVacationStatistics;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.Statistics;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -30,6 +31,8 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IUserActionServices _userActionServices;
 		private readonly ICompaniesService companiesService;
 		private readonly IStatisrticsAppliesServices statisrticsAppliesServices;
+		private readonly IStatisticsAppliesProcessServices statisticsAppliesProcessServices;
+		private readonly IStatisticsDailyProcessServices statisticsDailyProcessServices;
 
 		/// <summary>
 		///
@@ -38,10 +41,11 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <param name="authService"></param>
 		/// <param name="usersService"></param>
 		/// <param name="userActionServices"></param>
-		/// <param name="vacationStatisticsServices"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="statisrticsAppliesServices"></param>
-		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, ICompaniesService companiesService, IStatisrticsAppliesServices statisrticsAppliesServices)
+		/// <param name="statisticsAppliesProcessServices"></param>
+		/// <param name="statisticsDailyProcessServices"></param>
+		public VacationStatisticsController(ApplicationDbContext context, IGoogleAuthService authService, IUsersService usersService, IUserActionServices userActionServices, ICompaniesService companiesService, IStatisrticsAppliesServices statisrticsAppliesServices, IStatisticsAppliesProcessServices statisticsAppliesProcessServices, IStatisticsDailyProcessServices statisticsDailyProcessServices)
 		{
 			this.context = context;
 			this.authService = authService;
@@ -49,6 +53,8 @@ namespace TrainSchdule.Controllers.Statistics
 			_userActionServices = userActionServices;
 			this.companiesService = companiesService;
 			this.statisrticsAppliesServices = statisrticsAppliesServices;
+			this.statisticsAppliesProcessServices = statisticsAppliesProcessServices;
+			this.statisticsDailyProcessServices = statisticsDailyProcessServices;
 		}
 
 		/// <summary>
@@ -66,6 +72,66 @@ namespace TrainSchdule.Controllers.Statistics
 			{
 				Data = new DateWeekOfYearDataModel() { WeekOfYear = result }
 			});
+		}
+
+		/// <summary>
+		/// 获取指定单位指定时间内的休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[Route("AppliesProcessRecord")]
+		public async Task<IActionResult> GetAppliesProcess(string companyCode, DateTime from, DateTime to)
+		{
+			var r = await Task.Run(() => statisticsAppliesProcessServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
+			return new JsonResult(new EntitiesListViewModel<StatisticsAppliesProcess>(r));
+		}
+
+		/// <summary>
+		/// 删除指定单位指定时间内的休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		[Route("AppliesProcessRecord")]
+		public async Task<IActionResult> RemoveAppliesProcess(string companyCode, DateTime from, DateTime to)
+		{
+			await Task.Run(() => { statisticsAppliesProcessServices.RemoveCompleteApplies(companyCode, from, to); }).ConfigureAwait(false);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 获取指定单位指定时间内需累积项的休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[Route("AppliesDailyProcessRecord")]
+		public async Task<IActionResult> GetAppliesDailyProcess(string companyCode, DateTime from, DateTime to)
+		{
+			var r = await Task.Run(() => statisticsDailyProcessServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
+			return new JsonResult(new EntitiesListViewModel<StatisticsDailyProcessRate>(r));
+		}
+
+		/// <summary>
+		/// 删除指定单位指定时间内需累积项的休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <returns></returns>
+		[HttpDelete]
+		[Route("AppliesDailyProcessRecord")]
+		public async Task<IActionResult> RemoveAppliesDailyProcess(string companyCode, DateTime from, DateTime to)
+		{
+			await Task.Run(() => { statisticsDailyProcessServices.RemoveCompleteApplies(companyCode, from, to); }).ConfigureAwait(false);
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 	}
 }
