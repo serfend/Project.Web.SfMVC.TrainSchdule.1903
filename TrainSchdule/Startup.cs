@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BLL.Crontab;
 using BLL.Interfaces;
 using BLL.Interfaces.BBS;
 using BLL.Interfaces.Common;
@@ -86,6 +87,8 @@ namespace TrainSchdule
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IUserActionServices, UserActionServices>();
 			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
+			services.AddScoped<IStatisticsAppliesProcessServices, StatisticsAppliesProcessServices>();
+			services.AddScoped<IStatisticsDailyProcessServices, StatisticsDailyProcessServices>();
 
 			services.AddScoped<IGameR3Services, R3HandleServices>();
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
@@ -125,7 +128,11 @@ namespace TrainSchdule
 		private void ConfigureHangfireServices()
 		{
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), Cron.Daily);
+			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
+			BackgroundJob.Enqueue<ApplyClearJob>((a) => a.Run());
+			BackgroundJob.Enqueue<UserInfoClearJob>((a) => a.Run());
+			BackgroundJob.Enqueue<FileServices>((a) => a.RemoveTimeoutUploadStatus());
 		}
 
 		/// <summary>

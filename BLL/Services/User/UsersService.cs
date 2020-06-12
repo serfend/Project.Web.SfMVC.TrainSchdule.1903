@@ -151,6 +151,25 @@ namespace BLL.Services
 			return appUser;
 		}
 
+		public async Task RemoveNoRelateInfo()
+		{
+			// 所有在用的用户
+			var users = _context.AppUsers;
+			// 删除没有引用了的子表项（脏数据）
+			var list_app = _context.AppUserApplicationInfos.Where(a => !users.Any(u => u.Application.Id == a.Id));
+			_context.AppUserApplicationInfos.RemoveRange(list_app);
+			var list_cmp = _context.AppUserCompanyInfos.Where(a => !users.Any(u => u.CompanyInfo.Id == a.Id));
+			_context.AppUserCompanyInfos.RemoveRange(list_cmp);
+			var appliesBaseInfo = _context.ApplyBaseInfos;
+			var list_social = _context.AppUserSocialInfos.Where(a => !users.Any(u => u.SocialInfo.Id == a.Id)).Where(a => !appliesBaseInfo.Any(b => b.Social.Id == a.Id));
+			_context.AppUserSocialInfos.RemoveRange(list_social);
+			var list_base = _context.AppUserBaseInfos.Where(a => !users.Any(u => u.BaseInfo.Id == a.Id));
+			_context.AppUserBaseInfos.RemoveRange(list_base);
+			var list_diy = _context.AppUserDiyInfos.Where(a => !users.Any(u => u.DiyInfo.Id == a.Id));
+			_context.AppUserDiyInfos.RemoveRange(list_diy);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
+		}
+
 		private User CreateAppUser(User user)
 		{
 			user.Application.Create = DateTime.Now;
@@ -221,17 +240,7 @@ namespace BLL.Services
 			return true;
 		}
 
-		public bool Remove(string id)
-		{
-			var user = _context.AppUsers.Find(id);
-			if (user == null) return false;
-			_context.AppUsers.Remove(user);
-			var appUser = _context.Users.FirstOrDefault(u => u.UserName == id);
-			if (appUser == null) return false;
-			_context.Users.Remove(appUser);
-			_context.SaveChanges();
-			return true;
-		}
+		public bool Remove(string id) => RemoveAsync(id).Result;
 
 		public async Task<bool> RemoveAsync(string id)
 		{
@@ -250,6 +259,13 @@ namespace BLL.Services
 		private async Task RemoveUser(User user)
 		{
 			_context.AppUsers.Remove(user);
+			RemoveUserInfo(user);
+			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
+			_context.Users.Remove(appUser);
+		}
+
+		private void RemoveUserInfo(User user)
+		{
 			if (user.BaseInfo != null)
 			{
 				_context.AppUserBaseInfos.Remove(user.BaseInfo);
@@ -257,10 +273,10 @@ namespace BLL.Services
 			if (user.Application != null)
 			{
 				if (user.Application.Permission != null) _context.Permissions.Remove(user.Application.Permission);
-				if (user.Application.ApplicationSetting != null) _context.AppUserApplicationInfos.Remove(user.Application);
+				if (user.Application.ApplicationSetting != null) _context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
 			}
-			if (user.Application?.ApplicationSetting != null) _context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
 			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);
+
 			if (user.SocialInfo != null)
 			{
 				_context.AppUserSocialInfos.Remove(user.SocialInfo);
@@ -274,8 +290,6 @@ namespace BLL.Services
 				}
 			}
 			if (user.DiyInfo != null) _context.AppUserDiyInfos.Remove(user.DiyInfo);
-			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
-			_context.Users.Remove(appUser);
 		}
 
 		public string ConvertFromUserCiper(string username, string password)
