@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200610075728_StatisticsProcess")]
+    partial class StatisticsProcess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1278,35 +1280,6 @@ namespace DAL.Migrations
                     b.ToTable("VocationDescriptions");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.StatisticsDailyProcessRate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ApplyMembersCount");
-
-                    b.Property<string>("CompanyCode");
-
-                    b.Property<int>("CompleteVacationExpectDayCount");
-
-                    b.Property<int>("CompleteVacationRealDayCount");
-
-                    b.Property<int>("CompleteYearlyVacationCount");
-
-                    b.Property<int>("MembersCount");
-
-                    b.Property<int>("MembersVacationDayLessThanP60");
-
-                    b.Property<DateTime>("Target");
-
-                    b.Property<string>("Type");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StatisticsDailyProcessRates");
-                });
-
             modelBuilder.Entity("DAL.Entities.Vacations.Statistics.StatisticsNewApply.StatisticsApplyComplete", b =>
                 {
                     b.Property<int>("Id")
@@ -1365,9 +1338,21 @@ namespace DAL.Migrations
 
                     b.Property<int>("ApplyCount");
 
+                    b.Property<int>("ApplyMembersCount");
+
                     b.Property<int>("ApplySumDayCount");
 
                     b.Property<string>("CompanyCode");
+
+                    b.Property<int>("CompleteVacationExpectDayCount");
+
+                    b.Property<int>("CompleteVacationRealDayCount");
+
+                    b.Property<int>("CompleteYearlyVacationCount");
+
+                    b.Property<int>("MembersCount");
+
+                    b.Property<int>("MembersVacationDayLessThanP60");
 
                     b.Property<DateTime>("Target");
 

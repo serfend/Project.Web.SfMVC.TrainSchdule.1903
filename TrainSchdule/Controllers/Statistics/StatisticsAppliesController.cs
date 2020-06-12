@@ -1,10 +1,12 @@
-﻿using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
+﻿using BLL.Helpers;
+using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.Statistics;
+using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.Statistics
 {
@@ -22,13 +24,7 @@ namespace TrainSchdule.Controllers.Statistics
 		public async Task<IActionResult> GetAppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyNew>()
-			{
-				Data = new StatisticsAppliesDataModel<StatisticsApplyNew>()
-				{
-					List = r
-				}
-			});
+			return new JsonResult(new EntitiesListViewModel<StatisticsApplyNew>(r));
 		}
 
 		/// <summary>
@@ -43,13 +39,7 @@ namespace TrainSchdule.Controllers.Statistics
 		public async Task<IActionResult> GetAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
 			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyComplete>()
-			{
-				Data = new StatisticsAppliesDataModel<StatisticsApplyComplete>()
-				{
-					List = r
-				}
-			});
+			return new JsonResult(new EntitiesListViewModel<StatisticsApplyComplete>(r));
 		}
 
 		/// <summary>
@@ -63,14 +53,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetNew")]
 		public async Task<IActionResult> RemoveAppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyNew>()
-			{
-				Data = new StatisticsAppliesDataModel<StatisticsApplyNew>()
-				{
-					List = r
-				}
-			});
+			await Task.Run(() => { statisrticsAppliesServices.RemoveNewApplies(companyCode, from, to); }).ConfigureAwait(false);
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 
 		/// <summary>
@@ -84,14 +68,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetComplete")]
 		public async Task<IActionResult> RemoveAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new StatisticsAppliesViewModel<StatisticsApplyComplete>()
-			{
-				Data = new StatisticsAppliesDataModel<StatisticsApplyComplete>()
-				{
-					List = r
-				}
-			});
+			await Task.Run(() => { statisrticsAppliesServices.RemoveCompleteApplies(companyCode, from, to); }).ConfigureAwait(false);
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 	}
 }

@@ -29,6 +29,8 @@
     <Compile Remove="Migrations\20200518092034_fixDictation_vocation.Designer.cs" />
     <Compile Remove="Migrations\20200530081737_0530.cs" />
     <Compile Remove="Migrations\20200530081737_0530.Designer.cs" />
+    <Compile Remove="Migrations\20200611040051_moveStatisticsDaily.cs" />
+    <Compile Remove="Migrations\20200611040051_moveStatisticsDaily.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
