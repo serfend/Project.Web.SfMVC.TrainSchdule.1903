@@ -1,10 +1,37 @@
-﻿using System;
+﻿using BLL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.System
 {
+	/// <summary>
+	/// 任意实体列表的一般返回
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class EntitiesListViewModel<T> : ApiResult where T : class
+	{
+		/// <summary>
+		///
+		/// </summary>
+		public EntitiesListDataModel<T> Data { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+		public EntitiesListViewModel() { }
+
+		/// <summary>
+		/// 依据实体生成
+		/// </summary>
+		/// <param name="model"></param>
+		public EntitiesListViewModel(IEnumerable<T> model)
+		{
+			this.Data = new EntitiesListDataModel<T>(model);
+		}
+	}
+
 	/// <summary>
 	/// 任意实体列表
 	/// </summary>
@@ -20,5 +47,20 @@ namespace TrainSchdule.ViewModels.System
 		/// 数据库总量，配合SplitPage查询
 		/// </summary>
 		public int TotalCount { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+		public EntitiesListDataModel() { }
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="totalCount"></param>
+		public EntitiesListDataModel(IEnumerable<T> model, int totalCount = 0)
+		{
+			this.List = model;
+		}
 	}
 }
