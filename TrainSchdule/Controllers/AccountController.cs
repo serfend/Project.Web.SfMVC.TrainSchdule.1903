@@ -633,7 +633,7 @@ namespace TrainSchdule.Controllers
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
 			// 获取需要修改的目标用户
-			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "", false, ActionRank.Danger);
+			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, "", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var modefyUser = await _usersService.ModefyAsync(model.ToModel(authByUser.Id, _context.AdminDivisions), false);
 

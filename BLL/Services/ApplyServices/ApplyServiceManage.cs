@@ -87,7 +87,7 @@ namespace BLL.Services.ApplyServices
 
 		public async Task RemoveAllNoneFromUserApply()
 		{
-			var applies = _context.AppliesDb;
+			var applies = _context.Applies;
 
 			#region request
 

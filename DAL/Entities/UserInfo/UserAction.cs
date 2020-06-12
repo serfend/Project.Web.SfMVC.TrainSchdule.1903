@@ -54,13 +54,14 @@ namespace DAL.Entities.UserInfo
 		Default = 0,
 		Register = 1,
 		Remove = 2,
+		ModifyUser = 3,
 		Login = 4,
 		Logout = 5,
-		ModefyPsw = 8,
+		ModifyPsw = 8,
 		CreateApply = 16,
 		RemoveApply = 17,
 		AuditApply = 18,
-		ModefyApply = 19,
+		ModifyApply = 19,
 		Permission = 32,
 		FromUserReport = 64
 	}

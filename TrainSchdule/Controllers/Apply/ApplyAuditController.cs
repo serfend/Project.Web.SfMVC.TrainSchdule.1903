@@ -68,7 +68,7 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Withdrew(string id)
 		{
-			UserAction ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModefyApply, id, "撤回", false, ActionRank.Danger);
+			UserAction ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModifyApply, id, "撤回", false, ActionRank.Danger);
 			try
 			{
 				CheckApplyModelAndDoTask(id, (x, u) =>
@@ -95,7 +95,7 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Cancel(string id)
 		{
-			UserAction ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModefyApply, id, "作废休假", false, ActionRank.Danger);
+			UserAction ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModifyApply, id, "作废休假", false, ActionRank.Danger);
 			try
 			{
 				CheckApplyModelAndDoTask(id, (x, u) =>
