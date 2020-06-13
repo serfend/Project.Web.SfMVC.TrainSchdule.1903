@@ -173,6 +173,8 @@ namespace TrainSchdule
 			{
 				option.Filters.Add<ActionStatusMessageExceptionFilter>();
 			}).AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+			//.AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+			// TODO use yyyy-mm-ddThh:ii:ssZ (UTC)
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)

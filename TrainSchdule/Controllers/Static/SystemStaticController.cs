@@ -1,8 +1,10 @@
 ﻿using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +20,22 @@ namespace TrainSchdule.Controllers
 	/// <summary>
 	/// 系统内部的静态
 	/// </summary>
-	public partial class StaticController
+	public class SystemStaticController : Controller
 	{
+		private readonly IConfiguration configuration;
+		private readonly IVerifyService _verifyService;
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="configuration"></param>
+		/// <param name="verifyService"></param>
+		public SystemStaticController(IConfiguration configuration, IVerifyService verifyService)
+		{
+			this.configuration = configuration;
+			this._verifyService = verifyService;
+		}
+
 		/// <summary>
 		/// 获取图像的base64
 		/// </summary>
@@ -104,85 +120,35 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
-		///
+		/// 获取服务器时间
 		/// </summary>
-		/// <param name="code"></param>
 		/// <returns></returns>
-		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(LocationDataModel), 0)]
-		public IActionResult Location(int code)
-		{
-			var location = _context.AdminDivisions.Find(code);
-			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
-			return new JsonResult(new LocationViewModel()
-			{
-				Data = new LocationDataModel()
-				{
-					Code = location.Code,
-					ParentCode = location.ParentCode,
-					Name = location.Name,
-					ShortName = location.ShortName
-				}
-			});
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="code"></param>
-		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
-		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
-		public IActionResult LocationChildren(int code)
+		public IActionResult TimeZone()
 		{
-			var location = _context.AdminDivisions.Find(code);
-			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
-			var u = _currentUserService.CurrentUser;
-			var list = _context.AdminDivisions.Where(a => a.ParentCode == code).ToList();
-			int divider = 1;
-			while (divider < 1000000 && code % 10 == 0)
+			var config = configuration.GetSection("Configuration");
+			var timeZone = config?.GetSection("TimeZone");
+			var left = timeZone?.GetSection("Left");
+			var leftName = left?["Name"] ?? "天文时间";
+			var leftValue = Convert.ToInt64(left?["Value"] ?? "0");
+			var right = timeZone?.GetSection("Right");
+			var rightName = right?["Name"] ?? "中心时间";
+			var rightValue = Convert.ToInt64(right?["Value"] ?? "432000000");
+			return new JsonResult(new TimeZoneViewModel()
 			{
-				divider *= 10;
-				code /= 10;
-			}
-			divider /= 100;
-			var result = new List<AdminDivision>(list.Count);
-			// 根据当前登录用户的家庭情况选择顺序
-			if (u != null)
-			{
-				var firstResult = new List<AdminDivision>(4);
-				var uSettle = u.SocialInfo.Settle;
-				var uSelf = uSettle?.Self?.Address?.Code ?? -1;
-				var uParent = uSettle?.Parent?.Address?.Code ?? -1;
-				var uLover = uSettle?.Lover?.Address?.Code ?? -1;
-				var uLoverParent = uSettle?.LoversParent?.Address?.Code ?? -1;
-				var targets = new List<int>() { uSelf, uParent, uLover, uLoverParent };
-				foreach (var l in list)
+				Data = new TimeZoneDataModel()
 				{
-					if (targets.Any(c => Math.Abs(c - l.Code) < divider))
+					Left = new ValueNameDataModel<DateTime>()
 					{
-						firstResult.Add(l);
-						HttpContext.Response.Headers["X-Priority"] += $" {l.Code}";
+						Name = leftName,
+						Value = DateTime.Now.AddMilliseconds(leftValue)
+					},
+					Right = new ValueNameDataModel<DateTime>()
+					{
+						Name = rightName,
+						Value = DateTime.Now.AddMilliseconds(rightValue)
 					}
-					else result.Add(l);
-				}
-				if (firstResult.Count > 0)
-				{
-					firstResult.AddRange(result);
-					result = firstResult;
-				}
-			}
-			else
-				result = list;
-			var totalCount = result.Count;
-			return new JsonResult(new LocationChildrenViewModel()
-			{
-				Data = new LocationChildrenDataModel()
-				{
-					List = result.Select(t => t.ToDataModel()),
-					TotalCount = totalCount
 				}
 			});
 		}
