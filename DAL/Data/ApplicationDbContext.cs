@@ -7,6 +7,7 @@ using DAL.Entities.Game_r3;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using DAL.Entities.Vacations;
+using DAL.Entities.Vacations.Statistics;
 using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
 using DAL.Entities.ZX.Phy;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -79,6 +80,15 @@ namespace DAL.Data
 			builder.Entity<ShortUrl>().HasIndex(s => s.Key);
 			builder.Entity<UserAction>().HasIndex(s => s.Date);
 			builder.Entity<ApplicationUpdateRecord>().HasIndex(s => s.Create);
+
+			#region statistics base on time
+
+			builder.Entity<StatisticsAppliesProcess>().HasIndex(s => new { s.Target, s.CompanyCode });
+			builder.Entity<StatisticsApplyComplete>().HasIndex(s => new { s.Target, s.CompanyCode });
+			builder.Entity<StatisticsApplyNew>().HasIndex(s => new { s.Target, s.CompanyCode });
+			builder.Entity<StatisticsDailyProcessRate>().HasIndex(s => new { s.Target, s.CompanyCode });
+
+			#endregion statistics base on time
 		}
 
 		#endregion Logic
