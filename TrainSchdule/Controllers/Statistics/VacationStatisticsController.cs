@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.Crontab;
+using TrainSchdule.Extensions.StatisticsExtensions;
 using TrainSchdule.ViewModels.Statistics;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
@@ -85,8 +86,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesProcessRecord")]
 		public async Task<IActionResult> GetAppliesProcess(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisticsAppliesProcessServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new EntitiesListViewModel<StatisticsAppliesProcess>(r));
+			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesProcessServices.CaculateCompleteApplies, companyCode, from, to).ConfigureAwait(false);
+			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsAppliesProcess>>(result));
 		}
 
 		/// <summary>
@@ -115,8 +116,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesDailyProcessRecord")]
 		public async Task<IActionResult> GetAppliesDailyProcess(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisticsDailyProcessServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new EntitiesListViewModel<StatisticsDailyProcessRate>(r));
+			var result = await StatisticsResultExtensions.GetTarget(statisticsDailyProcessServices.CaculateCompleteApplies, companyCode, from, to).ConfigureAwait(false);
+			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsDailyProcessRate>>(result));
 		}
 
 		/// <summary>

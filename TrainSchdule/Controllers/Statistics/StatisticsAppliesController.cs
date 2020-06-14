@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.StatisticsExtensions;
 using TrainSchdule.ViewModels.Statistics;
 using TrainSchdule.ViewModels.System;
 
@@ -23,8 +24,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetNew")]
 		public async Task<IActionResult> GetAppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisrticsAppliesServices.CaculateNewApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new EntitiesListViewModel<StatisticsApplyNew>(r));
+			var result = await StatisticsResultExtensions.GetTarget(statisrticsAppliesServices.CaculateNewApplies, companyCode, from, to).ConfigureAwait(false);
+			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsApplyNew>>(result));
 		}
 
 		/// <summary>
@@ -38,8 +39,8 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetComplete")]
 		public async Task<IActionResult> GetAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
-			var r = await Task.Run(() => statisrticsAppliesServices.CaculateCompleteApplies(companyCode, from, to)).ConfigureAwait(false);
-			return new JsonResult(new EntitiesListViewModel<StatisticsApplyComplete>(r));
+			var result = await StatisticsResultExtensions.GetTarget(statisrticsAppliesServices.CaculateCompleteApplies, companyCode, from, to);
+			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsApplyComplete>>(result));
 		}
 
 		/// <summary>

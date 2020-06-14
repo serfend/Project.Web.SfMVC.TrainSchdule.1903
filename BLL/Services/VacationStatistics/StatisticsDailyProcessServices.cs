@@ -24,7 +24,8 @@ namespace BLL.Services.VacationStatistics
 			this._context = context;
 		}
 
-		public IEnumerable<StatisticsDailyProcessRate> CaculateCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd) => _context.StatisticsDailyProcessRates.AsQueryable()
+		public IEnumerable<StatisticsDailyProcessRate> CaculateCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
+			=> _context.StatisticsDailyProcessRates.AsQueryable()
 			.CaculateIStatisticsBaseApplies(_context, GetTargetStatistics, ApplyInfoExtensions.GetCompletedApplies, ApplyInfoExtensions.FirstYearOfTheDay
 		, item => _context.StatisticsDailyProcessRates.AddRange(item), companyCode, vStart, vEnd);
 
@@ -52,7 +53,6 @@ namespace BLL.Services.VacationStatistics
 				.Where(u => u.Application.Create <= target)
 				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength)
 				.Where(u => u.CompanyInfo.Company.Code.Substring(0, companyLength) == companyCode);
-
 			var result = groupRecords.ToList().Select(r =>
 			{
 				var users = r.GroupBy(a => a.From.Id);
@@ -77,7 +77,6 @@ namespace BLL.Services.VacationStatistics
 						YearlyLength = d.YearlyLength
 					};
 				}
-
 				return new T()
 				{
 					Target = target,
