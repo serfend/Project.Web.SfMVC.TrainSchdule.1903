@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers.Apply
 				{
 					_applyService.ModifyAuditStatus(x, AuditStatus.Cancel, u);
 					_userActionServices.Status(ua, true, $"通过{u}");
-				});
+				}, false);  // 无需授权，因为ModifyAuditStatus已判断权限问题
 			}
 			catch (ActionStatusMessageException e)
 			{
@@ -112,7 +112,7 @@ namespace TrainSchdule.Controllers.Apply
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply, string> callBack)
+		private void CheckApplyModelAndDoTask(string id, Action<DAL.Entities.ApplyInfo.Apply, string> callBack, bool needPermission = true)
 		{
 			Guid.TryParse(id, out var gid);
 			var apply = _applyService.GetById(gid);
@@ -123,7 +123,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply.BaseInfo.From.Id != currentUser?.Id)
 			{
 				var permit = _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code);
-				if (!permit) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (!permit && needPermission) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			callBack.Invoke(apply, currentUser.Id);
 		}

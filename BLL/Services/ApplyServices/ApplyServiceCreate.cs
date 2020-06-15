@@ -58,7 +58,7 @@ namespace BLL.Services.ApplyServices
 				// 当未享受福利假时才计算法定节假日
 				if (CaculateAdditionalAndTripLength && additionalVacationDay == 0)
 				{
-					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, CaculateAdditionalAndTripLength);
+					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, CaculateAdditionalAndTripLength).ConfigureAwait(true);
 					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
@@ -152,8 +152,7 @@ namespace BLL.Services.ApplyServices
 			var usrCmp = user.CompanyInfo.Company.Code;
 			// 初始化审批流
 			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
-			if (rule == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist, "无合适规则", true));
-			model.ApplyAuditStreamSolutionRule = rule;
+			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist, "无合适规则", true));
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
