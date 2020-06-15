@@ -13,7 +13,7 @@ namespace BLL.Interfaces.IVacationStatistics
 	/// </summary>
 	public interface IStatisticsCaculate
 	{
-		void Foo();
+		Tuple<IEnumerable<T>, bool> GetTargetStatistics<T>(string companyCode, DateTime target, IQueryable<T> db, IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb) where T : class;
 	}
 
 	public interface IStatisticsNew<T>

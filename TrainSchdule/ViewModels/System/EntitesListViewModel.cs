@@ -58,9 +58,10 @@ namespace TrainSchdule.ViewModels.System
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="totalCount"></param>
-		public EntitiesListDataModel(IEnumerable<T> model, int totalCount = 0)
+		public EntitiesListDataModel(IEnumerable<T> model, int totalCount = -1)
 		{
 			this.List = model;
+			TotalCount = totalCount > -1 ? totalCount : model.Count();
 		}
 	}
 }

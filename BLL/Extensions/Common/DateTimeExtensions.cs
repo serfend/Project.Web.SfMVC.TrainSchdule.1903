@@ -13,8 +13,8 @@ namespace BLL.Extensions.Common
 		/// <returns></returns>
 		public static DateTime EndDateNotEarlyThanNow(this DateTime vEnd, DateTime? now = null)
 		{
-			if (now == null) now = DateTime.Today;
-			return vEnd >= now.Value ? now.Value.AddSeconds(-1) : vEnd;
+			if (now == null) now = DateTime.Today.Date;
+			return vEnd >= now.Value ? now.Value : vEnd;
 		}
 
 		public static DateTime LastMilliSecondInDay(this DateTime vEnd) => vEnd.AddDays(1).AddMilliseconds(-1);

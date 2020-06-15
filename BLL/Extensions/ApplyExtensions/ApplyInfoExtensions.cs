@@ -125,19 +125,29 @@ namespace BLL.Extensions.ApplyExtensions
 			string companyCode, DateTime vStart, DateTime vEnd) where T : IStatisticsBase, new()
 		{
 			if (companyCode == null || context == null) return new List<T>();
+			vStart = vStart.Date;
+			vEnd = vEnd.Date;
 			vEnd = vEnd.EndDateNotEarlyThanNow();
 			if (vEnd.Subtract(vStart).TotalDays > 1200) vStart = vEnd.Subtract(TimeSpan.FromDays(1200));
-			var recallDb = context.RecallOrders;
+			/*--------------------------------------------计算未统计过的项并准备统计-----------------------------*/
+			var existList = db.CheckDb(companyCode, vStart, vEnd);
+			var dateAll = Enumerable.Range(0, vEnd.Subtract(vStart).Days).Select(i => vStart.AddDays(i)).ToList();
+			var existedDate = existList
+				.Select(s => s.Target.Date).ToList();
+			var needToCaculate = dateAll.Except(existedDate).ToList();
+			/*--------------------------------------------------------------------------------------------------------------------*/
+			var result = new List<T>(existList); // 拿到已统计过的项
 
-			var pDate = vStart.Date;
-			var result = new List<T>();
+			var recallDb = context.RecallOrders;
 			bool hasChange = false;
 			var applies = context.AppliesDb.GetCurrentApplies(companyCode);
-			while (pDate < vEnd)
+			// 计算未统计过的并保存
+			foreach (var pDate in needToCaculate)
 			{
 				var pEnd = GetEachEndDay(pDate, vStart, vEnd);
 				var earlyDate = pDate > pEnd ? pEnd : pDate;
 				var laterDate = pDate < pEnd ? pEnd : pDate;
+
 				var thisDayApplies = GetTargetAppliesByDay.Invoke(applies, recallDb, earlyDate, laterDate);
 				var r = GetTargetStatistics.Invoke(companyCode, pDate, db, thisDayApplies, recallDb);
 				result.AddRange(r.Item1);
@@ -146,10 +156,9 @@ namespace BLL.Extensions.ApplyExtensions
 					SaveToDb.Invoke(r.Item1);
 					hasChange = true;
 				}
-				pDate = pDate.AddDays(1);
 			}
 			if (hasChange) context.SaveChanges();
-			return result;
+			return result.OrderByDescending(r => r.Target); // handle by backend
 		}
 
 		/// <summary>
