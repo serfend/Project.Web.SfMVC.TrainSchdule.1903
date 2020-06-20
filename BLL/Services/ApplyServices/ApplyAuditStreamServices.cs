@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.ApplyExtensions;
+﻿using BLL.Extensions;
+using BLL.Extensions.ApplyExtensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
@@ -175,7 +176,7 @@ namespace BLL.Services.ApplyServices
 				}
 			}
 			else result = result.Where(u => filter.Duties.Any(d => d == u.CompanyInfo.Duties.Code));
-			IEnumerable<string> fitUsers = result.Select(u => u.Id).ToList();
+			IEnumerable<string> fitUsers = result.Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id).ToList();
 			if (managers != null)
 			{
 				var m = managers.Select(u => u.User.Id).ToList();
