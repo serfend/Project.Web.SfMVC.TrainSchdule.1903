@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,12 @@ namespace TrainSchdule.Crontab
 	public class ApplyClearJob : ICrontabJob
 	{
 		private IApplyService applyService;
+		private readonly IUserActionServices userActionServices;
 
-		public ApplyClearJob(IApplyService applyService)
+		public ApplyClearJob(IApplyService applyService, IUserActionServices userActionServices)
 		{
 			this.applyService = applyService;
+			this.userActionServices = userActionServices;
 		}
 
 		/// <summary>
@@ -20,8 +23,12 @@ namespace TrainSchdule.Crontab
 		/// </summary>
 		public void Run()
 		{
-			Task.Run(applyService.RemoveAllUnSaveApply).Wait();
-			Task.Run(applyService.RemoveAllNoneFromUserApply).Wait();
+			Task.Run(async () =>
+			{
+				var r = await applyService.RemoveAllUnSaveApply().ConfigureAwait(true);
+				var r2 = await applyService.RemoveAllNoneFromUserApply().ConfigureAwait(false);
+				userActionServices.Log(UserOperation.ModifyApply, "#System#", $"清理未保存项:{r},无用户项{r2}", true, ActionRank.Warning);
+			}).Wait();
 		}
 	}
 }

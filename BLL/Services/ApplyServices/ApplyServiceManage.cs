@@ -76,23 +76,24 @@ namespace BLL.Services.ApplyServices
 			return result.Item1;
 		}
 
-		public async Task RemoveAllUnSaveApply()
+		public async Task<int> RemoveAllUnSaveApply()
 		{
 			//寻找所有找过1天未保存的申请
 			var list = _context.AppliesDb
 						 .Where(a => a.Status == AuditStatus.NotSave)
 						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
 			await RemoveApplies(list).ConfigureAwait(true);
+			return list.Count;
 		}
 
-		public async Task RemoveAllNoneFromUserApply()
+		public async Task<int> RemoveAllNoneFromUserApply()
 		{
 			var applies = _context.Applies;
 
 			#region request
 
 			//寻找所有没有创建申请且不是今天创建的 请求信息
-			var request = _context.ApplyRequests.Where(r => DateTime.Now.Day != r.CreateTime.Day).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
+			var request = _context.ApplyRequests.Where(r => DateTime.Now.Date != r.CreateTime.Date).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
 			//删除这些请求信息的福利信息
 			foreach (var r in request) _context.VacationAdditionals.RemoveRange(r.AdditialVacations);
 			//删除这些请求信息
@@ -111,7 +112,7 @@ namespace BLL.Services.ApplyServices
 			#region base
 
 			//寻找所有没有创建申请且不是今天创建的 基础信息
-			var baseInfos = _context.ApplyBaseInfos.Where(r => DateTime.Now.Day != r.CreateTime.Day).Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id));
+			var baseInfos = _context.ApplyBaseInfos.Where(r => DateTime.Now.Date != r.CreateTime.Date).Where(r => !applies.Any(a => a.BaseInfo.Id == r.Id));
 			//删除这些基础信息
 			_context.ApplyBaseInfos.RemoveRange(baseInfos);
 
@@ -125,8 +126,11 @@ namespace BLL.Services.ApplyServices
 
 			#endregion response
 
+			await _context.SaveChangesAsync().ConfigureAwait(true); // 立即执行
+
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From == null);
 			await RemoveApplies(list).ConfigureAwait(true);
+			return request.Count + applySteps.Count() + baseInfos.Count() + responses.Count();
 		}
 
 		public async Task RemoveApplies(IEnumerable<Apply> list)
