@@ -14,7 +14,13 @@ namespace BLL.Extensions
 	{
 		public static string CheckValid(this AdminDivision division, string alertName) => division == null ? $"{alertName}无效" : null;
 
-		public static string CheckValid(this Moment moment, string alertName) => moment?.Address.CheckValid($"{alertName}地址");
+		public static string CheckValid(this Moment moment, string alertName)
+		{
+			var info = moment?.Address.CheckValid($"{alertName}地址");
+			if (info != null) return info;
+			if (moment.Valid && moment.Address.Code == 0) return $"{alertName}需要填写的市县";
+			return null;
+		}
 
 		public static string AnyCodeInvalid(this Settle settle)
 		{
