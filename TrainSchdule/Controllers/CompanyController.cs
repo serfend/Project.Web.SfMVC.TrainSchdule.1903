@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
+using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -79,9 +80,8 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public async Task<IActionResult> DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
-			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Duties.Name ?? "";
-			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet").Where(d => d.Name.Contains(name));
+			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet");
+			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
 			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
 			var data = new EntitiesListDataModel<DutyDataModel>()
 			{
@@ -104,9 +104,8 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public async Task<IActionResult> TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
-			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Title?.Name ?? "";
-			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet").Where(d => d.Name.Contains(name));
+			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet");
+			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
 			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
 			var data = new EntitiesListDataModel<UserTitleDataModel>()
 			{
