@@ -104,7 +104,7 @@ namespace BLL.Services.ApplyServices
 			#region steps
 
 			// 删除所有无申请指向的步骤
-			var applySteps = _context.ApplyAuditSteps.Where(s => !_context.AppliesDb.Any(a => a.ApplyAllAuditStep.Any(step => step.Id == s.Id)));
+			var applySteps = _context.ApplyAuditSteps.Where(s => !applies.Any(a => a.ApplyAllAuditStep.Any(step => step.Id == s.Id)));
 			_context.ApplyAuditSteps.RemoveRange(applySteps);
 
 			#endregion steps
