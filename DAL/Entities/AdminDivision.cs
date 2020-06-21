@@ -59,7 +59,7 @@ namespace DAL.Entities
 				return true;
 			}
 			var v = vmodel.Address?.Code;
-			NowErrorType = "当{0}地址填写时，需要选中具体地址";
+			NowErrorType = "当{0}地址填写时，需要选中具体地址（不可仅选中中国）";
 			return v / 100 >= 1000;
 		}
 	}
