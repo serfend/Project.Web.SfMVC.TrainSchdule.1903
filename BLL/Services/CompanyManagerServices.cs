@@ -67,7 +67,7 @@ namespace BLL.Services
 
 		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
 		{
-			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderByDescending(u => u.CompanyInfo.Title.Level).OrderByDescending(u => u.CompanyInfo.Title.Code);
+			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderByDescending(u => u.CompanyInfo.Title.Level).ThenByDescending(u => u.CompanyInfo.Title.Code);
 			totalCount = list.Count();
 			return list.Skip(page * pageSize).Take(pageSize);
 		}
