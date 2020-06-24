@@ -63,7 +63,7 @@ namespace TrainSchdule.Controllers.Apply
 			var targetCompanies = filter?.Companies;
 			if ((targetCompanies?.Count() ?? 0) == 0)
 			{
-				if (u.Id != "Root") return new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, "通用规则需要管理员权限");
+				if (u.Id.ToLower() != "root") return new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, "通用规则需要管理员权限");
 			}
 			foreach (var targetCompany in targetCompanies)
 			{
@@ -93,7 +93,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[Route("ApplyAuditStream/StreamNode")]
-		public IActionResult AddStreamNode([FromBody]StreamNodeCreateDataModel model)
+		public IActionResult AddStreamNode([FromBody] StreamNodeCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
@@ -122,7 +122,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[Route("ApplyAuditStream/StreamNode")]
-		public IActionResult EditStreamNode([FromBody]StreamNodeCreateDataModel model)
+		public IActionResult EditStreamNode([FromBody] StreamNodeCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
@@ -225,7 +225,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[Route("ApplyAuditStream/StreamSolution")]
-		public IActionResult AddStreamSolution([FromBody]StreamSolutionCreateDataModel model)
+		public IActionResult AddStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
@@ -269,7 +269,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[Route("ApplyAuditStream/StreamSolution")]
-		public IActionResult EditStreamSolution([FromBody]StreamSolutionCreateDataModel model)
+		public IActionResult EditStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
@@ -383,7 +383,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[Route("ApplyAuditStream/StreamSolutionRule")]
-		public IActionResult AddStreamSolutionRule([FromBody]StreamSolutionRuleCreateDataModel model)
+		public IActionResult AddStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
@@ -428,7 +428,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPut]
 		[Route("ApplyAuditStream/StreamSolutionRule")]
-		public IActionResult EditStreamSolutionRule([FromBody]StreamSolutionRuleCreateDataModel model)
+		public IActionResult EditStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;

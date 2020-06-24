@@ -31,7 +31,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		public IActionResult List([FromBody]QueryApplyViewModel model)
+		public IActionResult List([FromBody] QueryApplyViewModel model)
 		{
 			try
 			{
@@ -47,7 +47,7 @@ namespace TrainSchdule.Controllers.Apply
 				}
 
 				// 检查查询的单位范围，如果范围是空，则需要root权限
-				var permitCompanies = model.CreateCompany?.Value ?? "Root";
+				var permitCompanies = model.CreateCompany?.Value ?? "root";
 
 				var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, permitCompanies);
 				if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{permitCompanies}的权限"));
@@ -183,7 +183,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult RestoreApply([FromForm]ApplyRestoreViewModel model)
+		public IActionResult RestoreApply([FromForm] ApplyRestoreViewModel model)
 		{
 			var apply = _context.Applies.Where(a => a.Id == model.Id).FirstOrDefault();
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
@@ -194,7 +194,7 @@ namespace TrainSchdule.Controllers.Apply
 					auditUser = _usersService.Get(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
-			var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, "Root");
+			var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, "root");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			apply.IsRemoved = false;
 			_context.Applies.Update(apply);
@@ -240,7 +240,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpPost]
 		[AllowAnonymous]
-		public IActionResult RecallOrder([FromBody]RecallCreateViewModel model)
+		public IActionResult RecallOrder([FromBody] RecallCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
