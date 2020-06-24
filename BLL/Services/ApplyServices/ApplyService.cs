@@ -17,17 +17,19 @@ namespace BLL.Services.ApplyServices
 		#region Fileds
 
 		private readonly ApplicationDbContext _context;
+		private readonly ICompanyManagerServices companyManagerServices;
 		private readonly IVacationCheckServices vacationCheckServices;
 
 		#endregion Fileds
 
-		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices, IVacationCheckServices vacationCheckServices)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices)
 		{
 			_context = context;
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			new Configurator()[".xlsx"] = new WorkbookLoader();
 			_applyAuditStreamServices = applyAuditStreamServices;
+			this.companyManagerServices = companyManagerServices;
 			this.vacationCheckServices = vacationCheckServices;
 		}
 

@@ -135,7 +135,6 @@ namespace BLL.Services.ApplyServices
 			if (filter == null || company == null) return null;
 			if (filter.AuditMembers != null && filter.AuditMembers.Any(a => true)) return filter.AuditMembers;
 			var result = context.AppUsers.AsQueryable();
-			var managers = companyManagerServices.GetManagers(company).ToList();
 
 			// 指定单位
 			string target = null;
@@ -177,11 +176,15 @@ namespace BLL.Services.ApplyServices
 			}
 			else result = result.Where(u => filter.Duties.Any(d => d == u.CompanyInfo.Duties.Code));
 			IEnumerable<string> fitUsers = result.Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id).ToList();
-			if (managers != null)
-			{
-				var m = managers.Select(u => u.User.Id).ToList();
-				fitUsers = fitUsers.Union(m);
-			}
+			// 管理具有本单位审批权限
+			// 但非必选项，此处不应直接加入可审列表，而应在操作审批时判断是否是管理
+			// 一旦管理审批，此流程将直接通过
+			//var managers = companyManagerServices.GetManagers(company).ToList();
+			//if (managers != null)
+			//{
+			//	var m = managers.Select(u => u.User.Id).ToList();
+			//	fitUsers = fitUsers.Union(m);
+			//}
 			return fitUsers;
 		}
 

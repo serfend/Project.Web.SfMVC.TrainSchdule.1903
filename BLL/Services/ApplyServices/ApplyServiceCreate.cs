@@ -276,9 +276,17 @@ namespace BLL.Services.ApplyServices
 			// 审批未发布时 不可进行审批
 			if (nowStep == null) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAuditOrNotReceived;
 			if (model.Apply.Status != AuditStatus.AcceptAndWaitAdmin && model.Apply.Status != AuditStatus.Auditing) return ActionStatusMessage.ApplyMessage.Operation.Audit.NotOnAudingStatus;
-			// 待审批人无当前用户时，返回无效
-			if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.NoYourAuditStream;
-			if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAudit;
+			// 如果当前审批人是本单位管理，则本轮审批直接通过
+			var company = nowStep.FirstMemberCompanyCode;
+			var managers = companyManagerServices.GetManagers(company).Select(m => m.User.Id).ToList();
+			var isManagerAudit = managers.Contains(AuditUser.Id);
+			if (!isManagerAudit)
+			{
+				// 待审批人无当前用户时，返回无效
+				if (!nowStep.MembersFitToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.NoYourAuditStream;
+				if (nowStep.MembersAcceptToAudit.Split("##").Contains(AuditUser.Id)) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAudit;
+			}
+
 			// 当审批的申请为未发布的申请时，将其发布
 			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
 			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
@@ -300,8 +308,14 @@ namespace BLL.Services.ApplyServices
 			// 判断是否被驳回
 			if (model.Action != AuditResult.Accept)
 				model.Apply.Status = AuditStatus.Denied;
-			// 判断本步骤是否结束    需审批人数<=已审批人数  或  已审批人数=可审批人数
-			else if ((nowStep.RequireMembersAcceptCount <= list.Length && nowStep.RequireMembersAcceptCount > 0) || (nowStep.MembersAcceptToAudit.Length == nowStep.MembersFitToAudit.Length))
+			// 判断本步骤是否结束
+			// 当  需审批人数<=已审批人数
+			// 或  已审批人数=可审批人数
+			// 或  为管理员审批
+			else if (
+				(nowStep.RequireMembersAcceptCount <= list.Length && nowStep.RequireMembersAcceptCount > 0)
+				|| (nowStep.MembersAcceptToAudit.Length == nowStep.MembersFitToAudit.Length)
+				|| isManagerAudit)
 			{
 				// 寻找下一个步骤
 				if (nowStep.Index == allStep.Count - 1)
