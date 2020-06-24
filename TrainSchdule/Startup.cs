@@ -127,10 +127,10 @@ namespace TrainSchdule
 
 		private void ConfigureHangfireServices()
 		{
-			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run(), Cron.Daily);
+			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily);
 			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
-			BackgroundJob.Enqueue<ApplyClearJob>((a) => a.Run());
+			BackgroundJob.Enqueue<ApplyClearJob>((a) => a.Run("OnStart"));
 			BackgroundJob.Enqueue<UserInfoClearJob>((a) => a.Run());
 			BackgroundJob.Enqueue<FileServices>((a) => a.RemoveTimeoutUploadStatus());
 		}

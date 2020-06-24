@@ -11,7 +11,10 @@ namespace BLL.Extensions.CreateClientInfo
 	{
 		public static TResult ClientInfo<TResult>(this HttpContext context) where TResult : ICreateClientInfo, new()
 		{
-			if (context == null) return default;
+			if (context == null) return new TResult()
+			{
+				Device = "System"
+			};
 			return new TResult()
 			{
 				Device = context.Request.Headers["Device"],

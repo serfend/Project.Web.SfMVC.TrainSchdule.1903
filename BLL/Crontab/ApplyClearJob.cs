@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TrainSchdule.Crontab
 {
-	public class ApplyClearJob : ICrontabJob
+	public class ApplyClearJob
 	{
 		private IApplyService applyService;
 		private readonly IUserActionServices userActionServices;
@@ -21,13 +21,13 @@ namespace TrainSchdule.Crontab
 		/// <summary>
 		/// 清除失效的申请
 		/// </summary>
-		public void Run()
+		public void Run(string HandleBy = "Default")
 		{
 			Task.Run(async () =>
 			{
 				var r = await applyService.RemoveAllUnSaveApply().ConfigureAwait(true);
 				var r2 = await applyService.RemoveAllNoneFromUserApply().ConfigureAwait(false);
-				userActionServices.Log(UserOperation.ModifyApply, "#System#", $"清理未保存项:{r},无用户项{r2}", true, ActionRank.Warning);
+				userActionServices.Log(UserOperation.ModifyApply, "#System#", $"{HandleBy} - 清理未保存项:{r},无用户项{r2}", true, ActionRank.Warning);
 			}).Wait();
 		}
 	}
