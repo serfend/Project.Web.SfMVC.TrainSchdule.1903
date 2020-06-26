@@ -26,9 +26,10 @@ namespace TrainSchdule.ViewModels.System
 		/// 依据实体生成
 		/// </summary>
 		/// <param name="model"></param>
-		public EntitiesListViewModel(IEnumerable<T> model)
+		/// <param name="totalCount"></param>
+		public EntitiesListViewModel(IEnumerable<T> model, int totalCount = -1)
 		{
-			this.Data = new EntitiesListDataModel<T>(model);
+			this.Data = new EntitiesListDataModel<T>(model, totalCount);
 		}
 	}
 

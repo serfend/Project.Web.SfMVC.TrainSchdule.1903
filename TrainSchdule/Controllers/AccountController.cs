@@ -23,6 +23,8 @@ using System.Drawing;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Drawing.Imaging;
+using DAL.DTO.User;
+using BLL.Extensions.Common;
 
 namespace TrainSchdule.Controllers
 {
@@ -114,22 +116,20 @@ namespace TrainSchdule.Controllers
 		/// 通过用户真实姓名查询身份号
 		/// </summary>
 		/// <param name="realName"></param>
+		/// <param name="pageIndex"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
-		public IActionResult GetUserIdByRealName(string realName)
+		public IActionResult GetUserIdByRealName(string realName, int pageIndex = 0, int pageSize = 20)
 		{
 			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
-			var users = realName.ToLower() == "admin" ? new List<User>() { _usersService.Get("root") } : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName).ToList();
-			if (users.Count == 0) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName)).ToList();
-			return new JsonResult(new UserSummariesViewModel()
-			{
-				Data = new UserSummariesDataModel()
-				{
-					List = users.Select(u => u.ToSummaryDto())
-				}
-			});
+			var users = realName.ToLower() == "admin" ? new List<User>() { _usersService.Get("root") }.AsQueryable() : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName);
+			if (!users.Any()) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName));
+			var result = users.OrderByCompanyAndTitle().SplitPage(pageIndex, pageSize).Result;
+			var list = result.Item1.ToList().Select(u => u.ToSummaryDto());
+			return new JsonResult(new EntitiesListViewModel<UserSummaryDto>(list, result.Item2));
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult Permission([FromBody]ModefyPermissionsViewModel model)
+		public IActionResult Permission([FromBody] ModefyPermissionsViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.Get(model.Id);
@@ -239,7 +239,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> Password([FromBody]ModefyPasswordViewModel model)
+		public async Task<IActionResult> Password([FromBody] ModefyPasswordViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 
@@ -293,7 +293,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult CheckAuthCode([FromBody]GoogleAuthViewModel model)
+		public IActionResult CheckAuthCode([FromBody] GoogleAuthViewModel model)
 		{
 			var r = model?.Auth?.Verify(_authService, currentUserService.CurrentUser?.Id);
 			if (!r.HasValue) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Default);
@@ -309,7 +309,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult AuthKey([FromBody]ModifyAuthKeyViewModel model)
+		public IActionResult AuthKey([FromBody] ModifyAuthKeyViewModel model)
 		{
 			var targetUser = _usersService.Get(model.ModifyUserId);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -360,7 +360,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> Login([FromBody]LoginViewModel model)
+		public async Task<IActionResult> Login([FromBody] LoginViewModel model)
 		{
 			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
 			if (ModelState.IsValid)
@@ -408,7 +408,7 @@ namespace TrainSchdule.Controllers
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> RemoveMutil([FromBody]UserRemoveMutiViewMode model)
+		public async Task<IActionResult> RemoveMutil([FromBody] UserRemoveMutiViewMode model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -475,7 +475,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> Application([FromBody]UserApplicationViewModel model)
+		public async Task<IActionResult> Application([FromBody] UserApplicationViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
@@ -500,7 +500,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> ModefyUser([FromBody]UserModefyViewModel model)
+		public async Task<IActionResult> ModefyUser([FromBody] UserModefyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify?.Verify(_verifyService);
@@ -534,7 +534,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> Register([FromBody]UserCreateViewModel model)
+		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify?.Verify(_verifyService);
@@ -567,7 +567,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult AuthUserRegister([FromBody]AuthUserRegisterDataModel model)
+		public IActionResult AuthUserRegister([FromBody] AuthUserRegisterDataModel model)
 		{
 			var targetUser = _usersService.Get(model.UserName);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -589,7 +589,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> RegisterMutil([FromBody]UsersCreateMutilViewModel model)
+		public async Task<IActionResult> RegisterMutil([FromBody] UsersCreateMutilViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var r = model.Verify.Verify(_verifyService);

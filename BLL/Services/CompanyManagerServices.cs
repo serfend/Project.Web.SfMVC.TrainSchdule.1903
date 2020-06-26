@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Company;
@@ -67,7 +68,7 @@ namespace BLL.Services
 
 		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
 		{
-			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderByDescending(u => u.CompanyInfo.Title.Level).ThenByDescending(u => u.CompanyInfo.Title.Code);
+			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderByCompanyAndTitle();
 			totalCount = list.Count();
 			return list.Skip(page * pageSize).Take(pageSize);
 		}
