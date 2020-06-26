@@ -3,6 +3,7 @@ using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
 using Remotion.Linq.Parsing.ExpressionVisitors.MemberBindings;
+using System.Linq;
 
 namespace BLL.Extensions
 {
@@ -52,5 +53,12 @@ namespace BLL.Extensions
 			};
 			return b;
 		}
+
+		/// <summary>
+		/// 按单位-职级等级-职级代码的顺序依次拍讯
+		/// </summary>
+		/// <param name="users"></param>
+		/// <returns></returns>
+		public static IQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).ThenByDescending(u => u.CompanyInfo.Title.Level).ThenByDescending(u => u.CompanyInfo.Title.Code);
 	}
 }
