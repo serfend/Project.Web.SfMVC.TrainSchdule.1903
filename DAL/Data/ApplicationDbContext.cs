@@ -34,8 +34,8 @@ namespace DAL.Data
 
 		public DbSet<VacationAdditional> VacationAdditionals { get; set; }
 
-		public DbSet<Subject> Subjects { get; set; }
-		public DbSet<Standard> Standards { get; set; }
+		public DbSet<GradePhySubject> GradePhySubjects { get; set; }
+		public DbSet<GradePhyStandard> GradePhyStandards { get; set; }
 
 		/// <summary>
 		/// 近90天的数据

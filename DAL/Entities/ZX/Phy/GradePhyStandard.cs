@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace DAL.Entities.ZX.Phy
 {
-	public class Standard : BaseEntity
+	public class GradePhyStandard : BaseEntity
 	{
 		[NotMapped]
 		[JsonIgnore]
-		public virtual Subject BelongTo { get; set; }
+		public virtual GradePhySubject BelongTo { get; set; }
 
 		[NotMapped]
 		[JsonIgnore]
@@ -61,7 +61,7 @@ namespace DAL.Entities.ZX.Phy
 
 	public static class StandardExtensions
 	{
-		public static int ToValue(this Standard standard, string raw)
+		public static int ToValue(this GradePhyStandard standard, string raw)
 		{
 			if (standard == null) return 0;
 			switch (standard.BelongTo.ValueFormat)
@@ -85,7 +85,7 @@ namespace DAL.Entities.ZX.Phy
 			return 0;
 		}
 
-		public static string ToRawValue(this Standard standard, int expectGrade = 0)
+		public static string ToRawValue(this GradePhyStandard standard, int expectGrade = 0)
 		{
 			if (standard == null) return "无此标准";
 			int value = 0;

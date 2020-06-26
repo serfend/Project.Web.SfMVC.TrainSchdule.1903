@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200626030455_subject_alias")]
+    partial class subject_alias
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1438,7 +1440,7 @@ namespace DAL.Migrations
                     b.ToTable("XlsTempletes");
                 });
 
-            modelBuilder.Entity("DAL.Entities.ZX.Phy.GradePhyStandard", b =>
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -1449,11 +1451,11 @@ namespace DAL.Migrations
 
                     b.Property<string>("GradePairs");
 
-                    b.Property<Guid?>("GradePhySubjectId");
-
                     b.Property<bool>("IsRemoved");
 
                     b.Property<DateTime>("IsRemovedDate");
+
+                    b.Property<Guid?>("SubjectId");
 
                     b.Property<int>("gender");
 
@@ -1463,12 +1465,12 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GradePhySubjectId");
+                    b.HasIndex("SubjectId");
 
-                    b.ToTable("GradePhyStandards");
+                    b.ToTable("Standards");
                 });
 
-            modelBuilder.Entity("DAL.Entities.ZX.Phy.GradePhySubject", b =>
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -1489,7 +1491,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GradePhySubjects");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1936,11 +1938,11 @@ namespace DAL.Migrations
                         .HasForeignKey("CreateById");
                 });
 
-            modelBuilder.Entity("DAL.Entities.ZX.Phy.GradePhyStandard", b =>
+            modelBuilder.Entity("DAL.Entities.ZX.Phy.Standard", b =>
                 {
-                    b.HasOne("DAL.Entities.ZX.Phy.GradePhySubject")
+                    b.HasOne("DAL.Entities.ZX.Phy.Subject")
                         .WithMany("Standards")
-                        .HasForeignKey("GradePhySubjectId");
+                        .HasForeignKey("SubjectId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

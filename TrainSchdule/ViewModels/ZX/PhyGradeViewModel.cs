@@ -51,6 +51,11 @@ namespace TrainSchdule.ViewModels.ZX
 		public IEnumerable<PhyGradeQueryDataModel> Subjects { get; set; }
 
 		/// <summary>
+		/// 是否需要计算成绩，默认为否
+		/// </summary>
+		public bool NeedCaculateGrade { get; set; } = false;
+
+		/// <summary>
 		/// 用户信息
 		/// </summary>
 		[Required]
@@ -63,10 +68,19 @@ namespace TrainSchdule.ViewModels.ZX
 	public class PhyGradeQueryDataModel
 	{
 		/// <summary>
-		/// 查询的科目名
+		/// 查询的科目名【可选】
 		/// </summary>
-		[Required]
 		public string Subject { get; set; }
+
+		/// <summary>
+		/// 查询的科目分组【可选】
+		/// </summary>
+		public string Group { get; set; }
+
+		/// <summary>
+		/// 科目名称
+		/// </summary>
+		public string Name { get; set; }
 
 		/// <summary>
 		/// 成绩原始

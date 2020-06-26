@@ -6,11 +6,14 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.ZX;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Phy;
+using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.ZX;
 
@@ -49,7 +52,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult Subject([FromBody]PhySubjectDataModel model)
+		public IActionResult Subject([FromBody] PhySubjectDataModel model)
 		{
 			if (!model.Auth.Verify(googleAuthService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var actionUser = usersService.Get(model.Auth.AuthByUserID);
@@ -65,14 +68,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="name"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult Subject(string name)
 		{
 			var r = phyGradeServices.FindSubject(name);
 			if (r == null) return new JsonResult(ActionStatusMessage.Grade.Subject.NotExist);
-			return new JsonResult(new PhySubjectViewModel()
-			{
-				Data = r
-			});
+			return new JsonResult(new EntityViewModel<GradePhySubject>(r));
 		}
 
 		/// <summary>
@@ -82,14 +83,13 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <returns></returns>
 		[AllowAnonymous]
 		[HttpPost]
-		public IActionResult SingleResult([FromBody]PhySingleGradeDataModel model)
+		public IActionResult SingleResult([FromBody] PhySingleGradeDataModel model)
 		{
-			var result = GetResult(ref model);
+			var baseUser = GetUser(model);
+			var result = GetResult(model, baseUser);
 			return new JsonResult(new PhySingleGradeViewModel()
 			{
-				Data = model,
-				Status = result.Status,
-				Message = result.Message
+				Data = result
 			});
 		}
 
@@ -100,17 +100,16 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <returns></returns>
 		[AllowAnonymous]
 		[HttpPost]
-		public IActionResult MutilResult([FromBody]PhyGradeDataModel model)
+		public IActionResult MutilResult([FromBody] PhyGradeDataModel model)
 		{
 			var list = new List<PhySingleGradeDataModel>(model.Queries);
 			var resultList = new List<PhySingleGradeDataModel>();
-			var finalResult = new ApiResult(0, "");
+
 			for (int i = 0; i < list.Count; i++)
 			{
 				var m = list[i];
-				var result = GetResult(ref m);
-				if (result.Status != 0) finalResult = result;
-				resultList.Add(m);
+				var baseUser = GetUser(m);
+				resultList.Add(GetResult(m, baseUser));
 			}
 			return new JsonResult(new PhyGradesViewModel()
 			{
@@ -118,31 +117,73 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 			});
 		}
 
+		private UserBaseInfo GetUser(PhySingleGradeDataModel model)
+		{
+			if (model?.User == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
+
+			var baseUser = model.User.UserName == null ? model.User.User : usersService.Get(model.User.UserName)?.BaseInfo;
+			if (baseUser == null) throw new ActionStatusMessageException((ActionStatusMessage.UserMessage.NotExist));
+			return baseUser;
+		}
+
 		/// <summary>
-		/// 获取单个成绩结果及标准
+		/// 获取符合条件的科目
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		private ApiResult GetResult(ref PhySingleGradeDataModel model)
+		[AllowAnonymous]
+		[HttpPost]
+		public IActionResult Subjects([FromBody] PhySingleGradeDataModel model)
 		{
-			if (model?.User == null) return ActionStatusMessage.UserMessage.NoId;
-
-			var baseUser = model.User.UserName == null ? model.User.User : usersService.Get(model.User.UserName)?.BaseInfo;
-			if (baseUser == null) return (ActionStatusMessage.UserMessage.NotExist);
+			var baseUser = GetUser(model);
+			var result = new List<IEnumerable<GradePhySubject>>();
 			foreach (var subject in model.Subjects)
 			{
-				var subjectItem = phyGradeServices.GetSubjectByName(subject.Subject, baseUser);
+				var r = GetSubjects(subject, baseUser);
+				result.Add(r);
+			}
+			return new JsonResult(new EntitiesListViewModel<IEnumerable<GradePhySubject>>(result));
+		}
+
+		private IEnumerable<GradePhySubject> GetSubjects(PhyGradeQueryDataModel subject, UserBaseInfo baseUser)
+			=> phyGradeServices.GetSubjectsByName(new QueryUserGradeViewModel()
+			{
+				Names = new QueryByString()
+				{
+					Arrays = subject.Subject?.Split("|")
+				},
+				Groups = new QueryByString()
+				{
+					Value = subject.Group
+				}
+			}, baseUser);
+
+		/// <summary>
+		/// 获取单个成绩结果及标准
+		/// 科目名称以|分割
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="baseUser"></param>
+		/// <returns></returns>
+		private PhySingleGradeDataModel GetResult(PhySingleGradeDataModel model, UserBaseInfo baseUser)
+		{
+			foreach (var subject in model.Subjects)
+			{
+				var subjectItem = GetSubjects(subject, baseUser).FirstOrDefault();
 				if (subjectItem == null)
 				{
 					subject.Grade = -1;
 					subject.Standard = "无效科目";
 					continue;
 				}
+				subject.Group = subjectItem.Group;
+				subject.Name = subjectItem.Alias;
 				var standard = phyGradeServices.GetStandard(subjectItem, baseUser);
 				subject.Standard = standard.ToRawValue();
-				subject.Grade = phyGradeServices.GetGrade(standard, subject.RawValue);
+				if (model.NeedCaculateGrade)
+					subject.Grade = phyGradeServices.GetGrade(standard, subject.RawValue);
 			}
-			return ActionStatusMessage.Success;
+			return model;
 		}
 	}
 }

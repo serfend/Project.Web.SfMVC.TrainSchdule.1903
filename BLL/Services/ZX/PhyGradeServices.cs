@@ -1,8 +1,10 @@
-﻿
+﻿using BLL.Extensions;
+using BLL.Helpers;
 using BLL.Interfaces.ZX;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Phy;
+using DAL.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,31 +21,40 @@ namespace BLL.Services.ZX
 		{
 			_context = context;
 		}
-		private int GetExpressionGrade(int value,int prevValue, string expression)
+
+		private static int GetExpressionGrade(int value, int prevValue, string expression)
 		{
 			using (var d = new DataTable())
 			{
 				if (expression == null) return 0;
-				var replaceStr= expression.ToLower().Replace("x", value.ToString()).Replace("y",prevValue.ToString());
-				var result = Math.Floor(Convert.ToDouble(d.Compute(replaceStr, ""))+prevValue);
-				return (int)result;
+				try
+				{
+					var replaceStr = expression.ToLower().Replace("x", value.ToString()).Replace("y", prevValue.ToString());
+					var result = Math.Floor(Convert.ToDouble(d.Compute(replaceStr, "")) + prevValue);
+					return (int)result;
+				}
+				catch (Exception ex)
+				{
+					throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Grade.Compute.UnExpected, ex.Message, true));
+				}
 			}
 		}
-		public int GetGrade(Standard standard, string rawValue)
+
+		public int GetGrade(GradePhyStandard standard, string rawValue)
 		{
 			if (standard == null) return 0;
 			var value = standard.ToValue(rawValue);
-			KeyValuePair<int,int> prev = new KeyValuePair<int, int>();
+			KeyValuePair<int, int> prev = new KeyValuePair<int, int>();
 			foreach (var i in standard.GradePairsInner)
 			{
 				if (i.Key > value) return prev.Value;
 				prev = i;
 			}
 			if (prev.Key >= value) return prev.Value;
-			return GetExpressionGrade(value-prev.Key,prev.Value, standard.ExpressionWhenFullGrade);
+			return GetExpressionGrade(value - prev.Key, prev.Value, standard.ExpressionWhenFullGrade);
 		}
 
-		public Standard GetStandard(Subject subject, UserBaseInfo userBaseInfo)
+		public GradePhyStandard GetStandard(GradePhySubject subject, UserBaseInfo userBaseInfo)
 		{
 			if (subject == null || userBaseInfo == null) return null;
 			var userAge = userBaseInfo.Time_BirthDay.Age();
@@ -55,54 +66,57 @@ namespace BLL.Services.ZX
 			return null;
 		}
 
-		public Subject GetSubjectByName(string subjectName,UserBaseInfo userBase)
+		public IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase)
 		{
-			if (userBase == null) return null;
-			var userAge = userBase.Time_BirthDay.Age();
-			var subjectN = subjectName.Split('|');
-			foreach(var sn in subjectN)
+			if (model == null) model = new QueryUserGradeViewModel();
+			var has = model.Names?.Arrays?.Any() ?? false;
+			if (!has) model.Names = new QueryByString() { Arrays = new List<string>() { "*" } };
+			var group = model.Groups?.Value;
+			var subjectN = model.Names.Arrays;
+			var list = _context.GradePhySubjects.AsQueryable();
+			var result = new List<GradePhySubject>();
+			foreach (var sn in subjectN)
 			{
-				var r = _context.Subjects.Where(s => s.Name == sn && s.Standards.Any(d => d.minAge <= userAge && d.maxAge >= userAge && d.gender == userBase.Gender)).FirstOrDefault();
-				if (r != null)
-				{
-					r.Standards = r.Standards;
-					return r;
-				}
+				if (sn != "*") list = list.Where(s => s.Name == sn);
+				if (group != null) list = list.Where(s => s.Group == group);
+				var r = list.GetSubjectsByUser(userBase);
+				result.AddRange(r);
 			}
-			return null;
+			return result;
 		}
 
-		public void AddSubject(Subject model)
+		public void AddSubject(GradePhySubject model)
 		{
 			if (model == null) return;
-			var item = _context.Subjects.Where(s => s.Name == model.Name).FirstOrDefault();
-			if (item != null) {
-				_context.Standards.RemoveRange(item.Standards);
-				_context.Subjects.Remove(item);
+			var item = _context.GradePhySubjects.Where(s => s.Name == model.Name).FirstOrDefault();
+			if (item != null)
+			{
+				_context.GradePhyStandards.RemoveRange(item.Standards);
+				_context.GradePhySubjects.Remove(item);
 			}
-			_context.Subjects.Add(model);
+			_context.GradePhySubjects.Add(model);
 			_context.SaveChanges();
 		}
 
-		public Subject FindSubject(string name)
+		public GradePhySubject FindSubject(string name)
 		{
-			var r= _context.Subjects.Where(s => s.Name == name).FirstOrDefault();
-			
+			var r = _context.GradePhySubjects.Where(s => s.Name == name).FirstOrDefault();
+
 			if (r == null)
 			{
 				var names = name.Split(' ');
-				IQueryable<Subject> results = _context.Subjects ;
-				IQueryable<Subject>  prev = null;
-				foreach(var n in names)
+				IQueryable<GradePhySubject> results = _context.GradePhySubjects;
+				IQueryable<GradePhySubject> prev = null;
+				foreach (var n in names)
 				{
 					results = results.Where(s => s.Name.Contains(n));
 					if ((results.Count() > 1)) prev = results; else break;
 				}
-				r= prev?.FirstOrDefault();
+				r = prev?.FirstOrDefault();
 			}
 			if (r == null) return null;
 			r.Standards = r.Standards;
-			return r ;
+			return r;
 		}
 	}
 }

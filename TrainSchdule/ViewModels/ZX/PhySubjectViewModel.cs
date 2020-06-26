@@ -12,7 +12,7 @@ namespace TrainSchdule.ViewModels.ZX
 		/// <summary>
 		///
 		/// </summary>
-		public Subject Data { get; set; }
+		public GradePhySubject Data { get; set; }
 	}
 
 	/// <summary>
@@ -23,6 +23,6 @@ namespace TrainSchdule.ViewModels.ZX
 		/// <summary>
 		///
 		/// </summary>
-		public Subject Subject { get; set; }
+		public GradePhySubject Subject { get; set; }
 	}
 }
