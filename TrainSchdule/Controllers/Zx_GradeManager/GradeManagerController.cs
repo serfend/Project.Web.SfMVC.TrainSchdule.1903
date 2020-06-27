@@ -12,6 +12,7 @@ using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using Newtonsoft.Json;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
@@ -22,14 +23,14 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 	/// <summary>
 	/// 岞訓用体能成绩
 	/// </summary>
-	[Route("ZX/[controller]/[action]")]
-	[Authorize]
+	[Route("ZX/[controller]")]
 	public class GradeManagerController : ControllerBase
 	{
 		private readonly IPhyGradeServices phyGradeServices;
 		private readonly IUsersService usersService;
 		private readonly IGoogleAuthService googleAuthService;
 		private readonly IUserActionServices userActionServices;
+		private readonly ICurrentUserService currentUserService;
 
 		/// <summary>
 		///
@@ -38,27 +39,49 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="usersService"></param>
 		/// <param name="googleAuthService"></param>
 		/// <param name="userActionServices"></param>
-		public GradeManagerController(IPhyGradeServices phyGradeServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices)
+		/// <param name="currentUserService"></param>
+		public GradeManagerController(IPhyGradeServices phyGradeServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices, ICurrentUserService currentUserService)
 		{
 			this.phyGradeServices = phyGradeServices;
 			this.usersService = usersService;
 			this.googleAuthService = googleAuthService;
 			this.userActionServices = userActionServices;
+			this.currentUserService = currentUserService;
+		}
+
+		private void CheckPermission(GoogleAuthDataModel auth)
+		{
+			var authUser = auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser?.Id);
+			if (authUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
+			if (!userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Grade.Subject, Operation.Update, authUser.Id, "")) throw new ActionStatusMessageException(auth.PermitDenied());
 		}
 
 		/// <summary>
-		/// 添加一个科目
+		/// 编辑一个科目
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult Subject([FromBody] PhySubjectDataModel model)
+		[Route("Subject")]
+		public IActionResult EditSubject([FromBody] PhySubjectDataModel model)
 		{
-			if (!model.Auth.Verify(googleAuthService, null)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var actionUser = usersService.Get(model.Auth.AuthByUserID);
-			if (actionUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			if (!userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Grade.Subject, Operation.Update, actionUser.Id, "")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			phyGradeServices.AddSubject(model.Subject);
+			CheckPermission(model?.Auth);
+			phyGradeServices.ModifySubject(model.Subject);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+
+		/// <summary>
+		/// 编辑多个科目
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPut]
+		[Route("Subjects")]
+		public IActionResult EditSubjects([FromBody] PhySubjectsDataModel model)
+		{
+			CheckPermission(model?.Auth);
+			foreach (var s in model.Subjects)
+				phyGradeServices.ModifySubject(s);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -68,8 +91,8 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="name"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AllowAnonymous]
-		public IActionResult Subject(string name)
+		[Route("Subject")]
+		public IActionResult GetSubject(string name)
 		{
 			var r = phyGradeServices.FindSubject(name);
 			if (r == null) return new JsonResult(ActionStatusMessage.Grade.Subject.NotExist);
@@ -81,9 +104,9 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[AllowAnonymous]
+		[Route("SingleResult")]
 		[HttpPost]
-		public IActionResult SingleResult([FromBody] PhySingleGradeDataModel model)
+		public IActionResult GetSingleResult([FromBody] PhySingleGradeDataModel model)
 		{
 			var baseUser = GetUser(model);
 			var result = GetResult(model, baseUser);
@@ -94,13 +117,13 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		}
 
 		/// <summary>
-		///
+		/// 获取多组成绩查询
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[AllowAnonymous]
+		[Route("MutilResult")]
 		[HttpPost]
-		public IActionResult MutilResult([FromBody] PhyGradeDataModel model)
+		public IActionResult GetMutilResult([FromBody] PhyGradeDataModel model)
 		{
 			var list = new List<PhySingleGradeDataModel>(model.Queries);
 			var resultList = new List<PhySingleGradeDataModel>();
@@ -131,9 +154,9 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[AllowAnonymous]
 		[HttpPost]
-		public IActionResult Subjects([FromBody] PhySingleGradeDataModel model)
+		[Route("Subjects")]
+		public IActionResult GetSubjects([FromBody] PhySingleGradeDataModel model)
 		{
 			var baseUser = GetUser(model);
 			var result = new List<IEnumerable<GradePhySubject>>();

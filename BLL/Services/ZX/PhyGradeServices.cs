@@ -85,16 +85,27 @@ namespace BLL.Services.ZX
 			return result;
 		}
 
-		public void AddSubject(GradePhySubject model)
+		public void ModifySubject(GradePhySubject model)
 		{
 			if (model == null) return;
 			var item = _context.GradePhySubjects.Where(s => s.Name == model.Name).FirstOrDefault();
-			if (item != null)
+			if (model.IsRemoved)
 			{
-				_context.GradePhyStandards.RemoveRange(item.Standards);
-				_context.GradePhySubjects.Remove(item);
+				if (item == null) throw new ActionStatusMessageException(ActionStatusMessage.Grade.Subject.NotExist);
+				else
+				{
+					_context.GradePhySubjects.Remove(item);
+					_context.GradePhyStandards.RemoveRange(item.Standards);
+				}
 			}
-			_context.GradePhySubjects.Add(model);
+			if (item == null)
+				_context.GradePhySubjects.Add(model);
+			else
+			{
+				_context.Entry<GradePhySubject>(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached; // detached before update new model
+				model.Id = item.Id;
+				_context.GradePhySubjects.Update(model);
+			}
 			_context.SaveChanges();
 		}
 

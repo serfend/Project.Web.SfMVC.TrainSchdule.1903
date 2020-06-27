@@ -26,7 +26,7 @@ namespace BLL.Interfaces.ZX
 		/// <returns></returns>
 		IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase);
 
-		void AddSubject(GradePhySubject model);
+		void ModifySubject(GradePhySubject model);
 
 		GradePhySubject FindSubject(string name);
 	}
