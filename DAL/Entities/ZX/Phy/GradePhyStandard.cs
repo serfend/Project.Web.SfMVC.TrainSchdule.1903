@@ -77,8 +77,8 @@ namespace DAL.Entities.ZX.Phy
 							t = t.Add(TimeSpan.FromMinutes(Convert.ToInt32(minute[0])));
 							raw = minute[1];
 						}
-						var ms = Convert.ToInt32(System.Decimal.Parse((raw.Replace("\"", ".")), System.Globalization.NumberStyles.Float));
-						t = t.Add(TimeSpan.FromMilliseconds(ms * 1000));
+						var ms = Convert.ToInt32(decimal.Parse((raw.Replace("\"", ".")), System.Globalization.NumberStyles.Float) * 1000);
+						t = t.Add(TimeSpan.FromMilliseconds(ms));
 						return (int)(t.TotalMilliseconds * (standard.BelongTo.CountDown ? -1 : 1));
 					}
 			}
@@ -101,7 +101,8 @@ namespace DAL.Entities.ZX.Phy
 				case ValueFormat.TimeBase:
 					{
 						var t = TimeSpan.FromMilliseconds(value);
-						return $"{Math.Floor(t.TotalMinutes)}'{t.Seconds}";
+						var result = $"{Math.Floor(t.TotalMinutes)}'{t.Seconds}\"{t.Milliseconds}";
+						return result.Trim('0').Trim('\'');
 					}
 			}
 			return "未设计分法";
