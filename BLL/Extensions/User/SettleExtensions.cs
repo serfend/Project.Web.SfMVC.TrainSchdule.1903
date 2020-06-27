@@ -165,9 +165,9 @@ namespace BLL.Extensions
 				return 30;
 			}
 
-			var dis_lover = IsAllopatry(settle.Self?.Address, settle.Lover?.Address);//与配偶不在一地
-			var dis_parent = !((settle?.Parent == null || (!settle.Parent?.Valid ?? false))) && IsAllopatry(settle.Self?.Address, settle.Parent?.Address); // 与自己的家长不在一地
-			var dis_l_p = !((settle?.LoversParent == null || (!settle.LoversParent?.Valid ?? false))) && IsAllopatry(settle.Lover?.Address, settle.Parent?.Address) || IsAllopatry(settle.LoversParent?.Address, settle.Lover?.Address);//配偶与任意一方家长不在一地
+			var dis_lover = IsAllopatry(settle.Self, settle.Lover);//与配偶不在一地
+			var dis_parent = IsAllopatry(settle.Self, settle.Parent); // 与自己的家长不在一地
+			var dis_l_p = IsAllopatry(settle.Lover, settle.Parent) || IsAllopatry(settle.LoversParent, settle.Lover);//配偶与任意一方家长不在一地
 
 			if (dis_lover && dis_parent && dis_l_p)
 			{
@@ -206,11 +206,13 @@ namespace BLL.Extensions
 			return 0;
 		}
 
-		private static bool IsAllopatry(AdminDivision d1, AdminDivision d2)
+		private static bool IsAllopatry(Moment d1, Moment d2)
 		{
-			if (d1 == null || d2 == null) return false;
-			var codeCity1 = (int)(d1.Code / 100d);
-			var codeCity2 = (int)(d2.Code / 100d);
+			var a1 = d1?.Address;
+			var a2 = d2?.Address;
+			if (a1 == null || a2 == null || !d1.Valid || !d2.Valid) return false;
+			var codeCity1 = (int)(a1.Code / 100d);
+			var codeCity2 = (int)(a2.Code / 100d);
 
 			return codeCity1 != codeCity2;
 		}
