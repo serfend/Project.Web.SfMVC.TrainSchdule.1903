@@ -280,14 +280,7 @@ namespace TrainSchdule.Controllers
 					From = targetUser
 				}
 			};
-			try
-			{
-				_applyService.InitAuditStream(a);
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new ApiResult(-1404, ex.Message));
-			}
+			_applyService.InitAuditStream(a);
 			return new JsonResult(new UserAuditStreamViewModel()
 			{
 				Data = new UserAuditStreamDataModel()
@@ -326,18 +319,12 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		[HttpPost]
 		[Route("[action]")]
-		public async Task<IActionResult> Avatar([FromBody]ResponseImgDataModel model)
+		public async Task<IActionResult> Avatar([FromBody] ResponseImgDataModel model)
 		{
 			var targetUser = GetCurrentQueryUser(null, out var result);
 			if (result != null) return result;
-			try
-			{
-				await _usersService.UpdateAvatar(targetUser, model.Url).ConfigureAwait(true);
-			}
-			catch (FileTooLargeException ex)
-			{
-				return new JsonResult(new ApiResult(ActionStatusMessage.Static.FileSizeInvalid, ex.Message, true));
-			}
+			await _usersService.UpdateAvatar(targetUser, model.Url).ConfigureAwait(true);
+
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

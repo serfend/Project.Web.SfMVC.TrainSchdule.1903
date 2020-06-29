@@ -320,7 +320,7 @@ namespace BLL.Services
 			}
 			else if (avatar?.Img?.Length > 1024 * 200)
 			{
-				throw new FileTooLargeException(1024 * 200, avatar.Img.Length);
+				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Static.FileSizeInvalid, $"最大支持200KB,当前:{avatar.Img.Length}", true));
 			}
 			return avatar;
 		}
@@ -331,30 +331,7 @@ namespace BLL.Services
 			var list = _context.AppUserDiyAvatars.Where(a => a.CreateTime >= start).Where(a => a.User.Id == targetUser);
 			return list;
 		}
-
-		#endregion Logic
-
-		/// <summary>
-		/// 文件尺寸
-		/// </summary>
-		[Serializable]
-		public class FileTooLargeException : Exception
-		{
-			public FileTooLargeException(int requireSize, int currentSize) : this($"要求尺寸在{Math.Round((double)requireSize / 1000000, 2)}MB以内,实际{Math.Round((double)currentSize / 1000000, 2)}MB")
-			{
-			}
-
-			public FileTooLargeException(string message) : base(message)
-			{
-			}
-
-			public FileTooLargeException(string message, Exception inner) : base(message, inner)
-			{
-			}
-
-			protected FileTooLargeException(
-			  System.Runtime.Serialization.SerializationInfo info,
-			  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-		}
 	}
+
+	#endregion Logic
 }
