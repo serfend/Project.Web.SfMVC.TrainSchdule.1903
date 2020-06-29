@@ -140,9 +140,8 @@ namespace BLL.Services.ApplyServices
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;
 			if (company == null) return apply;
-
 			InitAuditStream(apply);
-			return Create(apply);
+			return Create(apply); // 创建成功，记录本次创建详情
 		}
 
 		public void InitAuditStream(Apply model)
@@ -192,6 +191,21 @@ namespace BLL.Services.ApplyServices
 			model.Response = new List<ApplyResponse>();
 		}
 
+		/// <summary>
+		/// 检查是否存在重复的时间范围的申请
+		/// </summary>
+		private void CheckIfHaveSameRangeVacation(Apply apply)
+		{
+			var r = apply.RequestInfo;
+			var list = new List<AuditStatus>() {
+					AuditStatus.Accept,
+					AuditStatus.AcceptAndWaitAdmin,
+					AuditStatus.Auditing
+			};
+			var userVacationsInTime = _context.AppliesDb.Where(a => a.Create >= r.StampLeave).Where(a => a.Create <= r.StampReturn).Where(a => list.Contains(a.Status));
+			if (userVacationsInTime.Any()) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation);
+		}
+
 		public void ModifyAuditStatus(Apply model, AuditStatus status, string authUser = null)
 		{
 			if (model == null) return;
@@ -216,6 +230,7 @@ namespace BLL.Services.ApplyServices
 					}
 				case AuditStatus.Auditing:
 					{
+						CheckIfHaveSameRangeVacation(model);
 						if (model.Status == AuditStatus.NotPublish || model.Status == AuditStatus.NotSave)
 						{
 							model.NowAuditStep = model.ApplyAllAuditStep.FirstOrDefault();
