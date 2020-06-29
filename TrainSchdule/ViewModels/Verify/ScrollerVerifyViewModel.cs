@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Helpers;
+using BLL.Interfaces;
 
 namespace TrainSchdule.ViewModels.Verify
 {
@@ -8,15 +9,27 @@ namespace TrainSchdule.ViewModels.Verify
 	public class ScrollerVerifyViewModel
 	{
 		/// <summary>
-		///
-		/// </summary>
-		/// <param name="_verifyService"></param>
-		/// <returns></returns>
-		public string Verify(IVerifyService _verifyService) => _verifyService.Verify(Code);
-
-		/// <summary>
 		/// X轴位置
 		/// </summary>
 		public int Code { get; set; }
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	public static class ScrollerVerifyExtensions
+	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="_verifyService"></param>
+		/// <returns></returns>
+		public static void Verify(this ScrollerVerifyViewModel model, IVerifyService _verifyService)
+		{
+			if (model == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Verify.NotSet);
+			var result = _verifyService.Verify(model.Code);
+			if (result != null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid, result, true));
+		}
 	}
 }

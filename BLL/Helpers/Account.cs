@@ -17,6 +17,7 @@
 				{
 					public static readonly ApiResult Default = new ApiResult(12200, "验证码异常");
 					public static readonly ApiResult Invalid = new ApiResult(12210, "验证码错误");
+					public static readonly ApiResult NotSet = new ApiResult(12220, "验证码未输入");
 				}
 
 				public static class AuthCode

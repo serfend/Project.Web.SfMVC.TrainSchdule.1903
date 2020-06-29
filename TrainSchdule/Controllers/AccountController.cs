@@ -125,10 +125,13 @@ namespace TrainSchdule.Controllers
 		public IActionResult GetUserIdByRealName(string realName, int pageIndex = 0, int pageSize = 20)
 		{
 			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
-			var users = realName.ToLower() == "admin" ? new List<User>() { _usersService.Get("root") }.AsQueryable() : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName);
+			var isAdmin = realName.ToLower() == "admin";
+			var users = isAdmin ? new List<User>() { _usersService.Get("root") }.AsQueryable() : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName);
 			if (!users.Any()) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName));
-			var result = users.OrderByCompanyAndTitle().SplitPage(pageIndex, pageSize).Result;
-			var list = result.Item1.ToList().Select(u => u.ToSummaryDto());
+			if (!isAdmin) users = users.OrderByCompanyAndTitle();
+			var result = users.SplitPage(pageIndex, pageSize).Result;
+			var r = result.Item1.ToList();
+			var list = r.Select(u => u.ToSummaryDto());
 			return new JsonResult(new EntitiesListViewModel<UserSummaryDto>(list, result.Item2));
 		}
 
@@ -365,8 +368,7 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
 			if (ModelState.IsValid)
 			{
-				var r = model.Verify.Verify(_verifyService);
-				if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
+				model.Verify.Verify(_verifyService);
 				var cid = model.UserName;
 				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
 				var targetUser = _usersService.Get(model.UserName);
@@ -503,8 +505,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> ModefyUser([FromBody] UserModefyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var r = model.Verify?.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r ?? "验证码验证失败"));
+			model.Verify?.Verify(_verifyService);
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
 			{
@@ -537,8 +538,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var r = model.Verify?.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r ?? "验证码验证失败"));
+			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
 			{
@@ -592,8 +592,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> RegisterMutil([FromBody] UsersCreateMutilViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
+			model.Verify.Verify(_verifyService);
 
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
