@@ -2,6 +2,7 @@
 using DAL.Entities.UserInfo;
 using GoogleAuth;
 using GoogleAuther;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,12 +11,13 @@ namespace BLL.Services
 {
 	public class GoogleAuthService : IGoogleAuthService
 	{
-		private readonly int StaticVerify = 199500616;
 		private readonly IUsersService usersService;
+		private readonly IConfiguration configuration;
 
-		public GoogleAuthService(IUsersService usersService = null)
+		public GoogleAuthService(IUsersService usersService = null, IConfiguration configuration = null)
 		{
 			this.usersService = usersService;
+			this.configuration = configuration;
 		}
 
 		public int Code(string username)
@@ -35,7 +37,7 @@ namespace BLL.Services
 			if (username == null) username = "root";
 			var u = usersService.Get(username);
 			var password = u?.Application?.AuthKey;
-			if (password == null) password = "invalid@user";
+			if (password == null) password = configuration.GetSection("Configuration").GetSection("Permission")["DefaultPassword"] ?? "invalid@user";
 
 			var normalUserName = $"{username}@{DateTime.Now.ToString("yyyyMMdd")}";
 			using (var md5 = MD5.Create())
