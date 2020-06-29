@@ -72,17 +72,20 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20)
+		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20, DateTime? start = null, DateTime? end = null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
+			if (start == null) start = new DateTime(DateTime.Today.XjxtNow().Year, 1, 1);
+			if (end == null) end = DateTime.Today.XjxtNow();
+			end = end.Value.AddDays(1);
+
 			var currentUser = _currentUserService.CurrentUser;
 			var c = id == null ? currentUser : _usersService.Get(id);
 			if (id != null && id != currentUser.Id)
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id);
-
+			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).Where(a => a.Create >= start).Where(a => a.Create <= end);
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages).Result;
 			return new JsonResult(new ApplyListViewModel()

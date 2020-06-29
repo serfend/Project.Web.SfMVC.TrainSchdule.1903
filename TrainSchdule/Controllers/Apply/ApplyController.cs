@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public async Task<IActionResult> BaseInfo([FromBody]SubmitBaseInfoViewModel model)
+		public async Task<IActionResult> BaseInfo([FromBody] SubmitBaseInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
@@ -161,18 +161,9 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var r = model.Verify.Verify(_verifyService);
-			if (r != "") return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Verify.Invalid.Status, r));
+			model.Verify.Verify(_verifyService);
 			var dto = model.ToVDTO();
-			DAL.Entities.ApplyInfo.Apply apply = null;
-			try
-			{
-				apply = _applyService.Submit(dto);
-			}
-			catch (ActionStatusMessageException ex)
-			{
-				return new JsonResult(ex.Status);
-			}
+			var apply = _applyService.Submit(dto);
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Default);
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
 			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
@@ -189,7 +180,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public async Task<IActionResult> Submit([FromBody]ApplyRemoveViewModel model)
+		public async Task<IActionResult> Submit([FromBody] ApplyRemoveViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);

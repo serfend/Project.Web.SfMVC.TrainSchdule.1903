@@ -65,8 +65,8 @@ namespace BLL.Services
 		{
 			if (targetUser == null) return null;
 			var applies = _context.AppliesDb
-				.Where<Apply>(a => a.BaseInfo.From.Id == targetUser.Id)
-				.Where(a => a.Status == DAL.Entities.ApplyInfo.AuditStatus.Accept)
+				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
+				.Where(a => a.Status == AuditStatus.Accept)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.AddDays(5).Year)
 				.Where(a => a.RequestInfo.VacationType == "正休").ToList(); // 仅正休计算天数
 
