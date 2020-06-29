@@ -63,10 +63,14 @@ namespace DAL.Entities.ZX.Phy
 	{
 		public static int ToValue(this GradePhyStandard standard, string raw)
 		{
-			if (standard == null) return 0;
+			if (standard == null || raw == null) return 0;
 			switch (standard.BelongTo.ValueFormat)
 			{
-				case ValueFormat.Default: return Convert.ToInt32(raw);
+				case ValueFormat.Default:
+					{
+						int.TryParse(raw, out var i);
+						return i;
+					}
 				case ValueFormat.SecondBase:
 				case ValueFormat.TimeBase:
 					{
@@ -77,7 +81,8 @@ namespace DAL.Entities.ZX.Phy
 							t = t.Add(TimeSpan.FromMinutes(Convert.ToInt32(minute[0])));
 							raw = minute[1];
 						}
-						var ms = Convert.ToInt32(decimal.Parse((raw.Replace("\"", ".")), System.Globalization.NumberStyles.Float) * 1000);
+						decimal.TryParse(raw.Replace("\"", "."), out var de);
+						var ms = Convert.ToInt32(de * 1000);
 						t = t.Add(TimeSpan.FromMilliseconds(ms));
 						return (int)(t.TotalMilliseconds * (standard.BelongTo.CountDown ? -1 : 1));
 					}
