@@ -100,7 +100,7 @@ namespace BLL.Services
 
 		public string Verify(int code)
 		{
-			string result;
+			string result = null;
 			var img = GetImg();
 			if (img == null)
 			{
@@ -129,7 +129,7 @@ namespace BLL.Services
 		public string Verify(int code)
 		{
 			bool success = VerifyService.StaticVerify == code || Math.Abs(code - _code) < 5;
-			return success ? "" : $"验证码错误 your x={code} except x={_code}";
+			return success ? null : $"验证码错误 your x={code} except x={_code}";
 		}
 
 		private static Image Compress(Image raw, int newWidth)
