@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using TrainSchdule.Crontab;
 
 namespace BLL.Crontab
 {
-	public class UserInfoClearJob
+	public class UserInfoClearJob : ICrontabJob
 	{
 		private readonly IUsersService userServices;
 
