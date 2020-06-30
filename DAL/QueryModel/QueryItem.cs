@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DAL.QueryModel
 {
@@ -74,5 +75,35 @@ namespace DAL.QueryModel
 	{
 		public IEnumerable<Guid> Arrays { get; set; }
 		public Guid Value { get; set; }
+	}
+
+	public static class QueryModelValid
+	{
+		public static bool Valid(this QueryByDate model)
+		{
+			if (model == null) return false;
+			var dates = model.Dates?.Any() ?? false;
+			var range = model.Start != DateTime.MinValue || model.End >= model.Start;
+			return range || dates;
+		}
+
+		public static bool Valid(this QueryByString model)
+		{
+			if (model == null) return false;
+			var v = model.Value != null || (model.Arrays?.Any() ?? false);
+			return v;
+		}
+
+		public static bool Valid(this QueryByIntOrEnum model)
+		{
+			if (model == null) return false;
+			return model.End >= model.Start || (model.Arrays?.Any() ?? false);
+		}
+
+		public static QueryByPage ValidSplitPage(this QueryByPage model, int pageIndex = 0, int pageSize = 20)
+		{
+			if (model == null) model = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
+			return model;
+		}
 	}
 }

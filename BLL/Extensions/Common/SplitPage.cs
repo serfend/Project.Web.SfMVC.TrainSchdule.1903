@@ -16,11 +16,7 @@ namespace BLL.Extensions.Common
 		{
 			if (model == null)
 				return null;
-			if (pages == null) pages = new QueryByPage()
-			{
-				PageIndex = 0,
-				PageSize = 20
-			};
+			pages = pages.ValidSplitPage();
 			var totalCount = await Task.Run<int>(() =>
 			{
 				return model.Count();
