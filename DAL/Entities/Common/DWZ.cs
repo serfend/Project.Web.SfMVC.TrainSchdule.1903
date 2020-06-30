@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DAL.Entities.Common
 {
-	public class ShortUrl : BaseEntity, ICreateClientInfo
+	public class ShortUrl : BaseEntityGuid, ICreateClientInfo
 	{
 		/// <summary>
 		/// 原始网址
@@ -34,7 +34,7 @@ namespace DAL.Entities.Common
 		public string UA { get; set; }
 	}
 
-	public class ShortUrlStatistics : BaseEntity, ICreateClientInfo
+	public class ShortUrlStatistics : BaseEntityGuid, ICreateClientInfo
 	{
 		public virtual ShortUrl Url { get; set; }
 

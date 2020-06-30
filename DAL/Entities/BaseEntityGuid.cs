@@ -16,13 +16,21 @@ namespace DAL.Entities
 	/// Base class for entities.
 	/// Contains <see cref="Id"/> property.
 	/// </summary>
-	public class BaseEntity
+	public class BaseEntityGuid : BaseEntity, IHasGuidId
 	{
 		/// <summary>
 		/// Gets and sets id.
 		/// </summary>
 		public virtual Guid Id { get; set; }
+	}
 
+	public class BaseEntityInt : BaseEntity, IHasIntId
+	{
+		public virtual int Id { get; set; }
+	}
+
+	public abstract class BaseEntity
+	{
 		/// <summary>
 		/// 使用软删除
 		/// </summary>

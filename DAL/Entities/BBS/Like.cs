@@ -8,7 +8,7 @@ namespace DAL.Entities.BBS
 	/// <summary>
 	/// 点赞
 	/// </summary>
-	public class Like : BaseEntity
+	public class Like : BaseEntityGuid
 	{
 		public virtual PostContent Content { get; set; }
 		public DateTime Create { get; set; }

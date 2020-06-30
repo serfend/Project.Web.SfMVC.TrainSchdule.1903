@@ -8,7 +8,7 @@ using DAL.DTO.Apply.ApplyAuditStreamDTO;
 
 namespace DAL.DTO.Apply
 {
-	public sealed class ApplyDetailDto : BaseEntity
+	public sealed class ApplyDetailDto : BaseEntityGuid
 	{
 		/// <summary>
 		/// 批准首长

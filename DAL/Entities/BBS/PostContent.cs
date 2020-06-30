@@ -3,7 +3,7 @@ using System;
 
 namespace DAL.Entities.BBS
 {
-	public class PostContent : BaseEntity
+	public class PostContent : BaseEntityGuid
 	{
 		/// <summary>
 		/// 回复何动态

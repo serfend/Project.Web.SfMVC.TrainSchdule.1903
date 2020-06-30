@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DAL.Entities.UserInfo
 {
-	public class Avatar : BaseEntity
+	public class Avatar : BaseEntityGuid
 	{
 		public string FilePath { get; set; }
 		public DateTime CreateTime { get; set; }

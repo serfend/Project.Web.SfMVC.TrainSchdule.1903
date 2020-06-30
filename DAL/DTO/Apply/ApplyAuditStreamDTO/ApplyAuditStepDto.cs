@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 {
-	public class ApplyAuditStepDto : BaseEntity
+	public class ApplyAuditStepDto : BaseEntityGuid
 	{
 		/// <summary>
 		/// 步骤在全流程中所处位置

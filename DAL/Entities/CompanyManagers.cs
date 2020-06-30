@@ -6,7 +6,7 @@ namespace DAL.Entities
 	/// <summary>
 	/// 单位主管决定单位的审批需要经过哪些人
 	/// </summary>
-	public class CompanyManagers : BaseEntity
+	public class CompanyManagers : BaseEntityGuid
 	{
 		public virtual User User { get; set; }
 		public virtual Company Company { get; set; }

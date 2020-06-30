@@ -3,7 +3,7 @@ using DAL.Entities.UserInfo;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class ApplyResponse : BaseEntity
+	public class ApplyResponse : BaseEntityGuid
 	{
 		/// <summary>
 		/// 当前审批人所处的审批节点序号

@@ -3,7 +3,7 @@ using System;
 
 namespace DAL.Entities
 {
-	public class RecallOrder : BaseEntity
+	public class RecallOrder : BaseEntityGuid
 	{
 		/// <summary>
 		/// 召回原因

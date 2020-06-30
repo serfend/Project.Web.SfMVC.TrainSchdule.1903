@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities.UserInfo
 {
-	public class UserCompanyInfo : BaseEntity
+	public class UserCompanyInfo : BaseEntityGuid
 	{
 		/// <summary>
 		/// 用户所处的单位

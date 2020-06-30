@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.UserInfo
 {
-	public class UserApplicationInfo : BaseEntity
+	public class UserApplicationInfo : BaseEntityGuid
 	{
 		/// <summary>
 		/// 用户注册时的授权人id

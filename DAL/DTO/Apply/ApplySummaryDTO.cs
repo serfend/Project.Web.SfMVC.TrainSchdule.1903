@@ -7,7 +7,7 @@ using DAL.DTO.Apply.ApplyAuditStreamDTO;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplySummaryDto : BaseEntity
+	public class ApplySummaryDto : BaseEntityGuid
 	{
 		/// <summary>
 		/// 用户基本信息

@@ -7,7 +7,7 @@ namespace DAL.Entities
 	/// xls渲染模板
 	/// TODO 日后用户自定义模板上传
 	/// </summary>
-	public class XlsTemplete : BaseEntity
+	public class XlsTemplete : BaseEntityGuid
 	{
 		/// <summary>
 		/// 模板名称

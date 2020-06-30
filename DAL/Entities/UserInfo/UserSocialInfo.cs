@@ -1,6 +1,6 @@
 ﻿namespace DAL.Entities.UserInfo
 {
-	public class UserSocialInfo : BaseEntity
+	public class UserSocialInfo : BaseEntityGuid
 	{
 		public string Phone { get; set; }
 		public virtual Settle.Settle Settle { get; set; }

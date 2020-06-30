@@ -7,7 +7,7 @@ namespace DAL.Entities.Common
 	/// <summary>
 	/// 版本记录
 	/// </summary>
-	public class ApplicationUpdateRecord : BaseEntity
+	public class ApplicationUpdateRecord : BaseEntityGuid
 	{
 		/// <summary>
 		/// 版本号

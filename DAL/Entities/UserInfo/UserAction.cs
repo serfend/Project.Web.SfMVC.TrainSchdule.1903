@@ -15,7 +15,7 @@ namespace DAL.Entities.UserInfo
 		Disaster = 0
 	}
 
-	public class UserAction : BaseEntity, ICreateClientInfo
+	public class UserAction : BaseEntityGuid, ICreateClientInfo
 	{
 		public string UserName { get; set; }
 

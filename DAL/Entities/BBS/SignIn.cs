@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.BBS
 {
-	public class SignIn : BaseEntity
+	public class SignIn : BaseEntityGuid
 	{
 		/// <summary>
 		/// 签到id

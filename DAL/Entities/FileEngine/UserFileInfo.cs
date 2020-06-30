@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.FileEngine
 {
-	public class UserFileInfo : BaseEntity
+	public class UserFileInfo : BaseEntityGuid
 	{
 		/// <summary>
 		/// 文件名

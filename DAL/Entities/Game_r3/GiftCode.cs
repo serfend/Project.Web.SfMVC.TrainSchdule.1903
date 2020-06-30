@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.Game_r3
 {
-	public class GiftCode : BaseEntity
+	public class GiftCode : BaseEntityGuid
 	{
 		/// <summary>
 		/// 礼包码
@@ -35,7 +35,7 @@ namespace DAL.Entities.Game_r3
 		public string ShareBy { get; set; }
 	}
 
-	public class GainGiftCode : BaseEntity
+	public class GainGiftCode : BaseEntityGuid
 	{
 		public virtual User User { get; set; }
 		public long GainStamp { get; set; }

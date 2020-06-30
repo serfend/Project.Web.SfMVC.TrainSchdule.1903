@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class Apply : BaseEntity
+	public class Apply : BaseEntityGuid
 	{
 		public virtual ApplyBaseInfo BaseInfo { get; set; }
 		public virtual ApplyRequest RequestInfo { get; set; }

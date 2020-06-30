@@ -9,7 +9,7 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 用户的申请请求
 	/// </summary>
-	public class ApplyRequest : BaseEntity
+	public class ApplyRequest : BaseEntityGuid
 	{
 		public DateTime? StampLeave { get; set; }
 		public DateTime? StampReturn { get; set; }

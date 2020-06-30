@@ -2,7 +2,7 @@
 
 namespace DAL.Entities.ZX.Phy
 {
-	public class GradePhySubject : BaseEntity
+	public class GradePhySubject : BaseEntityGuid
 	{
 		/// <summary>
 		/// 科目名称

@@ -3,7 +3,7 @@ using System;
 
 namespace DAL.Entities.Game_r3
 {
-	public class User : BaseEntity
+	public class User : BaseEntityGuid
 	{
 		/// <summary>
 		/// 用户游戏Id
@@ -37,7 +37,7 @@ namespace DAL.Entities.Game_r3
 		public virtual SignIn LastSignIn { get; set; }
 	}
 
-	public class UserInfo : BaseEntity
+	public class UserInfo : BaseEntityGuid
 	{
 		/// <summary>
 		/// 用户

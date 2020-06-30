@@ -31,6 +31,10 @@ namespace TrainSchdule.ViewModels.System
 	/// <typeparam name="T"></typeparam>
 	public class EntityViewModel<T> : ApiResult where T : class
 	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="data"></param>
 		public EntityViewModel(T data)
 		{
 			Data = data;

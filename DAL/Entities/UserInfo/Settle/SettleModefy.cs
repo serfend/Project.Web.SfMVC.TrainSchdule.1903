@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DAL.Entities.UserInfo.Settle
 {
-	public class AppUsersSettleModefyRecord : BaseEntity
+	public class AppUsersSettleModefyRecord : BaseEntityGuid
 	{
 		/// <summary>
 		/// 不使用id

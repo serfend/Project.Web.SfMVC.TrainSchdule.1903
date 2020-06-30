@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelReport.Driver", "Excel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelReport.Driver.NPOI", "ExcelReport.Driver.NPOI\ExcelReport.Driver.NPOI.csproj", "{E6658ECE-2545-48A8-907E-A7AA9F24E93C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{B7442B01-D70B-4062-9C7C-0A6863DD7D67}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implement.ExcelReort", "Implement.ExcelReort", "{4F7DFEB2-5F60-42AA-A5CB-553D3C57A38E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +118,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{129707D9-241D-4F53-A1A9-27517994C4C9} = {B7442B01-D70B-4062-9C7C-0A6863DD7D67}
+		{ABAFDAAD-0BC6-4891-9171-AB16562696EE} = {4F7DFEB2-5F60-42AA-A5CB-553D3C57A38E}
+		{0D56A760-9B6F-4474-B661-3A216135986D} = {4F7DFEB2-5F60-42AA-A5CB-553D3C57A38E}
+		{E6658ECE-2545-48A8-907E-A7AA9F24E93C} = {4F7DFEB2-5F60-42AA-A5CB-553D3C57A38E}
+		{4F7DFEB2-5F60-42AA-A5CB-553D3C57A38E} = {B7442B01-D70B-4062-9C7C-0A6863DD7D67}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7273A31-9CCB-4E35-BBC6-3D7DC364508D}

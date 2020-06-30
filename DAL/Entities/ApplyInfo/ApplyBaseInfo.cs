@@ -3,7 +3,7 @@ using System;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class ApplyBaseInfo : BaseEntity
+	public class ApplyBaseInfo : BaseEntityGuid
 	{
 		public string RealName { get; set; }
 		public string CompanyName { get; set; }

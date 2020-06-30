@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace DAL.Entities
 {
-	public class Permissions : BaseEntity
+	public class Permissions : BaseEntityGuid
 	{
 		//TODO 之后可能加上角色控制
 		public string Regions { get; set; }

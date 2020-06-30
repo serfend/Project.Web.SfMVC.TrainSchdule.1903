@@ -8,7 +8,7 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 当前审批的步骤执行情况信息
 	/// </summary>
-	public class ApplyAuditStep : BaseEntity
+	public class ApplyAuditStep : BaseEntityGuid
 	{
 		/// <summary>
 		/// 步骤在全流程中所处位置

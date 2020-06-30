@@ -9,7 +9,7 @@ namespace DAL.Entities.UserInfo.Settle
 	/// <summary>
 	/// 居住情况
 	/// </summary>
-	public class Settle : BaseEntity
+	public class Settle : BaseEntityGuid
 	{
 		/// <summary>
 		/// 本人所在地

@@ -6,7 +6,7 @@ namespace DAL.Entities.FileEngine
 	/// <summary>
 	/// 文件上传状态
 	/// </summary>
-	public class UploadCache : BaseEntity
+	public class UploadCache : BaseEntityGuid
 	{
 		/// <summary>
 		/// 文件上传列表
@@ -14,7 +14,7 @@ namespace DAL.Entities.FileEngine
 		public virtual List<FileUploadStatus> FileStatus { get; set; }
 	}
 
-	public class FileUploadStatus : BaseEntity
+	public class FileUploadStatus : BaseEntityGuid
 	{
 		public virtual UserFileInfo FileInfo { get; set; }
 		public long Current { get; set; }

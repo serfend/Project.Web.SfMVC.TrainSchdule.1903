@@ -18,7 +18,7 @@ namespace TrainSchdule.Extensions.Common
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.Static.ResourceNotExist;
+		public static ApiResult NotExist(this BaseEntityGuid model) => ActionStatusMessage.Static.ResourceNotExist;
 
 		/// <summary>
 		/// 用户不存在

@@ -8,12 +8,12 @@ namespace DAL.Entities.UserInfo
 	/// <summary>
 	/// TODO 用户受训情况
 	/// </summary>
-	public class UserTrainInfo : BaseEntity
+	public class UserTrainInfo : BaseEntityGuid
 	{
 		public virtual IEnumerable<Train> Trains { get; set; }
 	}
 
-	public class Train : BaseEntity
+	public class Train : BaseEntityGuid
 	{
 		public DateTime Time_Begin { get; set; }
 		public DateTime Time_End { get; set; }

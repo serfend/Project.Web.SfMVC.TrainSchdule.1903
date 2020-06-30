@@ -29,5 +29,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ExcelReport.Driver\ExcelReport.Driver.csproj" />
   </ItemGroup>
-
 </Project>

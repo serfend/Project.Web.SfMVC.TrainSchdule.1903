@@ -1,6 +1,6 @@
 ﻿namespace DAL.Entities.UserInfo
 {
-	public class UserDiyInfo : BaseEntity
+	public class UserDiyInfo : BaseEntityGuid
 	{
 		public string About { get; set; }
 

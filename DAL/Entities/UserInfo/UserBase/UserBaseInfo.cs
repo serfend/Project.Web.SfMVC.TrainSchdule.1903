@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Entities.UserInfo
 {
-	public class UserBaseInfo : BaseEntity
+	public class UserBaseInfo : BaseEntityGuid
 	{
 		[Required(ErrorMessage = "未输入身份证")]
 

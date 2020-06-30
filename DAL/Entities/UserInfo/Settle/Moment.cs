@@ -5,7 +5,7 @@ namespace DAL.Entities.UserInfo.Settle
 	/// <summary>
 	/// 居住情况，TODO 后续可将历史记录功能加入
 	/// </summary>
-	public class Moment : BaseEntity
+	public class Moment : BaseEntityGuid
 	{
 		/// <summary>
 		/// 居住开始时间

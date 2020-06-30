@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DAL.DTO.System
 {
-	public class FileInfoVDto : BaseEntity
+	public class FileInfoVDto : BaseEntityGuid
 	{
 		/// <summary>
 		/// 文件名

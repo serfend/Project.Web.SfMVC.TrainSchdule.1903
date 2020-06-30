@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace DAL.Entities.ZX.Phy
 {
-	public class GradePhyStandard : BaseEntity
+	public class GradePhyStandard : BaseEntityGuid
 	{
 		[NotMapped]
 		[JsonIgnore]
