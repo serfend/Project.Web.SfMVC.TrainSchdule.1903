@@ -51,7 +51,7 @@ namespace BLL.Services.VacationStatistics
 		/// <param name="target"></param>
 		/// <param name="db">目标日的申请</param>
 		/// <returns>返回是否需要添加到数据库</returns>
-		private Tuple<IEnumerable<T>, bool> GetTargetStatistics<T>(string companyCode, DateTime target, IQueryable<T> db, IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb) where T : IStatisticsApplyBase, new()
+		private static Tuple<IEnumerable<T>, bool> GetTargetStatistics<T>(string companyCode, DateTime target, IQueryable<T> db, IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb) where T : IStatisticsApplyBase, new()
 		{
 			if (db.CheckDb(companyCode, target).Any()) return new Tuple<IEnumerable<T>, bool>(db.CheckDb(companyCode, target), false);
 			var records = applies.Select(a => new T()

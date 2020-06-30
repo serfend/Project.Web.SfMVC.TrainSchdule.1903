@@ -104,6 +104,7 @@ namespace BLL.Services.ZX
 
 		public GradePhySubject FindSubject(string name)
 		{
+			if (name == null) return null;
 			var r = _context.GradePhySubjects.Where(s => s.Name == name).FirstOrDefault();
 
 			if (r == null)

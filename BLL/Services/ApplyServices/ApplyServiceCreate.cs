@@ -151,7 +151,7 @@ namespace BLL.Services.ApplyServices
 			var usrCmp = user.CompanyInfo.Company.Code;
 			// 初始化审批流
 			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
-			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist, "无合适规则", true));
+			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))

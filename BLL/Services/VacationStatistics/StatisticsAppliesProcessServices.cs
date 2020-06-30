@@ -37,7 +37,7 @@ namespace BLL.Services.VacationStatistics
 			_context.StatisticsAppliesProcesses.RemoveRange(list);
 		}
 
-		public Tuple<IEnumerable<T>, bool> GetTargetStatistics<T>(string companyCode, DateTime target, IQueryable<T> db, IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb) where T : StatisticsAppliesProcess, new()
+		public static Tuple<IEnumerable<T>, bool> GetTargetStatistics<T>(string companyCode, DateTime target, IQueryable<T> db, IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb) where T : StatisticsAppliesProcess, new()
 		{
 			if (db.CheckDb(companyCode, target).Any()) return new Tuple<IEnumerable<T>, bool>(db.CheckDb(companyCode, target), false);
 			var records = applies.Select(a => new StatisticsAppliesInfo()

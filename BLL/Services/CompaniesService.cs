@@ -73,7 +73,7 @@ namespace BLL.Services
 			return company;
 		}
 
-		private Company CreateCompany(string name, string code)
+		private static Company CreateCompany(string name, string code)
 		{
 			var company = new Company()
 			{
@@ -86,12 +86,13 @@ namespace BLL.Services
 		public async Task<Company> CreateAsync(string name, string code)
 		{
 			var company = CreateCompany(name, code);
-			await _context.Companies.AddAsync(company);
+			await _context.Companies.AddAsync(company).ConfigureAwait(false);
 			return company;
 		}
 
 		public bool Edit(string code, Action<Company> editCallBack)
 		{
+			if (editCallBack == null) return true;
 			var target = _context.Companies.Find(code);
 			if (target == null) return false;
 			editCallBack.Invoke(target);
