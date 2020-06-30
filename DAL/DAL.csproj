@@ -33,6 +33,8 @@
     <Compile Remove="Migrations\20200611040051_moveStatisticsDaily.Designer.cs" />
     <Compile Remove="Migrations\20200629235856_baseEntitySplit.cs" />
     <Compile Remove="Migrations\20200629235856_baseEntitySplit.Designer.cs" />
+    <Compile Remove="Migrations\20200630010252_thirdNotice.cs" />
+    <Compile Remove="Migrations\20200630010252_thirdNotice.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

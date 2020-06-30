@@ -44,6 +44,7 @@ namespace BLL.Services.ZX
 		{
 			if (standard == null) return 0;
 			var value = standard.ToValue(rawValue);
+			if (value == -1) return 0;
 			KeyValuePair<int, int> prev = new KeyValuePair<int, int>();
 			foreach (var i in standard.GradePairsInner)
 			{
