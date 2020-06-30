@@ -13,7 +13,7 @@ using System.Text;
 
 namespace BLL.Services.ZX
 {
-	public class PhyGradeServices : IPhyGradeServices
+	public partial class PhyGradeServices : IPhyGradeServices
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -21,6 +21,8 @@ namespace BLL.Services.ZX
 		{
 			_context = context;
 		}
+
+		#region Subject&Standard
 
 		private static int GetExpressionGrade(int value, int prevValue, string expression)
 		{
@@ -124,5 +126,7 @@ namespace BLL.Services.ZX
 			r.Standards = r.Standards;
 			return r;
 		}
+
+		#endregion Subject&Standard
 	}
 }

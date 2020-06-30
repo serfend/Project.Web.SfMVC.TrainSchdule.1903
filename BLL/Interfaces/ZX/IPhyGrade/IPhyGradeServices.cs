@@ -7,8 +7,10 @@ using System.Text;
 
 namespace BLL.Interfaces.ZX
 {
-	public interface IPhyGradeServices
+	public partial interface IPhyGradeServices
 	{
+		#region Subject&Standard
+
 		/// <summary>
 		/// 根据用户情况获取其体能标准
 		/// </summary>
@@ -29,5 +31,7 @@ namespace BLL.Interfaces.ZX
 		void ModifySubject(GradePhySubject model);
 
 		GradePhySubject FindSubject(string name);
+
+		#endregion Subject&Standard
 	}
 }

@@ -14,6 +14,12 @@
 			{
 				public static readonly ApiResult UnExpected = new ApiResult(61200, "计算错误");
 			}
+
+			public static class Record
+			{
+				public static readonly ApiResult NotExist = new ApiResult(61300, "无此成绩记录");
+				public static readonly ApiResult AlreadyExisted = new ApiResult(61310, "已存在此成绩记录");
+			}
 		}
 	}
 }
