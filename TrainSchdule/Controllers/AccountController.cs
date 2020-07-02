@@ -244,8 +244,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Password([FromBody] ModefyPasswordViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
-
 			// 身份证转id
 			var cid = model.Id;
 			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
@@ -366,40 +364,36 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Login([FromBody] LoginViewModel model)
 		{
 			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
-			if (ModelState.IsValid)
+			model.Verify.Verify(_verifyService);
+			var cid = model.UserName;
+			if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
+			var targetUser = _usersService.Get(model.UserName);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			var accountType = targetUser.Application.InvalidAccount();
+			if (accountType == BLL.Extensions.UserExtensions.AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
+			if (accountType == BLL.Extensions.UserExtensions.AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
+			model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
+			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+			if (result.Succeeded)
 			{
-				model.Verify.Verify(_verifyService);
-				var cid = model.UserName;
-				if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
-				var targetUser = _usersService.Get(model.UserName);
-				if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-				var accountType = targetUser.Application.InvalidAccount();
-				if (accountType == BLL.Extensions.UserExtensions.AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
-				if (accountType == BLL.Extensions.UserExtensions.AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
-				model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
-				if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-				var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-				if (result.Succeeded)
-				{
-					_logger.LogInformation($"用户登录:{model.UserName}");
-					_userActionServices.Status(actionRecord, true);
-					return new JsonResult(ActionStatusMessage.Success);
-				}
-				else if (result.RequiresTwoFactor)
-				{
-					_userActionServices.Status(actionRecord, false, "账号需要二次验证");
-					return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
-				}
-				else if (result.IsLockedOut)
-				{
-					_logger.LogWarning("账号异常");
-					_userActionServices.Status(actionRecord, false, "账号已处于锁定状态");
-
-					return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
-				}
-				else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+				_logger.LogInformation($"用户登录:{model.UserName}");
+				_userActionServices.Status(actionRecord, true);
+				return new JsonResult(ActionStatusMessage.Success);
 			}
-			else return new JsonResult(new ModelStateExceptionViewModel(ModelState));
+			else if (result.RequiresTwoFactor)
+			{
+				_userActionServices.Status(actionRecord, false, "账号需要二次验证");
+				return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
+			}
+			else if (result.IsLockedOut)
+			{
+				_logger.LogWarning("账号异常");
+				_userActionServices.Status(actionRecord, false, "账号已处于锁定状态");
+
+				return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
+			}
+			else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 		}
 
 		/// <summary>
@@ -412,7 +406,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> RemoveMutil([FromBody] UserRemoveMutiViewMode model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -504,7 +497,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> ModefyUser([FromBody] UserModefyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify?.Verify(_verifyService);
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
@@ -537,7 +529,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
@@ -591,7 +582,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> RegisterMutil([FromBody] UsersCreateMutilViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify.Verify(_verifyService);
 
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
@@ -640,7 +630,6 @@ namespace TrainSchdule.Controllers
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
 			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
-			if (!ModelState.IsValid) throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (invalidAccount == BLL.Extensions.UserExtensions.AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;

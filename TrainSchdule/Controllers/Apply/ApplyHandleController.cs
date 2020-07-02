@@ -35,9 +35,6 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			try
 			{
-				if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Default);
-
-				if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 				var auditUser = _currentUserService.CurrentUser;
 				if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 				{
@@ -245,8 +242,6 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RecallOrder([FromBody] RecallCreateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			RecallOrder result;
 			try

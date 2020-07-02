@@ -60,7 +60,7 @@ namespace TrainSchdule.Controllers.File
 		/// <returns></returns>
 		[Route("{id}")]
 		[HttpGet]
-		public async Task<IActionResult> StaticFile([FromRoute]string id)
+		public async Task<IActionResult> StaticFile([FromRoute] string id)
 		{
 			return await Download(id);
 		}
@@ -158,7 +158,7 @@ namespace TrainSchdule.Controllers.File
 		/// <returns></returns>
 		[HttpPost]
 		[DisableRequestSizeLimit]
-		public async Task<IActionResult> Upload([FromForm]FileUploadViewModel model)
+		public async Task<IActionResult> Upload([FromForm] FileUploadViewModel model)
 		{
 			try
 			{
@@ -196,9 +196,8 @@ namespace TrainSchdule.Controllers.File
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult ClientKey([FromBody]FileClientKeySpyViewModel model)
+		public IActionResult ClientKey([FromBody] FileClientKeySpyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			if (model.Auth?.AuthByUserID != "root") return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (!model.Auth?.Verify(googleAuthService, null) ?? false) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var f = fileServices.FileInfo(model.Id);

@@ -1,4 +1,5 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions.Common;
+using BLL.Helpers;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +70,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("Social/ModefyRecord")]
-		public IActionResult SingleSocialModefyRecord([FromBody]ModefySingleSettleModefyRecordViewModel model)
+		public IActionResult SingleSocialModefyRecord([FromBody] ModefySingleSettleModefyRecordViewModel model)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);
@@ -116,7 +117,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("social/[action]")]
-		public IActionResult Settle([FromBody]UserSocialSettleModefyViewModel model)
+		public IActionResult Settle([FromBody] UserSocialSettleModefyViewModel model)
 		{
 			var authUser = model?.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
 			var data = model?.Data;

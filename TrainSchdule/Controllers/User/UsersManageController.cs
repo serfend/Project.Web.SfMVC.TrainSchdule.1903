@@ -56,7 +56,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (model.Auth == null || !model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
 			var authUser = _usersService.Get(model.Auth.AuthByUserID);

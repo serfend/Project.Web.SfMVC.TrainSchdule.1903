@@ -136,9 +136,8 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult Audit([FromBody]AuditApplyViewModel model)
+		public IActionResult Audit([FromBody] AuditApplyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = _currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{

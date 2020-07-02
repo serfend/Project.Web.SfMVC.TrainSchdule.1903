@@ -104,7 +104,6 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> BaseInfo([FromBody] SubmitBaseInfoViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var userModel = new SubmitBaseInfoViewModel()
@@ -134,7 +133,6 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(_context);
@@ -160,7 +158,6 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public IActionResult Submit([FromBody] SubmitApplyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify.Verify(_verifyService);
 			var dto = model.ToVDTO();
 			var apply = _applyService.Submit(dto);
@@ -182,7 +179,6 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> Submit([FromBody] ApplyRemoveViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);

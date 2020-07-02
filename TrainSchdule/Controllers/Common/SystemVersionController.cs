@@ -69,9 +69,8 @@ namespace TrainSchdule.Controllers.Static
 		/// <returns></returns>
 		[Route("UpdateVersion")]
 		[HttpPost]
-		public IActionResult AddUpdateVersion([FromBody]ApplicationUpdateRecordUpdateViewModel model)
+		public IActionResult AddUpdateVersion([FromBody] ApplicationUpdateRecordUpdateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
 			var authBy = model.Auth.AuthUser(authService, currentUserService.CurrentUser?.Id);
 			if (authBy != "root") return new JsonResult(model.Auth.PermitDenied());
 			var mList = model.Data.List;

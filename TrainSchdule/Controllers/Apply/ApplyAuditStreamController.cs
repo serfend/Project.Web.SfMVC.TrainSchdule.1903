@@ -95,7 +95,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamNode")]
 		public IActionResult AddStreamNode([FromBody] StreamNodeCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -124,7 +123,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamNode")]
 		public IActionResult EditStreamNode([FromBody] StreamNodeCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -182,7 +180,6 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (auth?.AuthByUserID != null && auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
@@ -227,7 +224,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolution")]
 		public IActionResult AddStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -271,7 +267,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolution")]
 		public IActionResult EditStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -346,7 +341,6 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
@@ -385,7 +379,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolutionRule")]
 		public IActionResult AddStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -430,7 +423,6 @@ namespace TrainSchdule.Controllers.Apply
 		[Route("ApplyAuditStream/StreamSolutionRule")]
 		public IActionResult EditStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
@@ -500,7 +492,6 @@ namespace TrainSchdule.Controllers.Apply
 				AuthByUserID = authByUserId,
 				Code = code
 			};
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var auditUser = currentUserService.CurrentUser;
 			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
