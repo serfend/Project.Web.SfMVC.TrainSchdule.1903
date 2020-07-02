@@ -14,8 +14,13 @@ namespace BLL.Interfaces.ZX
 		/// 操作成绩记录
 		/// </summary>
 		/// <returns></returns>
-		GradePhyRecord Modify(GradePhyRecord model);
+		GradePhyRecord ModifyRecord(GradePhyRecord model);
 
+		/// <summary>
+		/// 查询成绩记录
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		Tuple<IEnumerable<GradePhyRecord>, int> GetRecords(QueryGradeRecordViewModel model);
 	}
 }

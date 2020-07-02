@@ -11,7 +11,7 @@ namespace BLL.Extensions
 	{
 		public static IQueryable<GradePhySubject> GetSubjectsByUser(this IQueryable<GradePhySubject> list, UserBaseInfo userBase)
 		{
-			if (userBase == null) return null;
+			if (userBase == null) return list;
 			var userAge = userBase.Time_BirthDay.Age();
 			return list.Where(s => s.Standards.Any(d => d.minAge <= userAge && d.maxAge >= userAge && d.gender == userBase.Gender));
 		}

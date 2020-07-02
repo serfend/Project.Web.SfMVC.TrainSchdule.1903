@@ -17,16 +17,30 @@ namespace BLL.Services.ZX
 {
 	public partial class PhyGradeServices
 	{
-		public GradePhyRecord Modify(GradePhyRecord model)
+		public GradePhyRecord ModifyRecord(GradePhyRecord model)
 		{
-			if (model == null) return null;
 			var db = _context.GradePhyRecords;
 			var prev = db.Where(r => r.Id == model.Id).FirstOrDefault();
-			var existed = prev != null;
-			if (model.IsRemoved && !existed) throw new ActionStatusMessageException(ActionStatusMessage.Grade.Record.NotExist);
-			if (existed) db.Remove(prev);
-			if (!model.IsRemoved) db.Add(model);
-			_context.SaveChanges();
+
+			return model.Modify(db, prev, (m, p) =>
+		   {
+			   var newM = MapPhyRecordModel(m);
+			   newM.CreateBy = p?.CreateBy ?? m.CreateBy;
+			   newM.Create = p?.Create ?? DateTime.Now;
+			   return newM;
+		   }, _context);
+		}
+
+		private GradePhyRecord MapPhyRecordModel(GradePhyRecord model)
+		{
+			var createById = model.CreateBy.Id;
+			model.CreateBy = _context.AppUsers.Where(u => u.Id == createById).FirstOrDefault();
+			var examId = model.Exam.Id;
+			model.Exam = _context.GradeExams.Where(e => e.Id == examId).FirstOrDefault();
+			var userId = model.User.Id;
+			model.User = _context.AppUsers.Where(u => u.Id == userId).FirstOrDefault();
+			var subjectId = model.Subject.Id;
+			model.Subject = _context.GradePhySubjects.Where(s => s.Id == subjectId).FirstOrDefault();
 			return model;
 		}
 
