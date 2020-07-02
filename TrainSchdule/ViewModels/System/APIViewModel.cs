@@ -24,25 +24,4 @@ namespace TrainSchdule.ViewModels.System
 		/// </summary>
 		public Dictionary<string, ModelStateExceptionDataModel> ModelStateException { get; set; }
 	}
-
-	/// <summary>
-	/// 任意 实体返回
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class EntityViewModel<T> : ApiResult where T : class
-	{
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="data"></param>
-		public EntityViewModel(T data)
-		{
-			Data = data;
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public T Data { get; set; }
-	}
 }
