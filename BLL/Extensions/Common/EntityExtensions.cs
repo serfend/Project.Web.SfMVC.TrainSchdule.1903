@@ -1,12 +1,12 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using DAL.Entities.ZX.Phy;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace TrainSchdule.Extensions.Common
+namespace BLL.Extensions.Common
 {
 	/// <summary>
 	///
@@ -18,13 +18,10 @@ namespace TrainSchdule.Extensions.Common
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static ApiResult NotExist(this BaseEntityGuid model) => ActionStatusMessage.Static.ResourceNotExist;
+		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.Static.ResourceNotExist;
 
-		/// <summary>
-		/// 用户不存在
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
+
+		public static ApiResult NotExist(this GradePhyRecord model) => ActionStatusMessage.Grade.Record.NotExist;
 	}
 }
