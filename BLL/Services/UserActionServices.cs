@@ -46,10 +46,10 @@ namespace BLL.Services
 
 		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode)
 		{
-			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}", false, ActionRank.Danger);
+			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation}", false, ActionRank.Danger);
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
-				Status(a, true, $"成功-授权到{targetUserCompanyCode}执行{key?.Name} ");
+				Status(a, true, "直接权限");
 				return true;
 			}
 			var u = usersService.Get(permissionUserName);
@@ -60,7 +60,7 @@ namespace BLL.Services
 				var ucmp = uc.Company.Code;
 				if (targetUserCompanyCode == null || (targetUserCompanyCode.Length >= ucmp.Length && targetUserCompanyCode.Substring(0, ucmp.Length) == ucmp) && ud)
 				{
-					Status(a, true, $"成功-单位主官-授权到{targetUserCompanyCode}执行{key?.Name} ");
+					Status(a, true, $"单位主官");
 					return true;
 				}
 				else
@@ -69,7 +69,7 @@ namespace BLL.Services
 					if (targetUserCompanyCode == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
 					else if (results.Item2 > 0 && results.Item1.Any(c => targetUserCompanyCode.Length >= c.Code.Length && targetUserCompanyCode.Substring(0, c.Code.Length) == c.Code))
 					{
-						Status(a, true, $"成功-单位管理-授权到{targetUserCompanyCode}执行{key?.Name}");
+						Status(a, true, $"单位管理");
 						return true;
 					}
 				}
