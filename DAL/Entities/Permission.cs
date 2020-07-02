@@ -41,6 +41,8 @@ namespace DAL.Entities
 		public static class Grade
 		{
 			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的编辑权限");
+			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "考核的编辑权限");
+			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩记录的编辑权限");
 		}
 
 		public static class Resources

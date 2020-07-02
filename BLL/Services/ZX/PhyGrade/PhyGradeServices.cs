@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces.ZX;
 using DAL.Data;
@@ -69,7 +70,7 @@ namespace BLL.Services.ZX
 			return null;
 		}
 
-		public IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase)
+		public IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase, QueryByPage pages)
 		{
 			if (model == null) model = new QueryUserGradeViewModel();
 			var has = model.Names?.Arrays?.Any() ?? false;
@@ -82,8 +83,8 @@ namespace BLL.Services.ZX
 			{
 				if (sn != "*") list = list.Where(s => s.Name == sn);
 				if (group != null) list = list.Where(s => s.Group == group);
-				var r = list.GetSubjectsByUser(userBase);
-				result.AddRange(r);
+				var r = list.GetSubjectsByUser(userBase).SplitPage(pages).Result;
+				result.AddRange(r.Item1);
 			}
 			return result;
 		}

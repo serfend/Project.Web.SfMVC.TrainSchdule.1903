@@ -25,8 +25,9 @@ namespace BLL.Interfaces.ZX
 		/// </summary>
 		/// <param name="model">搜索条件,Names须指定Arrays</param>
 		/// <param name="userBase"></param>
+		/// <param name="pages"></param>
 		/// <returns></returns>
-		IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase);
+		IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase, QueryByPage pages);
 
 		void ModifySubject(GradePhySubject model);
 

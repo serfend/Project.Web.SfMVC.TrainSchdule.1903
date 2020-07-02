@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.UserInfo;
+using DAL.QueryModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -60,6 +61,11 @@ namespace TrainSchdule.ViewModels.ZX
 		/// </summary>
 		[Required]
 		public PhyGradeUserDataModel User { get; set; }
+
+		/// <summary>
+		///
+		/// </summary>
+		public QueryByPage Pages { get; set; }
 	}
 
 	/// <summary>
