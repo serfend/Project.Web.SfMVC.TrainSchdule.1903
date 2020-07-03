@@ -30,8 +30,16 @@ namespace BLL.Services.ApplyServices
 			if (model.DutiesType != null)
 				list = list.Where(a => a.BaseInfo.From.CompanyInfo.Duties.Tags.Contains(model.DutiesType.Value));
 			if (model.CreateCompany != null)
-				foreach (var c in model.CreateCompany.Arrays)
-					list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code.Length >= c.Length && a.BaseInfo.From.CompanyInfo.Company.Code.Substring(0, c.Length) == c);
+			{
+				var arr = model.CreateCompany?.Arrays;
+				if (arr != null)
+					list = list.Where(a => a.BaseInfo != null)
+						.Where(a => a.BaseInfo.From != null)
+						.Where(a => a.BaseInfo.From.CompanyInfo != null)
+						.Where(a => a.BaseInfo.From.CompanyInfo.Company != null)
+						.Where(a => arr.Any(c => c.Length <= a.BaseInfo.From.CompanyInfo.Company.Code.Length
+						&& a.BaseInfo.From.CompanyInfo.Company.Code.Substring(0, c.Length) == c));
+			}
 
 			bool anyDateFilterIsLessThan30Days = false;
 			if (model.Create != null)
@@ -71,11 +79,6 @@ namespace BLL.Services.ApplyServices
 				list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
-			if (model.Pages == null || model.Pages.PageIndex < 0 || model.Pages.PageSize <= 0) model.Pages = new QueryByPage()
-			{
-				PageIndex = 0,
-				PageSize = 20
-			};
 			var result = list.SplitPage(model.Pages).Result;
 			totalCount = result.Item2;
 			return result.Item1;
