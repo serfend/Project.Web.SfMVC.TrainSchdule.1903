@@ -38,9 +38,19 @@ namespace DAL.QueryModel
 		public QueryByString CreateBy { get; set; }
 
 		/// <summary>
-		/// 申请创建人所在的单位
+		/// 申请创建人所在的单位(多选)
 		/// </summary>
 		public QueryByString CreateCompany { get; set; }
+
+		/// <summary>
+		/// 创建人的职务类型
+		/// </summary>
+		public QueryByString DutiesType { get; set; }
+
+		/// <summary>
+		/// 创建人的单位类型
+		/// </summary>
+		public QueryByString CompanyType { get; set; }
 
 		/// <summary>
 		/// 具有审批此申请权限的审批人

@@ -25,8 +25,13 @@ namespace BLL.Services.ApplyServices
 
 			if (model.NowAuditBy != null) list = list.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(model.NowAuditBy.Value));
 			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(model.AuditBy.Value)));
-
-			if (model.CreateCompany != null) list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code.Length >= model.CreateCompany.Value.Length && a.BaseInfo.From.CompanyInfo.Company.Code.Substring(0, model.CreateCompany.Value.Length) == model.CreateCompany.Value);
+			if (model.CompanyType != null)
+				list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Tag.Contains(model.CompanyType.Value));
+			if (model.DutiesType != null)
+				list = list.Where(a => a.BaseInfo.From.CompanyInfo.Duties.Tags.Contains(model.DutiesType.Value));
+			if (model.CreateCompany != null)
+				foreach (var c in model.CreateCompany.Arrays)
+					list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Code.Length >= c.Length && a.BaseInfo.From.CompanyInfo.Company.Code.Substring(0, c.Length) == c);
 
 			bool anyDateFilterIsLessThan30Days = false;
 			if (model.Create != null)
