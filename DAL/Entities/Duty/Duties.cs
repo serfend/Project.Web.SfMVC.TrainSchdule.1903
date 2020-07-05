@@ -29,5 +29,10 @@ namespace DAL.Entities
 		/// 人员类别用于统计时使用
 		/// </summary>
 		public string Type { get; set; }
+
+		/// <summary>
+		/// 职务级别
+		/// </summary>
+		public int Level { get; set; }
 	}
 }

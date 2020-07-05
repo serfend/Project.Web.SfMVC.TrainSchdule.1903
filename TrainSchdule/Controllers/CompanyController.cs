@@ -156,6 +156,19 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
+		/// 获取单位详情
+		/// </summary>
+		/// <param name="id">单位code</param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult Detail(string id)
+		{
+			var c = _companiesService.GetById(id);
+			return new JsonResult(new EntityViewModel<Company>(c));
+		}
+
+		/// <summary>
 		/// 获取单位的主管
 		/// </summary>
 		/// <param name="id"></param>

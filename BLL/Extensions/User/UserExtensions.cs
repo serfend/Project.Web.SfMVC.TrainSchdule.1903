@@ -55,10 +55,10 @@ namespace BLL.Extensions
 		}
 
 		/// <summary>
-		/// 按单位-职级等级-职级代码的顺序依次拍讯
+		/// 按单位-职务等级-职级等级的顺序依次排序
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).ThenByDescending(u => u.CompanyInfo.Title.Level).ThenByDescending(u => u.CompanyInfo.Title.Code);
+		public static IQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level);
 	}
 }
