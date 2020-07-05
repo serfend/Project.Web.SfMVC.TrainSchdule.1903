@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using BLL.Crontab;
 using BLL.Interfaces;
 using BLL.Interfaces.BBS;
@@ -70,38 +73,7 @@ namespace TrainSchdule
 
 		private void AddApplicationServices(IServiceCollection services)
 		{
-			//每次调用均对应一个实例
-			//services.AddTransient<IEmailSender, EmailSender>();
-
-			//每个http请求对应一个实例
-			services.AddScoped<IUsersService, UsersService>();
-			services.AddScoped<IUserServiceDetail, UsersService>();
-			services.AddScoped<ICurrentUserService, CurrentUserService>();
-			services.AddScoped<ICompaniesService, CompaniesService>();
-			services.AddScoped<IApplyService, ApplyService>();
-			services.AddScoped<IRecallOrderServices, RecallOrderServices>();
-			services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-			services.AddScoped<ICompanyManagerServices, CompanyManagerServices>();
-			services.AddScoped<IVacationCheckServices, VacationCheckServices>();
-			services.AddScoped<IEmailSender, EmailSender>();
-			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
-			services.AddScoped<IUserActionServices, UserActionServices>();
-			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
-			services.AddScoped<IStatisticsAppliesProcessServices, StatisticsAppliesProcessServices>();
-			services.AddScoped<IStatisticsDailyProcessServices, StatisticsDailyProcessServices>();
-
-			services.AddScoped<IGameR3Services, R3HandleServices>();
-			services.AddScoped<IR3UsersServices, R3UsersServices>();
-			services.AddScoped<ISignInServices, SignInServices>();
-			services.AddScoped<IFileServices, FileServices>();
-			services.AddScoped<IDWZServices, DWZServices>();
-			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamServices>();
-
-			//单例
-			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			services.AddSingleton<IVerifyService, VerifyService>();
-			services.AddSingleton<IFileProvider>(
-				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.RegisterServices();
 		}
 
 		private void AddHangfireServices(IServiceCollection services)
