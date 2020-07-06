@@ -67,7 +67,7 @@ namespace BLL.Services
 			var applies = _context.AppliesDb
 				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
-				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.AddDays(5).Year)
+				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.XjxtNow().Year)
 				.Where(a => a.RequestInfo.VacationType == "正休").ToList(); // 仅正休计算天数
 
 			var r = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser);
@@ -91,8 +91,9 @@ namespace BLL.Services
 		{
 			var userAdditions = new List<VacationAdditional>();
 			var maxOnTripTimeGainForRecall = 0;//应召回而增加路途次数
-			var maxOnTripTimeGainForRecallDescription = "";
+			var description = "";
 			int nowLength = 0;
+			int delayLength = 0;
 			int nowTimes = 0;
 			int onTripTime = 0;
 			var f = applies.All<DAL.Entities.ApplyInfo.Apply>(a =>
@@ -102,7 +103,7 @@ namespace BLL.Services
 				nowTimes++;
 				userAdditions.AddRange(a.RequestInfo.AdditialVacations);
 
-				//处理被召回的假期
+				// 处理被召回的假期
 				if (a.RecallId != null)
 				{
 					//不论用户是否休路途，均应该增加一次路途
@@ -116,9 +117,18 @@ namespace BLL.Services
 					var realComsumeMainVacation = dayComsumeBeforeRecall - containsLawVacationsLength - a.RequestInfo.OnTripLength;
 					if (realComsumeMainVacation > 0) nowLength -= realComsumeMainVacation;
 				}
+				// 处理推迟的假期
+				else if (((int)a.ExecuteStatus & (int)ExecuteStatus.Delay) > 0 && a.ExecuteStatusDetailId != null)
+				{
+					var order = _context.ApplyExcuteStatus.Find(a.ExecuteStatusDetailId);
+
+					var length = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
+					delayLength += length;
+				}
 				return true;
 			});
-			if (maxOnTripTimeGainForRecall > 0) maxOnTripTimeGainForRecallDescription = $"因期间被召回{maxOnTripTimeGainForRecall}次，全年可休路途次数相应增加。";
+			if (maxOnTripTimeGainForRecall > 0) description = $"因期间被召回{maxOnTripTimeGainForRecall}次，全年可休路途次数相应增加。";
+			if (delayLength > 0) description = $"{description}因期间归队时间推迟{delayLength}天，全年可休假天数相应减少";
 			var vacationInfo = new UserVacationInfoVDto()
 			{
 				LeftLength = (int)Math.Floor(yearlyLength - nowLength),
@@ -126,7 +136,7 @@ namespace BLL.Services
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
 				YearlyLength = (int)Math.Floor(yearlyLength),
-				Description = maxOnTripTimeGainForRecallDescription,
+				Description = description,
 				Additionals = userAdditions
 			};
 			return vacationInfo;
