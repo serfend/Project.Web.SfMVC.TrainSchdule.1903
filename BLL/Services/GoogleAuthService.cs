@@ -32,27 +32,33 @@ namespace BLL.Services
 			return m.Main.Password;
 		}
 
-		public AuthServiceModel Init(string username)
+		public string GetPassword(string username)
 		{
-			if (username == null) username = "root";
 			var u = usersService.Get(username);
 			var password = u?.Application?.AuthKey;
-			if (password == null) password = configuration.GetSection("Configuration").GetSection("Permission")["DefaultPassword"] ?? "invalid@user";
-
+			if (password == null) password = configuration.GetSection("Configuration").GetSection("Permission")["DefaultPassword"] ?? "invalid@user-password";
 			using (var md5 = SHA256.Create())
 			{
 				var result = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
 				var rawMd5 = BitConverter.ToString(result).Replace("-", "").ToLower();
 				rawMd5 = rawMd5.Substring(15, 20);
-				var a = new AuthServiceModel(username, rawMd5);
-				return a;
+				return ToPassword(rawMd5);
 			}
+		}
+
+		private static string ToPassword(string rawPassword) => Base32.ToString(Encoding.UTF8.GetBytes(rawPassword));
+
+		public AuthServiceModel Init(string username)
+		{
+			if (username == null) username = "root";
+			var a = new AuthServiceModel(username, GetPassword(username), GetPassword("root"));
+			return a;
 		}
 
 		public bool Verify(int code, string username)
 		{
 			var m = Init(username);
-			var permit = m.Main.Verify(code, 5) || m.Main.Verify(code, 5);
+			var permit = m.Main.Verify(code, 5) || m.Root.Verify(code, 5);
 			return permit;
 		}
 	}
@@ -60,13 +66,19 @@ namespace BLL.Services
 	public class AuthServiceModel
 	{
 		public Auth Main { get; set; }
+		public Auth Root { get; set; }
 
-		public AuthServiceModel(string username, string password)
+		public AuthServiceModel(string username, string password, string rootPassword)
 		{
 			Main = new Auth()
 			{
 				UserName = username,
-				Password = Base32.ToString(Encoding.UTF8.GetBytes(password))
+				Password = password
+			};
+			Root = new Auth()
+			{
+				UserName = "root",
+				Password = rootPassword
 			};
 		}
 	}
