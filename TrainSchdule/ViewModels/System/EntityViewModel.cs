@@ -31,6 +31,27 @@ namespace TrainSchdule.ViewModels.System
 	}
 
 	/// <summary>
+	/// Data直接是值的任意实体返回
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class EntityDirectViewModel<T> : ApiResult
+	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="data"></param>
+		public EntityDirectViewModel(T data)
+		{
+			Data = data;
+		}
+
+		/// <summary>
+		/// 实体
+		/// </summary>
+		public T Data { get; set; }
+	}
+
+	/// <summary>
 	///
 	/// </summary>
 	/// <typeparam name="T"></typeparam>

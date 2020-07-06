@@ -1,16 +1,18 @@
 ﻿using DAL.Entities.UserInfo;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace DAL.Entities
+namespace DAL.Entities.ApplyInfo
 {
-	public class RecallOrder : BaseEntityGuid
+	public class HandleModifyReturnStamp : BaseEntityGuid
 	{
 		/// <summary>
 		/// 召回原因
 		/// </summary>
 		public string Reason { get; set; }
 
-		public virtual User RecallBy { get; set; }
+		public virtual User HandleBy { get; set; }
 
 		/// <summary>
 		/// 创建时间

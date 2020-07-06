@@ -42,6 +42,17 @@ namespace DAL.Entities.ApplyInfo
 		public AuditStatus Status { get; set; }
 
 		/// <summary>
+		/// 休假落实状态
+		/// </summary>
+		public ExecuteStatus ExecuteStatus { get; set; }
+
+		/// <summary>
+		/// 休假落实状态，需要联动修改<see cref="ExecuteStatus"/>
+		/// </summary>
+
+		public Guid? ExecuteStatusDetailId { get; set; }
+
+		/// <summary>
 		/// 被召回的id
 		/// </summary>
 		public Guid? RecallId { get; set; }

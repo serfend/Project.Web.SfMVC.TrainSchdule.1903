@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using DAL.DTO.User;
 using DAL.DTO.Apply.ApplyAuditStreamDTO;
+using DAL.DTO.Recall;
 
 namespace DAL.DTO.Apply
 {
@@ -47,7 +48,14 @@ namespace DAL.DTO.Apply
 		public string AuditSolution { get; set; }
 
 		public AuditStatus Status { get; set; }
-		public Guid? RecallId { get; set; }
+
+		/// <summary>
+		/// 休假落实情况
+		/// </summary>
+		public ExecuteStatus ExecuteStatus { get; set; }
+
+		public RecallOrderVDto ApplyRecall { get; set; }
+		public ExecuteStatusVDto ApplyExecuteStatus { get; set; }
 		public bool Hidden { get; set; }
 
 		/// <summary>

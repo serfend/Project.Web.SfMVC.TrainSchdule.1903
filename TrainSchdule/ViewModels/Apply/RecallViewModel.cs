@@ -50,10 +50,10 @@ namespace TrainSchdule.ViewModels.Apply
 		public string Reason { get; set; }
 
 		/// <summary>
-		/// 召回人id
+		/// 操作人id
 		/// </summary>
 		[Required]
-		public string RecallBy { get; set; }
+		public string HandleBy { get; set; }
 
 		/// <summary>
 		///
@@ -67,7 +67,7 @@ namespace TrainSchdule.ViewModels.Apply
 		public DateTime ReturnStamp { get; set; }
 
 		/// <summary>
-		/// 召回的申请的id
+		/// 申请的id
 		/// </summary>
 		[Required]
 		public Guid Apply { get; set; }
@@ -83,18 +83,18 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static RecallOrderVDto ToVDto(this RecallCreateDataModel model)
+		public static T ToVDto<T>(this RecallCreateDataModel model) where T : HandleByVdto, new()
 		{
 			if (model == null) return null;
-			return new RecallOrderVDto()
+			return new T()
 			{
 				Create = model.Create,
 				ReturnStamp = model.ReturnStamp,
 				Reason = model.Reason,
 				Apply = model.Apply,
-				RecallBy = new DAL.DTO.User.UserSummaryDto()
+				HandleBy = new DAL.DTO.User.UserSummaryDto()
 				{
-					Id = model.RecallBy
+					Id = model.HandleBy
 				}
 			};
 		}

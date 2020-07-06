@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Phy;
 using System;
@@ -19,6 +20,10 @@ namespace BLL.Extensions.Common
 		/// <param name="model"></param>
 		/// <returns></returns>
 		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.Static.ResourceNotExist;
+
+		public static ApiResult NotExist(this Apply model) => ActionStatusMessage.ApplyMessage.NotExist;
+
+		public static ApiResult NotExist(this RecallOrder model) => ActionStatusMessage.ApplyMessage.Recall.NotExist;
 
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
 

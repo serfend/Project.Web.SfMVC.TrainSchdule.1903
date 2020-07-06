@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200706044757_ApplyExecuteStatus")]
+    partial class ApplyExecuteStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,6 +76,8 @@ namespace DAL.Migrations
                     b.HasIndex("ApplyAuditStreamSolutionRuleId");
 
                     b.HasIndex("BaseInfoId");
+
+                    b.HasIndex("ExecuteStatusDetailId");
 
                     b.HasIndex("NowAuditStepId");
 
@@ -252,7 +256,7 @@ namespace DAL.Migrations
                     b.ToTable("ApplyBaseInfos");
                 });
 
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExecuteStatus", b =>
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExcuteStatus", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -1723,6 +1727,10 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("BaseInfoId");
 
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyExcuteStatus", "ExecuteStatusDetail")
+                        .WithMany()
+                        .HasForeignKey("ExecuteStatusDetailId");
+
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStep", "NowAuditStep")
                         .WithMany()
                         .HasForeignKey("NowAuditStepId");
@@ -1769,7 +1777,7 @@ namespace DAL.Migrations
                         .HasForeignKey("SocialId");
                 });
 
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExecuteStatus", b =>
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExcuteStatus", b =>
                 {
                     b.HasOne("DAL.Entities.UserInfo.User", "HandleBy")
                         .WithMany()

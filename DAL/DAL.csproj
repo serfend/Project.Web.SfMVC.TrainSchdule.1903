@@ -35,6 +35,8 @@
     <Compile Remove="Migrations\20200629235856_baseEntitySplit.Designer.cs" />
     <Compile Remove="Migrations\20200630010252_thirdNotice.cs" />
     <Compile Remove="Migrations\20200630010252_thirdNotice.Designer.cs" />
+    <Compile Remove="Migrations\20200706071942_ApplyExecuteStatus2.cs" />
+    <Compile Remove="Migrations\20200706071942_ApplyExecuteStatus2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

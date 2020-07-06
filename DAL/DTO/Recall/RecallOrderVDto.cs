@@ -3,12 +3,7 @@ using System;
 
 namespace DAL.DTO.Recall
 {
-	public class RecallOrderVDto
+	public class RecallOrderVDto : HandleByVdto
 	{
-		public string Reason { get; set; }
-		public UserSummaryDto RecallBy { get; set; }
-		public DateTime Create { get; set; }
-		public DateTime ReturnStamp { get; set; }
-		public Guid Apply { get; set; }
 	}
 }

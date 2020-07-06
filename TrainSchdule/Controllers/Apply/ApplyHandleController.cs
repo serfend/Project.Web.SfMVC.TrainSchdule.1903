@@ -19,6 +19,7 @@ using TrainSchdule.ViewModels;
 using DAL.Entities.ApplyInfo;
 using BLL.Extensions.Common;
 using System.Threading.Tasks;
+using GoogleAuth;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -176,7 +177,7 @@ namespace TrainSchdule.Controllers.Apply
 			apply.ApplyAllAuditStep = apply.ApplyAllAuditStep.OrderBy(s => s.Index);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(_usersService.VacationInfo(apply.BaseInfo.From))
+				Data = apply.ToDetaiDto(_usersService.VacationInfo(apply.BaseInfo.From), _context)
 			});
 		}
 
@@ -245,17 +246,11 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RecallOrder([FromBody] RecallCreateViewModel model)
 		{
-			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			RecallOrder result;
-			try
-			{
-				var recall = model.Data.ToVDto();
-				result = recallOrderServices.Create(recall);
-			}
-			catch (ActionStatusMessageException ex)
-			{
-				return new JsonResult(ex.Status);
-			}
+			var authUser = model.Auth.AuthUser(_authService, _currentUserService.CurrentUser?.Id);
+			if (authUser != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
+
+			var recall = model.Data.ToVDto<RecallOrderVDto>();
+			var result = recallOrderServices.Create(recall);
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
 		}
 
@@ -271,10 +266,39 @@ namespace TrainSchdule.Controllers.Apply
 			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
 			if (recall == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.NotExist);
 			var apply = _context.AppliesDb.Where(a => a.RecallId == id).FirstOrDefault();
-			return new JsonResult(new RecallViewModel()
-			{
-				Data = recall.ToVDto(apply)
-			});
+			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(recall.ToVDto(apply)));
+		}
+
+		/// <summary>
+		/// 确认休假执行情况
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model)
+		{
+			var authUser = model.Auth.AuthUser(_authService, _currentUserService.CurrentUser?.Id);
+			if (authUser != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
+			var m = model.Data.ToVDto<ExecuteStatusVDto>();
+			var apply = _applyService.GetById(m.Apply);
+			var result = recallOrderServices.Create(apply, m);
+			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
+		}
+
+		/// <summary>
+		/// 通过休假执行情况id获取详情
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult ExecuteStatus(Guid id)
+		{
+			var model = _context.ApplyExcuteStatus.Where(r => r.Id == id).FirstOrDefault();
+			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.NotExist);
+			var apply = _context.AppliesDb.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
+			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply)));
 		}
 	}
 }

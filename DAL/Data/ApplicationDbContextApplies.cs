@@ -11,6 +11,7 @@ namespace DAL.Data
 	public partial class ApplicationDbContext
 	{
 		public DbSet<RecallOrder> RecallOrders { get; set; }
+		public DbSet<ApplyExecuteStatus> ApplyExcuteStatus { get; set; }
 		public DbSet<Apply> Applies { get; set; }
 		public IQueryable<Apply> AppliesDb { get => Applies.Where(a => !a.IsRemoved); }
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }

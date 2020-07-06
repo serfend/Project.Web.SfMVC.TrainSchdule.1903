@@ -33,6 +33,13 @@ namespace DAL.DTO.Apply
 		public AuditStatus Status { get; set; }
 
 		/// <summary>
+		/// 休假落实情况
+		/// </summary>
+		public ExecuteStatus ExecuteStatus { get; set; }
+
+		public Guid? ExecuteStatusId { get; set; }
+
+		/// <summary>
 		/// 召回id
 		/// </summary>
 		public Guid? RecallId { get; set; }

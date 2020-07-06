@@ -2,6 +2,7 @@
 using BLL.Extensions.Common;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.DTO.Recall;
 using DAL.DTO.User;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
@@ -17,9 +18,9 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVacationInfoVDto info)
+		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVacationInfoVDto info, ApplicationDbContext context)
 		{
-			if (model == null) return null;
+			if (model == null || context == null) return null;
 			var b = new ApplyDetailDto()
 			{
 				Base = model.BaseInfo.From.ToSummaryDto(),
@@ -36,9 +37,12 @@ namespace BLL.Extensions.ApplyExtensions
 				Social = model.BaseInfo.Social,
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
-				RecallId = model.RecallId,
+				ExecuteStatus = model.ExecuteStatus,
+				ApplyRecall = (RecallOrderVDto)context.RecallOrders.Where(r => r.Id == model.RecallId).FirstOrDefault()?.ToVDto(model),
+				ApplyExecuteStatus = (ExecuteStatusVDto)context.ApplyExcuteStatus.Where(r => r.Id == model.ExecuteStatusDetailId).FirstOrDefault()?.ToVDto(model),
 				UserVacationDescription = info
 			};
+
 			return b;
 		}
 
@@ -52,10 +56,12 @@ namespace BLL.Extensions.ApplyExtensions
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = model.RequestInfo,
+				ExecuteStatus = model.ExecuteStatus,
+				ExecuteStatusId = model.ExecuteStatusDetailId,
 				RecallId = model.RecallId,
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
-				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "未知的审批方式"
+				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程"
 			};
 			return b;
 		}
