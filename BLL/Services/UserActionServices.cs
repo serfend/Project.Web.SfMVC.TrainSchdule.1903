@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions.CreateClientInfo;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
@@ -44,9 +45,9 @@ namespace BLL.Services
 			return ua;
 		}
 
-		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode)
+		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null)
 		{
-			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation}", false, ActionRank.Danger);
+			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation} {description}", false, ActionRank.Danger);
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
 				Status(a, true, "直接权限");
@@ -74,6 +75,7 @@ namespace BLL.Services
 					}
 				}
 			}
+			//throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return false;
 		}
 

@@ -278,10 +278,13 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model)
 		{
-			var authUser = model.Auth.AuthUser(_authService, _currentUserService.CurrentUser?.Id);
-			if (authUser != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
+			var authUser = model.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
+			if (authUser.Id != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
+
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();
 			var apply = _applyService.GetById(m.Apply);
+			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code, "确认归队时间");
+			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var result = recallOrderServices.Create(apply, m);
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
 		}

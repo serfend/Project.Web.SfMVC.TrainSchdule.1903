@@ -122,7 +122,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			if (apply.BaseInfo.From.Id != currentUser?.Id)
 			{
-				var permit = _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code);
+				var permit = _userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code, "执行休假申请的操作");
 				if (!permit && needPermission) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			callBack.Invoke(apply, currentUser.Id);

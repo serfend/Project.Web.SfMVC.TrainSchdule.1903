@@ -54,8 +54,8 @@ namespace DAL.DTO.Apply
 		/// </summary>
 		public ExecuteStatus ExecuteStatus { get; set; }
 
-		public RecallOrderVDto ApplyRecall { get; set; }
-		public ExecuteStatusVDto ApplyExecuteStatus { get; set; }
+		public Guid? RecallId { get; set; }
+		public Guid? ExecuteStatusId { get; set; }
 		public bool Hidden { get; set; }
 
 		/// <summary>
