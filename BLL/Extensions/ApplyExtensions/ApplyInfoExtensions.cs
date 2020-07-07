@@ -32,14 +32,14 @@ namespace BLL.Extensions.ApplyExtensions
 				Response = model.Response.Select(r => r.ToResponseDto()),
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()),
-				AuditSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "旧版本方式审批",
+				AuditSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程",
 				Id = model.Id,
 				Social = model.BaseInfo.Social,
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
 				ExecuteStatus = model.ExecuteStatus,
-				ApplyRecall = (RecallOrderVDto)context.RecallOrders.Where(r => r.Id == model.RecallId).FirstOrDefault()?.ToVDto(model),
-				ApplyExecuteStatus = (ExecuteStatusVDto)context.ApplyExcuteStatus.Where(r => r.Id == model.ExecuteStatusDetailId).FirstOrDefault()?.ToVDto(model),
+				RecallId = model.RecallId,
+				ExecuteStatusId = model.ExecuteStatusDetailId,
 				UserVacationDescription = info
 			};
 
