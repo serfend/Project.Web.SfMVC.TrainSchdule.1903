@@ -25,6 +25,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using DAL.DTO.User;
 using BLL.Extensions.Common;
+using static BLL.Extensions.UserExtensions;
 
 namespace TrainSchdule.Controllers
 {
@@ -508,10 +509,6 @@ namespace TrainSchdule.Controllers
 			{
 				await ModefySingleUser(model.Data, authByUser, $"{authByUser.Id}修改用户信息");
 			}
-			catch (ActionStatusMessageException ex)
-			{
-				return new JsonResult(ex.Status);
-			}
 			catch (ModelStateException mse)
 			{
 				return new JsonResult(mse.Model);
@@ -565,10 +562,12 @@ namespace TrainSchdule.Controllers
 			if (targetUser.Application.InvitedBy != null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
 			var currentUser = currentUserService.CurrentUser;
 			var canAuthRank = _usersService.CheckAuthorizedToUser(currentUser, targetUser);
+			var ua = _userActionServices.Log(UserOperation.ModifyUser, model.UserName, "授权审核注册", false, ActionRank.Danger);
 			if (canAuthRank < 1) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : BLL.Extensions.UserExtensions.InviteByInvalidValue;
 			_context.AppUserApplicationInfos.Update(targetUser.Application);
 			_context.SaveChanges();
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -622,20 +621,23 @@ namespace TrainSchdule.Controllers
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.Get(model.Application.UserName);
 			// 获取需要修改的目标用户
-			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, "", false, ActionRank.Danger);
+			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, "修改用户", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var modefyUser = await _usersService.ModefyAsync(model.ToModel(authByUser.Id, _context.AdminDivisions), false);
+			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions);
+			var modefyUser = await _usersService.ModefyAsync(prevUser, false);
 
 			var invalidAccount = localUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
-			if (invalidAccount != BLL.Extensions.UserExtensions.AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
+			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
-			if (invalidAccount == BLL.Extensions.UserExtensions.AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
+			if (invalidAccount == AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);
 			await _context.SaveChangesAsync();
 			_userActionServices.Status(actionRecord, true, modefyDescription);
+			var prevUserInfo = JsonConvert.SerializeObject(prevUser);
+			_userActionServices.Log(UserOperation.ModifyUser, prevUser.Id, $"原信息:{prevUserInfo}", true, ActionRank.Danger);
 		}
 
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
