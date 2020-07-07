@@ -131,7 +131,7 @@ namespace BLL.Services
 			if (delayLength > 0) description = $"{description}因期间归队时间推迟{delayLength}天，全年可休假天数相应减少";
 			var vacationInfo = new UserVacationInfoVDto()
 			{
-				LeftLength = (int)Math.Floor(yearlyLength - nowLength),
+				LeftLength = (int)Math.Floor(yearlyLength - nowLength - delayLength),
 				MaxTripTimes = maxOnTripTimeGainForRecall,
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
@@ -139,6 +139,7 @@ namespace BLL.Services
 				Description = description,
 				Additionals = userAdditions
 			};
+			if (vacationInfo.LeftLength < 0) vacationInfo.LeftLength = 0;
 			return vacationInfo;
 		}
 
