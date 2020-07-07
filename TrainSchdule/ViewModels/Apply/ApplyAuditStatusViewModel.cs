@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Vacations;
 using System.Collections.Generic;
 
 namespace TrainSchdule.ViewModels.Apply
@@ -29,5 +30,10 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 用户操作
 		/// </summary>
 		public Dictionary<string, ActionByUserItem> Actions { get; set; }
+
+		/// <summary>
+		/// 假期类型表
+		/// </summary>
+		public Dictionary<string, VacationType> VacationTypes { get; set; }
 	}
 }

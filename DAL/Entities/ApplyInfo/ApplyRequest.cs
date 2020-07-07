@@ -21,7 +21,7 @@ namespace DAL.Entities.ApplyInfo
 		public int OnTripLength { get; set; }
 
 		/// <summary>
-		/// 正休长度
+		/// 主假期长度
 		/// </summary>
 		[Column("VocationLength")]
 		public int VacationLength { get; set; }

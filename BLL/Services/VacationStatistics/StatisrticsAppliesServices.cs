@@ -61,7 +61,7 @@ namespace BLL.Services.VacationStatistics
 				CompanyCode = companyCode,
 				Target = target,
 				Type = a.BaseInfo.From.CompanyInfo.Duties.Type,
-				Day = a.RequestInfo.VacationLength // 此处可能需要仅计算正休假
+				Day = a.RequestInfo.VacationLength // 此处可能需要仅计算主假
 			});
 			var groupRecords = records.GroupBy(a => new { a.From, a.To, a.Type });
 			var result = groupRecords.ToList().Select(r => new T()

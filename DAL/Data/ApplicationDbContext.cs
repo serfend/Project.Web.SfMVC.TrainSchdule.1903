@@ -78,14 +78,8 @@ namespace DAL.Data
 			builder.Entity<UserAction>().HasIndex(s => s.Date);
 			builder.Entity<ApplicationUpdateRecord>().HasIndex(s => s.Create);
 
-			#region statistics base on time
-
-			builder.Entity<StatisticsAppliesProcess>().HasIndex(s => new { s.Target, s.CompanyCode });
-			builder.Entity<StatisticsApplyComplete>().HasIndex(s => new { s.Target, s.CompanyCode });
-			builder.Entity<StatisticsApplyNew>().HasIndex(s => new { s.Target, s.CompanyCode });
-			builder.Entity<StatisticsDailyProcessRate>().HasIndex(s => new { s.Target, s.CompanyCode });
-
-			#endregion statistics base on time
+			Configuration_Statistics(builder);
+			Configuration_Applies(builder);
 		}
 
 		#endregion Logic

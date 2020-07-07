@@ -173,7 +173,7 @@ namespace BLL.Services
 		private User CreateAppUser(User user)
 		{
 			user.Application.Create = DateTime.Now;
-			user.Application.AuthKey = new Random().Next(1000, 9999).ToString().GetHashCode().ToString();
+			user.Application.AuthKey = new Random().Next(1000, 99999).ToString().GetHashCode().ToString();
 			user.Application.ApplicationSetting = new UserApplicationSetting()
 			{
 				LastSubmitApplyTime = DateTime.Now

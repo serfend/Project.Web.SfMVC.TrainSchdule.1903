@@ -75,7 +75,8 @@ namespace BLL.Helpers
 
 				public static readonly ApiResult NoEnoughVacation = new ApiResult(44200, "剩余休假天数不足");
 				public static readonly ApiResult TripTimesExceed = new ApiResult(44300, "剩余可休路途次数不足");
-				public static readonly ApiResult VacationLengthTooShort = new ApiResult(44400, "休假正休天数过少");
+				public static readonly ApiResult VacationLengthTooShort = new ApiResult(44400, "休假主假期天数过短");
+				public static readonly ApiResult VacationLengthTooLong = new ApiResult(44450, "休假主假期天数过长");
 				public static readonly ApiResult InvalidVacationType = new ApiResult(44500, "无效的休假类型");
 				public static readonly ApiResult NotPermitCrossYear = new ApiResult(44600, "不允许跨年休假");
 				public static readonly ApiResult CrashOtherVacation = new ApiResult(44700, "离队归队时间同其他假期发生冲突");

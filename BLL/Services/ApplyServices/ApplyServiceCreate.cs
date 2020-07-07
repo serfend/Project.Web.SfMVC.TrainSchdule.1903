@@ -49,16 +49,18 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequestVdto> CaculateVacation(ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			bool CaculateAdditionalAndTripLength = model.VacationType == "正休";
+			var type = model.VacationType;
 			int additionalVacationDay = 0;
 			model.VacationAdditionals?.All(v => { additionalVacationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (model.StampLeave != null)
 			{
-				var vacationLength = model.VacationLength + (CaculateAdditionalAndTripLength ? (model.OnTripLength + additionalVacationDay) : 0);
+				var vacationLength = model.VacationLength;
+				if (type.CaculateBenefit) vacationLength += additionalVacationDay;
+				if (type.CanUseOnTrip) vacationLength += model.OnTripLength;
 				// 当未享受福利假时才计算法定节假日
-				if (CaculateAdditionalAndTripLength && additionalVacationDay == 0)
+				if (type.CaculateBenefit && additionalVacationDay == 0)
 				{
-					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, CaculateAdditionalAndTripLength).ConfigureAwait(true);
+					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, true).ConfigureAwait(true);
 					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
@@ -71,7 +73,7 @@ namespace BLL.Services.ApplyServices
 				}
 				else model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
 
-				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription(CaculateAdditionalAndTripLength);
+				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription();
 			}
 			return model;
 		}
@@ -81,31 +83,24 @@ namespace BLL.Services.ApplyServices
 			if (model == null) return null;
 			var vacationInfo = _usersService.VacationInfo(targetUser);
 			model = await CaculateVacation(model).ConfigureAwait(true);
-			switch (model.VacationType)
+			var type = model.VacationType;
+			if (type.Primary)
 			{
-				case "正休":
-					if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
-					if (model.VacationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVacation.Status, $"已无足够假期可以使用，超出{model.VacationLength - vacationInfo.LeftLength}天"));
-					// TODO 改成可以自定义设置天数
-					//if (model.VacationLength < 5) return new JsonResult(ActionStatusMessage.Apply.Request.VacationLengthTooShort);
-					if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.Default);
-					break;
+				if (model.VacationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVacation.Status, $"已无足够假期可以使用，超出{model.VacationLength - vacationInfo.LeftLength}天"));
 
-				case "事假":
-					model.VacationAdditionals = null;
-					model.OnTripLength = 0;
-					break;
-
-				case "病休":
-					model.VacationAdditionals = null;
-					model.OnTripLength = 0;
-					break;
-
-				default:
-					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
+				if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.Default);
 			}
-			// TODO 改成可以自定义是否允许跨年
-			//if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.Apply.Request.NotPermitCrossYear);
+			if (type.CanUseOnTrip)
+			{
+				if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
+			}
+			else model.OnTripLength = 0;
+			if (model.VacationLength < type.MinLength) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationLengthTooShort);
+			if (model.VacationLength > type.MaxLength) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationLengthTooLong);
+			if (!type.CaculateBenefit)
+				model.VacationAdditionals = null;
+			if (type.NotPermitCrossYear)
+				if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.NotPermitCrossYear);
 			var r = new ApplyRequest()
 			{
 				OnTripLength = model.OnTripLength,
@@ -115,7 +110,7 @@ namespace BLL.Services.ApplyServices
 				VacationLength = model.VacationLength,
 				VacationPlace = model.VacationPlace,
 				VacationPlaceName = model.VacationPlaceName,
-				VacationType = model.VacationType,
+				VacationType = model.VacationType.Name,
 				CreateTime = DateTime.Now,
 				ByTransportation = model.ByTransportation,
 				AdditialVacations = model.VacationAdditionals,

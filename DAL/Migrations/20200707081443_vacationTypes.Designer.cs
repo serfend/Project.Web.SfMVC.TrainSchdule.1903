@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200707081443_vacationTypes")]
+    partial class vacationTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1450,10 +1452,6 @@ namespace DAL.Migrations
 
                     b.Property<string>("Alias");
 
-                    b.Property<bool>("CaculateBenefit");
-
-                    b.Property<bool>("CanUseOnTrip");
-
                     b.Property<bool>("IsRemoved");
 
                     b.Property<DateTime>("IsRemovedDate");
@@ -1462,85 +1460,13 @@ namespace DAL.Migrations
 
                     b.Property<int>("MinLength");
 
-                    b.Property<bool>("MinusNextYear");
-
                     b.Property<string>("Name");
 
-                    b.Property<bool>("NotPermitCrossYear");
-
                     b.Property<bool>("Primary");
-
-                    b.Property<string>("RegionOnCompany");
 
                     b.HasKey("Id");
 
                     b.ToTable("VacationTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Alias = "正休",
-                            CaculateBenefit = true,
-                            CanUseOnTrip = true,
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MaxLength = 500,
-                            MinLength = 0,
-                            MinusNextYear = false,
-                            Name = "正休",
-                            NotPermitCrossYear = false,
-                            Primary = true,
-                            RegionOnCompany = ""
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Alias = "事假",
-                            CaculateBenefit = false,
-                            CanUseOnTrip = false,
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MaxLength = 30,
-                            MinLength = 0,
-                            MinusNextYear = true,
-                            Name = "事假",
-                            NotPermitCrossYear = false,
-                            Primary = false,
-                            RegionOnCompany = ""
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Alias = "病休",
-                            CaculateBenefit = false,
-                            CanUseOnTrip = false,
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MaxLength = 30,
-                            MinLength = 0,
-                            MinusNextYear = true,
-                            Name = "病休",
-                            NotPermitCrossYear = false,
-                            Primary = false,
-                            RegionOnCompany = ""
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Alias = "疫情专项",
-                            CaculateBenefit = false,
-                            CanUseOnTrip = false,
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MaxLength = 30,
-                            MinLength = 0,
-                            MinusNextYear = true,
-                            Name = "疫情专项",
-                            NotPermitCrossYear = false,
-                            Primary = false,
-                            RegionOnCompany = ""
-                        });
                 });
 
             modelBuilder.Entity("DAL.Entities.XlsTemplete", b =>

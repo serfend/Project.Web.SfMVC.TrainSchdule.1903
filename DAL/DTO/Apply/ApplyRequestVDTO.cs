@@ -18,7 +18,7 @@ namespace DAL.DTO.Apply
 
 		public int OnTripLength { get; set; }
 		public int VacationLength { get; set; }
-		public string VacationType { get; set; }
+		public VacationType VacationType { get; set; }
 		public AdminDivision VacationPlace { get; set; }
 		public string VacationPlaceName { get; set; }
 		public string Reason { get; set; }

@@ -68,7 +68,7 @@ namespace BLL.Services
 				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.XjxtNow().Year)
-				.Where(a => a.RequestInfo.VacationType == "正休").ToList(); // 仅正休计算天数
+				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 
 			var r = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser);
 			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;

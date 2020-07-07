@@ -55,7 +55,7 @@ namespace TrainSchdule.Extensions
 				VacationLength = model.VacationLength,
 				VacationPlace = context.AdminDivisions.Find(model.VacationPlace),
 				VacationPlaceName = model.VacationPlaceName,
-				VacationType = model.VacationType,
+				VacationType = context.VacationTypes.Where(t => t.Name == model.VacationType).FirstOrDefault(),
 				ByTransportation = model.ByTransportation,
 				VacationAdditionals = model.VacationAdditionals
 			};

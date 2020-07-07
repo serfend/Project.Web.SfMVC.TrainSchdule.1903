@@ -10,6 +10,7 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.Vacations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -84,14 +85,18 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>), 0)]
 		public IActionResult AllStatus()
 		{
+			var list = _context.VacationTypes.Where(t => !t.IsRemoved)
+				.ToList()
+				.Select(t => new KeyValuePair<string, VacationType>(t.Name, t));
 			return new JsonResult(new ApplyAuditStatusViewModel()
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
 					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic,
-					Actions = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.ActionDic
+					Actions = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.ActionDic,
+					VacationTypes = new Dictionary<string, VacationType>(list)
 				}
-			});
+			}); ;
 		}
 
 		/// <summary>
