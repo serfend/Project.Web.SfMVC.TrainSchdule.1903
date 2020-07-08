@@ -23,7 +23,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[Route("Grade/Phy")]
+		[Route("Grade/Record")]
 		public IActionResult EditGrade([FromBody] GradeRecordModifyViewModel model)
 		{
 			var prev = context.GradePhyRecords.Where(r => r.Id == model.Id).FirstOrDefault();
@@ -52,12 +52,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpGet]
-		[Route("Grade/Phy")]
+		[HttpPost]
+		[Route("Grade/Records")]
 		public IActionResult GetGrade([FromBody] QueryGradeRecordViewModel model)
 		{
 			var result = phyGradeServices.GetRecords(model);
-			return new JsonResult(new EntitiesListViewModel<GradePhyRecord>(result.Item1, result.Item2));
+			return new JsonResult(new EntitiesListViewModel<GradePhyRecord>(result?.Item1, result?.Item2 ?? -1));
 		}
 	}
 }

@@ -37,12 +37,12 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpGet]
-		[Route("Grade/Exam")]
+		[HttpPost]
+		[Route("Grade/Exams")]
 		public IActionResult GetExam([FromBody] QueryGradeExamViewModel model)
 		{
 			var result = gradeServices.GetExams(model);
-			return new JsonResult(new EntitiesListViewModel<GradeExam>(result.Item1, result.Item2));
+			return new JsonResult(new EntitiesListViewModel<GradeExam>(result?.Item1, result?.Item2 ?? -1));
 		}
 	}
 }

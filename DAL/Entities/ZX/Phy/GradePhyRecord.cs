@@ -16,10 +16,29 @@ namespace DAL.Entities.ZX.Phy
 		/// </summary>
 		public virtual User User { get; set; }
 
+		/// <summary>
+		/// 创建人
+		/// </summary>
 		public virtual User CreateBy { get; set; }
+
+		/// <summary>
+		/// 创建时间
+		/// </summary>
 		public DateTime Create { get; set; }
+
+		/// <summary>
+		/// 科目
+		/// </summary>
 		public virtual GradePhySubject Subject { get; set; }
+
+		/// <summary>
+		/// 考核
+		/// </summary>
 		public virtual GradeExam Exam { get; set; }
+
+		/// <summary>
+		/// 成绩
+		/// </summary>
 		public int Score { get; set; }
 
 		/// <summary>
