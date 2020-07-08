@@ -84,23 +84,34 @@ namespace BLL.Services.ApplyServices
 			var vacationInfo = _usersService.VacationInfo(targetUser);
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;
+
 			if (type.Primary)
 			{
-				if (model.VacationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVacation.Status, $"已无足够假期可以使用，超出{model.VacationLength - vacationInfo.LeftLength}天"));
-
+				// 剩余天数判断
+				if (model.VacationLength > vacationInfo.LeftLength) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.NoEnoughVacation, $"超出{model.VacationLength - vacationInfo.LeftLength}天", true));
+				// 剩余路途次数判断
 				if (model.OnTripLength < 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.Default);
 			}
+			// 不允许未休完正休假前休某些假
+			else if (!type.AllowBeforePrimary && vacationInfo.LeftLength > 0)
+				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.BeforePrimaryNotAllow, $"({type.Alias})", true));
+			// 路途判断
 			if (type.CanUseOnTrip)
 			{
-				if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
+				if (model.OnTripLength > 0 && vacationInfo.MaxTripTimes <= vacationInfo.OnTripTimes)
+					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.TripTimesExceed);
 			}
 			else model.OnTripLength = 0;
+			// 休假天数范围判断
 			if (model.VacationLength < type.MinLength) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationLengthTooShort);
 			if (model.VacationLength > type.MaxLength) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationLengthTooLong);
+			// 福利假判断
 			if (!type.CaculateBenefit)
 				model.VacationAdditionals = null;
+			// 跨年假判断
 			if (type.NotPermitCrossYear)
 				if (model.StampReturn.Value.Year != model.StampLeave.Value.Year) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.NotPermitCrossYear);
+
 			var r = new ApplyRequest()
 			{
 				OnTripLength = model.OnTripLength,

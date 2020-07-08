@@ -33,6 +33,11 @@ namespace DAL.Entities.Vacations
 		public bool Primary { get; set; }
 
 		/// <summary>
+		/// 是否允许在正休未休完前休
+		/// </summary>
+		public bool AllowBeforePrimary { get; set; }
+
+		/// <summary>
 		/// 是否计算福利假
 		/// </summary>
 		public bool CaculateBenefit { get; set; }
