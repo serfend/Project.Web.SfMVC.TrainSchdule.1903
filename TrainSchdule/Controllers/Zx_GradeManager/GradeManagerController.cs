@@ -65,12 +65,13 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <param name="permission">需要何授权</param>
 		/// <param name="operation">进行何操作</param>
 		/// <param name="targetCompany">被授权方使用何单位，为空表示需要root授权</param>
-		private void CheckPermission(GoogleAuthDataModel auth, PermissionDescription permission = null, Operation operation = Operation.Update, string targetCompany = "")
+		/// <param name="description"></param>
+		private void CheckPermission(GoogleAuthDataModel auth, PermissionDescription permission = null, Operation operation = Operation.Update, string targetCompany = "", string description = null)
 		{
 			var authUser = auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser?.Id);
 			if (authUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (permission == null) permission = DictionaryAllPermission.Grade.Subject;
-			if (!userActionServices.Permission(authUser.Application.Permission, permission, operation, authUser.Id, targetCompany)) throw new ActionStatusMessageException(auth.PermitDenied());
+			if (!userActionServices.Permission(authUser.Application.Permission, permission, operation, authUser.Id, targetCompany, description)) throw new ActionStatusMessageException(auth.PermitDenied());
 		}
 
 		/// <summary>

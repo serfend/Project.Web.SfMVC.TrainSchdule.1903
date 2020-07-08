@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.ZX;
 
 namespace TrainSchdule.Controllers.Zx_GradeManager
 {
@@ -23,11 +24,26 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		/// <returns></returns>
 		[HttpPost]
 		[Route("Grade/Phy")]
-		public IActionResult EditGrade([FromBody] EntityWithAuthDataModel<GradePhyRecord> model)
+		public IActionResult EditGrade([FromBody] GradeRecordModifyViewModel model)
 		{
-			var prev = context.GradePhyRecords.Where(r => r.Id == model.Model.Id).FirstOrDefault();
-			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, model.Model.GetOperation(prev), prev?.User?.CompanyInfo?.Company?.Code);
-			phyGradeServices.ModifyRecord(model.Model);
+			var prev = context.GradePhyRecords.Where(r => r.Id == model.Id).FirstOrDefault();
+			var m = model.ToModel(context);
+			var operation = m.GetOperation(prev);
+			// check exam holder modify
+			var prevExamHolder = prev?.Exam?.HoldBy?.Code;
+			var currentExamHolder = m?.Exam?.HoldBy?.Code;
+			if (prevExamHolder != null && prevExamHolder != currentExamHolder)
+				CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, prevExamHolder, "所属考核-移出原单位");
+			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentExamHolder, "所属考核");
+
+			// check target user modify
+			var prevUser = prev?.User?.CompanyInfo?.Company?.Code;
+			var currentUser = m?.User?.CompanyInfo?.Company?.Code;
+			if (prevUser != currentUser)
+				CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, prevUser, "移出作用于成员");
+			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentUser, "作用于成员");
+
+			phyGradeServices.ModifyRecord(m);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

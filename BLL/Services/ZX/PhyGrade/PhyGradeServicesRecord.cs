@@ -19,9 +19,10 @@ namespace BLL.Services.ZX
 	{
 		public GradePhyRecord ModifyRecord(GradePhyRecord model)
 		{
+			if (model == null) throw new ActionStatusMessageException(model.NotExist());
 			var db = _context.GradePhyRecords;
 			var prev = db.Where(r => r.Id == model.Id).FirstOrDefault();
-
+			if (model.User == null) throw new ActionStatusMessageException(ActionStatusMessage.Grade.Record.UserNotSet);
 			return model.Modify(db, prev, (m, p) =>
 		   {
 			   var newM = MapPhyRecordModel(m);

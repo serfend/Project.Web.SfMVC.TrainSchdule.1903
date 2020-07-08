@@ -34,21 +34,21 @@ namespace DAL.Entities
 
 		public static class Apply
 		{
-			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的编辑权限");
-			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请审批流的编辑权限");
+			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的权限");
+			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请审批流的权限");
 		}
 
 		public static class Grade
 		{
-			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的编辑权限");
-			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "考核的编辑权限");
-			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩记录的编辑权限");
+			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的权限");
+			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "考核的权限");
+			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩记录的权限");
 		}
 
 		public static class Resources
 		{
-			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "资源的编辑权限");
-			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址的编辑权限");
+			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "资源的权限");
+			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址的权限");
 		}
 	}
 

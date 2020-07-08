@@ -1,10 +1,12 @@
 ﻿using BLL.Extensions.Common;
+using BLL.Helpers;
 using BLL.Interfaces.ZX.IGrade;
 using DAL.Data;
 using DAL.Entities.ZX.Grade;
 using DAL.QueryModel;
 using DAL.QueryModel.ZX;
 using NPOI.SS.Formula.Functions;
+using Remotion.Linq.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +43,9 @@ namespace BLL.Services.ZX.Grade
 
 		public GradeExam ModifyExam(GradeExam model)
 		{
+			if (model == null) throw new ActionStatusMessageException(model.NotExist());
 			var db = _context.GradeExams;
+			if (model.HoldBy == null) throw new ActionStatusMessageException(ActionStatusMessage.Grade.Exam.UserNotSet);
 			var prev = db.Where(r => r.Name == model.Name).FirstOrDefault(); // use name as unique
 			return model.Modify(db, prev, (m, p) =>
 			{

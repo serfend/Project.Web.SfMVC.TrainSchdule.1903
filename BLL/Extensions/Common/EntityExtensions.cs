@@ -2,6 +2,7 @@
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using DAL.Entities.ZX.Grade;
 using DAL.Entities.ZX.Phy;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,7 @@ namespace BLL.Extensions.Common
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
 
 		public static ApiResult NotExist(this GradePhyRecord model) => ActionStatusMessage.Grade.Record.NotExist;
+
+		public static ApiResult NotExist(this GradeExam model) => ActionStatusMessage.Grade.Exam.NotExist;
 	}
 }
