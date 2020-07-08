@@ -122,7 +122,7 @@ namespace BLL.Services
 				{
 					var order = _context.ApplyExcuteStatus.Find(a.ExecuteStatusDetailId);
 
-					var length = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
+					var length = order.ReturnStramp.Subtract(a.RequestInfo.StampReturn.Value).Days;
 					delayLength += length;
 				}
 				return true;
