@@ -59,6 +59,15 @@ namespace BLL.Extensions
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level);
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).OrderByLevel();
+
+		/// <summary>
+		/// 按单位-职务等级-职级等级的顺序依次排序
+		/// </summary>
+		/// <param name="users"></param>
+		/// <returns></returns>
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.ThenBy(u => u.CompanyInfo.Company.Code).OrderByLevel();
+
+		public static IOrderedQueryable<User> OrderByLevel(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level);
 	}
 }
