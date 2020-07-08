@@ -30,8 +30,11 @@ namespace BLL.Services.ZX.Grade
 			if (model.CreateBy.Valid()) result = result.Where(r => r.CreateBy.Id == model.CreateBy.Value);
 			if (model.HandleBy.Valid()) result = result.Where(r => r.HandleBy.Id == model.HandleBy.Value);
 			if (model.HoldBy.Valid()) result = result.Where(r => r.HoldBy.Code == model.HoldBy.Value);
-			var nameLen = model.Name.Value.Length;
-			if (model.Name.Valid()) result = result.Where(r => r.Name.Length >= nameLen).Where(r => r.Name.Substring(0, nameLen) == model.Name.Value);
+			if (model.Name.Valid())
+			{
+				var nameLen = model.Name.Value.Length;
+				result = result.Where(r => r.Name.Length >= nameLen).Where(r => r.Name.Substring(0, nameLen) == model.Name.Value);
+			}
 
 			if (!model.Create.Valid()) model.Create = new QueryByDate() { Start = DateTime.Now.AddYears(-1), End = DateTime.Now };
 			if (model.ExecuteTime.Valid()) result = result.Where(r => r.ExecuteTime >= model.ExecuteTime.Start).Where(r => r.ExecuteTime <= model.ExecuteTime.End);
