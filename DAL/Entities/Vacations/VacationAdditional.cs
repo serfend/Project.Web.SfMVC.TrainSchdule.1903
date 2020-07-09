@@ -6,7 +6,6 @@ namespace DAL.Entities.Vacations
 	/// <summary>
 	/// 额外假期
 	/// </summary>
-	[Table("VocationAdditionals")]
 	public class VacationAdditional : BaseEntityGuid
 	{
 		/// <summary>

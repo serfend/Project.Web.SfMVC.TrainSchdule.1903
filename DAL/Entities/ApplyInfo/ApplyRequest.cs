@@ -23,31 +23,26 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 主假期长度
 		/// </summary>
-		[Column("VocationLength")]
 		public int VacationLength { get; set; }
 
 		/// <summary>
 		/// 休假类别
 		/// </summary>
-		[Column("VocationType")]
 		public string VacationType { get; set; }
 
 		/// <summary>
 		/// 福利假，包含法定节假日自动计算
 		/// </summary>
-		[Column("AdditialVocations")]
 		public virtual IEnumerable<VacationAdditional> AdditialVacations { get; set; }
 
 		/// <summary>
 		/// 休假地点
 		/// </summary>
-		[Column("VocationPlace")]
 		public virtual AdminDivision VacationPlace { get; set; }
 
 		/// <summary>
 		/// 休假地点（详细地址）
 		/// </summary>
-		[Column("VocationPlaceName")]
 		public string VacationPlaceName { get; set; }
 
 		/// <summary>

@@ -111,7 +111,7 @@ namespace BLL.Services
 					var order = _context.RecallOrders.Find(a.RecallId);
 					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.IdRecordButNoData);
 					//此处减去召回时间应注意是否在福利假内部
-					var dayComsumeBeforeRecall = order.ReturnStramp.Subtract(a.RequestInfo.StampLeave.Value).Days;
+					var dayComsumeBeforeRecall = order.ReturnStamp.Subtract(a.RequestInfo.StampLeave.Value).Days;
 					var containsLawVacations = _vacationCheckServices.GetVacationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
 					var containsLawVacationsLength = containsLawVacations.Sum(v => v.Length);
 					var realComsumeMainVacation = dayComsumeBeforeRecall - containsLawVacationsLength - a.RequestInfo.OnTripLength;
@@ -122,7 +122,7 @@ namespace BLL.Services
 				{
 					var order = _context.ApplyExcuteStatus.Find(a.ExecuteStatusDetailId);
 
-					var length = order.ReturnStramp.Subtract(a.RequestInfo.StampReturn.Value).Days;
+					var length = order.ReturnStamp.Subtract(a.RequestInfo.StampReturn.Value).Days;
 					delayLength += length;
 				}
 				return true;

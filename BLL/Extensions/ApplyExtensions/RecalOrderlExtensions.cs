@@ -13,7 +13,7 @@ namespace BLL.Extensions.ApplyExtensions
 			return new HandleByVdto()
 			{
 				Apply = apply == null ? Guid.Empty : apply.Id,
-				ReturnStamp = model.ReturnStramp,
+				ReturnStamp = model.ReturnStamp,
 				Create = model.Create,
 				Reason = model.Reason,
 				HandleBy = model.HandleBy.ToSummaryDto()

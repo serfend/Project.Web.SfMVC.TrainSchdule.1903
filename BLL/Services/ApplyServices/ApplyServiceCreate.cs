@@ -208,7 +208,8 @@ namespace BLL.Services.ApplyServices
 					AuditStatus.AcceptAndWaitAdmin,
 					AuditStatus.Auditing
 			};
-			var userVacationsInTime = _context.AppliesDb.Where(a => a.Create >= r.StampLeave).Where(a => a.Create <= r.StampReturn).Where(a => list.Contains(a.Status));
+			var userid = apply.BaseInfo.From.Id;
+			var userVacationsInTime = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == userid).Where(a => a.Create >= r.StampLeave).Where(a => a.Create <= r.StampReturn).Where(a => list.Contains(a.Status));
 			if (userVacationsInTime.Any()) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation);
 		}
 

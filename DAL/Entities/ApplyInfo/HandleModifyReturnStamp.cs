@@ -22,6 +22,6 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 归队时间
 		/// </summary>
-		public DateTime ReturnStramp { get; set; }
+		public DateTime ReturnStamp { get; set; }
 	}
 }

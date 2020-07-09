@@ -209,8 +209,8 @@ namespace BLL.Extensions.ApplyExtensions
 		=> applies.Where(
 				a =>
 				(a.RecallId != null
-				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStramp >= pDate
-				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStramp <= pDateEnd)
+				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStamp >= pDate
+				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStamp <= pDateEnd)
 				||
 				(a.RecallId == null
 				&& a.RequestInfo.StampReturn.HasValue

@@ -299,7 +299,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ExecuteStatus(Guid id)
 		{
 			var model = _context.ApplyExcuteStatus.Where(r => r.Id == id).FirstOrDefault();
-			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.NotExist);
+			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.ExecuteNotExist);
 			var apply = _context.AppliesDb.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
 			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply)));
 		}

@@ -87,7 +87,8 @@ namespace BLL.Helpers
 
 			public static class Recall
 			{
-				public static readonly ApiResult NotExist = new ApiResult(46100, "召回信息不存在");
+				public static readonly ApiResult NotExist = new ApiResult(46100, "召回的信息不存在");
+				public static readonly ApiResult ExecuteNotExist = new ApiResult(46110, "确认时间的信息不存在");
 				public static readonly ApiResult RecallByNotSame = new ApiResult(46200, "召回人和终审人不一致");
 				public static readonly ApiResult Crash = new ApiResult(46300, "已存在记录，无法操作");
 				public static readonly ApiResult IdRecordButNoData = new ApiResult(46400, "用户休假申请的召回id存在，但无此召回的详细信息");

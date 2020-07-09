@@ -26,7 +26,7 @@ namespace BLL.Services
 			var order = new RecallOrder()
 			{
 				Create = DateTime.Now,
-				ReturnStramp = recallOrder.ReturnStamp,
+				ReturnStamp = recallOrder.ReturnStamp,
 				Reason = recallOrder.Reason,
 				HandleBy = _context.AppUsers.Find(recallOrder.HandleBy.Id)
 			};
@@ -35,8 +35,8 @@ namespace BLL.Services
 			if (apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.Crash);
 			if (order.HandleBy == null) throw new ActionStatusMessageException(order.HandleBy.NotExist());
 			if (!(apply.ApplyAllAuditStep.LastOrDefault()?.MembersAcceptToAudit.Split("##").Contains(order.HandleBy.Id) ?? false)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallByNotSame);
-			if (apply.RequestInfo.StampReturn <= order.ReturnStramp) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeLateThanVacation);
-			if (order.ReturnStramp < apply.RequestInfo.StampLeave) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeEarlyThanVacationLeaveStamp);
+			if (apply.RequestInfo.StampReturn <= order.ReturnStamp) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeLateThanVacation);
+			if (order.ReturnStamp < apply.RequestInfo.StampLeave) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeEarlyThanVacationLeaveStamp);
 			_context.RecallOrders.Add(order);
 			apply.RecallId = order.Id;
 			apply.ExecuteStatus |= ExecuteStatus.BeenSet;
@@ -56,12 +56,12 @@ namespace BLL.Services
 			{
 				Create = DateTime.Now,
 				HandleBy = _context.AppUsers.Find(status.HandleBy.Id),
-				ReturnStramp = status.ReturnStamp,
+				ReturnStamp = status.ReturnStamp,
 				Reason = status.Reason
 			};
 			var rawReturn = apply.RequestInfo.StampReturn?.Date;
-			if (m.ReturnStramp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.SelfReturnNotPermit);
-			else if (m.ReturnStramp.Date > rawReturn)
+			if (m.ReturnStamp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.SelfReturnNotPermit);
+			else if (m.ReturnStamp.Date > rawReturn)
 				apply.ExecuteStatus |= ExecuteStatus.Delay;
 			_context.ApplyExcuteStatus.Add(m);
 			apply.ExecuteStatusDetailId = m.Id;
