@@ -11,6 +11,7 @@ using BLL.Extensions;
 using DAL.QueryModel;
 using System.Threading.Tasks;
 using BLL.Extensions.Common;
+using NPOI.SS.Formula.Functions;
 
 namespace BLL.Services.ApplyServices
 {
@@ -22,7 +23,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.AppliesDb;
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
-
+			if (model.ExecuteStatus?.Arrays != null) list = list.Where(a => (model.ExecuteStatus.Arrays != null && model.ExecuteStatus.Arrays.Contains((int)a.ExecuteStatus)));
 			if (model.NowAuditBy != null) list = list.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(model.NowAuditBy.Value));
 			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(model.AuditBy.Value)));
 			if (model.CompanyType != null)

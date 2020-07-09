@@ -71,5 +71,10 @@ namespace DAL.QueryModel
 		/// 休假结束时间
 		/// </summary>
 		public QueryByDate StampReturn { get; set; }
+
+		/// <summary>
+		/// 状态,需多选
+		/// </summary>
+		public QueryByIntOrEnum ExecuteStatus { get; set; }
 	}
 }
