@@ -80,6 +80,7 @@ namespace DAL.Data
 
 			Configuration_Statistics(builder);
 			Configuration_Applies(builder);
+			Configuration_Common(builder);
 		}
 
 		#endregion Logic

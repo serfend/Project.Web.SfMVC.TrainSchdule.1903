@@ -37,6 +37,22 @@
     <Compile Remove="Migrations\20200630010252_thirdNotice.Designer.cs" />
     <Compile Remove="Migrations\20200706071942_ApplyExecuteStatus2.cs" />
     <Compile Remove="Migrations\20200706071942_ApplyExecuteStatus2.Designer.cs" />
+    <Compile Remove="Migrations\20200710030634_DataDictionary.cs" />
+    <Compile Remove="Migrations\20200710030634_DataDictionary.Designer.cs" />
+    <Compile Remove="Migrations\20200710031213_DataDictionary.cs" />
+    <Compile Remove="Migrations\20200710031213_DataDictionary.Designer.cs" />
+    <Compile Remove="Migrations\20200710031523_DataDictionary.cs" />
+    <Compile Remove="Migrations\20200710031523_DataDictionary.Designer.cs" />
+    <Compile Remove="Migrations\20200710032036_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710032036_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710032238_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710032238_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710033457_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710033457_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710033928_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710033928_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710034236_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710034236_DataDictionary_Seed.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +62,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>

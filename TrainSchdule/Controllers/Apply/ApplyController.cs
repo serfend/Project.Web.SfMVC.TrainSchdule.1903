@@ -85,16 +85,28 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>), 0)]
 		public IActionResult AllStatus()
 		{
-			var list = _context.VacationTypes.Where(t => !t.IsRemoved)
+			var vacationTypes = _context.VacationTypes.Where(t => !t.IsRemoved)
 				.ToList()
 				.Select(t => new KeyValuePair<string, VacationType>(t.Name, t));
+
+			var applyStatus = _context.CommonDataDictionaries.Where(d => d.GroupName == "ApplyStatus").ToList();
+			var dictList = applyStatus.Select(s => new KeyValuePair<int, AuditStatusMessage>(s.Value, new AuditStatusMessage(s.Value, s.Alias, s.Key, s.Color)
+			{
+				Acessable = s.Description.Split("##")
+			}));
+			var dict = new Dictionary<int, AuditStatusMessage>(dictList);
+
+			var applyAction = _context.CommonDataDictionaries.Where(d => d.GroupName == "ApplyAction").ToList();
+
+			var actions = applyAction.Select(s => new KeyValuePair<string, ActionByUserItem>(s.Key, new ActionByUserItem(s.Key, s.Alias, s.Color, s.Description)));
+			var actionDict = new Dictionary<string, ActionByUserItem>(actions);
 			return new JsonResult(new ApplyAuditStatusViewModel()
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
-					List = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.StatusDic,
-					Actions = BLL.Extensions.ApplyExtensions.ApplyStaticExtensions.ActionDic,
-					VacationTypes = new Dictionary<string, VacationType>(list)
+					List = dict,
+					Actions = actionDict,
+					VacationTypes = new Dictionary<string, VacationType>(vacationTypes)
 				}
 			}); ;
 		}

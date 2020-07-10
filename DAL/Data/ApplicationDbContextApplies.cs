@@ -29,7 +29,9 @@ namespace DAL.Data
 		{
 			#region VacationTypeData
 
-			builder.Entity<VacationType>().HasData(new VacationType()
+			var vacaType = builder.Entity<VacationType>();
+			vacaType.HasData(new List<VacationType>() {
+				new VacationType()
 			{
 				Id = 1,
 				Alias = "正休",
@@ -42,8 +44,8 @@ namespace DAL.Data
 				MinusNextYear = false,
 				NotPermitCrossYear = false,
 				RegionOnCompany = ""
-			});
-			builder.Entity<VacationType>().HasData(new VacationType()
+			},
+				new VacationType()
 			{
 				Id = 2,
 				Alias = "事假",
@@ -56,9 +58,8 @@ namespace DAL.Data
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
 				RegionOnCompany = ""
-			});
-
-			builder.Entity<VacationType>().HasData(new VacationType()
+			},
+				new VacationType()
 			{
 				Id = 3,
 				Alias = "病休",
@@ -72,9 +73,8 @@ namespace DAL.Data
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
 				RegionOnCompany = ""
-			});
-
-			builder.Entity<VacationType>().HasData(new VacationType()
+			},
+				new VacationType()
 			{
 				Id = 4,
 				Alias = "疫情专项",
@@ -88,6 +88,7 @@ namespace DAL.Data
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
 				RegionOnCompany = ""
+			}
 			});
 
 			#endregion VacationTypeData
