@@ -1,4 +1,5 @@
-﻿using DAL.Entities.Common.DataDictionary;
+﻿using DAL.Entities.ApplyInfo;
+using DAL.Entities.Common.DataDictionary;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,25 @@ namespace DAL.Data
 		public DbSet<CommonDataGroup> CommonDataGroups { get; set; }
 		public DbSet<CommonDataDictionary> CommonDataDictionaries { get; set; }
 
-		private void Configuration_Common(ModelBuilder builder)
-		{
-			#region 数据字典组
+		private const string applyStatus = "ApplyStatus";
+		private const string applyAuditStatus = "ApplyAuditStatus";
+		private const string applyAction = "ApplyAction";
+		private const string applyExecuteStatus = "ApplyExecuteStatus";
+		private const string Publish = "Publish";
+		private const string Save = "Save";
+		private const string Delete = "Delete";
+		private const string Withdrew = "Withdrew";
+		private const string Cancel = "Cancel";
+		private int dataId = 1;
 
-			var applyStatus = "ApplyStatus";
-			var applyAuditStatus = "ApplyAuditStatus";
-			var applyAction = "ApplyAction";
+		private static string ToHtml(Color c) => string.Format("#{0:x2}{1:x2}{2:x2}{3:x2}", c.R, c.G, c.B, c.A);
+
+		/// <summary>
+		/// 数据字典 分组数据
+		/// </summary>
+		/// <param name="builder"></param>
+		private void Configuration_Common_Group(ModelBuilder builder)
+		{
 			var group = builder.Entity<CommonDataGroup>();
 			group.HasData(new List<CommonDataGroup>() {
 				new CommonDataGroup()
@@ -38,23 +51,25 @@ namespace DAL.Data
 					Id=3,
 					Name=applyAction,
 					Description="对应审批状态下可操作的行为。联动系统逻辑，勿修改"
+				},
+				new CommonDataGroup(){
+				Id=4,
+				Name=applyExecuteStatus,
+				Description="休假的落实状态。联动系统逻辑，勿修改"
 				}
 			});
+		}
 
-			#endregion 数据字典组
-
-			#region 数组字典数据
-
-			var data = builder.Entity<CommonDataDictionary>();
-			int dataId = 1;
-
+		/// <summary>
+		/// 数据字典 申请的操作数据
+		/// </summary>
+		/// <param name="builder"></param>
+		private void Configuration_Actions(ModelBuilder builder)
+		{
 			#region actions
 
-			var Publish = "Publish";
-			var Save = "Save";
-			var Delete = "Delete";
-			var Withdrew = "Withdrew";
-			var Cancel = "Cancel";
+			var data = builder.Entity<CommonDataDictionary>();
+
 			var actions = new List<CommonDataDictionary>(){
 				new CommonDataDictionary()
 				{
@@ -105,84 +120,80 @@ namespace DAL.Data
 			data.HasData(actions);
 
 			#endregion actions
+		}
 
-			#region Status
-
-			var toHtml = new Func<Color, string>((c) => string.Format("#{0:x2}{1:x2}{2:x2}{3:x3}", c.A, c.R, c.G, c.B));
-			var Status_NotPublish = "NotPublish";
-			var Status_Auditing = "Auditing";
-			var Status_Withdrew = "Withdrew";
-			var Status_AcceptAndWaitAdmin = "AcceptAndWaitAdmin";
-			var Status_Accept = "Accept";
-			var Status_Denied = "Denied";
-			var Status_NotSave = "NotSave";
-			var Status_Cancel = "Cancel";
-			data.HasIndex(d => d.Key);
+		/// <summary>
+		/// 数据字典 申请状态数据
+		/// </summary>
+		/// <param name="builder"></param>
+		private void Configuration_Status(ModelBuilder builder)
+		{
+			var data = builder.Entity<CommonDataDictionary>();
 			var status = new List<CommonDataDictionary>()
 			{
 				new CommonDataDictionary()
 				{
 					Alias="未保存",
-					Key = Status_NotSave,
-					Color=toHtml(Color.Black),
+					Key = AuditStatus.NotSave.ToString(),
+					Color=ToHtml(Color.Black),
 					Description=$"{Save}##{Publish}##{Delete}",
-					Value=0
+					Value=(int)AuditStatus.NotSave
 				},
 				new CommonDataDictionary()
 				{
 					Alias="未发布",
-					Key = Status_NotPublish,
-					Color=toHtml(Color.DarkGray),
+					Key = AuditStatus.NotPublish.ToString(),
+					Color=ToHtml(Color.DarkGray),
 					Description=$"{Publish}##{Delete}",
-					Value=10
+					Value=(int)AuditStatus.NotPublish
 				},
 				new CommonDataDictionary()
 				{
 					Alias="已撤回",
-					Key = Status_Withdrew,
-					Color=toHtml(Color.Gray),
+					Key = AuditStatus.Withdrew.ToString(),
+					Color=ToHtml(Color.Gray),
 					Description=$"",
 					Value=20
 				},
 				new CommonDataDictionary()
 				{
 					Alias="审核中",
-					Key=Status_Auditing,
-					Color =toHtml(Color.Coral),
+					Key=AuditStatus.Auditing.ToString(),
+					Color =ToHtml(Color.Coral),
 					Description=$"{Withdrew}",
-					Value= 40
+					Value= (int)AuditStatus.Auditing
 				},
 				new CommonDataDictionary()
 				{
 					Alias="终审中",
-					Key=Status_AcceptAndWaitAdmin,
-					Color = toHtml(Color.DeepSkyBlue),
+					Key=AuditStatus.AcceptAndWaitAdmin.ToString(),
+					Color = ToHtml(Color.DeepSkyBlue),
 					Description=$"{Withdrew}",
-					Value= 50
+					Value= (int)AuditStatus.AcceptAndWaitAdmin
 				},
 				new CommonDataDictionary()
 				{
 					Alias="被驳回",
-					Key=Status_Denied,
-					Color =toHtml(Color.Red),
+					Key=AuditStatus.Denied.ToString(),
+					Color =ToHtml(Color.Red),
 					Description=$"",
-					Value= 75
+					Value= (int)AuditStatus.Denied
 				},
 				new CommonDataDictionary()
 				{
-					Alias="审核中",
-					Key=Status_Accept,
-					Color =toHtml(Color.LimeGreen),
+					Alias="已通过",
+					Key=AuditStatus.Accept.ToString(),
+					Color =ToHtml(Color.LimeGreen),
 					Description=$"{Cancel}",
-					Value= 100
+					Value= (int)AuditStatus.Accept
 				},
 				new CommonDataDictionary()
 				{
 					Alias="被作废",
-					Key=Status_Cancel,
-					Color = toHtml(Color.LightSlateGray),
+					Key=AuditStatus.Cancel.ToString(),
+					Color = ToHtml(Color.LightSlateGray),
 					Description=$"",
-					Value= 125
+					Value= (int)AuditStatus.Cancel
 				},
 			};
 			foreach (var d in status)
@@ -191,10 +202,67 @@ namespace DAL.Data
 				d.GroupName = applyStatus;
 			}
 			data.HasData(status);
+		}
 
-			#endregion Status
+		/// <summary>
+		/// 数据字典 休假的落实状态
+		/// </summary>
+		/// <param name="builder"></param>
+		private void Configuration_ExecuteStatus(ModelBuilder builder)
+		{
+			var data = builder.Entity<CommonDataDictionary>();
+			var status = new List<CommonDataDictionary>()
+			{
+				new CommonDataDictionary()
+				{
+					Alias="未确认",
+					Key = ExecuteStatus.NotSet.ToString(),
+					Color=ToHtml(Color.OrangeRed),
+					Description="待确认归队时间",
+					Value=(int)ExecuteStatus.NotSet
+				},
+				new CommonDataDictionary()
+				{
+					Alias="已确认",
+					Key = ExecuteStatus.BeenSet.ToString(),
+					Color=ToHtml(Color.Green),
+					Description="已确认归队时间",
+					Value=(int)ExecuteStatus.BeenSet
+				},
+				new CommonDataDictionary()
+				{
+					Alias="推迟归队",
+					Key = ExecuteStatus.Delay.ToString(),
+					Color=ToHtml(Color.Red),
+					Description="因事推迟归队",
+					Value=(int)ExecuteStatus.BeenSet|(int)ExecuteStatus.Delay
+				},
+				new CommonDataDictionary()
+				{
+					Alias="被召回",
+					Key = ExecuteStatus.Recall.ToString(),
+					Color=ToHtml(Color.Blue),
+					Description="因事提前归队",
+					Value=(int)ExecuteStatus.BeenSet|(int)ExecuteStatus.Recall
+				},
+			};
+			foreach (var d in status)
+			{
+				d.Id = dataId++;
+				d.GroupName = applyExecuteStatus;
+			}
+			data.HasData(status);
+		}
 
-			#endregion 数组字典数据
+		private void Configuration_Common(ModelBuilder builder)
+		{
+			var data = builder.Entity<CommonDataDictionary>();
+			data.HasIndex(d => d.Key);
+
+			Configuration_Common_Group(builder);
+			Configuration_Actions(builder);
+			Configuration_Status(builder);
+			Configuration_ExecuteStatus(builder);
 		}
 	}
 }

@@ -53,6 +53,12 @@
     <Compile Remove="Migrations\20200710033928_DataDictionary_Seed.Designer.cs" />
     <Compile Remove="Migrations\20200710034236_DataDictionary_Seed.cs" />
     <Compile Remove="Migrations\20200710034236_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710034609_DataDictionary_Seed.cs" />
+    <Compile Remove="Migrations\20200710034609_DataDictionary_Seed.Designer.cs" />
+    <Compile Remove="Migrations\20200710080641_DataDictionary_SeedExecute.cs" />
+    <Compile Remove="Migrations\20200710080641_DataDictionary_SeedExecute.Designer.cs" />
+    <Compile Remove="Migrations\20200710093633_DataDictionary_SeedExecute.cs" />
+    <Compile Remove="Migrations\20200710093633_DataDictionary_SeedExecute.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

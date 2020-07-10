@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200710034609_DataDictionary_Seed")]
-    partial class DataDictionary_Seed
+    [Migration("20200710095115_DataDictionary_SeedExecute")]
+    partial class DataDictionary_SeedExecute
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -550,7 +550,7 @@ namespace DAL.Migrations
                         {
                             Id = 6,
                             Alias = "未保存",
-                            Color = "#ff0000000",
+                            Color = "#000000ff",
                             Description = "Save##Publish##Delete",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -562,7 +562,7 @@ namespace DAL.Migrations
                         {
                             Id = 7,
                             Alias = "未发布",
-                            Color = "#ffa9a90a9",
+                            Color = "#a9a9a9ff",
                             Description = "Publish##Delete",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -574,7 +574,7 @@ namespace DAL.Migrations
                         {
                             Id = 8,
                             Alias = "已撤回",
-                            Color = "#ff8080080",
+                            Color = "#808080ff",
                             Description = "",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -586,7 +586,7 @@ namespace DAL.Migrations
                         {
                             Id = 9,
                             Alias = "审核中",
-                            Color = "#ffff7f050",
+                            Color = "#ff7f50ff",
                             Description = "Withdrew",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -598,7 +598,7 @@ namespace DAL.Migrations
                         {
                             Id = 10,
                             Alias = "终审中",
-                            Color = "#ff00bf0ff",
+                            Color = "#00bfffff",
                             Description = "Withdrew",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -610,7 +610,7 @@ namespace DAL.Migrations
                         {
                             Id = 11,
                             Alias = "被驳回",
-                            Color = "#ffff00000",
+                            Color = "#ff0000ff",
                             Description = "",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -621,8 +621,8 @@ namespace DAL.Migrations
                         new
                         {
                             Id = 12,
-                            Alias = "审核中",
-                            Color = "#ff32cd032",
+                            Alias = "已通过",
+                            Color = "#32cd32ff",
                             Description = "Cancel",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
@@ -634,13 +634,61 @@ namespace DAL.Migrations
                         {
                             Id = 13,
                             Alias = "被作废",
-                            Color = "#ff7788099",
+                            Color = "#778899ff",
                             Description = "",
                             GroupName = "ApplyStatus",
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Key = "Cancel",
-                            Value = 125
+                            Value = 120
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Alias = "未确认",
+                            Color = "#ff4500ff",
+                            Description = "待确认归队时间",
+                            GroupName = "ApplyExecuteStatus",
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Key = "NotSet",
+                            Value = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Alias = "已确认",
+                            Color = "#008000ff",
+                            Description = "已确认归队时间",
+                            GroupName = "ApplyExecuteStatus",
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Key = "BeenSet",
+                            Value = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Alias = "推迟归队",
+                            Color = "#ff0000ff",
+                            Description = "因事推迟归队",
+                            GroupName = "ApplyExecuteStatus",
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Key = "Delay",
+                            Value = 5
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Alias = "被召回",
+                            Color = "#0000ffff",
+                            Description = "因事提前归队",
+                            GroupName = "ApplyExecuteStatus",
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Key = "Recall",
+                            Value = 3
                         });
                 });
 
@@ -688,6 +736,15 @@ namespace DAL.Migrations
                             Create = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "对应审批状态下可操作的行为。联动系统逻辑，勿修改",
                             Id = 3,
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Name = "ApplyExecuteStatus",
+                            Create = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "休假的落实状态。联动系统逻辑，勿修改",
+                            Id = 4,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
