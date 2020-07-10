@@ -106,9 +106,10 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="pageSize"></param>
 		/// <param name="status">审批的状态，以##分割</param>
 		/// <param name="actionStatus">我对此审批的状态</param>
+		/// <param name="executeStatus"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, string actionStatus = null)
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, string actionStatus = null, string executeStatus = null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var c = _currentUserService.CurrentUser;
@@ -116,7 +117,11 @@ namespace TrainSchdule.Controllers.Apply
 			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
 			if (statusArr != null && statusArr.Any()) r = r.Where(a => statusArr.Contains((int)a.Status)); // 查出所有状态符合的
 			r = r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
-
+			if (executeStatus != null)
+			{
+				int.TryParse(executeStatus, out var executeStatusInt);
+				r = r.Where(a => (int)a.ExecuteStatus == executeStatusInt);
+			}
 			if (actionStatus != null)
 			{
 				switch (actionStatus.ToLower())
@@ -148,7 +153,6 @@ namespace TrainSchdule.Controllers.Apply
 					default: return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Default);
 				}
 			}
-
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages).Result;

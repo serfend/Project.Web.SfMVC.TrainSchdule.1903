@@ -23,6 +23,12 @@ namespace DAL.QueryModel
 		public QueryByIntOrEnum Status { get; set; }
 
 		/// <summary>
+		/// 落实状态，单选
+		/// </summary>
+
+		public QueryByString ExecuteStatus { get; set; }
+
+		/// <summary>
 		/// 申请的创建时间
 		/// </summary>
 		public QueryByDate Create { get; set; }
@@ -71,10 +77,5 @@ namespace DAL.QueryModel
 		/// 休假结束时间
 		/// </summary>
 		public QueryByDate StampReturn { get; set; }
-
-		/// <summary>
-		/// 状态,需多选
-		/// </summary>
-		public QueryByIntOrEnum ExecuteStatus { get; set; }
 	}
 }
