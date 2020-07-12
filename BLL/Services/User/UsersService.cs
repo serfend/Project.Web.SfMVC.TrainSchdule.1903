@@ -69,7 +69,22 @@ namespace BLL.Services
 		public User Get(string id)
 		{
 			if (id == null) return null;
-			if (id.ToLower() == "root") return new User()
+			switch (id.ToLower())
+			{
+				case "root": return UserRoot();
+				case "audit_skipper": return UserSkip();
+			}
+			var user = _context.AppUsers.Where(u => u.Id == id).FirstOrDefault();
+			return user;
+		}
+
+		/// <summary>
+		/// 系统管理员
+		/// </summary>
+		/// <returns></returns>
+		private static User UserRoot()
+		{
+			return new User()
 			{
 				Id = "root",
 				Application = new UserApplicationInfo()
@@ -102,8 +117,47 @@ namespace BLL.Services
 					Id = Guid.Empty
 				}
 			};
-			var user = _context.AppUsers.Where(u => u.Id == id).FirstOrDefault();
-			return user;
+		}
+
+		/// <summary>
+		/// 审批流无合适人可审批时，使用此账号
+		/// </summary>
+		/// <returns></returns>
+		private static User UserSkip()
+		{
+			return new User()
+			{
+				Id = "audit_skipper",
+				Application = new UserApplicationInfo()
+				{
+					Permission = new Permissions()
+					{
+						Role = "User"
+					}
+				},
+				BaseInfo = new UserBaseInfo()
+				{
+					RealName = "跳过审批"
+				},
+				CompanyInfo = new UserCompanyInfo()
+				{
+					Company = new Company()
+					{
+						Name = "跳过审批",
+						Code = "root"
+					},
+					Duties = new Duties()
+					{
+						Name = "跳过审批",
+						Code = 0
+					}
+				},
+				SocialInfo = new UserSocialInfo()
+				{
+					Address = new AdminDivision(),
+					Id = Guid.Empty
+				}
+			};
 		}
 
 		public IQueryable<User> Find(Expression<Func<User, bool>> predict)
@@ -142,7 +196,9 @@ namespace BLL.Services
 		public async Task<User> ModefyAsync(User user, bool update)
 		{
 			if (user == null) return null;
+			var lastCreateTime = user?.Application?.Create;
 			var appUser = CreateAppUser(user);
+			appUser.Application.Create = lastCreateTime; // create time should not modify
 			if (update)
 			{
 				_context.AppUsers.Update(appUser);
