@@ -130,8 +130,8 @@ namespace TrainSchdule.Controllers.Apply
 			var userModel = new SubmitBaseInfoViewModel()
 			{//重写前端传回的数据
 				Id = model.Id,
-				Company = targetUser.CompanyInfo.Company.Code,
-				Duties = targetUser.CompanyInfo.Duties.Name,
+				Company = targetUser.CompanyInfo.Company?.Code,
+				Duties = targetUser.CompanyInfo.Duties?.Name,
 				Phone = model.Phone ?? targetUser.SocialInfo.Phone,
 				RealName = targetUser.BaseInfo.RealName,
 				Settle = targetUser.SocialInfo.Settle,
