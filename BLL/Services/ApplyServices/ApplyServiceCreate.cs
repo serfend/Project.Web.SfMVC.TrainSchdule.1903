@@ -50,6 +50,7 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model == null) return null;
 			var type = model.VacationType;
+			if (type == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
 			int additionalVacationDay = 0;
 			model.VacationAdditionals?.All(v => { additionalVacationDay += v.Length; v.Start = DateTime.Now; return true; });
 			if (model.StampLeave != null)
@@ -68,7 +69,7 @@ namespace BLL.Services.ApplyServices
 						Length = v.Length,
 						Description = "法定节假日"
 					}).ToList();
-					lawVacations.AddRange(model.VacationAdditionals);
+					if(model.VacationAdditionals!=null)lawVacations.AddRange(model.VacationAdditionals);
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
 				}
 				else model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
@@ -192,7 +193,6 @@ namespace BLL.Services.ApplyServices
 				modelApplyAllAuditStep.Add(item);
 			}
 			model.ApplyAllAuditStep = modelApplyAllAuditStep;
-
 			// 初始化审批记录，当每个人审批时，添加一条记录。并检查是否已全部完成审批，若已完成则进入下一步。
 			model.Response = new List<ApplyResponse>();
 		}
@@ -209,7 +209,10 @@ namespace BLL.Services.ApplyServices
 					AuditStatus.Auditing
 			};
 			var userid = apply.BaseInfo.From.Id;
-			var userVacationsInTime = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == userid).Where(a => a.Create >= r.StampLeave).Where(a => a.Create <= r.StampReturn).Where(a => list.Contains(a.Status));
+			var userVacationsInTime = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == userid).Where(a =>
+			(a.RequestInfo.StampLeave <= r.StampLeave && a.RequestInfo.StampReturn >= r.StampLeave) ||
+			(a.RequestInfo.StampLeave <= r.StampReturn && a.RequestInfo.StampReturn >= r.StampReturn)
+			).Where(a => list.Contains(a.Status));
 			if (userVacationsInTime.Any()) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation);
 		}
 
@@ -241,6 +244,9 @@ namespace BLL.Services.ApplyServices
 						if (model.Status == AuditStatus.NotPublish || model.Status == AuditStatus.NotSave)
 						{
 							model.NowAuditStep = model.ApplyAllAuditStep.FirstOrDefault();
+							// 检查当前层级是否可审批
+							GoNextStep(ref model, model.NowAuditStep, new List<ApplyAuditStep>(model.ApplyAllAuditStep), false);
+							status = model.Status; // 接管状态
 						}
 						else throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.NotOnPublishable);
 
@@ -292,12 +298,13 @@ namespace BLL.Services.ApplyServices
 		/// <returns></returns>
 		private ApiResult AuditSingle(ApplyAuditNodeVdto model, User AuditUser)
 		{
-			if (model.Apply == null) return ActionStatusMessage.ApplyMessage.NotExist;
-			var nowStep = model.Apply.NowAuditStep;
-			List<ApplyAuditStep> allStep = new List<ApplyAuditStep>(model.Apply.ApplyAllAuditStep);
+			var apply = model.Apply;
+			if (apply == null) return ActionStatusMessage.ApplyMessage.NotExist;
+			var nowStep = apply.NowAuditStep;
+			List<ApplyAuditStep> allStep = new List<ApplyAuditStep>(apply.ApplyAllAuditStep);
 			// 审批未发布时 不可进行审批
 			if (nowStep == null) return ActionStatusMessage.ApplyMessage.Operation.Audit.BeenAuditOrNotReceived;
-			if (model.Apply.Status != AuditStatus.AcceptAndWaitAdmin && model.Apply.Status != AuditStatus.Auditing) return ActionStatusMessage.ApplyMessage.Operation.Audit.NotOnAudingStatus;
+			if (apply.Status != AuditStatus.AcceptAndWaitAdmin && apply.Status != AuditStatus.Auditing) return ActionStatusMessage.ApplyMessage.Operation.Audit.NotOnAudingStatus;
 			// 如果当前审批人是本单位管理，则本轮审批直接通过
 			var company = nowStep.FirstMemberCompanyCode;
 			var managers = companyManagerServices.GetManagers(company).Select(m => m.User.Id).ToList();
@@ -310,8 +317,30 @@ namespace BLL.Services.ApplyServices
 			}
 
 			// 当审批的申请为未发布的申请时，将其发布
-			//if (model.Apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == model.Apply.Status)
-			//	ModifyAuditStatus(model.Apply, AuditStatus.Auditing);
+			//if (apply.Status == AuditStatus.NotSave || AuditStatus.NotPublish == apply.Status)
+			//	ModifyAuditStatus(apply, AuditStatus.Auditing);
+			var list = AddAuditRecord(nowStep, AuditUser, model);
+			// 判断是否被驳回
+			if (model.Action != AuditResult.Accept)
+				apply.Status = AuditStatus.Denied;
+			// 判断本步骤是否结束
+			// 当  需审批人数<=已审批人数，需审批数为0表示需要所有人审批
+			// 或  已审批人数=可审批人数
+			// 或  为管理员审批
+			else if (
+				(nowStep.RequireMembersAcceptCount <= list.Length && nowStep.RequireMembersAcceptCount > 0)
+				|| (nowStep.MembersAcceptToAudit.Length >= nowStep.MembersFitToAudit.Length)
+				|| isManagerAudit)
+			{
+				GoNextStep(ref apply, nowStep, allStep);
+			}
+			_context.Applies.Update(apply);
+			_context.SaveChanges();
+			return ActionStatusMessage.Success;
+		}
+
+		private string[] AddAuditRecord(ApplyAuditStep nowStep, User AuditUser, ApplyAuditNodeVdto model)
+		{
 			var list = (nowStep.MembersAcceptToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : nowStep.MembersAcceptToAudit.Split("##");
 			list = list.Append(AuditUser.Id).ToArray();
 			nowStep.MembersAcceptToAudit = string.Join("##", list);
@@ -320,40 +349,56 @@ namespace BLL.Services.ApplyServices
 			var responseList = new List<ApplyResponse>(model.Apply.Response);
 			responseList.Add(new ApplyResponse()
 			{
-				AuditingBy = AuditUser,
+				// 通过判断有无授权码判断
+				AuditingBy = AuditUser.Application.AuthKey != null ? AuditUser : null,
 				Remark = model.Remark,
 				HandleStamp = DateTime.Now,
 				StepIndex = nowStep.Index,
 				Status = model.Action == AuditResult.Accept ? Auditing.Accept : Auditing.Denied
 			});
 			model.Apply.Response = responseList;
-			// 判断是否被驳回
-			if (model.Action != AuditResult.Accept)
-				model.Apply.Status = AuditStatus.Denied;
-			// 判断本步骤是否结束
-			// 当  需审批人数<=已审批人数
-			// 或  已审批人数=可审批人数
-			// 或  为管理员审批
-			else if (
-				(nowStep.RequireMembersAcceptCount <= list.Length && nowStep.RequireMembersAcceptCount > 0)
-				|| (nowStep.MembersAcceptToAudit.Length == nowStep.MembersFitToAudit.Length)
-				|| isManagerAudit)
-			{
-				// 寻找下一个步骤
-				if (nowStep.Index == allStep.Count - 1)
-				{
-					model.Apply.NowAuditStep = null;
-					model.Apply.Status = AuditStatus.Accept;
-				}
-				else
-				{
-					model.Apply.NowAuditStep = allStep[nowStep.Index + 1];
-					if (model.Apply.NowAuditStep.Index == allStep.Count - 1) model.Apply.Status = AuditStatus.AcceptAndWaitAdmin;
-				}
-			}
-			_context.Applies.Update(model.Apply);
-			_context.SaveChanges();
-			return ActionStatusMessage.Success;
+			return list;
 		}
+
+		/// <summary>
+		/// 检查当前步骤是否完成
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="nowStep"></param>
+		/// <param name="allStep"></param>
+		/// <param name="goNext">是否进行下一步，或者仅检查本级</param>
+		private void GoNextStep(ref Apply model, ApplyAuditStep nowStep, List<ApplyAuditStep> allStep, bool goNext = true)
+		{
+			// 寻找下一个步骤
+			if (nowStep.Index >= allStep.Count - 1 && goNext)
+			{
+				model.NowAuditStep = null;
+				model.Status = AuditStatus.Accept;
+			}
+			else
+			{
+				if (goNext) model.NowAuditStep = allStep[nowStep.Index + 1];
+				if (CheckStepShouldSkip(model.NowAuditStep))
+				{
+					AddAuditRecord(nowStep, _usersService.Get("audit_skipper"), new ApplyAuditNodeVdto()
+					{
+						Action = AuditResult.Accept,
+						Remark = "无合适人可审,已跳过。",
+						Apply = model
+					});
+					GoNextStep(ref model, model.NowAuditStep, allStep);
+					return;
+				}
+				if (model.NowAuditStep.Index == allStep.Count - 1) model.Status = AuditStatus.AcceptAndWaitAdmin;
+			}
+		}
+
+		/// <summary>
+		/// 当前节点是否应该直接跳过
+		/// </summary>
+		/// <param name="nowStep"></param>
+		/// <returns></returns>
+
+		private static bool CheckStepShouldSkip(ApplyAuditStep nowStep) => nowStep.MembersFitToAudit.Length == 0;
 	}
 }

@@ -81,6 +81,7 @@ namespace BLL.Helpers
 				public static readonly ApiResult NotPermitCrossYear = new ApiResult(44600, "不允许跨年休假");
 				public static readonly ApiResult CrashOtherVacation = new ApiResult(44700, "离队归队时间同其他假期发生冲突");
 				public static readonly ApiResult BeforePrimaryNotAllow = new ApiResult(44800, "不允许在正休假未休完前进行");
+				public static readonly ApiResult VacationTypeNotExist = new ApiResult(44900, "无效的休假类型");
 			}
 
 			public static readonly ApiResult GuidFail = new ApiResult(45000, "申请的ID无效");
