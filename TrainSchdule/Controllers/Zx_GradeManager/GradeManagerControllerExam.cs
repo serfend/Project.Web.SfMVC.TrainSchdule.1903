@@ -1,4 +1,5 @@
 ﻿using BLL.Helpers;
+using DAL.DTO.ZX.Grade;
 using DAL.Entities;
 using DAL.Entities.ZX.Grade;
 using DAL.QueryModel.ZX;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.ZX;
 
@@ -23,11 +25,13 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		[Route("Grade/Exam")]
 		public IActionResult EditExam([FromBody] ExamModifyViewModel model)
 		{
-			var prev = context.GradeExams.Where(e => e.Name == model.Name).FirstOrDefault();
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var m = model.ToModel(context);
+			var prev = context.GradeExams.Where(e => e.Name == m.Name).FirstOrDefault();
 			var operation = m.GetOperation(prev);
 			if (prev?.HoldBy != null && prev.HoldBy?.Code != m?.HoldBy?.Code) CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Exam, operation, prev.HoldBy.Code, "移出原单位");
-			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Exam, operation, m.HoldBy.Code);
+			var authUser = CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Exam, operation, m.HoldBy.Code);
+			m.CreateBy = authUser;
 			gradeServices.ModifyExam(m);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -42,7 +46,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 		public IActionResult GetExam([FromBody] QueryGradeExamViewModel model)
 		{
 			var result = gradeServices.GetExams(model);
-			return new JsonResult(new EntitiesListViewModel<GradeExam>(result?.Item1, result?.Item2 ?? -1));
+			return new JsonResult(new EntitiesListViewModel<ExamDTO>(result?.Item1, result?.Item2 ?? -1));
 		}
 	}
 }

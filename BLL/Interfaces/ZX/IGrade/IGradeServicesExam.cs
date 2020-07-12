@@ -1,4 +1,5 @@
-﻿using DAL.Entities.ZX.Grade;
+﻿using DAL.DTO.ZX.Grade;
+using DAL.Entities.ZX.Grade;
 using DAL.QueryModel.ZX;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,6 @@ namespace BLL.Interfaces.ZX.IGrade
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		Tuple<IEnumerable<GradeExam>, int> GetExams(QueryGradeExamViewModel model);
+		Tuple<IEnumerable<ExamDTO>, int> GetExams(QueryGradeExamViewModel model);
 	}
 }

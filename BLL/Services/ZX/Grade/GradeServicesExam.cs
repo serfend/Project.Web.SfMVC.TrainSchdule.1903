@@ -2,6 +2,7 @@
 using BLL.Helpers;
 using BLL.Interfaces.ZX.IGrade;
 using DAL.Data;
+using DAL.DTO.ZX.Grade;
 using DAL.Entities.ZX.Grade;
 using DAL.QueryModel;
 using DAL.QueryModel.ZX;
@@ -23,7 +24,7 @@ namespace BLL.Services.ZX.Grade
 			this._context = context;
 		}
 
-		public Tuple<IEnumerable<GradeExam>, int> GetExams(QueryGradeExamViewModel model)
+		public Tuple<IEnumerable<ExamDTO>, int> GetExams(QueryGradeExamViewModel model)
 		{
 			if (model == null) return null;
 			var result = _context.GradeExams.AsQueryable();
@@ -41,7 +42,7 @@ namespace BLL.Services.ZX.Grade
 
 			result = result.Where(r => r.Create >= model.Create.Start).Where(r => r.Create <= model.Create.End);
 			var list = result.SplitPage(model.Pages.ValidSplitPage()).Result;
-			return new Tuple<IEnumerable<GradeExam>, int>(list.Item1.ToList(), list.Item2);
+			return new Tuple<IEnumerable<ExamDTO>, int>(list.Item1.ToList().Select(f => f.ToDTO()), list.Item2);
 		}
 
 		public GradeExam ModifyExam(GradeExam model)
@@ -61,12 +62,12 @@ namespace BLL.Services.ZX.Grade
 
 		private GradeExam MapGradeExamModel(GradeExam model)
 		{
-			var createById = model.CreateBy.Id;
-			model.CreateBy = _context.AppUsers.Where(u => u.Id == createById).FirstOrDefault();
-			var holdById = model.HoldBy.Code;
-			model.HoldBy = _context.Companies.Where(u => u.Code == holdById).FirstOrDefault();
-			var handleById = model.HandleBy.Id;
-			model.HandleBy = _context.AppUsers.Where(u => u.Id == handleById).FirstOrDefault();
+			var createById = model.CreateBy?.Id;
+			if (createById != null) model.CreateBy = _context.AppUsers.Where(u => u.Id == createById).FirstOrDefault();
+			var holdById = model.HoldBy?.Code;
+			if (holdById != null) model.HoldBy = _context.Companies.Where(u => u.Code == holdById).FirstOrDefault();
+			var handleById = model.HandleBy?.Id;
+			if (handleById != null) model.HandleBy = _context.AppUsers.Where(u => u.Id == handleById).FirstOrDefault();
 			return model;
 		}
 	}
