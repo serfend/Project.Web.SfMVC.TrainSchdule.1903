@@ -68,7 +68,8 @@ namespace TrainSchdule.Controllers.Apply
 			foreach (var targetCompany in targetCompanies)
 			{
 				var permit = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, targetCompany);
-				if (!permit) return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{targetCompany}的权限"));
+				var targetCompanyItem = companiesService.GetById(targetCompany);
+				if (!permit) return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{targetCompanyItem?.Name}({targetCompany})的权限"));
 			}
 			return ActionStatusMessage.Success;
 		}

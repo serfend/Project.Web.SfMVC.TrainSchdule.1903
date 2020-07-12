@@ -69,7 +69,7 @@ namespace BLL.Services.ApplyServices
 						Length = v.Length,
 						Description = "法定节假日"
 					}).ToList();
-					if(model.VacationAdditionals!=null)lawVacations.AddRange(model.VacationAdditionals);
+					if (model.VacationAdditionals != null) lawVacations.AddRange(model.VacationAdditionals);
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
 				}
 				else model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
@@ -244,6 +244,7 @@ namespace BLL.Services.ApplyServices
 						if (model.Status == AuditStatus.NotPublish || model.Status == AuditStatus.NotSave)
 						{
 							model.NowAuditStep = model.ApplyAllAuditStep.FirstOrDefault();
+							model.Status = status;
 							// 检查当前层级是否可审批
 							GoNextStep(ref model, model.NowAuditStep, new List<ApplyAuditStep>(model.ApplyAllAuditStep), false);
 							status = model.Status; // 接管状态

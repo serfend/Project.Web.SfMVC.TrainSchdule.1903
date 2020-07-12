@@ -49,7 +49,8 @@ namespace TrainSchdule.Controllers.Apply
 				foreach (var c in permitCompanies)
 				{
 					var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c);
-					if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{c}的权限"));
+					var cItem = _companiesService.GetById(c);
+					if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
 				}
 
 				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
