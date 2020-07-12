@@ -62,7 +62,7 @@ namespace TrainSchdule.ViewModels.System
 		public EntitiesListDataModel(IEnumerable<T> model, int totalCount = -1)
 		{
 			this.List = model;
-			TotalCount = totalCount > -1 ? totalCount : model.Count();
+			TotalCount = totalCount > -1 ? totalCount : model?.Count() ?? -1;
 		}
 	}
 }
