@@ -18,6 +18,7 @@ namespace BLL.Services.ApplyServices
 		private readonly IUsersService _usersService;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IApplyAuditStreamServices _applyAuditStreamServices;
+		private const string Const_LawVacationDescription = "法定节假日";
 
 		public async Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model)
 		{
@@ -52,7 +53,14 @@ namespace BLL.Services.ApplyServices
 			var type = model.VacationType;
 			if (type == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
 			int additionalVacationDay = 0;
-			model.VacationAdditionals?.All(v => { additionalVacationDay += v.Length; v.Start = DateTime.Now; return true; });
+			model.VacationAdditionals?.All(v =>
+			{
+				additionalVacationDay += v.Length;
+				v.Start = DateTime.Now;
+				if (v.Description == Const_LawVacationDescription)
+					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.LawVacationCantCreateByUser);
+				return true;
+			});
 			if (model.StampLeave != null)
 			{
 				var vacationLength = model.VacationLength;
@@ -67,7 +75,7 @@ namespace BLL.Services.ApplyServices
 						Name = v.Name,
 						Start = v.Start,
 						Length = v.Length,
-						Description = "法定节假日"
+						Description = Const_LawVacationDescription
 					}).ToList();
 					if (model.VacationAdditionals != null) lawVacations.AddRange(model.VacationAdditionals);
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
