@@ -17,12 +17,14 @@ namespace BLL.Extensions.Common
 			if (model == null) return null;
 			var existed = prev != null;
 			if (model.IsRemoved && !existed) throw new ActionStatusMessageException(model.NotExist());
-			if (existed) db.Remove(prev);
-			if (!model.IsRemoved)
+			// soft remove
+			else if (existed && model.IsRemoved)
 			{
-				model = MapModel?.Invoke(model, prev);
-				db.Add(model);
+				prev.Remove();
+				db.Update(prev);
 			}
+			model = MapModel?.Invoke(model, prev);
+			db.Update(model);
 			context.SaveChanges();
 			return model;
 		}
