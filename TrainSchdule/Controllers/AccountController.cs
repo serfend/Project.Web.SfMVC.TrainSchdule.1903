@@ -624,19 +624,23 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, "修改用户", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions);
+
 			var modefyUser = await _usersService.ModefyAsync(prevUser, false);
 
 			var invalidAccount = localUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
+
 			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			CheckCurrentUserData(modefyUser);
 			if (invalidAccount == AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
+
 			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(modefyUser);
 			await _context.SaveChangesAsync();
+
 			_userActionServices.Status(actionRecord, true, modefyDescription);
-			var prevUserInfo = JsonConvert.SerializeObject(prevUser);
+			var prevUserInfo = JsonConvert.SerializeObject(localUser);
 			_userActionServices.Log(UserOperation.ModifyUser, prevUser.Id, $"原信息:{prevUserInfo}", true, ActionRank.Danger);
 		}
 
