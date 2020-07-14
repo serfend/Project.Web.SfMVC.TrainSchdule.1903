@@ -1,4 +1,5 @@
-﻿using DAL.DTO.User.Social;
+﻿using DAL.DTO.User;
+using DAL.DTO.User.Social;
 using DAL.Entities.UserInfo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -107,7 +108,7 @@ namespace TrainSchdule.ViewModels.Account
 		///
 		/// </summary>
 		[Required(ErrorMessage = "未输入单位信息")]
-		public UserCompanyInfo Company { get; set; }
+		public CompanyInfoDto Company { get; set; }
 
 		/// <summary>
 		///
