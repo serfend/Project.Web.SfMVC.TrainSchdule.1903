@@ -43,7 +43,7 @@ namespace TrainSchdule.Controllers.Apply
 						auditUser = _usersService.Get(model.Auth.AuthByUserID);
 					else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				}
-
+				if (auditUser == null) return new JsonResult(auditUser.NotLogin());
 				// 检查查询的单位范围，如果范围是空，则需要root权限
 				var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
 				foreach (var c in permitCompanies)
@@ -283,6 +283,7 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var authUser = model.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
 			if (authUser.Id != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
 
