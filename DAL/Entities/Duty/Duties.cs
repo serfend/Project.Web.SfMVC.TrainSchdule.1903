@@ -13,6 +13,7 @@ namespace DAL.Entities
 		/// <summary>
 		/// 职务的名称
 		/// </summary>
+		[Required(ErrorMessage = "未输入职务名称")]
 		public string Name { get; set; }
 
 		/// <summary>
