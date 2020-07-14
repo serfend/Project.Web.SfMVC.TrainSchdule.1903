@@ -389,7 +389,7 @@ namespace BLL.Services.ApplyServices
 				if (goNext) model.NowAuditStep = allStep[nowStep.Index + 1];
 				if (CheckStepShouldSkip(model.NowAuditStep))
 				{
-					AddAuditRecord(nowStep, _usersService.Get("audit_skipper"), new ApplyAuditNodeVdto()
+					AddAuditRecord(model.NowAuditStep, _usersService.Get("audit_skipper"), new ApplyAuditNodeVdto()
 					{
 						Action = AuditResult.Accept,
 						Remark = "无合适人可审,已跳过。",
