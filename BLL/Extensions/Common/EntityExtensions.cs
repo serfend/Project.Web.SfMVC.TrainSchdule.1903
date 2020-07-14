@@ -28,6 +28,8 @@ namespace BLL.Extensions.Common
 
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
 
+		public static ApiResult NotLogin(this User model) => ActionStatusMessage.Account.Auth.Invalid.NotLogin;
+
 		public static ApiResult NotExist(this GradePhyRecord model) => ActionStatusMessage.Grade.Record.NotExist;
 
 		public static ApiResult NotExist(this GradeExam model) => ActionStatusMessage.Grade.Exam.NotExist;

@@ -562,7 +562,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser.Application.InvitedBy != null) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyValid);
 			var currentUser = currentUserService.CurrentUser;
 			var canAuthRank = _usersService.CheckAuthorizedToUser(currentUser, targetUser);
-			var ua = _userActionServices.Log(UserOperation.ModifyUser, model.UserName, "授权审核注册", false, ActionRank.Danger);
+			var ua = _userActionServices.Log(UserOperation.ModifyUser, model.UserName, $"通过{currentUser?.Id} 授权审核注册", false, ActionRank.Danger);
 			if (canAuthRank < 1) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : BLL.Extensions.UserExtensions.InviteByInvalidValue;
 			_context.AppUserApplicationInfos.Update(targetUser.Application);
