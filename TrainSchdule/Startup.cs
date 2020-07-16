@@ -1,24 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using BLL.Crontab;
-using BLL.Interfaces;
-using BLL.Interfaces.BBS;
-using BLL.Interfaces.Common;
-using BLL.Interfaces.File;
-using BLL.Interfaces.GameR3;
-using BLL.Interfaces.IVacationStatistics;
-using BLL.Interfaces.ZX;
-using BLL.Services;
-using BLL.Services.ApplyServices;
-using BLL.Services.BBS;
 using BLL.Services.Common;
 using BLL.Services.File;
-using BLL.Services.GameR3;
-using BLL.Services.VacationStatistics;
-using BLL.Services.ZX;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using Hangfire;
@@ -26,12 +10,10 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Swashbuckle.AspNetCore.Swagger;
 using TrainSchdule.Controllers.Log;
 using TrainSchdule.Crontab;
@@ -119,8 +101,9 @@ namespace TrainSchdule
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
-			AddHangfireServices(services);
 			AddAllowCorsServices(services);
+
+			AddHangfireServices(services);
 			AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
 			{
@@ -177,6 +160,7 @@ namespace TrainSchdule
 			{
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
+
 			services.ConfigureExternalCookie(options =>
 			{
 				// Other options
@@ -242,7 +226,8 @@ namespace TrainSchdule
 			{
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
-
+			// diabled Cors for chrome 80 not support
+			// on dev mode , please just edit chrome setting : chrome://flags -> `SameSite by default cookies` : Disabled
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
