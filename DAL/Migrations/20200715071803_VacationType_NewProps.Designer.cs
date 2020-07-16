@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200715071803_VacationType_NewProps")]
+    partial class VacationType_NewProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1746,9 +1748,9 @@ namespace DAL.Migrations
 
                     b.Property<bool>("CanUseOnTrip");
 
-                    b.Property<string>("Description");
+                    b.Property<bool>("DIsabled");
 
-                    b.Property<bool>("Disabled");
+                    b.Property<string>("Description");
 
                     b.Property<bool>("IsRemoved");
 
@@ -1780,8 +1782,8 @@ namespace DAL.Migrations
                             AllowBeforePrimary = false,
                             CaculateBenefit = true,
                             CanUseOnTrip = true,
+                            DIsabled = false,
                             Description = "正常休假",
-                            Disabled = false,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MaxLength = 500,
@@ -1799,8 +1801,8 @@ namespace DAL.Migrations
                             AllowBeforePrimary = false,
                             CaculateBenefit = false,
                             CanUseOnTrip = false,
+                            DIsabled = false,
                             Description = "仅可在正休的假期结束后提交，不超过10天。",
-                            Disabled = false,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MaxLength = 30,
@@ -1818,8 +1820,8 @@ namespace DAL.Migrations
                             AllowBeforePrimary = true,
                             CaculateBenefit = false,
                             CanUseOnTrip = false,
+                            DIsabled = false,
                             Description = "须提供医院开具的有效证明。",
-                            Disabled = false,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MaxLength = 30,
@@ -1837,9 +1839,9 @@ namespace DAL.Migrations
                             AllowBeforePrimary = true,
                             CaculateBenefit = false,
                             CanUseOnTrip = false,
+                            DIsabled = false,
                             Description = @"仅限疫情期间14天隔离期使用，将不计算正休假。
 其余情况请使用`确认时间`推迟归队，将从全年假期中扣除期间延迟归队的假期天数。",
-                            Disabled = false,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MaxLength = 30,

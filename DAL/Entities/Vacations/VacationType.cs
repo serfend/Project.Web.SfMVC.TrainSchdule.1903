@@ -18,6 +18,16 @@ namespace DAL.Entities.Vacations
 		public string Alias { get; set; }
 
 		/// <summary>
+		/// 描述信息
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// 是否禁用（前端隐藏）
+		/// </summary>
+		public bool Disabled { get; set; }
+
+		/// <summary>
 		/// 最长长度
 		/// </summary>
 		public int MaxLength { get; set; }

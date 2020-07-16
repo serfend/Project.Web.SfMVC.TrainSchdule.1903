@@ -93,7 +93,7 @@ namespace BLL.Services.ApplyServices
 			var vacationInfo = _usersService.VacationInfo(targetUser);
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;
-
+			if (type?.Disabled ?? true) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
 			if (type.Primary)
 			{
 				// 剩余天数判断
