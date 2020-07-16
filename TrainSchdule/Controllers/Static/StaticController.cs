@@ -129,17 +129,18 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(LocationChildrenDataModel), 0)]
-		public IActionResult LocationChildren(int code)
+		public IActionResult LocationChildren(string code)
 		{
-			var location = _context.AdminDivisions.Find(code);
+			int.TryParse(code, out var codeInt);
+			var location = _context.AdminDivisions.Find(codeInt);
 			if (location == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoChildArea);
 			var u = _currentUserService.CurrentUser;
-			var list = _context.AdminDivisions.Where(a => a.ParentCode == code).ToList();
+			var list = _context.AdminDivisions.Where(a => a.ParentCode == codeInt).ToList();
 			int divider = 1;
-			while (divider < 1000000 && code % 10 == 0)
+			while (divider < 1000000 && codeInt % 10 == 0)
 			{
 				divider *= 10;
-				code /= 10;
+				codeInt /= 10;
 			}
 			divider /= 100;
 			var result = new List<AdminDivision>(list.Count);
