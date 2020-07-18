@@ -5,6 +5,7 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.Vacations.Statistics;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,13 +47,13 @@ namespace BLL.Services.VacationStatistics
 				// 此处未考虑召回导致的假期损失
 				// 后续可以通过将RecallDb加以考虑
 				RecallReduceDay = 0
-			});
+			}).ToList();
 			var groupRecords = records.GroupBy(a => new { a.Type });
 			var companyLength = companyCode.Length;
 			var companyAllMembers = _context.AppUsers
 				.Where(u => u.Application.Create <= target)
-				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength)
-				.Where(u => u.CompanyInfo.Company.Code.Substring(0, companyLength) == companyCode);
+				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
+				&& EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyCode}%"));
 			var result = groupRecords.ToList().Select(r =>
 			{
 				var users = r.GroupBy(a => a.From.Id);

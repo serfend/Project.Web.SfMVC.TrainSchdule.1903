@@ -1,7 +1,7 @@
 ﻿using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
 using Hangfire;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -70,7 +70,7 @@ namespace TrainSchdule.Controllers
 
 		private string GetFilePath(string templete)
 		{
-			var sWebRootFolder = _hostingEnvironment.WebRootPath;
+			var sWebRootFolder = env.WebRootPath;
 			templete = $"Templete\\{templete}";
 			var tempFile = new FileInfo(Path.Combine(sWebRootFolder, templete));
 			if (!tempFile.Exists) throw new ActionStatusMessageException(ActionStatusMessage.Static.TempXlsNotExist);

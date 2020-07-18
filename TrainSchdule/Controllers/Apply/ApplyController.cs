@@ -42,7 +42,6 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IGoogleAuthService _authService;
 		private readonly IRecallOrderServices recallOrderServices;
 		private readonly IUserActionServices _userActionServices;
-		private readonly IHostingEnvironment _hostingEnvironment;
 
 		/// <summary>
 		///
@@ -57,8 +56,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <param name="authService"></param>
 		/// <param name="recallOrderServices"></param>
 		/// <param name="userActionServices"></param>
-		/// <param name="hostingEnvironment"></param>
-		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IHostingEnvironment hostingEnvironment)
+		public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices)
 		{
 			_usersService = usersService;
 			_currentUserService = currentUserService;
@@ -70,7 +68,6 @@ namespace TrainSchdule.Controllers.Apply
 			_authService = authService;
 			this.recallOrderServices = recallOrderServices;
 			_userActionServices = userActionServices;
-			_hostingEnvironment = hostingEnvironment;
 		}
 
 		#endregion filed
@@ -83,7 +80,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(Dictionary<int, AuditStatusMessage>), 0)]
+		[ProducesResponseType(typeof(Dictionary<string, AuditStatusMessage>), 0)]
 		public IActionResult AllStatus()
 		{
 			var vacationTypes = _context.VacationTypes.Where(t => !t.IsRemoved)
@@ -91,7 +88,7 @@ namespace TrainSchdule.Controllers.Apply
 				.Select(t => new KeyValuePair<string, VacationType>(t.Name, t));
 			var db = _context.CommonDataDictionaries;
 			var applyStatus = db.Where(d => d.GroupName == "ApplyStatus").ToList();
-			var dictList = applyStatus.Select(s => new KeyValuePair<int, AuditStatusMessage>(s.Value, new AuditStatusMessage(s.Value, s.Key, s.Alias, s.Color)
+			var dictList = applyStatus.Select(s => new KeyValuePair<string, AuditStatusMessage>(s.Value.ToString(), new AuditStatusMessage(s.Value, s.Key, s.Alias, s.Color)
 			{
 				Acessable = s.Description.Split("##", StringSplitOptions.RemoveEmptyEntries)
 			}));
@@ -102,15 +99,15 @@ namespace TrainSchdule.Controllers.Apply
 
 			var executeStatus = db.Where(d => d.GroupName == "ApplyExecuteStatus")
 				.ToList()
-				.Select(d => new KeyValuePair<int, CommonDataDictionary>(d.Value, d));
+				.Select(d => new KeyValuePair<string, CommonDataDictionary>(d.Value.ToString(), d));
 			return new JsonResult(new ApplyAuditStatusViewModel()
 			{
 				Data = new ApplyAuditStatusDataModel()
 				{
-					List = new Dictionary<int, AuditStatusMessage>(dictList),
+					List = new Dictionary<string, AuditStatusMessage>(dictList),
 					Actions = new Dictionary<string, ActionByUserItem>(actions),
 					VacationTypes = new Dictionary<string, VacationType>(vacationTypes),
-					ExecuteStatus = new Dictionary<int, CommonDataDictionary>(executeStatus)
+					ExecuteStatus = new Dictionary<string, CommonDataDictionary>(executeStatus)
 				}
 			}); ;
 		}
@@ -154,6 +151,7 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = _usersService.Get(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(_context);
@@ -186,7 +184,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
 			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
 			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
-
+			_userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.From.Id, null, true, ActionRank.Warning);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
 

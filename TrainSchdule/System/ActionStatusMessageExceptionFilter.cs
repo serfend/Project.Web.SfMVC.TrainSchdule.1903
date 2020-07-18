@@ -16,18 +16,15 @@ namespace TrainSchdule.System
 	/// </summary>
 	public class ActionStatusMessageExceptionFilter : Attribute, IExceptionFilter
 	{
-		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly IModelMetadataProvider _modelMetadataProvider;
 
 		/// <summary>
 		///
 		/// </summary>
-		/// <param name="hostingEnvironment"></param>
 		/// <param name="modelMetadataProvider"></param>
-		public ActionStatusMessageExceptionFilter(IHostingEnvironment hostingEnvironment,
+		public ActionStatusMessageExceptionFilter(
 			IModelMetadataProvider modelMetadataProvider)
 		{
-			_hostingEnvironment = hostingEnvironment;
 			_modelMetadataProvider = modelMetadataProvider;
 		}
 

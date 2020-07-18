@@ -2,7 +2,7 @@
 using BLL.Helpers;
 using DAL.Entities.FileEngine;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
 using System;

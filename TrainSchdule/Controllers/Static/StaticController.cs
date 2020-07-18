@@ -34,11 +34,11 @@ namespace TrainSchdule.Controllers
 	[Route("[controller]/[action]")]
 	public partial class StaticController : Controller
 	{
+		private readonly IWebHostEnvironment env;
 		private readonly IVerifyService _verifyService;
 		private readonly IVacationCheckServices _vacationCheckServices;
 		private readonly ApplicationDbContext _context;
 		private readonly IApplyService _applyService;
-		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly IHttpContextAccessor _httpContext;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IUsersService _usersService;
@@ -48,23 +48,23 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		///
 		/// </summary>
+		/// <param name="env"></param>
 		/// <param name="verifyService"></param>
 		/// <param name="vacationCheckServices"></param>
 		/// <param name="context"></param>
 		/// <param name="applyService"></param>
-		/// <param name="hostingEnvironment"></param>
 		/// <param name="currentUserService"></param>
 		/// <param name="usersService"></param>
 		/// <param name="companiesService"></param>
 		/// <param name="httpContext"></param>
 		/// <param name="fileServices"></param>
-		public StaticController(IVerifyService verifyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IApplyService applyService, IHostingEnvironment hostingEnvironment, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
+		public StaticController(IWebHostEnvironment env, IVerifyService verifyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IApplyService applyService, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
 		{
+			this.env = env;
 			_verifyService = verifyService;
 			_vacationCheckServices = vacationCheckServices;
 			_context = context;
 			_applyService = applyService;
-			_hostingEnvironment = hostingEnvironment;
 			_currentUserService = currentUserService;
 			_usersService = usersService;
 			_companiesService = companiesService;

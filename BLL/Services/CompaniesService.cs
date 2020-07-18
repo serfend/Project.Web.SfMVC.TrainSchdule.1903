@@ -3,6 +3,7 @@ using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace BLL.Services
 			else
 			{
 				var childCodeLength = code.Length + 1;
-				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => x.Code.Substring(0, childCodeLength - 1) == code);
+				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => EF.Functions.Like(x.Code, $"{code}%"));
 			}
 			return list.OrderByDescending(x => x.Priority).ToList();
 		}
@@ -116,9 +117,6 @@ namespace BLL.Services
 			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m => m.User);
 		}
 
-		public bool CheckManagers(string code, string userid)
-		{
-			return _context.CompanyManagers.Where(m => m.Company.Code == code).Any(m => m.User.Id == userid);
-		}
+		public bool CheckManagers(string code, string userid) => _context.CompanyManagers.Where(m => m.Company.Code == code).Any(m => m.User.Id == userid);
 	}
 }

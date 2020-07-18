@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 using BLL.Crontab;
 using BLL.Services.Common;
 using BLL.Services.File;
+using Common.Text.Json.SystemTextJsonSamples;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using Hangfire;
@@ -14,6 +17,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using TrainSchdule.Controllers.Log;
 using TrainSchdule.Crontab;
@@ -33,6 +38,11 @@ namespace TrainSchdule
 		/// </summary>
 		public IConfiguration Configuration { get; set; }
 
+		/// <summary>
+		///
+		/// </summary>
+		public IWebHostEnvironment Env { get; }
+
 		private readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 		#endregion Properties
@@ -43,37 +53,36 @@ namespace TrainSchdule
 		///
 		/// </summary>
 		/// <param name="configuration"></param>
-		public Startup(IConfiguration configuration)
+		/// <param name="env"></param>
+		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			//注入Configuration服务
 			Configuration = configuration;
+			Env = env;
 		}
 
 		#endregion .ctors
 
 		#region Logic
 
-		private void AddApplicationServices(IServiceCollection services)
-		{
-			services.RegisterServices();
-		}
-
 		private void AddHangfireServices(IServiceCollection services)
 		{
+			var hangfire = new SqlServerStorageOptions
+			{
+				CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+				SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+				QueuePollInterval = TimeSpan.Zero,
+				UseRecommendedIsolationLevel = true,
+				UsePageLocksOnDequeue = true,
+				DisableGlobalLocks = true
+			};
+			var connection = Configuration.GetConnectionString("HangfireConnection");
 			// Add Hangfire services.
 			services.AddHangfire(configuration => configuration
 				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
 				.UseSimpleAssemblyNameTypeSerializer()
 				.UseRecommendedSerializerSettings()
-				.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
-				{
-					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-					QueuePollInterval = TimeSpan.Zero,
-					UseRecommendedIsolationLevel = true,
-					UsePageLocksOnDequeue = true,
-					DisableGlobalLocks = true
-				}));
+				.UseSqlServerStorage(connection, hangfire));
 
 			// Add the processing server as IHostedService
 			services.AddHangfireServer();
@@ -101,6 +110,7 @@ namespace TrainSchdule
 				options.UseLazyLoadingProxies()
 					   .UseSqlServer(connectionString);
 			});
+
 			AddAllowCorsServices(services);
 
 			AddHangfireServices(services);
@@ -123,11 +133,24 @@ namespace TrainSchdule
 				// User settings
 				options.User.RequireUniqueEmail = true;
 			});
-			AddApplicationServices(services);
-			services.AddMvc(option =>
+			services.RegisterServices();
+
+			services
+				.AddMvc(option =>
 			{
 				option.Filters.Add<ActionStatusMessageExceptionFilter>();
-			}).AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+			})
+				.AddNewtonsoftJson(opt =>
+				{
+					opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+				});
+			//.AddJsonOptions(opt =>
+			//	{
+			//		opt.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+			//		opt.JsonSerializerOptions.Converters.Add(new DictionaryTKeyEnumTValueConverter());
+			//		opt.JsonSerializerOptions.AllowTrailingCommas = true;
+			//	}
+			//);
 			//.AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
 			// TODO use yyyy-mm-ddThh:ii:ssZ (UTC)
 		}
@@ -137,7 +160,7 @@ namespace TrainSchdule
 			//注册Swagger生成器，定义一个和多个Swagger 文档
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new Info { Title = "TrainSchdule", Version = "v1" });
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "TrainSchdule", Version = "v1" });
 				// 为 Swagger JSON and UI设置xml文档注释路径
 				var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
 				var xmlPath = Path.Combine(basePath, "TrainSchdule.xml");
@@ -147,15 +170,19 @@ namespace TrainSchdule
 
 		private void AddAllowCorsServices(IServiceCollection services)
 		{
+			var allowOrgin = Configuration.GetSection("Cors")?.GetValue<string>("Orgins", "localhost");
+			var allowOrgins = allowOrgin.Split(',').Select(ip => ip.StartsWith("http") ? ip : $"http://{ip}").ToArray();
 			services.AddCors(options =>
 			{
-				options.AddPolicy(MyAllowSpecificOrigins,
-					builder =>
-					{
-						builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((x) => true);
-					});
+				options.AddPolicy(
+					MyAllowSpecificOrigins,
+				builder => builder
+				.WithOrigins(allowOrgins)
+				.AllowAnyMethod()
+				.AllowCredentials()
+				.AllowAnyHeader()
+				);
 			});
-
 			services.Configure<CookiePolicyOptions>(options =>
 			{
 				options.MinimumSameSitePolicy = SameSiteMode.None;
@@ -175,6 +202,7 @@ namespace TrainSchdule
 				.AddCookie(options =>
 				{
 					options.Cookie.SameSite = SameSiteMode.None;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 				});
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
@@ -183,6 +211,7 @@ namespace TrainSchdule
 			{
 				s.IdleTimeout = TimeSpan.FromMinutes(60);
 				s.Cookie.SameSite = SameSiteMode.None;
+				s.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 			});
 		}
 
@@ -191,16 +220,10 @@ namespace TrainSchdule
 		/// </summary>
 		/// <param name="app"></param>
 		/// <param name="env"></param>
-		/// <param name="services"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			if (env.IsDevelopment())
-			{
-			}
-			else if (env.IsProduction())
-			{
-			}
 			app.Map("/ws/log", WebSocketLog.Map);// 连接到资源上报的ws
+
 			app.UseHangfireServer();
 			app.UseHangfireDashboard("/schdule", new DashboardOptions()
 			{
@@ -211,37 +234,47 @@ namespace TrainSchdule
 			ConfigureHangfireServices();
 
 			app.UseDeveloperExceptionPage();
-			app.UseDatabaseErrorPage();
+
 			DefaultFilesOptions options = new DefaultFilesOptions();
 			options.DefaultFileNames.Add("index.html");    //将index.html改为需要默认起始页的文件名.
 			app.UseDefaultFiles(options);
-			//中间件方法
+
+			// 中间件方法 #1
 			app.UseStaticFiles();
 			app.UseSession();
 
-			//启用中间件服务生成Swagger作为JSON终结点
-			app.UseSwagger();
-			//启用中间件服务对swagger-ui，指定Swagger JSON终结点
-			app.UseSwaggerUI(c =>
-			{
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-			});
+			// 默认路由 #2
+			app.UseRouting();
+
+			// 跨域 #3
 			// diabled Cors for chrome 80 not support
 			// on dev mode , please just edit chrome setting : chrome://flags -> `SameSite by default cookies` : Disabled
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				MinimumSameSitePolicy = SameSiteMode.None,
+				Secure = CookieSecurePolicy.Always
 			});
-			app.UseAuthentication();
 
-			//默认路由
-			app.UseMvc(routes =>
+			// 认证 #4
+			app.UseAuthentication();
+			app.UseAuthorization();
+
+			// 路由 #5
+			app.UseEndpoints(endpoints =>
 			{
-				routes.MapRoute(
+				endpoints.MapControllerRoute(
 					name: "default",
-					//controller/action/param
-					template: "{controller=Home}/{action=Cover}/{Id?}");
+					pattern: "{controller=Home}/{action=Index}/{id?}");
+			});
+
+			// 其他中间件 #n
+			//启用中间件服务生成Swagger作为JSON终结点
+			app.UseSwagger();
+			//启用中间件服务对swagger-ui，指定Swagger JSON终结点
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
 
 			//seeder.Seed().Wait();

@@ -76,7 +76,7 @@ namespace BLL.Extensions.ApplyExtensions
 			if (companyCode == null) return db.Where(a => false);
 			var codeLen = companyCode.Length;
 			return db.Where(a => a.Status == AuditStatus.Accept)
-				.Where(s => s.BaseInfo.Company.Code.Length >= codeLen && s.BaseInfo.Company.Code.Substring(0, codeLen) == companyCode);
+				.Where(s => EF.Functions.Like(s.BaseInfo.Company.Code, $"{companyCode}%"));
 		}
 
 		/// <summary>

@@ -2,7 +2,6 @@
 using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
-using Remotion.Linq.Parsing.ExpressionVisitors.MemberBindings;
 using System.Linq;
 
 namespace BLL.Extensions

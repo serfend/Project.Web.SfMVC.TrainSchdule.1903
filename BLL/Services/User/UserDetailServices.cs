@@ -64,10 +64,11 @@ namespace BLL.Services
 		public UserVacationInfoVDto VacationInfo(User targetUser)
 		{
 			if (targetUser == null) return null;
+			var nowY = DateTime.Now.XjxtNow().Year;
 			var applies = _context.AppliesDb
 				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
-				.Where(a => a.RequestInfo.StampLeave.Value.Year == DateTime.Now.XjxtNow().Year)
+				.Where(a => a.RequestInfo.StampLeave.Value.Year == nowY)
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 
 			var r = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser);

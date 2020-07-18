@@ -11,7 +11,8 @@ using BLL.Extensions;
 using DAL.QueryModel;
 using System.Threading.Tasks;
 using BLL.Extensions.Common;
-using NPOI.SS.Formula.Functions;
+using Microsoft.EntityFrameworkCore;
+using Abp.Linq.Expressions;
 
 namespace BLL.Services.ApplyServices
 {
@@ -25,31 +26,33 @@ namespace BLL.Services.ApplyServices
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 			if (model.ExecuteStatus?.Value != null)
 			{
-				int.TryParse(model.ExecuteStatus.Value, out var executeStatusInt);
+				var success = int.TryParse(model.ExecuteStatus.Value, out var executeStatusInt);
 				list = list.Where(a => (int)a.ExecuteStatus == executeStatusInt);
 			}
-			if (model.NowAuditBy != null) list = list.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(model.NowAuditBy.Value));
-			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(model.AuditBy.Value)));
+			if (model.NowAuditBy != null) list = list.Where(a => EF.Functions.Like(a.NowAuditStep.MembersFitToAudit, $"%{model.NowAuditBy.Value }% "));
+			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => EF.Functions.Like(s.MembersFitToAudit, $"%{model.AuditBy.Value}%")));
 			if (model.CompanyType != null)
-				list = list.Where(a => a.BaseInfo.From.CompanyInfo.Company.Tag.Contains(model.CompanyType.Value));
+				list = list.Where(a => EF.Functions.Contains(a.BaseInfo.From.CompanyInfo.Company.Tag, model.CompanyType.Value));
 			if (model.DutiesType != null)
-				list = list.Where(a => a.BaseInfo.From.CompanyInfo.Duties.Tags.Contains(model.DutiesType.Value));
+				list = list.Where(a => EF.Functions.Contains(a.BaseInfo.From.CompanyInfo.Duties.Tags, model.DutiesType.Value));
 			if (model.CreateCompany != null)
 			{
-				var arr = model.CreateCompany?.Arrays;
+				var arr = model.CreateCompany?.Arrays?.Select(i => $"{i}%");
+				var exp = PredicateBuilder.New<Apply>();
+				foreach (var item in arr)
+					exp = exp.Or(p => EF.Functions.Like(p.BaseInfo.From.CompanyInfo.Company.Code, item));
 				if (arr != null)
 					list = list.Where(a => a.BaseInfo != null)
 						.Where(a => a.BaseInfo.From != null)
 						.Where(a => a.BaseInfo.From.CompanyInfo != null)
 						.Where(a => a.BaseInfo.From.CompanyInfo.Company != null)
-						.Where(a => arr.Any(c => c.Length <= a.BaseInfo.From.CompanyInfo.Company.Code.Length
-						&& a.BaseInfo.From.CompanyInfo.Company.Code.Substring(0, c.Length) == c));
+						.Where(exp);
 			}
 
 			bool anyDateFilterIsLessThan30Days = false;
 			if (model.Create != null)
 			{
-				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End) || (model.Create.Dates != null && model.Create.Dates.Any(d => d.Date.Subtract(a.Create.Value).Days == 0)));
+				list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End));
 				anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
 			}
 
@@ -64,12 +67,12 @@ namespace BLL.Services.ApplyServices
 			//		End = nowDay.AddDays(thisFri - nowDay.DayOfWeek).AddDays(8)
 			//	};
 			//}
-			if (model.StampLeave?.Start != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End) || (model.StampLeave.Dates != null && model.StampLeave.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampLeave.Value).Days == 0)));
+			if (model.StampLeave?.Start != null) list = list.Where(a => (a.RequestInfo.StampLeave >= model.StampLeave.Start && a.RequestInfo.StampLeave <= model.StampLeave.End));
 			anyDateFilterIsLessThan30Days |= (model.StampLeave == null || model.StampLeave.End.Subtract(model.StampLeave.Start).Days <= 360);
 
 			if (model.StampReturn != null)
 			{
-				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End) || (model.StampReturn.Dates != null && model.StampReturn.Dates.Any(d => d.Date.Subtract(a.RequestInfo.StampReturn.Value).Days == 0)));
+				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End));
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
 			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
@@ -84,29 +87,31 @@ namespace BLL.Services.ApplyServices
 				list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
-			var result = list.SplitPage(model.Pages).Result;
+			var result = list.SplitPage(model.Pages);
 			totalCount = result.Item2;
 			return result.Item1;
 		}
 
-		public async Task<int> RemoveAllUnSaveApply()
+		public async Task<int> RemoveAllUnSaveApply(TimeSpan interval)
 		{
+			var outofDate = DateTime.Now.Subtract(interval);
 			//寻找所有找过1天未保存的申请
 			var list = _context.AppliesDb
 						 .Where(a => a.Status == AuditStatus.NotSave)
-						 .Where(a => a.Create.HasValue && a.Create.Value.AddDays(1).Subtract(DateTime.Now).TotalDays < 0).ToList();
+						 .Where(a => a.Create.HasValue && a.Create.Value < outofDate).ToList();
 			await RemoveApplies(list).ConfigureAwait(true);
 			return list.Count;
 		}
 
-		public async Task<int> RemoveAllNoneFromUserApply()
+		public async Task<int> RemoveAllNoneFromUserApply(TimeSpan interval)
 		{
 			var applies = _context.Applies;
+			var outofDate = DateTime.Now.Subtract(interval);
 
 			#region request
 
 			//寻找所有没有创建申请且不是今天创建的 请求信息
-			var request = _context.ApplyRequests.Where(r => DateTime.Now.Date != r.CreateTime.Date).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
+			var request = _context.ApplyRequests.Where(r => r.CreateTime < outofDate).Where(r => !applies.Any(a => a.RequestInfo.Id == r.Id)).ToList();
 			//删除这些请求信息的福利信息
 			foreach (var r in request) _context.VacationAdditionals.RemoveRange(r.AdditialVacations);
 			//删除这些请求信息

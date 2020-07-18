@@ -30,6 +30,8 @@ namespace TrainSchdule.Controllers
 	[Route("[controller]")]
 	public partial class UsersController : Controller
 	{
+		private readonly IWebHostEnvironment env;
+
 		#region Fields
 
 		private readonly IUsersService _usersService;
@@ -40,7 +42,6 @@ namespace TrainSchdule.Controllers
 		private readonly IGoogleAuthService _authService;
 		private readonly ApplicationDbContext _context;
 		private readonly IUserActionServices _userActionServices;
-		private readonly IHostingEnvironment _hostingEnvironment;
 
 		#endregion Fields
 
@@ -49,6 +50,7 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 用户管理
 		/// </summary>
+		/// <param name="env"></param>
 		/// <param name="usersService"></param>
 		/// <param name="currentUserService"></param>
 		/// <param name="userServiceDetail"></param>
@@ -58,9 +60,9 @@ namespace TrainSchdule.Controllers
 		/// <param name="companyManagerServices"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="context"></param>
-		/// <param name="hostingEnvironment"></param>
-		public UsersController(IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+		public UsersController(IWebHostEnvironment env, IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
 		{
+			this.env = env;
 			_usersService = usersService;
 			_currentUserService = currentUserService;
 			this.userServiceDetail = userServiceDetail;
@@ -70,7 +72,6 @@ namespace TrainSchdule.Controllers
 			_companyManagerServices = companyManagerServices;
 			_userActionServices = userActionServices;
 			_context = context;
-			_hostingEnvironment = hostingEnvironment;
 		}
 
 		#endregion .ctors
@@ -129,7 +130,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return result;
 			return new JsonResult(new UserDiyInfoViewModel()
 			{
-				Data = targetUser.DiyInfo?.ToViewModel(targetUser, _hostingEnvironment)
+				Data = targetUser.DiyInfo?.ToViewModel(targetUser)
 			});
 		}
 
@@ -348,7 +349,7 @@ namespace TrainSchdule.Controllers
 				avatar = targetUser?.DiyInfo?.Avatar;
 				if (avatar == null)
 				{
-					avatar = targetUser.BaseInfo.RealName.CreateTempAvatar(targetUser.BaseInfo.Gender, _hostingEnvironment.WebRootPath);
+					avatar = targetUser.BaseInfo.RealName.CreateTempAvatar(targetUser.BaseInfo.Gender, env.WebRootPath);
 					await _usersService.UpdateAvatar(targetUser, avatar?.Img?.ToBase64()).ConfigureAwait(true);
 				}
 			}

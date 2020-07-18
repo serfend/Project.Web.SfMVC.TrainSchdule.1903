@@ -1,10 +1,12 @@
-﻿using BLL.Extensions;
+﻿using Abp.Linq.Expressions;
+using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,7 +135,7 @@ namespace BLL.Services.ApplyServices
 		{
 			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;
-			if (filter.AuditMembers != null && filter.AuditMembers.Any(a => true)) return filter.AuditMembers;
+			if (filter.AuditMembers != null && filter.AuditMembers.Any()) return filter.AuditMembers;
 			var result = context.AppUsers.AsQueryable();
 
 			// 指定单位
@@ -146,13 +148,30 @@ namespace BLL.Services.ApplyServices
 			if (target == null)
 			{
 				// Companies
-				if (filter.Companies != null && filter.Companies.Any(a => true)) result = result.Where(u => filter.Companies.Any(c => c == u.CompanyInfo.Company.Code));
-
+				if (filter.Companies != null && filter.Companies.Any())
+				{
+					var expC = PredicateBuilder.New<User>();
+					foreach (var c in filter.Companies)
+						expC = expC.Or(u => u.CompanyInfo.Company.Code == c);
+					result = result.Where(expC);
+				}
 				// CompanyTag
-				if (filter.CompanyTags != null && filter.CompanyTags.Any(a => true)) result = result.Where(u => filter.CompanyTags.Any(c => c == u.CompanyInfo.Company.Tag));
+				if (filter.CompanyTags != null && filter.CompanyTags.Any())
+				{
+					var expC = PredicateBuilder.New<User>();
+					foreach (var c in filter.CompanyTags)
+						expC = expC.Or(u => EF.Functions.Like(u.CompanyInfo.Company.Tag, $"%{c}%"));
+					result = result.Where(expC);
+				}
 
 				// CompanyLength
-				if (filter.CompanyCodeLength != null && filter.CompanyCodeLength.Any(a => true)) result = result.Where(u => filter.CompanyCodeLength.Any(c => c == u.CompanyInfo.Company.Code.Length));
+				if (filter.CompanyCodeLength != null && filter.CompanyCodeLength.Any())
+				{
+					var expL = PredicateBuilder.New<User>();
+					foreach (var l in filter.CompanyCodeLength)
+						expL = expL.Or(u => u.CompanyInfo.Company.Code.Length == l);
+					result = result.Where(expL);
+				}
 			}
 			else
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
@@ -160,7 +179,13 @@ namespace BLL.Services.ApplyServices
 			// 指定职务
 			if (filter.Duties == null || !filter.Duties.Any(a => true))
 			{
-				if (filter.DutyTags != null && filter.DutyTags.Any(a => true)) result = result.Where(u => filter.DutyTags.Any(t => u.CompanyInfo.Duties.Tags.Contains(t)));
+				if (filter.DutyTags != null && filter.DutyTags.Any())
+				{
+					var expD = PredicateBuilder.New<User>();
+					foreach (var d in filter.Duties)
+						expD = expD.Or(u => EF.Functions.Like(u.CompanyInfo.Duties.Tags, $"%{d}%"));
+					result = result.Where(expD);
+				}
 
 				switch (filter.DutyIsMajor)
 				{
@@ -174,8 +199,14 @@ namespace BLL.Services.ApplyServices
 						break;
 				}
 			}
-			else result = result.Where(u => filter.Duties.Any(d => d == u.CompanyInfo.Duties.Code));
-			IEnumerable<string> fitUsers = result.Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id).ToList();
+			else
+			{
+				var expD = PredicateBuilder.New<User>();
+				foreach (var d in filter.Duties)
+					expD = expD.Or(u => u.CompanyInfo.Duties.Code == d);
+			}
+			var rawUser = result.ToList();
+			IEnumerable<string> fitUsers = rawUser.Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id).ToList();
 			// 管理具有本单位审批权限
 			// 但非必选项，此处不应直接加入可审列表，而应在操作审批时判断是否是管理
 			// 一旦管理审批，此流程将直接通过

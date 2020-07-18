@@ -47,13 +47,14 @@ namespace TrainSchdule.Extensions
 		/// <returns></returns>
 		public static ApplyRequestVdto ToVDTO(this SubmitRequestInfoViewModel model, ApplicationDbContext context)
 		{
+			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
 			var b = new ApplyRequestVdto()
 			{
 				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
 				VacationLength = model.VacationLength,
-				VacationPlace = context.AdminDivisions.Find(model.VacationPlace),
+				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),
 				VacationPlaceName = model.VacationPlaceName,
 				VacationType = context.VacationTypes.Where(t => t.Name == model.VacationType).FirstOrDefault(),
 				ByTransportation = model.ByTransportation,

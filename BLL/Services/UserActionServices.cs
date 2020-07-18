@@ -7,6 +7,7 @@ using DAL.Entities.Common;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace BLL.Services
 				var uc = u.CompanyInfo;
 				var ud = uc.Duties.IsMajorManager;
 				var ucmp = uc.Company.Code;
-				if (targetUserCompanyCode == null || (targetUserCompanyCode.Length >= ucmp.Length && targetUserCompanyCode.Substring(0, ucmp.Length) == ucmp) && ud)
+				if (targetUserCompanyCode == null || (targetUserCompanyCode.Length >= ucmp.Length && EF.Functions.Like(targetUserCompanyCode, $"{ucmp}%")) && ud)
 				{
 					Status(a, true, $"单位主官");
 					return true;
@@ -68,7 +69,7 @@ namespace BLL.Services
 				{
 					var results = userServiceDetail.InMyManage(u).Result;
 					if (targetUserCompanyCode == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
-					else if (results.Item2 > 0 && results.Item1.Any(c => targetUserCompanyCode.Length >= c.Code.Length && targetUserCompanyCode.Substring(0, c.Code.Length) == c.Code))
+					else if (results.Item2 > 0 && results.Item1.Any(c => targetUserCompanyCode.Length >= c.Code.Length && EF.Functions.Like(targetUserCompanyCode, $"{c.Code}%")))
 					{
 						Status(a, true, $"单位管理");
 						return true;

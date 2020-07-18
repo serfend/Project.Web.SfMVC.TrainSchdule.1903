@@ -9,10 +9,7 @@ namespace BLL.Extensions
 {
 	public static class SystemExtensions
 	{
-		public static DateTime XjxtNow(this DateTime date)
-		{
-			return date.AddDays(5);
-		}
+		public static DateTime XjxtNow(this DateTime date) => date.AddDays(5);
 
 		public static string ToBase64(this byte[] data)
 		{

@@ -45,12 +45,11 @@ namespace BLL.Services.VacationStatistics
 				Type = a.BaseInfo.From.CompanyInfo.Duties.Type,
 				From = a.BaseInfo.From,
 				Days = a.RequestInfo.VacationLength,
-
 				// 统计中用不到RecallOrder
 				RecallReduceDay = 0
-			});
-			var groupRecords = records.GroupBy(a => new { a.Type });
-			var result = groupRecords.ToList().Select(r =>
+			}).ToList(); // TODO client side query shoud disabled
+			var groupRecords = records.GroupBy(a => new { a.Type }).ToList();
+			var result = groupRecords.Select(r =>
 			{
 				var users = r.GroupBy(a => a.From.Id);
 				var dict = new Dictionary<string, int>();

@@ -86,7 +86,8 @@ namespace BLL.Extensions
 				// 上次是否是新年初始化 或 上次的家庭情况时间不同于本次
 				else if (lastVacationModefy.IsNewYearInitData || lastVacationModefy.UpdateDate != userFinnalModefyDate)
 				{
-					var thisYearModefyRecords = vacationModefyRecords.Where(rec => rec.UpdateDate.Year == DateTime.Now.XjxtNow().Year); // 今年以来的变更记录
+					var nowY = DateTime.Now.XjxtNow().Year;
+					var thisYearModefyRecords = vacationModefyRecords.Where(rec => rec.UpdateDate.Year == nowY); // 今年以来的变更记录
 					var newLength = thisYearModefyRecords.CaculateLengthByWeight(userFinnalModefyDate, nowVacationLength, out var weightDescription);
 
 					requireToAdd = new AppUsersSettleModefyRecord()
@@ -109,11 +110,12 @@ namespace BLL.Extensions
 			// 若今年无变更记录，则创建一条记录
 			else
 			{
+				var newRecord = new DateTime(DateTime.Now.XjxtNow().Year, 1, 1);
 				requireToAdd = new AppUsersSettleModefyRecord()
 				{
 					Description = description,
 					IsNewYearInitData = true,
-					UpdateDate = new DateTime(DateTime.Now.XjxtNow().Year, 1, 1),
+					UpdateDate = newRecord,
 					Length = nowVacationLength
 				};
 				return new Tuple<double, AppUsersSettleModefyRecord, int, string>(nowVacationLength, requireToAdd, maxOnTripTime, description);

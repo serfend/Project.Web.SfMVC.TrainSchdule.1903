@@ -53,9 +53,8 @@ namespace TrainSchdule.ViewModels.User
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="user">需要传入用户本身</param>
-		/// <param name="env"></param>
 		/// <returns></returns>
-		public static UserDiyInfoDataModel ToViewModel(this UserDiyInfo model, DAL.Entities.UserInfo.User user, IHostingEnvironment env)
+		public static UserDiyInfoDataModel ToViewModel(this UserDiyInfo model, DAL.Entities.UserInfo.User user)
 		{
 			return new UserDiyInfoDataModel()
 			{

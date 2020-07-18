@@ -62,9 +62,9 @@ namespace BLL.Services.VacationStatistics
 				Target = target,
 				Type = a.BaseInfo.From.CompanyInfo.Duties.Type,
 				Day = a.RequestInfo.VacationLength // 此处可能需要仅计算主假
-			});
-			var groupRecords = records.GroupBy(a => new { a.From, a.To, a.Type });
-			var result = groupRecords.ToList().Select(r => new T()
+			}).ToList(); // TODO client side query should diabled
+			var groupRecords = records.GroupBy(a => new { a.From, a.To, a.Type }).ToList();
+			var result = groupRecords.Select(r => new T()
 			{
 				Target = target,
 				To = r.Key.To,

@@ -25,7 +25,7 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 休假状态
 		/// </summary>
-		public Dictionary<int, AuditStatusMessage> List { get; set; }
+		public Dictionary<string, AuditStatusMessage> List { get; set; }
 
 		/// <summary>
 		/// 用户操作
@@ -40,6 +40,6 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 休假落实情况
 		/// </summary>
-		public Dictionary<int, CommonDataDictionary> ExecuteStatus { get; set; }
+		public Dictionary<string, CommonDataDictionary> ExecuteStatus { get; set; }
 	}
 }
