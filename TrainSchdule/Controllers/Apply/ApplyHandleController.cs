@@ -48,12 +48,12 @@ namespace TrainSchdule.Controllers.Apply
 				var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
 				foreach (var c in permitCompanies)
 				{
-					var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c);
+					var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c, "审批列表");
 					var cItem = _companiesService.GetById(c);
 					if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
 				}
 
-				var list = _applyService.QueryApplies(model, false, out var totalCount)?.Select(a => a.ToSummaryDto());
+				var list = _applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto());
 				return new JsonResult(new ApplyListViewModel()
 				{
 					Data = new EntitiesListDataModel<ApplySummaryDto>()
@@ -85,11 +85,11 @@ namespace TrainSchdule.Controllers.Apply
 			var c = id == null ? currentUser : _usersService.Get(id);
 			if (id != null && id != currentUser.Id)
 			{
-				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).Where(a => a.Create >= start).Where(a => a.Create <= end);
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
-			var result = list.SplitPage(pages).Result;
+			var result = list.SplitPage(pages);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new EntitiesListDataModel<ApplySummaryDto>()
@@ -156,7 +156,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
-			var result = list.SplitPage(pages).Result;
+			var result = list.SplitPage(pages);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new EntitiesListDataModel<ApplySummaryDto>()
@@ -216,10 +216,10 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> RomovedApply(int pageIndex = 0, int pageSize = 20)
+		public IActionResult RomovedApply(int pageIndex = 0, int pageSize = 20)
 		{
 			var list = _context.Applies.Where(a => a.IsRemoved).OrderByDescending(a => a.IsRemovedDate);
-			var result = await list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
+			var result = list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new EntitiesListDataModel<ApplySummaryDto>()
@@ -238,7 +238,7 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult RemoveAllUnSaveApply()
 		{
-			_applyService.RemoveAllUnSaveApply();
+			var result = _applyService.RemoveAllUnSaveApply(TimeSpan.FromDays(1));
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -252,10 +252,12 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult RecallOrder([FromBody] RecallCreateViewModel model)
 		{
 			var authUser = model.Auth.AuthUser(_authService, _currentUserService.CurrentUser?.Id);
+			var ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModifyApply, authUser, $"召回{model.Data.Apply}");
 			if (authUser != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
 
 			var recall = model.Data.ToVDto<RecallOrderVDto>();
 			var result = recallOrderServices.Create(recall);
+			_userActionServices.Status(ua, true);
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
 		}
 
@@ -289,7 +291,8 @@ namespace TrainSchdule.Controllers.Apply
 
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();
 			var apply = _applyService.GetById(m.Apply);
-			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, apply.BaseInfo.From.CompanyInfo.Company.Code, "确认归队时间");
+			var targetUser = apply.BaseInfo.From;
+			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code, $"确认{targetUser.Id}归队时间");
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var result = recallOrderServices.Create(apply, m);
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));

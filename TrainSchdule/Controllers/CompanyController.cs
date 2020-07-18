@@ -29,7 +29,6 @@ namespace TrainSchdule.Controllers
 		private readonly ICurrentUserService _currentUserService;
 		private readonly ICompanyManagerServices _companyManagerServices;
 		private readonly IUserServiceDetail _usersService;
-		private readonly IHostingEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
 
 		/// <summary>
@@ -39,15 +38,13 @@ namespace TrainSchdule.Controllers
 		/// <param name="currentUserService"></param>
 		/// <param name="companyManagerServices"></param>
 		/// <param name="usersService"></param>
-		/// <param name="hostingEnvironment"></param>
 		/// <param name="context"></param>
-		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, ICompanyManagerServices companyManagerServices, IUserServiceDetail usersService, IHostingEnvironment hostingEnvironment, ApplicationDbContext context)
+		public CompanyController(ICompaniesService companiesService, ICurrentUserService currentUserService, ICompanyManagerServices companyManagerServices, IUserServiceDetail usersService, ApplicationDbContext context)
 		{
 			_companiesService = companiesService;
 			_currentUserService = currentUserService;
 			_companyManagerServices = companyManagerServices;
 			_usersService = usersService;
-			_hostingEnvironment = hostingEnvironment;
 			_context = context;
 		}
 
@@ -78,11 +75,11 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
+		public IActionResult DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet");
 			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
+			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
 			var data = new EntitiesListDataModel<DutyDataModel>()
 			{
 				List = result.Item1.Select(d => d.ToDataModel()),
@@ -102,11 +99,11 @@ namespace TrainSchdule.Controllers
 		/// <param name="pageNum"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
+		public IActionResult TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
 		{
 			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet");
 			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			var result = await dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
+			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
 			var data = new EntitiesListDataModel<UserTitleDataModel>()
 			{
 				List = result.Item1.Select(d => d.ToDataModel()),

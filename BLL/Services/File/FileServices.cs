@@ -47,7 +47,7 @@ namespace BLL.Services.File
 			else
 				list = list.Where(f => f.Parent.Id == node.Id);
 			list = list.Where(f => f.Name != null).OrderByDescending(f => f.Create);
-			return list.SplitPage<UserFileInfo>(pages).Result;
+			return list.SplitPage<UserFileInfo>(pages);
 		}
 
 		public Tuple<IEnumerable<string>, int> Folders(string filepath, QueryByPage pages)
@@ -59,7 +59,7 @@ namespace BLL.Services.File
 			else
 				list = list.Where(f => f.Parent.Id == node.Id);
 			list = list.Where(f => f.Name == null).OrderByDescending(f => f.Create);
-			var result = list.SplitPage(pages).Result;
+			var result = list.SplitPage(pages);
 			return new Tuple<IEnumerable<string>, int>(result.Item1.Select(c => c.Path), result.Item2);
 		}
 
@@ -250,7 +250,8 @@ namespace BLL.Services.File
 		/// </summary>
 		public void RemoveTimeoutUploadStatus()
 		{
-			var list = context.FileUploadStatuses.Where(s => DateTime.Now.Subtract(s.LastUpdate).TotalMilliseconds > 30).ToList();
+			var outofDateStatus = DateTime.Now.AddMinutes(30);
+			var list = context.FileUploadStatuses.Where(s => s.LastUpdate < outofDateStatus);
 			context.FileUploadStatuses.RemoveRange(list);
 			context.SaveChanges();
 		}

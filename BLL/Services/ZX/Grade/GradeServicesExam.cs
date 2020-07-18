@@ -6,8 +6,8 @@ using DAL.DTO.ZX.Grade;
 using DAL.Entities.ZX.Grade;
 using DAL.QueryModel;
 using DAL.QueryModel.ZX;
+using Microsoft.EntityFrameworkCore;
 using NPOI.SS.Formula.Functions;
-using Remotion.Linq.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,14 +34,14 @@ namespace BLL.Services.ZX.Grade
 			if (model.Name.Valid())
 			{
 				var nameLen = model.Name.Value.Length;
-				result = result.Where(r => r.Name.Length >= nameLen).Where(r => r.Name.Substring(0, nameLen) == model.Name.Value);
+				result = result.Where(r => r.Name.Length >= nameLen).Where(r => EF.Functions.Like(r.Name, $"{ model.Name.Value}%"));
 			}
 
 			if (!model.Create.Valid()) model.Create = new QueryByDate() { Start = DateTime.Now.AddYears(-1), End = DateTime.Now };
 			if (model.ExecuteTime.Valid()) result = result.Where(r => r.ExecuteTime >= model.ExecuteTime.Start).Where(r => r.ExecuteTime <= model.ExecuteTime.End);
 
 			result = result.Where(r => r.Create >= model.Create.Start).Where(r => r.Create <= model.Create.End);
-			var list = result.SplitPage(model.Pages.ValidSplitPage()).Result;
+			var list = result.SplitPage(model.Pages.ValidSplitPage());
 			return new Tuple<IEnumerable<ExamDTO>, int>(list.Item1.ToList().Select(f => f.ToDTO()), list.Item2);
 		}
 

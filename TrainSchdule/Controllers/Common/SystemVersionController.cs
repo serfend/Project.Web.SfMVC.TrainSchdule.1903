@@ -51,7 +51,7 @@ namespace TrainSchdule.Controllers.Static
 		[Route("UpdateVersion")]
 		public IActionResult GetUpdateVersion(int pageIndex = 0, int pageSize = 20)
 		{
-			var list = context.ApplicationUpdateRecordsDb.OrderByDescending(r => r.Create).SplitPage(pageIndex, pageSize).Result;
+			var list = context.ApplicationUpdateRecordsDb.OrderByDescending(r => r.Create).SplitPage(pageIndex, pageSize);
 			return new JsonResult(new ApplicationUpdateRecordViewModel()
 			{
 				Data = new ApplicationUpdateRecordDataModel()

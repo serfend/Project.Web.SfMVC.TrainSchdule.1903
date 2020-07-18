@@ -54,12 +54,15 @@ namespace TrainSchdule.Controllers
 		[Route("s/{url}")]
 		[AllowAnonymous]
 		[HttpGet]
-		public async Task<IActionResult> RedirectDwz([FromRoute]string url, [FromServices] IDWZServices dwzInnerServices)
+		public async Task<IActionResult> RedirectDwz([FromRoute] string url, [FromServices] IDWZServices dwzInnerServices)
 		{
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
 			// Record(m); // 此处异步不会等待，所以服务器直接返回的同时把db清理了，导致Record方法报错
-			dwzInnerServices.Open(m, currentUserService.CurrentUser);
+			new Task(() =>
+			{
+				dwzInnerServices.Open(m, currentUserService.CurrentUser);
+			}).Start();
 			return Redirect(m.Target);
 		}
 
@@ -94,7 +97,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[Route("Static/ShortUrl/Query")]
 		[HttpPost]
-		public async Task<IActionResult> QueryDwz([FromBody]QueryDwzViewModel model)
+		public async Task<IActionResult> QueryDwz([FromBody] QueryDwzViewModel model)
 		{
 			var result = await dWZServices.Query(model).ConfigureAwait(true);
 			var list = result.Item1;
@@ -116,7 +119,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("Static/ShortUrl/Create")]
-		public async Task<IActionResult> Create([FromBody]ShortUrlCreateDataModel model)
+		public async Task<IActionResult> Create([FromBody] ShortUrlCreateDataModel model)
 		{
 			var c = currentUserService.CurrentUser;
 			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Create, c.Id, null);
@@ -143,7 +146,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[Route("s/{key}/Statistics")]
 		[HttpPost]
-		public async Task<IActionResult> QueryStatistics([FromRoute] string key, [FromBody]QueryDwzStatisticsViewModel model)
+		public async Task<IActionResult> QueryStatistics([FromRoute] string key, [FromBody] QueryDwzStatisticsViewModel model)
 		{
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(key).ConfigureAwait(true);

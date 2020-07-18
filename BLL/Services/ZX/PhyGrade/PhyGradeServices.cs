@@ -83,7 +83,7 @@ namespace BLL.Services.ZX
 			{
 				if (sn != "*") list = list.Where(s => s.Name == sn);
 				if (group != null) list = list.Where(s => s.Group == group);
-				var r = list.GetSubjectsByUser(userBase).SplitPage(pages).Result;
+				var r = list.GetSubjectsByUser(userBase).SplitPage(pages);
 				result.AddRange(r.Item1);
 			}
 			return result;

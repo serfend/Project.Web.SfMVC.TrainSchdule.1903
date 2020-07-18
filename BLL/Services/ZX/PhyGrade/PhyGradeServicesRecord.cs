@@ -53,7 +53,7 @@ namespace BLL.Services.ZX
 			if (model.CreateFor.Valid()) result = result.Where(r => r.User.Id == model.CreateFor.Value);
 			if (!model.Create.Valid()) model.Create = new QueryByDate() { Start = DateTime.Now.AddYears(-1), End = DateTime.Now };
 			result = result.Where(r => r.Create >= model.Create.Start).Where(r => r.Create <= model.Create.End);
-			var list = result.SplitPage(model.Pages.ValidSplitPage()).Result;
+			var list = result.SplitPage(model.Pages.ValidSplitPage());
 			return new Tuple<IEnumerable<GradePhyRecord>, int>(list.Item1.ToList(), list.Item2);
 		}
 	}

@@ -8,6 +8,7 @@ using DAL.Entities.Common;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,11 +100,12 @@ namespace BLL.Services.Common
 			if (model.CreateBy != null) res = res.Where(s => s.CreateBy.Id == model.CreateBy.Value);
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Key != null) res = res.Where(s => s.Key == model.Key.Value);
-			if (model.Target != null) res = res.Where(s => s.Target.Contains(model.Target.Value));
+			if (model.Target != null) res = res.Where(s => EF.Functions.Contains(s.Target, model.Target.Value));
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
 			res = res.OrderByDescending(s => s.Create);
-			var result = await res.SplitPage(model.Pages).ConfigureAwait(true);
-			return new Tuple<IEnumerable<ShortUrl>, int>(result.Item1, result.Item2);
+			var result = res.SplitPage(model.Pages);
+			var r = await Task.Run(() => new Tuple<IEnumerable<ShortUrl>, int>(result.Item1, result.Item2)).ConfigureAwait(false);
+			return r;
 		}
 
 		public async Task Remove(ShortUrl model)
@@ -124,7 +126,7 @@ namespace BLL.Services.Common
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
 			res = res.OrderByDescending(s => s.Create);
-			var result = await res.SplitPage(model.Pages).ConfigureAwait(true);
+			var result = res.SplitPage(model.Pages);
 			return await Task.FromResult(new Tuple<IEnumerable<ShortUrlStatistics>, int>(result.Item1.ToList(), result.Item2)).ConfigureAwait(true);
 		}
 	}
