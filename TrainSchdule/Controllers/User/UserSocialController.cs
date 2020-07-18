@@ -125,7 +125,7 @@ namespace TrainSchdule.Controllers
 			var user = _usersService.Get(userid);
 			if (user == null) return new JsonResult(user.NotExist());
 			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
-			if (!_userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.CompanyInfo.Company.Code, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			user.SocialInfo.Settle = data.Settle.ToModel(_context.AdminDivisions, user.SocialInfo.Settle);
 			_context.AUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 			_context.SaveChanges();

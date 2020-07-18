@@ -58,7 +58,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (u == null) return (ActionStatusMessage.UserMessage.NotExist);
 			// 如果要新增相对，则需要管理员权限
 			if (filter?.CompanyRefer != null || filter?.CompanyCodeLength?.Count() > 0 || filter?.CompanyTags?.Count() > 0)
-				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root"))
+				if (!userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, "root", "检查权限"))
 					return (ActionStatusMessage.Account.Auth.Invalid.Default);
 			var targetCompanies = filter?.Companies;
 			if ((targetCompanies?.Count() ?? 0) == 0)
