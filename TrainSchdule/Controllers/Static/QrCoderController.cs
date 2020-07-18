@@ -55,10 +55,10 @@ namespace TrainSchdule.Controllers
 			jpgFile = _fileServices.Load(QRCodePath, imgFileName);
 			svgFile = _fileServices.Load(QRCodePath, svgFileName);
 			if (jpgFile != null && svgFile != null) return null;
-			if (model == null) return (ActionStatusMessage.Static.QrCode.NoData);
+			if (model == null) return (ActionStatusMessage.StaticMessage.QrCode.NoData);
 			var rawText = model.Data;
 			if (rawText == null)
-				return (ActionStatusMessage.Static.QrCode.NoData);
+				return (ActionStatusMessage.StaticMessage.QrCode.NoData);
 			var qrCodeData = new QRCoder.QRCodeGenerator().CreateQrCode(rawText, QRCodeGenerator.ECCLevel.H);
 			var svg = new SvgQRCode(qrCodeData).GetGraphic(model.Size, model.DarkColor, model.LightColor, true, SvgQRCode.SizingMode.ViewBoxAttribute);
 			var bitmap = new QRCode(qrCodeData).GetGraphic(model.Size, ColorTranslator.FromHtml(model.DarkColor), ColorTranslator.FromHtml(model.LightColor), icon, model.Icon?.IconSize ?? 15, model.Icon?.BorderSize ?? 6, model?.Margin ?? false);
@@ -123,7 +123,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		public IActionResult QrCodeScan([FromBody] QrCodeDataModel model)
 		{
-			if (model == null) return new JsonResult(ActionStatusMessage.Static.QrCode.NoData);
+			if (model == null) return new JsonResult(ActionStatusMessage.StaticMessage.QrCode.NoData);
 
 			var imgRaw = Convert.FromBase64String(model.Img);
 			using (var ms = new MemoryStream(imgRaw))

@@ -176,7 +176,7 @@ namespace BLL.Services.File
 			if (uploadStatusId != Guid.Empty)
 			{
 				var lastStatus = uploadStatus.FileStatus.Where(s => s.Id == uploadStatusId).FirstOrDefault();
-				if (lastStatus == null) throw new ActionStatusMessageException(ActionStatusMessage.Static.CacheIsInvalid);
+				if (lastStatus == null) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.CacheIsInvalid);
 				fileInfo = lastStatus.FileInfo;
 				file = context.UserFiles.Find(uploadStatusId);
 			}

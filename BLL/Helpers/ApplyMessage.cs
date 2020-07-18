@@ -87,7 +87,7 @@ namespace BLL.Helpers
 
 			public static readonly ApiResult GuidFail = new ApiResult(45000, "申请的ID无效");
 
-			public static class Recall
+			public static class RecallMessage
 			{
 				public static readonly ApiResult NotExist = new ApiResult(46100, "召回的信息不存在");
 				public static readonly ApiResult ExecuteNotExist = new ApiResult(46110, "确认时间的信息不存在");
@@ -99,7 +99,7 @@ namespace BLL.Helpers
 				public static readonly ApiResult SelfReturnNotPermit = new ApiResult(46700, "实际归队时间早于应归队时间，请使用召回并填写召回单");
 			}
 
-			public static class AuditStream
+			public static class AuditStreamMessage
 			{
 				public static class Node
 				{

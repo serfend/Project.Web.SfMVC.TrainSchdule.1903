@@ -12,7 +12,7 @@ using System.Text;
 
 namespace BLL.Services
 {
-	public class VerifyService : IVerifyService
+	public class VerifyService : IVerifyService, IDisposable
 	{
 		#region Fileds
 
@@ -110,6 +110,11 @@ namespace BLL.Services
 
 			Generate();
 			return result;
+		}
+
+		public void Dispose()
+		{
+			((IDisposable)_cache).Dispose();
 		}
 
 		public string Status { get; private set; }

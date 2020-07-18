@@ -56,7 +56,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			return new ApplyAuditStreamSolutionRuleVDto()
 			{
 				Id = model.Id,
-				AuditMembers = model.AuditMembers?.Select(m => usersService.Get(m)?.ToSummaryDto()),
+				AuditMembers = model.AuditMembers?.Select(m => usersService.GetById(m)?.ToSummaryDto()),
 				AuditMembersCount = model.AuditMembersCount,
 				Companies = model.Companies?.Select(c => companiesService.GetById(c)?.ToDto()),
 				CompanyCodeLength = model.CompanyCodeLength,

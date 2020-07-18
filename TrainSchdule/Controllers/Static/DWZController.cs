@@ -57,7 +57,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> RedirectDwz([FromRoute] string url, [FromServices] IDWZServices dwzInnerServices)
 		{
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
-			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			// Record(m); // 此处异步不会等待，所以服务器直接返回的同时把db清理了，导致Record方法报错
 			new Task(() =>
 			{
@@ -83,7 +83,7 @@ namespace TrainSchdule.Controllers
 		{
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
-			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.Company.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			await dWZServices.Remove(m).ConfigureAwait(false);
@@ -150,7 +150,7 @@ namespace TrainSchdule.Controllers
 		{
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(key).ConfigureAwait(true);
-			if (m == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			if (!userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Query, c.Id, m.CreateBy.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var result = await dWZServices.QueryStatistics(m, model).ConfigureAwait(true);
 			var statistics = result.Item1;

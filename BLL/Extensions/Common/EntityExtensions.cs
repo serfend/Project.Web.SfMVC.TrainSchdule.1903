@@ -20,11 +20,11 @@ namespace BLL.Extensions.Common
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.Static.ResourceNotExist;
+		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
 
 		public static ApiResult NotExist(this Apply model) => ActionStatusMessage.ApplyMessage.NotExist;
 
-		public static ApiResult NotExist(this RecallOrder model) => ActionStatusMessage.ApplyMessage.Recall.NotExist;
+		public static ApiResult NotExist(this RecallOrder model) => ActionStatusMessage.ApplyMessage.RecallMessage.NotExist;
 
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
 

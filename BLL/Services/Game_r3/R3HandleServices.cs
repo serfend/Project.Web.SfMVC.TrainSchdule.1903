@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.GameR3
 {
-	public class R3HandleServices : IGameR3Services
+	public class R3HandleServices : IGameR3Services, IDisposable
 	{
 		private readonly ApplicationDbContext context;
 		private readonly HttpClient http;
+		private bool disposedValue;
 		private const string host = "http://statistics.pandadastudio.com";
 
 		public R3HandleServices(ApplicationDbContext context)
@@ -131,14 +132,17 @@ namespace BLL.Services.GameR3
 
 		public async Task<IEnumerable<GiftCode>> GetAllValidGiftCodes(int pageIndex, int pageSize)
 		{
-			var codes = context.GiftCodes.Where(c => c.Valid);
-			codes = codes.OrderByDescending(c => c.ShareTime);
-			if (pageIndex != 0 && pageSize != 0)
+			return await Task.Run(() =>
 			{
-				codes = codes.Skip(pageIndex * pageSize);
-				codes = codes.Take(pageSize);
-			}
-			return codes.ToList();
+				var codes = context.GiftCodes.Where(c => c.Valid);
+				codes = codes.OrderByDescending(c => c.ShareTime);
+				if (pageIndex != 0 && pageSize != 0)
+				{
+					codes = codes.Skip(pageIndex * pageSize);
+					codes = codes.Take(pageSize);
+				}
+				return codes.ToList();
+			}).ConfigureAwait(false);
 		}
 
 		public async Task HandleAllUsersGiftCode()
@@ -175,8 +179,37 @@ namespace BLL.Services.GameR3
 
 		public async Task<IEnumerable<GainGiftCode>> GetUserGiftCodeHistory(User user)
 		{
-			var list = context.GainGiftCodeHistory.Where(h => h.User.GameId == user.GameId);
-			return list.ToList();
+			return await Task.Run(() =>
+			{
+				var list = context.GainGiftCodeHistory.Where(h => h.User.GameId == user.GameId);
+				return list.ToList();
+			}).ConfigureAwait(false);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					context?.Dispose();
+				}
+				disposedValue = true;
+			}
+		}
+
+		// // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
+		// ~R3HandleServices()
+		// {
+		//     // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+		//     Dispose(disposing: false);
+		// }
+
+		public void Dispose()
+		{
+			// 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

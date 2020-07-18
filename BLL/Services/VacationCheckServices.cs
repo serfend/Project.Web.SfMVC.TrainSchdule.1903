@@ -53,7 +53,7 @@ namespace BLL.Services
 		/// <param name="vacationStart"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		private int GetCrossDay(DateTime userNormalDateStart, DateTime userNormalDateEnd, DateTime vacationStart, DateTime vacationEnd)
+		private static int GetCrossDay(DateTime userNormalDateStart, DateTime userNormalDateEnd, DateTime vacationStart, DateTime vacationEnd)
 		{
 			if (userNormalDateStart <= vacationStart && userNormalDateEnd >= vacationStart) return vacationEnd.Subtract(vacationStart).Days;
 			if (userNormalDateStart > vacationStart && userNormalDateStart <= vacationEnd) return vacationEnd.Subtract(userNormalDateStart).Days;

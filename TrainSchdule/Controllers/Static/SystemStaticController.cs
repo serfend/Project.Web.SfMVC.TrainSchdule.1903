@@ -45,7 +45,7 @@ namespace TrainSchdule.Controllers
 		[AllowAnonymous]
 		public IActionResult ImgToBase64(IFormFile file)
 		{
-			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (file == null) return new JsonResult(ActionStatusMessage.StaticMessage.FileNotExist);
 			using (var img = file.OpenReadStream())
 			{
 				var imgBuffer = new byte[file.Length];

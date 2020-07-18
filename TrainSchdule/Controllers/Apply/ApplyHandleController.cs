@@ -40,7 +40,7 @@ namespace TrainSchdule.Controllers.Apply
 				if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 				{
 					if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
-						auditUser = _usersService.Get(model.Auth.AuthByUserID);
+						auditUser = _usersService.GetById(model.Auth.AuthByUserID);
 					else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				}
 				if (auditUser == null) return new JsonResult(auditUser.NotLogin());
@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers.Apply
 			end = end.Value.AddDays(1);
 
 			var currentUser = _currentUserService.CurrentUser;
-			var c = id == null ? currentUser : _usersService.Get(id);
+			var c = id == null ? currentUser : _usersService.GetById(id);
 			if (id != null && id != currentUser.Id)
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -200,7 +200,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
-					auditUser = _usersService.Get(model.Auth.AuthByUserID);
+					auditUser = _usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 			var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, "root");
@@ -271,7 +271,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult RecallOrder(Guid id)
 		{
 			var recall = _context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
-			if (recall == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.NotExist);
+			if (recall == null) return new JsonResult(ActionStatusMessage.ApplyMessage.RecallMessage.NotExist);
 			var apply = _context.AppliesDb.Where(a => a.RecallId == id).FirstOrDefault();
 			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(recall.ToVDto(apply)));
 		}
@@ -308,7 +308,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult ExecuteStatus(Guid id)
 		{
 			var model = _context.ApplyExcuteStatus.Where(r => r.Id == id).FirstOrDefault();
-			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Recall.ExecuteNotExist);
+			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.RecallMessage.ExecuteNotExist);
 			var apply = _context.AppliesDb.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
 			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply)));
 		}

@@ -122,7 +122,7 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> BaseInfo([FromBody] SubmitBaseInfoViewModel model)
 		{
-			var targetUser = _usersService.Get(model.Id);
+			var targetUser = _usersService.GetById(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var userModel = new SubmitBaseInfoViewModel()
 			{//重写前端传回的数据
@@ -152,10 +152,10 @@ namespace TrainSchdule.Controllers.Apply
 		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
-			var targetUser = _usersService.Get(model.Id);
+			var targetUser = _usersService.GetById(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(_context);
-			if (m.VacationPlace == null) return new JsonResult(ActionStatusMessage.Static.AdminDivision.NoSuchArea);
+			if (m.VacationPlace == null) return new JsonResult(ActionStatusMessage.StaticMessage.AdminDivision.NoSuchArea);
 			try
 			{
 				var info = await _applyService.SubmitRequestAsync(targetUser, m).ConfigureAwait(true);
@@ -199,7 +199,7 @@ namespace TrainSchdule.Controllers.Apply
 		public async Task<IActionResult> Submit([FromBody] ApplyRemoveViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			Guid.TryParse(model.Id, out var id);
 			var apply = _applyService.GetById(id);

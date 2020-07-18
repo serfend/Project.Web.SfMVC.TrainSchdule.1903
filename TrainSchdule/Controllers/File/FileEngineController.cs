@@ -47,7 +47,7 @@ namespace TrainSchdule.Controllers.File
 		{
 			var file = Guid.Parse(fileid);
 			var f = await Task.Run(() => { return fileServices.Download(file); }).ConfigureAwait(true);
-			if (f == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (f == null) return new JsonResult(ActionStatusMessage.StaticMessage.FileNotExist);
 			var fileInfo = fileServices.FileInfo(f.Id);
 			new FileExtensionContentTypeProvider().TryGetContentType(fileInfo.Name, out var contentType);
 			return File(f.Data, contentType ?? "text/plain", fileInfo.Name);
@@ -78,7 +78,7 @@ namespace TrainSchdule.Controllers.File
 			{
 				return fileServices.Load(path, filename);
 			}).ConfigureAwait(true);
-			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (file == null) return new JsonResult(ActionStatusMessage.StaticMessage.FileNotExist);
 			return await Download(file.Id.ToString()).ConfigureAwait(false);
 		}
 
@@ -95,7 +95,7 @@ namespace TrainSchdule.Controllers.File
 			{
 				return fileServices.Load(filepath, filename);
 			}).ConfigureAwait(true);
-			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (file == null) return new JsonResult(ActionStatusMessage.StaticMessage.FileNotExist);
 			var result = file.ToVdto();
 			if (result.Path == null) result.Path = file.FullPath();
 			return new JsonResult(new FileInfoViewModel()
@@ -215,7 +215,7 @@ namespace TrainSchdule.Controllers.File
 		public IActionResult Remove(string path, string filename, string clientKey)
 		{
 			var file = fileServices.Load(path, filename);
-			if (file == null) return new JsonResult(ActionStatusMessage.Static.FileNotExist);
+			if (file == null) return new JsonResult(ActionStatusMessage.StaticMessage.FileNotExist);
 			var guid = Guid.Parse(clientKey);
 			if (file.ClientKey != guid) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			if (fileServices.Remove(file))

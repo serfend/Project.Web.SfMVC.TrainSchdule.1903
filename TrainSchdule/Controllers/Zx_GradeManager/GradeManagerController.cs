@@ -161,7 +161,7 @@ namespace TrainSchdule.Controllers.Zx_GradeManager
 
 		private UserBaseInfo GetUser(PhySingleGradeDataModel model)
 		{
-			var baseUser = model.User.UserName == null ? model.User.User : usersService.Get(model.User.UserName)?.BaseInfo;
+			var baseUser = model.User.UserName == null ? model.User.User : usersService.GetById(model.User.UserName)?.BaseInfo;
 			return baseUser;
 		}
 

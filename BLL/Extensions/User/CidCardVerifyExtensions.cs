@@ -5,16 +5,16 @@ namespace BLL.Extensions
 	/// <summary>
 	/// 验证身份证号码类
 	/// </summary>
-	public class IDCardValidation
+	public static class IDCardValidation
 	{
 		/// <summary>
 		/// 验证身份证合理性
 		/// </summary>
 		/// <param name="Id"></param>
 		/// <returns></returns>
-		public bool CheckIDCard(string idNumber)
+		public static bool CheckIDCard(this string idNumber)
 		{
-			if (idNumber.Length == 18)
+			if (idNumber?.Length == 18)
 			{
 				bool check = CheckIDCard18(idNumber);
 				return check;
@@ -33,7 +33,7 @@ namespace BLL.Extensions
 		/// <summary>
 		/// 18位身份证号码验证
 		/// </summary>
-		private static bool CheckIDCard18(string idNumber)
+		private static bool CheckIDCard18(this string idNumber)
 		{
 			long n = 0;
 			if (long.TryParse(idNumber.Remove(17), out n) == false

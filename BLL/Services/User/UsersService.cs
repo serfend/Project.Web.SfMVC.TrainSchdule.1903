@@ -66,7 +66,7 @@ namespace BLL.Services
 		/// <summary>
 		/// Loads user by username, returns user DTO.
 		/// </summary>
-		public User Get(string id)
+		public User GetById(string id)
 		{
 			if (id == null) return null;
 			switch (id.ToLower())
@@ -338,7 +338,7 @@ namespace BLL.Services
 				_context.AppUserSocialInfos.Remove(user.SocialInfo);
 				if (user.SocialInfo.Settle != null)
 				{
-					_context.AUserSocialInfoSettles.Remove(user.SocialInfo.Settle);
+					_context.AppUserSocialInfoSettles.Remove(user.SocialInfo.Settle);
 					if (user.SocialInfo.Settle.Self != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Self);
 					if (user.SocialInfo.Settle.Parent != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Parent);
 					if (user.SocialInfo.Settle.Lover != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.Lover);
@@ -376,7 +376,7 @@ namespace BLL.Services
 			}
 			else if (avatar?.Img?.Length > 1024 * 200)
 			{
-				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Static.FileSizeInvalid, $"最大支持200KB,当前:{avatar.Img.Length}", true));
+				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.StaticMessage.FileSizeInvalid, $"最大支持200KB,当前:{avatar.Img.Length}", true));
 			}
 			return avatar;
 		}

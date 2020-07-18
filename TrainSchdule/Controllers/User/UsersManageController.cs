@@ -31,7 +31,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult OnMyManage(string id)
 		{
 			id = id ?? _currentUserService.CurrentUser?.Id;
-			var targetUser = _usersService.Get(id);
+			var targetUser = _usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var result = _usersService.InMyManage(targetUser).Result;
 			var list = result.Item1.Select(c => c.ToDto(_companiesService));
@@ -58,9 +58,9 @@ namespace TrainSchdule.Controllers
 		{
 			if (model.Auth == null || !model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
-			var authUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var targetUser = _usersService.Get(id);
+			var targetUser = _usersService.GetById(id);
 			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var manages = _companyManagerServices.GetManagers(model.Code);
@@ -83,9 +83,9 @@ namespace TrainSchdule.Controllers
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model, string mdzz)
 		{
 			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var authByUser = _usersService.Get(model.Auth.AuthByUserID);
+			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
-			var targetUser = _usersService.Get(id);
+			var targetUser = _usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permit = _userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);

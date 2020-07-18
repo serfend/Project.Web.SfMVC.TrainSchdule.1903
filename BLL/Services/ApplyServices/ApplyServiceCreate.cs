@@ -166,26 +166,26 @@ namespace BLL.Services.ApplyServices
 			var usrCmp = user.CompanyInfo.Company.Code;
 			// 初始化审批流
 			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
-			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
+			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
 				var n = _context.ApplyAuditStreamNodeActions.Where(a => a.Name == nStr).FirstOrDefault();
-				if (n == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist, $"无效的节点：{nStr}", true));
+				if (n == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.NotExist, $"无效的节点：{nStr}", true));
 
 				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
 				if (modelApplyAllAuditStep.Count > 0)
 				{
 					var currentNodeFitMembers = modelApplyAllAuditStep[modelApplyAllAuditStep.Count - 1].MembersFitToAudit;
 					var firstHandleUsr = (currentNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : currentNodeFitMembers.Split("##");
-					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.Get(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
+					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.GetById(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 				}
 
 				var nextNodeUsrCmp = usrCmp;
 				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n).ToList());
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
-				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.Get(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
+				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.GetById(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 
 				var firstMemberCompany = _context.Companies.Where(c => c.Code == nextNodeUsrCmp).FirstOrDefault();
 				var item = new ApplyAuditStep()
@@ -389,7 +389,7 @@ namespace BLL.Services.ApplyServices
 				if (goNext) model.NowAuditStep = allStep[nowStep.Index + 1];
 				if (CheckStepShouldSkip(model.NowAuditStep))
 				{
-					AddAuditRecord(model.NowAuditStep, _usersService.Get("audit_skipper"), new ApplyAuditNodeVdto()
+					AddAuditRecord(model.NowAuditStep, _usersService.GetById("audit_skipper"), new ApplyAuditNodeVdto()
 					{
 						Action = AuditResult.Accept,
 						Remark = "无合适人可审,已跳过。",

@@ -79,7 +79,7 @@ namespace BLL.Services
 				var list = new List<AppUsersSettleModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
 				list.Add(requireAddRecord);
 				targetUser.SocialInfo.Settle.PrevYealyLengthHistory = list;
-				_context.AUserSocialInfoSettles.Update(targetUser.SocialInfo.Settle);
+				_context.AppUserSocialInfoSettles.Update(targetUser.SocialInfo.Settle);
 				_context.SaveChanges();
 			}
 			var vacationInfo = VacationInfoInRange(applies, yearlyLength);
@@ -110,7 +110,7 @@ namespace BLL.Services
 					//不论用户是否休路途，均应该增加一次路途
 					maxOnTripTimeGainForRecall++;
 					var order = _context.RecallOrders.Find(a.RecallId);
-					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.IdRecordButNoData);
+					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.IdRecordButNoData);
 					//此处减去召回时间应注意是否在福利假内部
 					var dayComsumeBeforeRecall = order.ReturnStamp.Subtract(a.RequestInfo.StampLeave.Value).Days;
 					var containsLawVacations = _vacationCheckServices.GetVacationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
@@ -152,7 +152,7 @@ namespace BLL.Services
 			{
 				Callback(records);
 				user.SocialInfo.Settle.PrevYealyLengthHistory = records;
-				_context.AUserSocialInfoSettles.Update(user.SocialInfo.Settle);
+				_context.AppUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 				_context.SaveChanges();
 			}
 			return records;
@@ -167,9 +167,9 @@ namespace BLL.Services
 				if (isDelete)
 				{
 					record.Remove();
-					var settlePre = _context.AUserSocialInfoSettles.Where(s => s.PrevYealyLengthHistory.Any(rec => rec.Code == code)).FirstOrDefault();
+					var settlePre = _context.AppUserSocialInfoSettles.Where(s => s.PrevYealyLengthHistory.Any(rec => rec.Code == code)).FirstOrDefault();
 					settlePre.PrevYealyLengthHistory = settlePre.PrevYealyLengthHistory.Where(rec => rec.Code != code).ToList();
-					_context.AUserSocialInfoSettles.Update(settlePre);
+					_context.AppUserSocialInfoSettles.Update(settlePre);
 				}
 				_context.AppUsersSettleModefyRecord.Update(record);
 				_context.SaveChanges();

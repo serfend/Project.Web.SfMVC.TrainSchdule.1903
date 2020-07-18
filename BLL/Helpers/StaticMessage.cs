@@ -2,7 +2,7 @@
 {
 	public static partial class ActionStatusMessage
 	{
-		public static class Static
+		public static class StaticMessage
 		{
 			public static readonly ApiResult TempXlsNotExist = new ApiResult(50000, "未找到Excel模板");
 			public static readonly ApiResult XlsNoData = new ApiResult(51000, "生成的Excel文件无数据");

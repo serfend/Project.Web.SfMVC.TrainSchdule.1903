@@ -31,7 +31,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult SocialModefyRecord(string id)
 		{
 			var userid = id ?? _currentUserService.CurrentUser?.Id;
-			var u = _usersService.Get(id);
+			var u = _usersService.GetById(id);
 			if (u == null) return new JsonResult(id == null ? ActionStatusMessage.Account.Auth.Invalid.NotLogin : ActionStatusMessage.UserMessage.NotExist);
 			var records = userServiceDetail.ModefyUserSettleModefyRecord(u);
 			return new JsonResult(new SettleModefyRecordViewModel()
@@ -53,7 +53,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult SingleSocialModefyRecord(int code)
 		{
 			var record = userServiceDetail.ModefySettleModeyRecord(code);
-			if (record == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			if (record == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			return new JsonResult(new SingleSettleModefyRecordViewModel()
 			{
 				Data = new SingleSettleModefyRecordDataModel()
@@ -122,12 +122,12 @@ namespace TrainSchdule.Controllers
 			var authUser = model?.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
 			var data = model?.Data;
 			var userid = data?.Id;
-			var user = _usersService.Get(userid);
+			var user = _usersService.GetById(userid);
 			if (user == null) return new JsonResult(user.NotExist());
-			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.Static.ResourceNotExist);
+			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			if (!_userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.CompanyInfo.Company.Code, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			user.SocialInfo.Settle = data.Settle.ToModel(_context.AdminDivisions, user.SocialInfo.Settle);
-			_context.AUserSocialInfoSettles.Update(user.SocialInfo.Settle);
+			_context.AppUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 			_context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
 		}

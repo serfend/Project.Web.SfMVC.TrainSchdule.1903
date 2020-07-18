@@ -28,7 +28,7 @@ namespace TrainSchdule.Extensions
 			{
 				Company = model.Company,
 				Duties = model.Duties,
-				From = usersService.Get(model.Id),
+				From = usersService.GetById(model.Id),
 				//TODO 【Future unnecessary】可能可以利用为休假去向
 				//VacationTargetAddress=model.VacationTargetAddress,
 				//VacationTargetAddressDetail=model.VacationTargetAddressDetail,

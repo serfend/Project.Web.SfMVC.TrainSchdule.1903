@@ -100,18 +100,18 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
 			var checkExist = applyAuditStreamServices.EditNode(model.Name);
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.AlreadyExist);
 
 			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 
 			var r = applyAuditStreamServices.NewNode(model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.Description);
-			if (DateTime.Now.Subtract(r.Create).TotalSeconds > 10) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.AlreadyExist);
+			if (DateTime.Now.Subtract(r.Create).TotalSeconds > 10) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.AlreadyExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -128,13 +128,13 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 			var permit = CheckPermission(auditUser, model?.Filter);
 			if (permit.Status != 0) return new JsonResult(permit);
 			var n = applyAuditStreamServices.GetNode(model.Id);
-			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
+			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.NotExist);
 			model.Filter.ToModel<ApplyAuditStreamNodeAction>().ToApplyAuditStreamNodeAction(n);
 			n.Description = model.Description;
 			n.Create = n.Create;
@@ -155,7 +155,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult GetStreamNode(string name)
 		{
 			var r = applyAuditStreamServices.EditNode(name);
-			if (r == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
+			if (r == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.NotExist);
 			return new JsonResult(new StreamNodeViewModel()
 			{
 				Data = new StreamNodeDataModel()
@@ -185,7 +185,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (auth?.AuthByUserID != null && auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(auth.AuthByUserID);
+					auditUser = usersService.GetById(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
@@ -203,7 +203,7 @@ namespace TrainSchdule.Controllers.Apply
 					}
 				}
 				else
-					return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.Node.NotExist);
+					return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.NotExist);
 			}
 			catch (Exception ex)
 			{
@@ -229,7 +229,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
@@ -253,7 +253,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(model.Name);
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.AlreadyExist);
 
 			var r = applyAuditStreamServices.NewSolution(list, model.Name, model.Description);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -272,7 +272,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
@@ -296,7 +296,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			var node = applyAuditStreamServices.GetSolution(model.Id);
 
-			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
+			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			node.Description = model.Description;
 			node.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
 			node.Name = model.Name;
@@ -316,7 +316,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(name);
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			return new JsonResult(new StreamSolutionViewModel()
 			{
 				Data = new StreamSolutionDataModel()
@@ -346,7 +346,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(auth.AuthByUserID);
+					auditUser = usersService.GetById(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
@@ -355,7 +355,7 @@ namespace TrainSchdule.Controllers.Apply
 			ApplyAuditStream checkExist = null;
 			checkExist = applyAuditStreamServices.EditSolution(name);
 
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 
 			var nStr = (checkExist.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : checkExist.Nodes.Split("##");
 			var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
@@ -384,7 +384,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 			ApiResult result = null;
@@ -404,12 +404,12 @@ namespace TrainSchdule.Controllers.Apply
 
 				return false;
 			});
-			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.AlreadyExist);
+			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.AlreadyExist);
 			if (result.Status != 0) return new JsonResult(result);
 
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
-			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
+			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 
 			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.Description, model.Priority, model.Enable);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -428,16 +428,16 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(model.Auth.AuthByUserID);
+					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
 			ApiResult result = null;
 			ApplyAuditStream solution = null;
 			solution = applyAuditStreamServices.EditSolution(model.SolutionName);
-			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolution.NotExist);
+			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			var n = applyAuditStreamServices.GetRule(model.Id);
-			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
+			if (n == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			result = CheckPermission(auditUser, n.ToDtoModel());
 			if (result.Status == 0)
 			{
@@ -467,7 +467,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			ApplyAuditStreamSolutionRule checkExist = null;
 			applyAuditStreamServices.EditSolutionRule(name, (n) => { checkExist = n; return false; });
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			return new JsonResult(new StreamSolutionRuleViewModel()
 			{
 				Data = new StreamSolutionRuleDataModel()
@@ -497,7 +497,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.Get(auth.AuthByUserID);
+					auditUser = usersService.GetById(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 			ApiResult result = null;
@@ -516,7 +516,7 @@ namespace TrainSchdule.Controllers.Apply
 				return false;
 			});
 			if (result != null && result.Status != 0) return new JsonResult(result);
-			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStream.StreamSolutionRule.NotExist);
+			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 

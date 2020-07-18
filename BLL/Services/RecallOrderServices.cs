@@ -32,11 +32,11 @@ namespace BLL.Services
 			};
 			var apply = _context.AppliesDb.Where(a => a.Id == recallOrder.Apply).FirstOrDefault();
 			if (apply == null) throw new ActionStatusMessageException(apply.NotExist());
-			if (apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.Crash);
+			if (apply.RecallId != null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.Crash);
 			if (order.HandleBy == null) throw new ActionStatusMessageException(order.HandleBy.NotExist());
-			if (!(apply.ApplyAllAuditStep.LastOrDefault()?.MembersAcceptToAudit.Split("##").Contains(order.HandleBy.Id) ?? false)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallByNotSame);
-			if (apply.RequestInfo.StampReturn <= order.ReturnStamp) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeLateThanVacation);
-			if (order.ReturnStamp < apply.RequestInfo.StampLeave) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.RecallTimeEarlyThanVacationLeaveStamp);
+			if (!(apply.ApplyAllAuditStep.LastOrDefault()?.MembersAcceptToAudit.Split("##").Contains(order.HandleBy.Id) ?? false)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.RecallByNotSame);
+			if (apply.RequestInfo.StampReturn <= order.ReturnStamp) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.RecallTimeLateThanVacation);
+			if (order.ReturnStamp < apply.RequestInfo.StampLeave) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.RecallTimeEarlyThanVacationLeaveStamp);
 			_context.RecallOrders.Add(order);
 			apply.RecallId = order.Id;
 			apply.ExecuteStatus |= ExecuteStatus.BeenSet;
@@ -50,7 +50,7 @@ namespace BLL.Services
 		{
 			if (apply == null || status == null) throw new ActionStatusMessageException(apply.NotExist());
 			var s = (int)apply.ExecuteStatus & (int)ExecuteStatus.BeenSet;
-			if (s > 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.Crash);
+			if (s > 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.Crash);
 			apply.ExecuteStatus |= ExecuteStatus.BeenSet;
 			var m = new ApplyExecuteStatus()
 			{
@@ -60,7 +60,7 @@ namespace BLL.Services
 				Reason = status.Reason
 			};
 			var rawReturn = apply.RequestInfo.StampReturn?.Date;
-			if (m.ReturnStamp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Recall.SelfReturnNotPermit);
+			if (m.ReturnStamp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.SelfReturnNotPermit);
 			else if (m.ReturnStamp.Date > rawReturn)
 				apply.ExecuteStatus |= ExecuteStatus.Delay;
 			_context.ApplyExcuteStatus.Add(m);

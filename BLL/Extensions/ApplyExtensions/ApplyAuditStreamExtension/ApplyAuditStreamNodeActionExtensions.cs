@@ -53,7 +53,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			if (raw == null) raw = new ApplyAuditStreamNodeActionVDto();
 
 			raw.Id = model.Id;
-			raw.AuditMembers = model.AuditMembers?.Select(m => userServices.Get(m)?.ToSummaryDto());
+			raw.AuditMembers = model.AuditMembers?.Select(m => userServices.GetById(m)?.ToSummaryDto());
 			raw.AuditMembersCount = model.AuditMembersCount;
 			raw.Companies = model.Companies?.Select(c => companiesService.GetById(c)?.ToDto());
 			raw.CompanyCodeLength = model.CompanyCodeLength;

@@ -87,7 +87,8 @@ namespace TrainSchdule.Controllers.Statistics
 		public async Task<IActionResult> GetAppliesProcess(string companyCode, DateTime from, DateTime to)
 		{
 			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesProcessServices.CaculateCompleteApplies, companyCode, from, to).ConfigureAwait(false);
-			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsAppliesProcess>>(result));
+			var r = new EntitiesListViewModel<EntitiesListDataModel<StatisticsAppliesProcess>>(result);
+			return new JsonResult(r);
 		}
 
 		/// <summary>

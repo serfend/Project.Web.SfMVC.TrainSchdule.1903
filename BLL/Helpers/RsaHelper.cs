@@ -84,22 +84,9 @@ namespace BLL.Helpers
 
 		public string Decrypt(string cipherText)
 		{
-			if (_privateKeyRsaProvider == null)
-			{
-				throw new Exception("_privateKeyRsaProvider is null");
-			}
-			string result;
-
-			try
-			{
-				var dec = _privateKeyRsaProvider.Decrypt(Convert.FromBase64String(cipherText), RSAEncryptionPadding.Pkcs1);
-				result = Encoding.UTF8.GetString(dec);
-			}
-			catch (Exception)
-			{
-				return null;
-			}
-			return result;
+			if (_privateKeyRsaProvider == null) return null;
+			var dec = _privateKeyRsaProvider.Decrypt(Convert.FromBase64String(cipherText), RSAEncryptionPadding.Pkcs1);
+			return Encoding.UTF8.GetString(dec);
 		}
 
 		#endregion 解密
@@ -108,10 +95,7 @@ namespace BLL.Helpers
 
 		public string Encrypt(string text)
 		{
-			if (_publicKeyRsaProvider == null)
-			{
-				throw new Exception("_publicKeyRsaProvider is null");
-			}
+			if (_publicKeyRsaProvider == null) return null;
 			return Convert.ToBase64String(_publicKeyRsaProvider.Encrypt(Encoding.UTF8.GetBytes(text), RSAEncryptionPadding.Pkcs1));
 		}
 
@@ -119,7 +103,7 @@ namespace BLL.Helpers
 
 		#region 使用私钥创建RSA实例
 
-		public RSA CreateRsaProviderFromPrivateKey(string privateKey)
+		public static RSA CreateRsaProviderFromPrivateKey(string privateKey)
 		{
 			var privateKeyBits = Convert.FromBase64String(privateKey);
 

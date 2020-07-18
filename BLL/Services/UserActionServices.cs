@@ -54,7 +54,7 @@ namespace BLL.Services
 				Status(a, true, "直接权限");
 				return true;
 			}
-			var u = usersService.Get(permissionUserName);
+			var u = usersService.GetById(permissionUserName);
 			if (u != null)
 			{
 				var uc = u.CompanyInfo;

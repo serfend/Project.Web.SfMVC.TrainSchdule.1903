@@ -142,7 +142,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
-					auditUser = _usersService.Get(model.Auth.AuthByUserID);
+					auditUser = _usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 			try

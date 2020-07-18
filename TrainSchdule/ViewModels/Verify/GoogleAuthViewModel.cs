@@ -76,7 +76,7 @@ namespace TrainSchdule.ViewModels.Verify
 		public static DAL.Entities.UserInfo.User AuthUser(this GoogleAuthDataModel model, IGoogleAuthService authService, IUsersService usersService, string currentUserId)
 		{
 			var u = model.AuthUser(authService, currentUserId);
-			var user = usersService.Get(u);
+			var user = usersService.GetById(u);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Permission.AuthUserNotExist);
 			return user;
 		}

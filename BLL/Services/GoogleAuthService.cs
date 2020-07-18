@@ -34,7 +34,7 @@ namespace BLL.Services
 
 		public string GetPassword(string username)
 		{
-			var u = usersService.Get(username);
+			var u = usersService.GetById(username);
 			var password = u?.Application?.AuthKey;
 			if (password == null) password = configuration.GetSection("Configuration").GetSection("Permission")["DefaultPassword"] ?? "invalid@user-password";
 			using (var md5 = SHA256.Create())

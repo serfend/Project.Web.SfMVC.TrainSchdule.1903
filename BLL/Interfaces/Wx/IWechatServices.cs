@@ -4,8 +4,4 @@ using System.Text;
 
 namespace BLL.Interfaces.Wx
 {
-	public interface IWechatServices
-	{
-		
-	}
 }

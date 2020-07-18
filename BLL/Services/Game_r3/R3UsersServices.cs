@@ -20,11 +20,14 @@ namespace BLL.Services.GameR3
 
 		public async Task<IEnumerable<GainGiftCode>> GainGiftCodeHistory(string userid, string code, int pageIndex, int pageSize)
 		{
-			var history = context.GainGiftCodeHistory.AsQueryable();
-			if (userid != null) history = history.Where(h => h.Code.Code == code);
-			if (code != null) history = history.Where(h => h.User.GameId == userid);
-			history = history.OrderByDescending(h => h.GainStamp).Skip(pageIndex * pageSize).Take(pageSize);
-			return history.ToList();
+			return await Task.Run(() =>
+			{
+				var history = context.GainGiftCodeHistory.AsQueryable();
+				if (userid != null) history = history.Where(h => h.Code.Code == code);
+				if (code != null) history = history.Where(h => h.User.GameId == userid);
+				history = history.OrderByDescending(h => h.GainStamp).Skip(pageIndex * pageSize).Take(pageSize);
+				return history.ToList();
+			}).ConfigureAwait(false);
 		}
 
 		public UserInfo GetUser(string userid)
@@ -34,8 +37,11 @@ namespace BLL.Services.GameR3
 
 		public async Task<IEnumerable<UserInfo>> Members(int pageIndex, int pageSize)
 		{
-			var users = context.GameR3UserInfos.OrderByDescending(u => u.DateTime).Skip(pageIndex * pageSize).Take(pageSize);
-			return users.ToList();
+			return await Task.Run(() =>
+			{
+				var users = context.GameR3UserInfos.OrderByDescending(u => u.DateTime).Skip(pageIndex * pageSize).Take(pageSize);
+				return users.ToList();
+			}).ConfigureAwait(false);
 		}
 
 		public UserInfo UpdateUserInfo(UserInfo u)

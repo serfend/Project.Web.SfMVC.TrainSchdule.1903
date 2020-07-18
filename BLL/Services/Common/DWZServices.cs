@@ -33,9 +33,9 @@ namespace BLL.Services.Common
 		{
 			if (target == null) throw new ArgumentNullException(nameof(target));
 			if (createBy == null) throw new ArgumentNullException(nameof(createBy));
-			if (key != null && key.Length > 255) throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceOutofSize);
+			if (key != null && key.Length > 255) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.ResourceOutofSize);
 			var checkExist = await Load(key).ConfigureAwait(true);
-			if (checkExist != null) throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceAllReadyExist);
+			if (checkExist != null) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.ResourceAllReadyExist);
 			var httpContext = httpContextAccessor.HttpContext;
 			var m = httpContext.ClientInfo<ShortUrl>();
 			m.Create = DateTime.Now;
@@ -55,7 +55,7 @@ namespace BLL.Services.Common
 					if (checkExist != null)
 					{
 						if (checkExist.Target == target) return checkExist;
-						else throw new ActionStatusMessageException(ActionStatusMessage.Static.ResourceAllReadyExist);
+						else throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.ResourceAllReadyExist);
 					}
 				};
 				m.Key = result;
