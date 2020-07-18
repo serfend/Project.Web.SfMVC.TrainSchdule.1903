@@ -25,8 +25,8 @@ namespace TrainSchdule.Crontab
 		{
 			Task.Run(async () =>
 			{
-				var r = await applyService.RemoveAllUnSaveApply().ConfigureAwait(true);
-				var r2 = await applyService.RemoveAllNoneFromUserApply().ConfigureAwait(false);
+				var r = await applyService.RemoveAllUnSaveApply(TimeSpan.FromDays(1)).ConfigureAwait(true);
+				var r2 = await applyService.RemoveAllNoneFromUserApply(TimeSpan.FromDays(1)).ConfigureAwait(false);
 				userActionServices.Log(UserOperation.ModifyApply, "#System#", $"{HandleBy} - 清理未保存项:{r},无用户项{r2}", true, ActionRank.Warning);
 			}).Wait();
 		}
