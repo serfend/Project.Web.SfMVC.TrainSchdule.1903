@@ -202,7 +202,7 @@ namespace TrainSchdule
 				.AddCookie(options =>
 				{
 					options.Cookie.SameSite = SameSiteMode.None;
-					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 				});
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
@@ -211,7 +211,7 @@ namespace TrainSchdule
 			{
 				s.IdleTimeout = TimeSpan.FromMinutes(60);
 				s.Cookie.SameSite = SameSiteMode.None;
-				s.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+				s.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 			});
 		}
 
@@ -253,7 +253,7 @@ namespace TrainSchdule
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				MinimumSameSitePolicy = SameSiteMode.None,
-				Secure = CookieSecurePolicy.Always
+				Secure = CookieSecurePolicy.SameAsRequest
 			});
 
 			// 认证 #4
