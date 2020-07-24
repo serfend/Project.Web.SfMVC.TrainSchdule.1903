@@ -44,7 +44,8 @@ namespace DAL.Data
 				MinLength = 0,
 				MinusNextYear = false,
 				NotPermitCrossYear = false,
-				RegionOnCompany = ""
+				RegionOnCompany = "",
+				Background="vacation_zhengxiu.jpg"
 			},
 				new VacationType()
 			{
@@ -59,7 +60,8 @@ namespace DAL.Data
 				MinLength = 0,
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
-				RegionOnCompany = ""
+				RegionOnCompany = "",
+				Background="vacation_shijia.jpg"
 			},
 				new VacationType()
 			{
@@ -75,7 +77,8 @@ namespace DAL.Data
 				MinLength = 0,
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
-				RegionOnCompany = ""
+				RegionOnCompany = "",
+				Background="vacation_bingxiu.jpg"
 			},
 				new VacationType()
 			{
@@ -91,7 +94,8 @@ namespace DAL.Data
 				MinLength = 0,
 				MinusNextYear = true,
 				NotPermitCrossYear = false,
-				RegionOnCompany = ""
+				RegionOnCompany = "",
+				Background="vacation_yiqingzhuanxiang.jpg"
 			}
 			});
 

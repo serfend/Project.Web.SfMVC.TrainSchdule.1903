@@ -61,6 +61,8 @@
     <Compile Remove="Migrations\20200710093633_DataDictionary_SeedExecute.Designer.cs" />
     <Compile Remove="Migrations\20200718134901_typo_appUserInfo.cs" />
     <Compile Remove="Migrations\20200718134901_typo_appUserInfo.Designer.cs" />
+    <Compile Remove="Migrations\20200723154844_VacationType_newProp_background2.cs" />
+    <Compile Remove="Migrations\20200723154844_VacationType_newProp_background2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

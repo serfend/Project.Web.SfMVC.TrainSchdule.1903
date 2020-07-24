@@ -68,5 +68,10 @@ namespace DAL.Entities.Vacations
 		public bool NotPermitCrossYear { get; set; }
 
 		public string RegionOnCompany { get; set; }
+
+		/// <summary>
+		/// 背景图文件名
+		/// </summary>
+		public string Background { get; set; }
 	}
 }
