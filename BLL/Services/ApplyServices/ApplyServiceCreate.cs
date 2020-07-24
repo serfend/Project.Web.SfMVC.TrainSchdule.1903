@@ -66,10 +66,10 @@ namespace BLL.Services.ApplyServices
 				var vacationLength = model.VacationLength;
 				if (type.CaculateBenefit) vacationLength += additionalVacationDay;
 				if (type.CanUseOnTrip) vacationLength += model.OnTripLength;
-				// 当未享受福利假时才计算法定节假日
-				if (type.CaculateBenefit && additionalVacationDay == 0)
+				// 仅计算正休假包含的法定节假日
+				if (type.CaculateBenefit)
 				{
-					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, true).ConfigureAwait(true);
+					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, model.VacationLength, true).ConfigureAwait(true);
 					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
@@ -165,7 +165,7 @@ namespace BLL.Services.ApplyServices
 			if (user == null) return;
 			var usrCmp = user.CompanyInfo.Company.Code;
 			// 初始化审批流
-			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user);
+			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user, false);
 			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;
@@ -183,7 +183,7 @@ namespace BLL.Services.ApplyServices
 				}
 
 				var nextNodeUsrCmp = usrCmp;
-				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n).ToList());
+				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n, true).ToList());
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
 				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.GetById(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 
