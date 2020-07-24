@@ -68,7 +68,7 @@ namespace BLL.Services
 		/// <returns></returns>
 		public async Task<DateTime> CrossVacation(DateTime start, int length, bool caculateLawVacation)
 		{
-			VacationDesc = await GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(true);
+			await GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(false);
 			return EndDate;
 		}
 
@@ -82,7 +82,7 @@ namespace BLL.Services
 		public async Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation)
 		{
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
-			if (length > 500 || length < 0)
+			if (length > 1000 || length < 0)
 			{
 				EndDate = start;
 				return null;
@@ -106,6 +106,6 @@ namespace BLL.Services
 		}
 
 		public DateTime EndDate { get; private set; }
-		public IEnumerable<VacationDescription> VacationDesc { get; set; }
+		public IEnumerable<VacationDescription> VacationDesc { get; set; } = new List<VacationDescription>();
 	}
 }
