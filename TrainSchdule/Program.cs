@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore;
+﻿using DAL.Data;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
@@ -38,6 +41,12 @@ namespace TrainSchdule
 		   .ConfigureAppConfiguration(ConfigConfiguration)
 		   .ConfigureLogging(ConfigLogging)
 		   .Build();
+
+			using (var scope = host.Services.CreateScope())
+			{
+				var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+				db.Database.Migrate();
+			}
 
 			host.Run();
 		}
