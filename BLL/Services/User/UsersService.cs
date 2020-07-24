@@ -32,7 +32,7 @@ namespace BLL.Services
 	{
 		#region Fields
 
-		private readonly IHostingEnvironment _hostingEnvironment;
+		private readonly IWebHostEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
 		private readonly IVacationCheckServices _vacationCheckServices;
 
@@ -43,7 +43,7 @@ namespace BLL.Services
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UsersService"/>.
 		/// </summary>
-		public UsersService(IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+		public UsersService(IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
 		{
 			_context = context;
 			_hostingEnvironment = hostingEnvironment;
