@@ -23,10 +23,10 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 通过用户信息，决定此用户需要使用哪种审批流规则
 		/// </summary>
-		/// <param name="company"></param>
 		/// <param name="user"></param>
+		/// <param name="CheckInvalidAccount"></param>
 		/// <returns></returns>
-		ApplyAuditStreamSolutionRule GetAuditSolutionRule(DAL.Entities.UserInfo.User user);
+		ApplyAuditStreamSolutionRule GetAuditSolutionRule(DAL.Entities.UserInfo.User user, bool CheckInvalidAccount);
 
 		/// <summary>
 		/// 在当前单位中寻找符合进行审批条件的人员
@@ -34,6 +34,6 @@ namespace BLL.Interfaces
 		/// <param name="company"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filter);
+		IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filter, bool CheckInvalidAccount);
 	}
 }

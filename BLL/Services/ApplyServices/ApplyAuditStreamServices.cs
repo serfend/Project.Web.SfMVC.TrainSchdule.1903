@@ -46,19 +46,19 @@ namespace BLL.Services.ApplyServices
 			return rule;
 		}
 
-		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user)
+		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user, bool CheckInvalidAccount)
 		{
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.Company.Code;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
-			var auditRule = context.ApplyAuditStreamSolutionRules.Where(r => r.Enable).ToList();
+			var auditRule = context.ApplyAuditStreamSolutionRules.Where(r => r.Enable).OrderByDescending(a => a.Priority).ToList();
 			var fitRule = new List<ApplyAuditStreamSolutionRule>();
 			foreach (var rule in auditRule)
 			{
-				if (GetToAuditMembers(cmp, rule).Contains(user.Id))
-					fitRule.Add(rule);
+				if (GetToAuditMembers(cmp, rule, CheckInvalidAccount).Contains(user.Id))
+					return rule;
 			};
-			return fitRule.OrderByDescending(a => a.Priority).FirstOrDefault();
+			return null;
 		}
 
 		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string description = null)
@@ -131,7 +131,7 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filterRaw)
+		public IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filterRaw, bool CheckInvalidAccount)
 		{
 			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;
@@ -148,26 +148,26 @@ namespace BLL.Services.ApplyServices
 			if (target == null)
 			{
 				// Companies
-				if (filter.Companies != null && filter.Companies.Any())
+				if (filter.Companies != null && filter.Companies.Any(a => a.Length > 0))
 				{
-					var expC = PredicateBuilder.New<User>();
+					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.Companies)
 						expC = expC.Or(u => u.CompanyInfo.Company.Code == c);
 					result = result.Where(expC);
 				}
 				// CompanyTag
-				if (filter.CompanyTags != null && filter.CompanyTags.Any())
+				if (filter.CompanyTags != null && filter.CompanyTags.Any(a => a.Length > 0))
 				{
-					var expC = PredicateBuilder.New<User>();
+					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.CompanyTags)
 						expC = expC.Or(u => EF.Functions.Like(u.CompanyInfo.Company.Tag, $"%{c}%"));
 					result = result.Where(expC);
 				}
 
 				// CompanyLength
-				if (filter.CompanyCodeLength != null && filter.CompanyCodeLength.Any())
+				if (filter.CompanyCodeLength != null && filter.CompanyCodeLength.Any(a => a > 0))
 				{
-					var expL = PredicateBuilder.New<User>();
+					var expL = PredicateBuilder.New<User>(false);
 					foreach (var l in filter.CompanyCodeLength)
 						expL = expL.Or(u => u.CompanyInfo.Company.Code.Length == l);
 					result = result.Where(expL);
@@ -177,36 +177,35 @@ namespace BLL.Services.ApplyServices
 				result = result.Where(u => u.CompanyInfo.Company.Code == target);
 
 			// 指定职务
-			if (filter.Duties == null || !filter.Duties.Any(a => true))
+			if (filter.Duties != null && filter.Duties.Any(a => a > 0))
 			{
-				if (filter.DutyTags != null && filter.DutyTags.Any())
-				{
-					var expD = PredicateBuilder.New<User>();
-					foreach (var d in filter.Duties)
-						expD = expD.Or(u => EF.Functions.Like(u.CompanyInfo.Duties.Tags, $"%{d}%"));
-					result = result.Where(expD);
-				}
-
-				switch (filter.DutyIsMajor)
-				{
-					case DutiesIsMajor.BothCanGo: break;
-					case DutiesIsMajor.OnlyMajor:
-						result = result.Where(u => u.CompanyInfo.Duties.IsMajorManager);
-						break;
-
-					case DutiesIsMajor.OnlyUnMajor:
-						result = result.Where(u => !u.CompanyInfo.Duties.IsMajorManager);
-						break;
-				}
-			}
-			else
-			{
-				var expD = PredicateBuilder.New<User>();
+				var expD = PredicateBuilder.New<User>(false);
 				foreach (var d in filter.Duties)
 					expD = expD.Or(u => u.CompanyInfo.Duties.Code == d);
+				result = result.Where(expD);
 			}
-			var rawUser = result.ToList();
-			IEnumerable<string> fitUsers = rawUser.Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id).ToList();
+			if (filter.DutyTags != null && filter.DutyTags.Any(a => a.Length > 0))
+			{
+				var expD = PredicateBuilder.New<User>(false);
+				foreach (var d in filter.DutyTags)
+					expD = expD.Or(u => EF.Functions.Like(u.CompanyInfo.Duties.Tags, $"%{d}%"));
+				result = result.Where(expD);
+			}
+
+			switch (filter.DutyIsMajor)
+			{
+				case DutiesIsMajor.BothCanGo: break;
+				case DutiesIsMajor.OnlyMajor:
+					result = result.Where(u => u.CompanyInfo.Duties.IsMajorManager);
+					break;
+
+				case DutiesIsMajor.OnlyUnMajor:
+					result = result.Where(u => !u.CompanyInfo.Duties.IsMajorManager);
+					break;
+			}
+			var rawUser = CheckInvalidAccount ?
+				result.ToList().Where(u => u.Application.InvalidAccount() == UserExtensions.AccountType.BeenAuth).Select(u => u.Id)
+				: result.ToList().Select(u => u.Id);
 			// 管理具有本单位审批权限
 			// 但非必选项，此处不应直接加入可审列表，而应在操作审批时判断是否是管理
 			// 一旦管理审批，此流程将直接通过
@@ -216,7 +215,7 @@ namespace BLL.Services.ApplyServices
 			//	var m = managers.Select(u => u.User.Id).ToList();
 			//	fitUsers = fitUsers.Union(m);
 			//}
-			return fitUsers;
+			return rawUser;
 		}
 
 		public ApplyAuditStreamNodeAction GetNode(Guid id)

@@ -38,7 +38,7 @@ namespace BLL.Services.ApplyServices
 			if (model.CreateCompany != null)
 			{
 				var arr = model.CreateCompany?.Arrays?.Select(i => $"{i}%");
-				var exp = PredicateBuilder.New<Apply>();
+				var exp = PredicateBuilder.New<Apply>(false);
 				foreach (var item in arr)
 					exp = exp.Or(p => EF.Functions.Like(p.BaseInfo.From.CompanyInfo.Company.Code, item));
 				if (arr != null)
