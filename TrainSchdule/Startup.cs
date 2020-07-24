@@ -183,10 +183,6 @@ namespace TrainSchdule
 				.AllowAnyHeader()
 				);
 			});
-			services.Configure<CookiePolicyOptions>(options =>
-			{
-				options.MinimumSameSitePolicy = SameSiteMode.None;
-			});
 
 			services.ConfigureExternalCookie(options =>
 			{
@@ -213,6 +209,26 @@ namespace TrainSchdule
 				s.Cookie.SameSite = SameSiteMode.None;
 				s.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 			});
+			services.Configure<CookiePolicyOptions>(options =>
+			{
+				options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+				options.OnAppendCookie = cookieContext =>
+					CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+				options.OnDeleteCookie = cookieContext =>
+					CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+			});
+		}
+
+		private void CheckSameSite(HttpContext httpContext, CookieOptions options)
+		{
+			if (options.SameSite == SameSiteMode.None)
+			{
+				var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+				if (MyUserAgentDetectionLib.DisallowsSameSiteNone(userAgent))
+				{
+					options.SameSite = SameSiteMode.Unspecified;
+				}
+			}
 		}
 
 		/// <summary>
@@ -252,6 +268,10 @@ namespace TrainSchdule
 			app.UseCors(MyAllowSpecificOrigins);
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
+				OnAppendCookie = cookieContext =>
+					  CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
+				OnDeleteCookie = cookieContext =>
+					  CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
 				MinimumSameSitePolicy = SameSiteMode.None,
 				Secure = CookieSecurePolicy.SameAsRequest
 			});
