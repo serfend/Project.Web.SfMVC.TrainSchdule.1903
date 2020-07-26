@@ -78,9 +78,13 @@ namespace BLL.Services
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <param name="caculateLawVacation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
+		/// <param name="exceptVacationCount">需要排除多少个假期（以避免重复计算）</param>
 		/// <returns></returns>
-		public async Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation)
+		public async Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation, int exceptVacationCount = 0)
 		{
+			// 初始化
+			if (exceptVacationCount < 0) exceptVacationCount = 0;
+			if (exceptVacationCount == 0) VacationDesc = new List<VacationDescription>();
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
 			if (length > 1000 || length < 0)
 			{
@@ -89,20 +93,29 @@ namespace BLL.Services
 			}
 			var list = new List<VacationDescription>();
 			var end = start.AddDays(length);
+			int vacationCount = 0;
 			int vacationDay = 0;
 			await Task.Run(() =>
 			{
 				if (caculateLawVacation)
-					foreach (var description in GetVacationDates(start, length, true))
+				{
+					var vas = GetVacationDates(start, length, true).ToList();
+					vacationCount = vas.Count;
+					for (var i = exceptVacationCount; i < vas.Count; i++)
 					{
+						var description = vas[i];
 						list.Add(description);
 						vacationDay += description.Length;
 					}
+				}
 			}).ConfigureAwait(true);
-
-			EndDate = end.AddDays(vacationDay);
-			VacationDesc = list;
-			return list;
+			VacationDesc = VacationDesc.Concat(list);
+			// 如果本轮计算了假期，则结果可能因为计算的假期而达到新假期的标准
+			// 此时应从开始日期重新计算包含假期后的实际长度，并加上新的假期
+			if (vacationCount > exceptVacationCount) return await GetVacationDescriptions(start, vacationDay + length + 1, true, vacationCount).ConfigureAwait(false);
+			end = end.AddDays(vacationDay);
+			EndDate = end;
+			return VacationDesc;
 		}
 
 		public DateTime EndDate { get; private set; }

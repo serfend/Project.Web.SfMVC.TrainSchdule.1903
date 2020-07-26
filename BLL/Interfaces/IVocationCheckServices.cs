@@ -32,8 +32,10 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="start"></param>
 		/// <param name="length"></param>
+		/// <param name="caculateLawVacation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
+		/// <param name="exceptVacationCount">需要排除多少个假期（以避免重复计算）</param>
 		/// <returns></returns>
-		Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation);
+		Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation, int exceptVacationCount = 0);
 
 		DateTime EndDate { get; }
 		IEnumerable<VacationDescription> VacationDesc { get; set; }
