@@ -26,6 +26,7 @@ using System.Drawing.Imaging;
 using DAL.DTO.User;
 using BLL.Extensions.Common;
 using static BLL.Extensions.UserExtensions;
+using BLL.Interfaces.Common;
 
 namespace TrainSchdule.Controllers
 {
@@ -48,6 +49,7 @@ namespace TrainSchdule.Controllers
 		private readonly IVerifyService _verifyService;
 		private readonly IGoogleAuthService _authService;
 		private readonly IUserActionServices _userActionServices;
+		private readonly ICipperServices cipperServices;
 
 		#endregion Fields
 
@@ -71,7 +73,8 @@ namespace TrainSchdule.Controllers
 			SignInManager<ApplicationUser> signInManager,
 			IEmailSender emailSender,
 			ILogger<AccountController> logger,
-			IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices)
+			IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices,
+			ICipperServices cipperServices)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
@@ -83,6 +86,7 @@ namespace TrainSchdule.Controllers
 			_context = context;
 			this.currentUserService = currentUserService;
 			_userActionServices = userActionServices;
+			this.cipperServices = cipperServices;
 		}
 
 		#endregion .ctors
@@ -246,8 +250,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Password([FromBody] ModefyPasswordViewModel model)
 		{
 			// 身份证转id
-			var cid = model.Id;
-			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
+			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
 
 			// 目标用户权限判断
 			var currentUser = currentUserService.CurrentUser;
@@ -270,10 +273,10 @@ namespace TrainSchdule.Controllers
 			// 密码修改判断
 			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
 
-			model.ConfirmNewPassword = _usersService.ConvertFromUserCiper(cid, model.ConfirmNewPassword);
-			model.NewPassword = _usersService.ConvertFromUserCiper(cid, model.NewPassword);
+			model.ConfirmNewPassword = model.ConfirmNewPassword.FromCipperToString(model.Id, cipperServices);
+			model.NewPassword = model.NewPassword.FromCipperToString(model.Id, cipperServices);
 			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(ActionStatusMessage.Account.Register.ConfirmPasswordNotSame);
-			model.OldPassword = _usersService.ConvertFromUserCiper(cid, model.OldPassword);
+			model.OldPassword = model.OldPassword.FromCipperToString(model.Id, cipperServices);
 			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
 
 			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
@@ -366,14 +369,13 @@ namespace TrainSchdule.Controllers
 		{
 			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
-			var cid = model.UserName;
-			if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == cid).FirstOrDefault()?.Id;
+			if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 			var targetUser = _usersService.GetById(model.UserName);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var accountType = targetUser.Application.InvalidAccount();
-			if (accountType == BLL.Extensions.UserExtensions.AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
-			if (accountType == BLL.Extensions.UserExtensions.AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
-			model.Password = _usersService.ConvertFromUserCiper(cid, model.Password);
+			if (accountType == AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
+			if (accountType == AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
+			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
 			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 			if (result.Succeeded)
@@ -391,10 +393,12 @@ namespace TrainSchdule.Controllers
 			{
 				_logger.LogWarning("账号异常");
 				_userActionServices.Status(actionRecord, false, "账号已处于锁定状态");
-
 				return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
 			}
-			else return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			else
+			{
+				return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			}
 		}
 
 		/// <summary>
@@ -625,7 +629,7 @@ namespace TrainSchdule.Controllers
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions);
 
-			var modefyUser = await _usersService.ModefyAsync(prevUser, false);
+			var modefyUser = await _usersService.ModifyAsync(prevUser, false);
 
 			var invalidAccount = localUser.Application.InvalidAccount();
 			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);

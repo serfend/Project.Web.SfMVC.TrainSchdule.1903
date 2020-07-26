@@ -193,7 +193,7 @@ namespace BLL.Services
 			return identity;
 		}
 
-		public async Task<User> ModefyAsync(User user, bool update)
+		public async Task<User> ModifyAsync(User user, bool update)
 		{
 			if (user == null) return null;
 			var lastCreateTime = user?.Application?.Create;
@@ -346,11 +346,6 @@ namespace BLL.Services
 				}
 			}
 			if (user.DiyInfo != null) _context.AppUserDiyInfos.Remove(user.DiyInfo);
-		}
-
-		public string ConvertFromUserCiper(string username, string password)
-		{
-			return password.FromCipperToString(username);
 		}
 
 		public async Task<Avatar> UpdateAvatar(User targetUser, string newAvatar)

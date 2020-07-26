@@ -19,11 +19,14 @@ namespace TrainSchdule.Controllers.Statistics
 		/// 重新加载所有统计记录
 		/// </summary>
 		/// <returns></returns>
+		[RequireHttps]
+		[HttpPost]
 		public async Task<IActionResult> ReloadAllStatistics(DateTime from, DateTime to)
 		{
 			var runningRecord = new List<Tuple<DateTime, string>>();
 			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", null, false);
 			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "开始重新加载"));
+			if (HttpContext.Connection.RemoteIpAddress != HttpContext.Connection.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var removeActions = new Task[]
 			{
 				new Task(() => statisticsAppliesServices.RemoveCompleteApplies("", from, to)),

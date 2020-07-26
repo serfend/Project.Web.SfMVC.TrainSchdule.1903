@@ -92,8 +92,8 @@ namespace TrainSchdule.System
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();
-			services.AddSingleton<IFileProvider>(
-				new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.AddSingleton<ICipperServices, CipperServices>();
+			services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 		}
 
 		/// <summary>

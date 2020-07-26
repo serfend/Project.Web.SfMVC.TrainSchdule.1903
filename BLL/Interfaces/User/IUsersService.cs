@@ -17,8 +17,6 @@ namespace BLL.Interfaces
 	/// </remarks>
 	public interface IUsersService : IUserServiceDetail
 	{
-		string ConvertFromUserCiper(string username, string password);
-
 		/// <summary>
 		/// 加载所有用户的信息
 		/// </summary>
@@ -46,7 +44,7 @@ namespace BLL.Interfaces
 		/// <param name="user"></param>
 		/// <param name="update"></param>
 		/// <returns></returns>
-		Task<User> ModefyAsync(User user, bool update);
+		Task<User> ModifyAsync(User user, bool update);
 
 		bool Edit(User newUser);
 
