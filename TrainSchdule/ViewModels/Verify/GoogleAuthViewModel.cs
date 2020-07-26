@@ -44,7 +44,7 @@ namespace TrainSchdule.ViewModels.Verify
 		/// <param name="authService"></param>
 		/// <param name="currentUserId"></param>
 		/// <returns></returns>
-		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId) => model?.AuthByUserID == currentUserId || (model != null && authService.Verify(Convert.ToInt32(model.Code), model?.AuthByUserID));
+		public static bool Verify(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId) => model?.AuthByUserID == currentUserId || (model != null && authService.Verify(int.Parse(model.Code), model?.AuthByUserID));
 
 		/// <summary>
 		/// 获取授权人

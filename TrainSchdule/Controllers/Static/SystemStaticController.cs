@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,16 +25,19 @@ namespace TrainSchdule.Controllers
 	{
 		private readonly IConfiguration configuration;
 		private readonly IVerifyService _verifyService;
+		private readonly ICipperServices cipperServices;
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="configuration"></param>
 		/// <param name="verifyService"></param>
-		public SystemStaticController(IConfiguration configuration, IVerifyService verifyService)
+		/// <param name="cipperServices"></param>
+		public SystemStaticController(IConfiguration configuration, IVerifyService verifyService, ICipperServices cipperServices)
 		{
 			this.configuration = configuration;
 			this._verifyService = verifyService;
+			this.cipperServices = cipperServices;
 		}
 
 		/// <summary>
@@ -158,7 +162,7 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult QueryStatus([FromBody]string content)
+		public IActionResult QueryStatus([FromBody] string content)
 		{
 			var request = HttpContext.Request;
 			return new JsonResult(new
@@ -169,6 +173,18 @@ namespace TrainSchdule.Controllers
 				Body = content,
 				Path = request.PathBase
 			});
+		}
+
+		/// <summary>
+		/// RSA公钥
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult CurrentRSAKey()
+		{
+			var key = cipperServices.PublicKey;
+			return new JsonResult(new EntityViewModel<string>(key));
 		}
 	}
 }

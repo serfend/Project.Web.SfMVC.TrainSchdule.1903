@@ -1,5 +1,4 @@
-﻿
-using GoogleAuther;
+﻿using GoogleAuther;
 
 namespace GoogleAuth
 {
@@ -12,14 +11,16 @@ namespace GoogleAuth
 		bool Verify(int code, int tryTime = 0);
 	}
 
-	public class Auth :IAuth
+	public class Auth : IAuth
 	{
-		private readonly GoogleAuthMain _auth=new GoogleAuthMain();
+		private readonly GoogleAuthMain _auth = new GoogleAuthMain();
+
 		public string UserName
 		{
 			get => _auth.UserName;
-			set => _auth.UserName=value;
+			set => _auth.UserName = value;
 		}
+
 		public string Password
 		{
 			get => _auth.Password;
@@ -27,13 +28,14 @@ namespace GoogleAuth
 		}
 
 		public int OneTimePassword => _auth.Code;
+
 		public bool Verify(int code, int tryTime = 0)
 		{
 			var timestamp = GoogleAuthMain.GetUnixTimestamp();
 			for (var i = 0; i <= tryTime; i++)
 			{
-				if (_auth.CalculateOneTimePassword(timestamp + 30 * i)==code)return true;
-				if (_auth.CalculateOneTimePassword(timestamp - 30 * i)==code)return true;
+				if (_auth.CalculateOneTimePassword(timestamp + 30 * i) == code) return true;
+				if (_auth.CalculateOneTimePassword(timestamp - 30 * i) == code) return true;
 			}
 
 			return false;
