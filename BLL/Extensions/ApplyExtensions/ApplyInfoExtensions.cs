@@ -125,7 +125,7 @@ namespace BLL.Extensions.ApplyExtensions
 		public static IEnumerable<T> CaculateIStatisticsBaseApplies<T>(
 			this IQueryable<T> db, ApplicationDbContext context,
 			Func<string, DateTime, IQueryable<T>, IQueryable<Apply>, IQueryable<RecallOrder>, Tuple<IEnumerable<T>, bool>> GetTargetStatistics,
-			Func<IQueryable<Apply>, IQueryable<RecallOrder>, DateTime, DateTime, IQueryable<Apply>> GetTargetAppliesByDay,
+			Func<IQueryable<Apply>, IQueryable<RecallOrder>, IQueryable<ApplyExecuteStatus>, DateTime, DateTime, IQueryable<Apply>> GetTargetAppliesByDay,
 			Func<DateTime, DateTime, DateTime, DateTime> GetEachEndDay,
 			Action<IEnumerable<T>> SaveToDb,
 			string companyCode, DateTime vStart, DateTime vEnd) where T : IStatisticsBase, new()
@@ -145,6 +145,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var result = new List<T>(existList); // 拿到已统计过的项
 
 			var recallDb = context.RecallOrders;
+			var executeDb = context.ApplyExcuteStatus;
 			bool hasChange = false;
 			var applies = context.AppliesDb.GetCurrentApplies(companyCode);
 			// 计算未统计过的并保存
@@ -154,7 +155,7 @@ namespace BLL.Extensions.ApplyExtensions
 				var earlyDate = pDate > pEnd ? pEnd : pDate;
 				var laterDate = pDate < pEnd ? pEnd : pDate;
 
-				var thisDayApplies = GetTargetAppliesByDay.Invoke(applies, recallDb, earlyDate, laterDate);
+				var thisDayApplies = GetTargetAppliesByDay.Invoke(applies, recallDb, executeDb, earlyDate, laterDate);
 				var r = GetTargetStatistics.Invoke(companyCode, pDate, db, thisDayApplies, recallDb);
 				result.AddRange(r.Item1);
 				if (r.Item2)
@@ -190,10 +191,11 @@ namespace BLL.Extensions.ApplyExtensions
 		/// </summary>
 		/// <param name="applies"></param>
 		/// <param name="recallDb"></param>
+		/// <param name="executeDb"></param>
 		/// <param name="pDate"></param>
 		/// <param name="pDateEnd"></param>
 		/// <returns></returns>
-		public static IQueryable<Apply> GetNewApplies(this IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb, DateTime pDate, DateTime pDateEnd) => applies.Where(a => a.RequestInfo.StampLeave.HasValue)
+		public static IQueryable<Apply> GetNewApplies(this IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb, IQueryable<ApplyExecuteStatus> executeDb, DateTime pDate, DateTime pDateEnd) => applies.Where(a => a.RequestInfo.StampLeave.HasValue)
 				.Where(a => a.RequestInfo.StampLeave.Value >= pDate)
 				.Where(a => a.RequestInfo.StampLeave.Value <= pDateEnd);
 
@@ -202,17 +204,23 @@ namespace BLL.Extensions.ApplyExtensions
 		/// </summary>
 		/// <param name="applies"></param>
 		/// <param name="recallDb"></param>
+		/// <param name="executeDb">落实休假情况</param>
 		/// <param name="pDate"></param>
 		/// <param name="pDateEnd"></param>
 		/// <returns></returns>
-		public static IQueryable<Apply> GetCompletedApplies(this IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb, DateTime pDate, DateTime pDateEnd)
+		public static IQueryable<Apply> GetCompletedApplies(this IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb, IQueryable<ApplyExecuteStatus> executeDb, DateTime pDate, DateTime pDateEnd)
 		=> applies.Where(
 				a =>
-				(a.RecallId != null
+				(((int)a.ExecuteStatus & (int)a.ExecuteStatus) > 0
+				&& executeDb.First(e => e.Id == a.ExecuteStatusDetailId).ReturnStamp >= pDate
+				&& executeDb.First(e => e.Id == a.ExecuteStatusDetailId).ReturnStamp <= pDateEnd
+				)
+				||
+				(a.RecallId != null && ((int)a.ExecuteStatus & (int)a.ExecuteStatus) == 0
 				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStamp >= pDate
 				&& recallDb.Where(rec => rec.Id == a.RecallId).First().ReturnStamp <= pDateEnd)
 				||
-				(a.RecallId == null
+				(a.RecallId == null && ((int)a.ExecuteStatus & (int)a.ExecuteStatus) == 0
 				&& a.RequestInfo.StampReturn.HasValue
 				&& a.RequestInfo.StampReturn.Value >= pDate
 				&& a.RequestInfo.StampReturn.Value <= pDateEnd)

@@ -31,7 +31,7 @@ namespace TrainSchdule.Controllers.Statistics
 		private readonly IUsersService usersService;
 		private readonly IUserActionServices _userActionServices;
 		private readonly ICompaniesService companiesService;
-		private readonly IStatisrticsAppliesServices statisrticsAppliesServices;
+		private readonly IStatisrticsAppliesServices statisticsAppliesServices;
 		private readonly IStatisticsAppliesProcessServices statisticsAppliesProcessServices;
 		private readonly IStatisticsDailyProcessServices statisticsDailyProcessServices;
 
@@ -53,7 +53,7 @@ namespace TrainSchdule.Controllers.Statistics
 			this.usersService = usersService;
 			_userActionServices = userActionServices;
 			this.companiesService = companiesService;
-			this.statisrticsAppliesServices = statisrticsAppliesServices;
+			this.statisticsAppliesServices = statisrticsAppliesServices;
 			this.statisticsAppliesProcessServices = statisticsAppliesProcessServices;
 			this.statisticsDailyProcessServices = statisticsDailyProcessServices;
 		}
