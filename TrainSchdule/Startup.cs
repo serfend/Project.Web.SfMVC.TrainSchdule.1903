@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using BLL.Crontab;
+using BLL.Services;
 using BLL.Services.Common;
 using BLL.Services.File;
 using Common.Text.Json.SystemTextJsonSamples;
@@ -21,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using TrainSchdule.Controllers.Log;
+using TrainSchdule.Controllers.Statistics;
 using TrainSchdule.Crontab;
 using TrainSchdule.System;
 
@@ -90,10 +92,12 @@ namespace TrainSchdule
 
 		private void ConfigureHangfireServices()
 		{
-			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily);
+			BackgroundJob.Enqueue<UserActionServices>(ua => ua.Log(UserOperation.FromSystemReport, "#System#", "Start", true, ActionRank.Infomation));
+			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily(-5, 5));
+			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today), Cron.Daily(-5, 30));
 			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
-			BackgroundJob.Enqueue<ApplyClearJob>((a) => a.Run("OnStart"));
+			BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
 			BackgroundJob.Enqueue<UserInfoClearJob>((a) => a.Run());
 			BackgroundJob.Enqueue<FileServices>((a) => a.RemoveTimeoutUploadStatus());
 		}

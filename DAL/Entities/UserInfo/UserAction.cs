@@ -63,6 +63,7 @@ namespace DAL.Entities.UserInfo
 		AuditApply = 18,
 		ModifyApply = 19,
 		Permission = 32,
-		FromUserReport = 64
+		FromUserReport = 64,
+		FromSystemReport = 65
 	}
 }
