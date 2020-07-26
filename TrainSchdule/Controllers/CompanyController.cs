@@ -8,6 +8,7 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Data;
+using DAL.DTO.User;
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -117,6 +118,7 @@ namespace TrainSchdule.Controllers
 
 		/// <summary>
 		/// 获取单位的子层级单位
+		/// 默认返回用户自身单位及用户可管辖单位
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -132,6 +134,8 @@ namespace TrainSchdule.Controllers
 			{
 				var mymanage_result = await _usersService.InMyManage(currentUser);
 				manageCount = mymanage_result.Item2;
+				var uc = currentUser.CompanyInfo.Company;
+				list[uc.Code] = uc;
 				foreach (var c in mymanage_result.Item1)
 				{
 					c.Name = $"*{c.Name}";
@@ -227,7 +231,8 @@ namespace TrainSchdule.Controllers
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
 			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
-			var list = _companyManagerServices.GetMembers(code, page, pageSize, out var totalCount).Select(u => u.ToSummaryDto());
+			int totalCount = 0;
+			var list = code == null ? new List<UserSummaryDto>() : _companyManagerServices.GetMembers(code, page, pageSize, out totalCount).Select(u => u.ToSummaryDto());
 			return new JsonResult(new AllMembersViewModel()
 			{
 				Data = new AllMembersDataModel()

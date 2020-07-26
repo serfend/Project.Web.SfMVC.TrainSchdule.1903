@@ -7,24 +7,15 @@ using DAL.DTO.Company;
 using DAL.Entities;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Extensions
 {
 	public static class CompanyExtensions
 	{
-		public static IEnumerable<User> CompanyWithChildCompanyMembers(this Company company, ICompaniesService companiesService, IUsersService usersService)
-		{
-			var list = new List<User>();
-			var r = companiesService?.FindAllChild(company?.Code).All<Company>(c =>
-			{
-				list.AddRange(c.CompanyWithChildCompanyMembers(companiesService, usersService));
-				return true;
-			});
-			list.AddRange(company.CompanyMembers(usersService));
-			return list;
-		}
+		public static IEnumerable<User> CompanyWithChildCompanyMembers(this Company company, IUsersService usersService) => company.CompanyMembers(usersService, 999);
 
-		public static IEnumerable<User> CompanyMembers(this Company company, IUsersService usersService) => usersService?.Find(u => u.CompanyInfo.Company.Code == company.Code);
+		public static IEnumerable<User> CompanyMembers(this Company company, IUsersService usersService, int includeChild) => usersService.Find(u => u.CompanyInfo.Company.Code.Length <= company.Code.Length + includeChild && EF.Functions.Like(u.CompanyInfo.Company.Code, $"{ company.Code}%"));
 
 		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService = null)
 		{
