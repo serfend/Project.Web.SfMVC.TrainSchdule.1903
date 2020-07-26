@@ -48,7 +48,7 @@ namespace BLL.Services
 		public IEnumerable<Company> FindAllChild(string code)
 		{
 			var list = _context.Companies.AsQueryable();
-			if (code.IsNullOrEmpty() || code.ToLower() == "root") list = list.Where(x => x.Code.Length == 1);
+			if (code.IsNullOrEmpty() || code.ToLower() == "root") return new List<Company>();
 			else
 			{
 				var childCodeLength = code.Length + 1;

@@ -8,6 +8,7 @@ using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations;
 using DAL.Entities.Vacations.Statistics;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,8 @@ namespace BLL.Services.VacationStatistics
 
 		public void RemoveCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
-			var list = _context.StatisticsAppliesProcesses.Where(s => s.CompanyCode == companyCode).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
+			var pattern = $"{companyCode}%";
+			var list = _context.StatisticsAppliesProcesses.Where(s => EF.Functions.Like(s.CompanyCode, pattern)).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
 			_context.StatisticsAppliesProcesses.RemoveRange(list);
 		}
 
