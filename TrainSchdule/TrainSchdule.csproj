@@ -39,4 +39,6 @@
 	<Folder Include="wwwroot\data\settings\" />
 	<Folder Include="wwwroot\tmp\" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

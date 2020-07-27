@@ -26,7 +26,7 @@ namespace TrainSchdule.Controllers.Statistics
 			var runningRecord = new List<Tuple<DateTime, string>>();
 			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", null, false);
 			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "开始重新加载"));
-			if (HttpContext.Connection.RemoteIpAddress != HttpContext.Connection.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (HttpContext?.Connection?.RemoteIpAddress != HttpContext?.Connection?.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var removeActions = new Task[]
 			{
 				new Task(() => statisticsAppliesServices.RemoveCompleteApplies("", from, to)),
@@ -34,13 +34,17 @@ namespace TrainSchdule.Controllers.Statistics
 				new Task(() => statisticsAppliesProcessServices.RemoveCompleteApplies("", from, to)),
 				new Task(() => statisticsDailyProcessServices.RemoveCompleteApplies("", from, to))
 			};
+			foreach (var t in removeActions)
+			{
+				t.Start();
+				await t.ConfigureAwait(true);
+			}
 			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "删除原记录"));
-			await Task.Run(() => Task.WaitAll(removeActions));
 
 			var allCompanies = context.Companies.Select(c => c.Code).ToList();
-			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, $"重建${allCompanies.Count}个单位的记录"));
+			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, $"重建{allCompanies.Count}个单位的记录"));
 			var reloadActions = new List<Task>();
-			int total = allCompanies.Count;
+			int total = allCompanies.Count * 4;
 			int current = 0;
 			foreach (var c in allCompanies)
 			{
@@ -50,7 +54,11 @@ namespace TrainSchdule.Controllers.Statistics
 				reloadActions.Add(new Task(() => statisticsDailyProcessServices.CaculateCompleteApplies(c, from, to)));
 				if (reloadActions.Count > 8)
 				{
-					await Task.Run(() => Task.WaitAll(reloadActions.ToArray()));
+					foreach (var t in reloadActions)
+					{
+						t.Start();
+						await t.ConfigureAwait(true);
+					}
 					current += reloadActions.Count;
 					runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, $"{Math.Round((100 * current / (decimal)total), 2)}% "));
 					reloadActions.Clear();
