@@ -249,13 +249,16 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Password([FromBody] ModefyPasswordViewModel model)
 		{
+			string userid = null;
+			var isCid = model.Id.Length == 18;
 			// 身份证转id
-			if (model.Id.Length == 18) model.Id = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
-
+			if (isCid) userid = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
+			else userid = model.Id;
 			// 目标用户权限判断
 			var currentUser = currentUserService.CurrentUser;
-			var targetUser = _usersService.GetById(model?.Id);
+			var targetUser = _usersService.GetById(userid);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			var ua = _userActionServices.Log(UserOperation.AuditApply, targetUser.Id, $"通过{currentUser?.Id}");
 			var authUser = currentUser;
 			bool authUserPermission = false;
 			if (model.Auth.AuthByUserID != null)
@@ -264,29 +267,33 @@ namespace TrainSchdule.Controllers
 				if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				// 允许本人修改本人密码，允许本级以上修改密码
-				authUserPermission = authUser.Id == model.Id;
+				authUserPermission = authUser.Id == userid;
 			}
 			if (authUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (!authUserPermission) authUserPermission = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code, $"修改{targetUser.Id}密码");
 			if (!authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 
 			// 密码修改判断
-			var appUser = _context.Users.Where(u => u.UserName == model.Id).FirstOrDefault();
+			var appUser = _context.Users.Where(u => u.UserName == targetUser.Id).FirstOrDefault();
 
 			model.ConfirmNewPassword = model.ConfirmNewPassword.FromCipperToString(model.Id, cipperServices);
 			model.NewPassword = model.NewPassword.FromCipperToString(model.Id, cipperServices);
+			if (model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthFormat);
 			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(ActionStatusMessage.Account.Register.ConfirmPasswordNotSame);
 			model.OldPassword = model.OldPassword.FromCipperToString(model.Id, cipperServices);
-			if (model.OldPassword == null || model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.ByUnknown);
-
-			var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
-			if (!sign.Succeeded && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
+			// 本人修改密码，则判断旧密码
+			if (userid == authUser.Id)
+			{
+				var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
+				if (!sign.Succeeded && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+				if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
+			}
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
 			targetUser.BaseInfo.PasswordModefy = true;
 			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -367,20 +374,24 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Login([FromBody] LoginViewModel model)
 		{
-			var actionRecord = _userActionServices.Log(UserOperation.Login, model?.UserName, "", false, ActionRank.Infomation);
+			string userid = null;
+			bool isCid = model.UserName.Length == 18;
+			string loginType = isCid ? "身份证登录" : "用户登录";
+			if (isCid) userid = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
+			else userid = model.UserName;
+			var actionRecord = _userActionServices.Log(UserOperation.Login, userid, $"{loginType}", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
-			if (model.UserName.Length == 18) model.UserName = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
-			var targetUser = _usersService.GetById(model.UserName);
+			var targetUser = _usersService.GetById(userid);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var accountType = targetUser.Application.InvalidAccount();
 			if (accountType == AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
 			if (accountType == AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
 			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
 			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, model.RememberMe, lockoutOnFailure: false);
 			if (result.Succeeded)
 			{
-				_logger.LogInformation($"用户登录:{model.UserName}");
+				_logger.LogInformation($"用户登录:{userid}");
 				_userActionServices.Status(actionRecord, true);
 				return new JsonResult(ActionStatusMessage.Success);
 			}
