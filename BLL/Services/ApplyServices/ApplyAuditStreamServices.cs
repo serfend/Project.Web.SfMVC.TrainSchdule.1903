@@ -152,7 +152,7 @@ namespace BLL.Services.ApplyServices
 				{
 					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.Companies)
-						expC = expC.Or(u => u.CompanyInfo.Company.Code == c);
+						expC = expC.Or(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{c}%"));
 					result = result.Where(expC);
 				}
 				// CompanyTag
