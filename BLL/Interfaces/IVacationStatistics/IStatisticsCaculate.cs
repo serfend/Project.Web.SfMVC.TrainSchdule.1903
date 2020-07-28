@@ -28,6 +28,16 @@ namespace BLL.Interfaces.IVacationStatistics
 		IEnumerable<T> CaculateNewApplies(string companyCode, DateTime vStart, DateTime vEnd);
 
 		/// <summary>
+		/// 直接从数据库获取指定单位指定时间的新增休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="vStart"></param>
+		/// <param name="vEnd"></param>
+		/// <returns></returns>
+
+		IEnumerable<T> DirectGetNewApplies(string companyCode, DateTime vStart, DateTime vEnd);
+
+		/// <summary>
 		/// 删除单位在指定时间内的新增休假情况
 		/// </summary>
 		/// <param name="companyCode"></param>
@@ -47,6 +57,15 @@ namespace BLL.Interfaces.IVacationStatistics
 		/// <param name="vEnd"></param>
 		/// <returns></returns>
 		IEnumerable<T> CaculateCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd);
+
+		/// <summary>
+		/// 直接从数据库获取指定单位指定时间的完成的休假情况
+		/// </summary>
+		/// <param name="companyCode"></param>
+		/// <param name="vStart"></param>
+		/// <param name="vEnd"></param>
+		/// <returns></returns>
+		IEnumerable<T> DirectGetCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd);
 
 		/// <summary>
 		/// 删除单位在指定时间内的完成休假情况

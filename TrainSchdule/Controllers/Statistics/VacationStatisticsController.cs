@@ -86,7 +86,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesProcessRecord")]
 		public async Task<IActionResult> GetAppliesProcess(string companyCode, DateTime from, DateTime to)
 		{
-			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesProcessServices.CaculateCompleteApplies, companyCode, from, to).ConfigureAwait(false);
+			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesProcessServices.DirectGetCompleteApplies, companyCode, from, to).ConfigureAwait(false);
 			var r = new EntitiesListViewModel<EntitiesListDataModel<StatisticsAppliesProcess>>(result);
 			return new JsonResult(r);
 		}
@@ -117,7 +117,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesDailyProcessRecord")]
 		public async Task<IActionResult> GetAppliesDailyProcess(string companyCode, DateTime from, DateTime to)
 		{
-			var result = await StatisticsResultExtensions.GetTarget(statisticsDailyProcessServices.CaculateCompleteApplies, companyCode, from, to).ConfigureAwait(false);
+			var result = await StatisticsResultExtensions.GetTarget(statisticsDailyProcessServices.DirectGetCompleteApplies, companyCode, from, to).ConfigureAwait(false);
 			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsDailyProcessRate>>(result));
 		}
 

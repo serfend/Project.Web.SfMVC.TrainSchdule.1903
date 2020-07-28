@@ -32,6 +32,8 @@ namespace BLL.Services.VacationStatistics
 			.CaculateIStatisticsBaseApplies(_context, GetTargetStatistics, ApplyInfoExtensions.GetCompletedApplies, ApplyInfoExtensions.LastMilliSecondInDay
 				, item => _context.StatisticsAppliesProcesses.AddRange(item), companyCode, vStart, vEnd);
 
+		public IEnumerable<StatisticsAppliesProcess> DirectGetCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd) => _context.StatisticsAppliesProcesses.AsQueryable().CheckDb(companyCode, vStart, vEnd);
+
 		public void RemoveCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
 			var pattern = $"{companyCode}%";
