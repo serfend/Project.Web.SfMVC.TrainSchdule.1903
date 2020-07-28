@@ -23,9 +23,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[HttpPost]
 		public async Task<IActionResult> ReloadAllStatistics(DateTime from, DateTime to)
 		{
-			var runningRecord = new List<Tuple<DateTime, string>>();
-			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", null, false);
-			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "开始重新加载"));
+			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", "更新统计情况", false);
 			if (HttpContext?.Connection?.RemoteIpAddress != HttpContext?.Connection?.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var removeActions = new Task[]
 			{
@@ -39,10 +37,9 @@ namespace TrainSchdule.Controllers.Statistics
 				t.Start();
 				await t.ConfigureAwait(true);
 			}
-			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "删除原记录"));
-
+			_userActionServices.Status(ua, false, "删除原记录");
 			var allCompanies = context.Companies.Select(c => c.Code).ToList();
-			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, $"重建{allCompanies.Count}个单位的记录"));
+			_userActionServices.Status(ua, false, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, $"重建{allCompanies.Count}个单位的记录")));
 			var reloadActions = new List<Task>();
 			int total = allCompanies.Count * 4;
 			int current = 0;
@@ -60,13 +57,11 @@ namespace TrainSchdule.Controllers.Statistics
 						await t.ConfigureAwait(true);
 					}
 					current += reloadActions.Count;
-					runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, $"{Math.Round((100 * current / (decimal)total), 2)}% "));
+					_userActionServices.Status(ua, false, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, $"{Math.Round((100 * current / (decimal)total), 2)}% ")));
 					reloadActions.Clear();
 				}
 			}
-			runningRecord.Add(new Tuple<DateTime, string>(DateTime.Now, "完成重新加载"));
-			var info = JsonConvert.SerializeObject(runningRecord);
-			_userActionServices.Status(ua, true, info);
+			_userActionServices.Status(ua, true, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, "完成重新加载")));
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -81,7 +76,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetNew")]
 		public async Task<IActionResult> GetAppliesTargetNew(string companyCode, DateTime from, DateTime to)
 		{
-			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesServices.CaculateNewApplies, companyCode, from, to).ConfigureAwait(false);
+			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesServices.DirectGetNewApplies, companyCode, from, to).ConfigureAwait(false);
 			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsApplyNew>>(result));
 		}
 
@@ -96,7 +91,7 @@ namespace TrainSchdule.Controllers.Statistics
 		[Route("AppliesTargetComplete")]
 		public async Task<IActionResult> GetAppliesTargetComplete(string companyCode, DateTime from, DateTime to)
 		{
-			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesServices.CaculateCompleteApplies, companyCode, from, to);
+			var result = await StatisticsResultExtensions.GetTarget(statisticsAppliesServices.DirectGetCompleteApplies, companyCode, from, to);
 			return new JsonResult(new EntitiesListViewModel<EntitiesListDataModel<StatisticsApplyComplete>>(result));
 		}
 
