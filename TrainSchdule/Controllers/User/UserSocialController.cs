@@ -74,10 +74,13 @@ namespace TrainSchdule.Controllers
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);
-			if (authUser.Id != "root") return new JsonResult(model.Auth.PermitDenied());
+
 			var newR = model.Record;
 			if (newR == null) return new JsonResult(newR.NotExist());
-
+			var targetUser = _context.AppUsers.Where(u => u.SocialInfo.Settle.PrevYealyLengthHistory.Any(r => r.Id == newR.Id)).FirstOrDefault();
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
+			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var record = userServiceDetail.ModefySettleModeyRecord(newR.Code, (r) =>
 			{
 				if (r == null) return;
