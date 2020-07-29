@@ -119,6 +119,8 @@ namespace BLL.Helpers
 					public static readonly ApiResult AlreadyExist = new ApiResult(47302, "审批方案规则已存在");
 					public static readonly ApiResult NoAuditStreamRuleFit = new ApiResult(47303, "当前用户没有合适的审批流供使用");
 				}
+
+				public static readonly ApiResult InvalidRegion = new ApiResult(47401, "审批流作用域无效");
 			}
 		}
 	}

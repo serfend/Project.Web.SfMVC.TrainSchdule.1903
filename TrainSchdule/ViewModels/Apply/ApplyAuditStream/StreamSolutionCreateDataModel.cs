@@ -25,6 +25,11 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		public string Name { get; set; }
 
 		/// <summary>
+		/// 单位作用域
+		/// </summary>
+		public string CompanyRegion { get; set; }
+
+		/// <summary>
 		/// 解决方案描述
 		/// </summary>
 		public string Description { get; set; }

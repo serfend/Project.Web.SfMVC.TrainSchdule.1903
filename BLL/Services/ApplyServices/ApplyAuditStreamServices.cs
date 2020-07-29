@@ -51,17 +51,20 @@ namespace BLL.Services.ApplyServices
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.Company.Code;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
-			var auditRule = context.ApplyAuditStreamSolutionRules.Where(r => r.Enable).OrderByDescending(a => a.Priority).ToList();
+			var auditRule = context.ApplyAuditStreamSolutionRules
+				.Where(r => r.Enable)
+				.Where(r => cmp.StartsWith(r.RegionOnCompany))
+				.OrderByDescending(a => a.Priority).ToList();
 			var fitRule = new List<ApplyAuditStreamSolutionRule>();
 			foreach (var rule in auditRule)
 			{
-				if (GetToAuditMembers(cmp, rule, CheckInvalidAccount).Contains(user.Id))
+				if (GetToAuditMembers(cmp, rule.RegionOnCompany, rule, CheckInvalidAccount).Contains(user.Id))
 					return rule;
 			};
 			return null;
 		}
 
-		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string description = null)
+		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null)
 		{
 			var prev = context.ApplyAuditStreamNodeActions.Where(a => a.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -70,6 +73,7 @@ namespace BLL.Services.ApplyServices
 				Description = description,
 				Name = name,
 				Create = DateTime.Now,
+				RegionOnCompany = companyRegion,
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
@@ -86,13 +90,14 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string description = null)
+		public ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description = null)
 		{
 			var prev = context.ApplyAuditStreams.Where(a => a.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
 			var result = new ApplyAuditStream()
 			{
 				Name = name,
+				RegionOnCompany = companyRegion,
 				Description = description,
 				Create = DateTime.Now,
 
@@ -103,7 +108,7 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string description = null, int priority = 0, bool enable = false)
+		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false)
 		{
 			var prev = context.ApplyAuditStreamSolutionRules.Where(r => r.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -114,6 +119,7 @@ namespace BLL.Services.ApplyServices
 				Priority = priority,
 				Enable = enable,
 				Create = DateTime.Now,
+				RegionOnCompany = companyRegion,
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
@@ -131,12 +137,12 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filterRaw, bool CheckInvalidAccount)
+		public IEnumerable<string> GetToAuditMembers(string company, string companyRegion, IMembersFilter filterRaw, bool CheckInvalidAccount)
 		{
 			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;
 			if (filter.AuditMembers != null && filter.AuditMembers.Any()) return filter.AuditMembers;
-			var result = context.AppUsers.AsQueryable();
+			var result = context.AppUsers.Where(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyRegion}%"));
 
 			// 指定单位
 			string target = null;

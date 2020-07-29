@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,11 +7,8 @@ using System.Text;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class ApplyAuditStreamSolutionRule : IMembersFilter
+	public class ApplyAuditStreamSolutionRule : BaseEntityGuid, IMembersFilter
 	{
-		[Key]
-		public Guid Id { get; set; }
-
 		/// <summary>
 		/// 规则名称
 		/// </summary>
@@ -46,16 +44,14 @@ namespace DAL.Entities.ApplyInfo
 		public string CompanyCodeLength { get; set; }
 		public string AuditMembers { get; set; }
 		public int AuditMembersCount { get; set; }
+		public string RegionOnCompany { get; set; }
 	}
 
 	/// <summary>
 	/// 审批流方案
 	/// </summary>
-	public class ApplyAuditStream
+	public class ApplyAuditStream : BaseEntityGuid, IRegion
 	{
-		[Key]
-		public Guid Id { get; set; }
-
 		/// <summary>
 		/// 审批方案名称
 		/// </summary>
@@ -69,16 +65,14 @@ namespace DAL.Entities.ApplyInfo
 		public string Nodes { get; set; }
 
 		public DateTime Create { get; set; }
+		public string RegionOnCompany { get; set; }
 	}
 
 	/// <summary>
 	/// 单个审批节点，通过Filter选出需要进行审批的成员
 	/// </summary>
-	public class ApplyAuditStreamNodeAction : IMembersFilter
+	public class ApplyAuditStreamNodeAction : BaseEntityGuid, IMembersFilter
 	{
-		[Key]
-		public Guid Id { get; set; }
-
 		/// <summary>
 		/// 审批节点的名称
 		/// </summary>
@@ -100,6 +94,7 @@ namespace DAL.Entities.ApplyInfo
 		public string CompanyCodeLength { get; set; }
 		public int AuditMembersCount { get; set; }
 		public string AuditMembers { get; set; }
+		public string RegionOnCompany { get; set; }
 	}
 
 	public class BaseMembersFilter : IMembersFilter
@@ -113,12 +108,13 @@ namespace DAL.Entities.ApplyInfo
 		public string CompanyCodeLength { get; set; }
 		public string AuditMembers { get; set; }
 		public int AuditMembersCount { get; set; }
+		public string RegionOnCompany { get; set; }
 	}
 
 	/// <summary>
 	/// 通过条件设置，筛选出符合条件的人
 	/// </summary>
-	public interface IMembersFilter
+	public interface IMembersFilter : IRegion
 	{
 		/// <summary>
 		/// 职务范围,int类型，以##分割

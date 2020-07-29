@@ -8,11 +8,11 @@ namespace BLL.Interfaces
 {
 	public interface IApplyAuditStreamServices : IApplyAuditStreamRepositoryServices
 	{
-		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string description = null, int priority = 0, bool enable = false);
+		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false);
 
-		ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string description = null);
+		ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description = null);
 
-		ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string description = null);
+		ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null);
 
 		ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback = null);
 
@@ -31,9 +31,11 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 在当前单位中寻找符合进行审批条件的人员
 		/// </summary>
-		/// <param name="company"></param>
-		/// <param name="action"></param>
+		/// <param name="company">当前审批单位</param>
+		/// <param name="companyRegion">单位作用域</param>
+		/// <param name="filter">人员过滤器</param>
+		/// <param name="CheckInvalidAccount">是否检查无效账号</param>
 		/// <returns></returns>
-		IEnumerable<string> GetToAuditMembers(string company, IMembersFilter filter, bool CheckInvalidAccount);
+		IEnumerable<string> GetToAuditMembers(string company, string companyRegion, IMembersFilter filter, bool CheckInvalidAccount);
 	}
 }

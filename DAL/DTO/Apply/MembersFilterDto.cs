@@ -53,6 +53,11 @@ namespace DAL.DTO.Apply
 		/// 精确设置需要审批的人，当设置此属性，其他设置均失效
 		/// </summary>
 		public IEnumerable<string> AuditMembers { get; set; }
+
+		/// <summary>
+		/// 规则的单位作用域
+		/// </summary>
+		public string CompanyRegion { get; set; }
 	}
 
 	public class MembersFilterVDto

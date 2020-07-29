@@ -22,7 +22,8 @@ namespace BLL.Extensions.ApplyExtensions
 				CompanyCodeLength = string.Join("##", model.CompanyCodeLength),
 				Duties = string.Join("##", model.Duties),
 				DutiesTags = string.Join("##", model.DutyTags),
-				DutyIsMajor = model.DutyIsMajor
+				DutyIsMajor = model.DutyIsMajor,
+				RegionOnCompany = model.CompanyRegion
 			};
 		}
 
