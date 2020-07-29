@@ -26,12 +26,18 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Save(string id)
 		{
+			var ua = _userActionServices.Log(UserOperation.ModifyApply, id, $"保存", false, ActionRank.Infomation);
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.NotPublish, u));
+				CheckApplyModelAndDoTask(id, (x, u) =>
+				{
+					_applyService.ModifyAuditStatus(x, AuditStatus.NotPublish, u);
+					_userActionServices.Status(ua, true, $"通过{u}");
+				});
 			}
 			catch (ActionStatusMessageException e)
 			{
+				_userActionServices.Status(ua, false, e.Status.Message);
 				return new JsonResult(e.Status);
 			}
 			return new JsonResult(ActionStatusMessage.Success);
@@ -47,12 +53,18 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Publish(string id)
 		{
+			var ua = _userActionServices.Log(UserOperation.ModifyApply, id, $"发布", false, ActionRank.Infomation);
 			try
 			{
-				CheckApplyModelAndDoTask(id, (x, u) => _applyService.ModifyAuditStatus(x, AuditStatus.Auditing, u));
+				CheckApplyModelAndDoTask(id, (x, u) =>
+				{
+					_applyService.ModifyAuditStatus(x, AuditStatus.Auditing, u);
+					_userActionServices.Status(ua, true, $"通过{u}");
+				});
 			}
 			catch (ActionStatusMessageException e)
 			{
+				_userActionServices.Status(ua, false, e.Status.Message);
 				return new JsonResult(e.Status);
 			}
 			return new JsonResult(ActionStatusMessage.Success);
@@ -68,7 +80,7 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult Withdrew(string id)
 		{
-			UserAction ua = _userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModifyApply, id, "撤回", false, ActionRank.Danger);
+			UserAction ua = _userActionServices.Log(UserOperation.ModifyApply, id, $"撤回", false, ActionRank.Warning);
 			try
 			{
 				CheckApplyModelAndDoTask(id, (x, u) =>
