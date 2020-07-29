@@ -34,6 +34,8 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// <summary>
 		/// 单位作用域
 		/// </summary>
+		[Required(ErrorMessage = "节点作用域不能为空")]
+		[MinLength(1, ErrorMessage = "节点作用域不能为空白")]
 		public string CompanyRegion { get; set; }
 
 		/// <summary>
