@@ -64,12 +64,12 @@ namespace BLL.Services.ApplyServices
 			if (model.StampLeave != null)
 			{
 				var vacationLength = model.VacationLength;
-				if (type.CaculateBenefit) vacationLength += additionalVacationDay;
 				if (type.CanUseOnTrip) vacationLength += model.OnTripLength;
 				// 仅计算正休假包含的法定节假日
 				if (type.CaculateBenefit)
 				{
-					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, model.VacationLength, true).ConfigureAwait(true);
+					// 得到所有福利假后需要加入路途和原假并再次计算
+					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, true).ConfigureAwait(true);
 					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
@@ -79,8 +79,10 @@ namespace BLL.Services.ApplyServices
 					}).ToList();
 					if (model.VacationAdditionals != null) lawVacations.AddRange(model.VacationAdditionals);
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
+					vacationLength += lawVacations.Sum(v => v.Length);
 				}
-				else model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
+				if (type.CaculateBenefit) vacationLength += additionalVacationDay;
+				model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
 
 				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription();
 			}
@@ -91,6 +93,7 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model == null) return null;
 			var vacationInfo = _usersService.VacationInfo(targetUser);
+			if (vacationInfo.Description.Contains("无休假：")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description, true));
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;
 			if (type?.Disabled ?? true) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);

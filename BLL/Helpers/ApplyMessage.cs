@@ -83,6 +83,7 @@ namespace BLL.Helpers
 				public static readonly ApiResult BeforePrimaryNotAllow = new ApiResult(44800, "不允许在正休假未休完前进行");
 				public static readonly ApiResult VacationTypeNotExist = new ApiResult(44900, "无效的休假类型");
 				public static readonly ApiResult LawVacationCantCreateByUser = new ApiResult(44110, "法定节假日不可由用户创建");
+				public static readonly ApiResult HaveNoVacationSinceExcept = new ApiResult(44120, "因异常而无休假。");
 			}
 
 			public static readonly ApiResult GuidFail = new ApiResult(45000, "申请的ID无效");
