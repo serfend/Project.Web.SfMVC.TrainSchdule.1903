@@ -197,8 +197,10 @@ namespace BLL.Services
 		{
 			if (user == null) return null;
 			var lastCreateTime = user?.Application?.Create;
+			var lastSettleHistory = user?.SocialInfo?.Settle?.PrevYealyLengthHistory;
 			var appUser = CreateAppUser(user);
 			appUser.Application.Create = lastCreateTime; // create time should not modify
+			appUser.SocialInfo.Settle.PrevYealyLengthHistory = lastSettleHistory;// settle history shouldnot modify
 			if (update)
 			{
 				_context.AppUsers.Update(appUser);
