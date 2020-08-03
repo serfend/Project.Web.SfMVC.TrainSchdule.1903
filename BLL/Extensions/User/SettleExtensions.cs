@@ -150,7 +150,7 @@ namespace BLL.Extensions
 		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description)
 		{
 			maxOnTripTime = 0;
-			description = "本人地址无效，无休假";
+			description = "无休假：本人地址无效，请填写正确地址。";
 			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
 
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
@@ -195,16 +195,16 @@ namespace BLL.Extensions
 				if (dis_l_p)
 				{
 					maxOnTripTime = 1;
-					description = "已婚且与妻子同地，与父母异地，探父母假计20天。"; return 20;
+					description = "已婚且与配偶同地，与父母异地，探父母假计20天。"; return 20;
 				}
 				else
 				{
 					maxOnTripTime = 0;
-					description = "已婚且与妻子、父母同地，驻地假计20天。"; return 20;
+					description = "已婚且与配偶、父母同地，驻地假计20天。"; return 20;
 				}
 			}
 
-			description = "异常的个人信息，请核实";
+			description = "无休假：异常的个人信息，请核实。";
 			return 0;
 		}
 
