@@ -111,12 +111,12 @@ namespace BLL.Services
 					maxOnTripTimeGainForRecall++;
 					var order = _context.RecallOrders.Find(a.RecallId);
 					if (order == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.IdRecordButNoData);
-					//此处减去召回时间应注意是否在福利假内部
-					var dayComsumeBeforeRecall = order.ReturnStamp.Subtract(a.RequestInfo.StampLeave.Value).Days;
-					var containsLawVacations = _vacationCheckServices.GetVacationDates(a.RequestInfo.StampLeave.Value, dayComsumeBeforeRecall, true).ToList();
-					var containsLawVacationsLength = containsLawVacations.Sum(v => v.Length);
-					var realComsumeMainVacation = dayComsumeBeforeRecall - containsLawVacationsLength - a.RequestInfo.OnTripLength;
-					if (realComsumeMainVacation > 0) nowLength -= realComsumeMainVacation;
+					// 归还天数=应归队 - 召回应归队
+					var recallMiniusDay = a.RequestInfo.StampReturn.Value.Subtract(order.ReturnStamp).Days;
+					nowLength -= recallMiniusDay;
+					// 判断召回应归队到应归队之间的福利假天数
+					var benefitDuringRecallAndStampReturn = _vacationCheckServices.GetVacationDates(order.ReturnStamp, recallMiniusDay, true).Sum(v => v.Length);
+					if (benefitDuringRecallAndStampReturn > 0) nowLength += benefitDuringRecallAndStampReturn;
 				}
 				// 处理推迟的假期
 				else if (((int)a.ExecuteStatus & (int)ExecuteStatus.Delay) > 0 && a.ExecuteStatusDetailId != null)
