@@ -388,7 +388,8 @@ namespace TrainSchdule.Controllers
 			if (accountType == AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
 			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
 			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, model.RememberMe, lockoutOnFailure: false);
+			// it seems if use persistent , cookie cant save expectly
+			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, false, lockoutOnFailure: true);
 			if (result.Succeeded)
 			{
 				_logger.LogInformation($"用户登录:{userid}");
@@ -522,7 +523,7 @@ namespace TrainSchdule.Controllers
 			}
 			try
 			{
-				await ModefySingleUser(model.Data, authByUser, $"{authByUser.Id}修改用户信息");
+				await ModifySingleUser(model.Data, authByUser, $"{authByUser.Id}修改用户信息");
 			}
 			catch (ModelStateException mse)
 			{
@@ -631,12 +632,12 @@ namespace TrainSchdule.Controllers
 		/// <param name="authByUser"></param>
 		/// <param name="modefyDescription">备注</param>
 		/// <returns></returns>
-		private async Task ModefySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
+		private async Task ModifySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.GetById(model.Application.UserName);
 			// 获取需要修改的目标用户
-			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, "修改用户", false, ActionRank.Danger);
+			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, $"通过{authByUser.Id}", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions);
 
@@ -655,8 +656,6 @@ namespace TrainSchdule.Controllers
 			await _context.SaveChangesAsync();
 
 			_userActionServices.Status(actionRecord, true, modefyDescription);
-			var prevUserInfo = JsonConvert.SerializeObject(localUser);
-			_userActionServices.Log(UserOperation.ModifyUser, prevUser.Id, $"原信息:{prevUserInfo}", true, ActionRank.Danger);
 		}
 
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
