@@ -20,6 +20,7 @@ using DAL.Entities.ApplyInfo;
 using BLL.Extensions.Common;
 using System.Threading.Tasks;
 using GoogleAuth;
+using DAL.Entities.UserInfo;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -83,6 +84,9 @@ namespace TrainSchdule.Controllers.Apply
 
 			var currentUser = _currentUserService.CurrentUser;
 			var c = id == null ? currentUser : _usersService.GetById(id);
+			var item = new { pages, id, start, end };
+			var ua = _userActionServices.Log(UserOperation.AuditApply, c.Id, $"本人申请:{JsonConvert.SerializeObject(item)}", false, ActionRank.Infomation);
+
 			if (id != null && id != currentUser.Id)
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
@@ -90,6 +94,7 @@ namespace TrainSchdule.Controllers.Apply
 			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).Where(a => a.Create >= start).Where(a => a.Create <= end);
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
+			_userActionServices.Status(ua, true);
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new EntitiesListDataModel<ApplySummaryDto>()
@@ -114,6 +119,9 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var c = _currentUserService.CurrentUser;
+			var item = new { pages, status, actionStatus, executeStatus };
+			var ua = _userActionServices.Log(UserOperation.AuditApply, c.Id, $"本人审批:{JsonConvert.SerializeObject(item)}", true, ActionRank.Infomation);
+
 			var statusArr = status?.Split("##")?.Select(i => Convert.ToInt32(i));
 			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
 			if (statusArr != null && statusArr.Any()) r = r.Where(a => statusArr.Contains((int)a.Status)); // 查出所有状态符合的
@@ -157,6 +165,7 @@ namespace TrainSchdule.Controllers.Apply
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
+
 			return new JsonResult(new ApplyListViewModel()
 			{
 				Data = new EntitiesListDataModel<ApplySummaryDto>()
