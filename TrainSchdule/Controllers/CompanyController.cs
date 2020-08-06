@@ -126,7 +126,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> CompanyChild(string id)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			id = id ?? currentUser?.CompanyInfo?.Company?.Code;
+			id ??= currentUser?.CompanyInfo?.Company?.Code;
 			var list = _companiesService.FindAllChild(id)?.ToDictionary(c => c.Code) ?? new Dictionary<string, Company>();
 			int totalCount = list.Count;
 			var manageCount = 0;
@@ -166,6 +166,9 @@ namespace TrainSchdule.Controllers
 		public IActionResult Detail(string id)
 		{
 			var c = _companiesService.GetById(id);
+			if (c == null) id = _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			c = _companiesService.GetById(id);
+
 			return new JsonResult(new EntityViewModel<Company>(c));
 		}
 
