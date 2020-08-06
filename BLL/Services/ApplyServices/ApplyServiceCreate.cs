@@ -52,11 +52,9 @@ namespace BLL.Services.ApplyServices
 			if (model == null) return null;
 			var type = model.VacationType;
 			if (type == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
-			int additionalVacationDay = 0;
+			// 检查是否合法
 			model.VacationAdditionals?.All(v =>
 			{
-				additionalVacationDay += v.Length;
-				v.Start = DateTime.Now;
 				if (v.Description == Const_LawVacationDescription)
 					throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.LawVacationCantCreateByUser);
 				return true;
@@ -79,9 +77,8 @@ namespace BLL.Services.ApplyServices
 					}).ToList();
 					if (model.VacationAdditionals != null) lawVacations.AddRange(model.VacationAdditionals);
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
-					vacationLength += lawVacations.Sum(v => v.Length);
+					vacationLength += model.VacationAdditionals.Sum(v => v.Length);
 				}
-				if (type.CaculateBenefit) vacationLength += additionalVacationDay;
 				model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
 
 				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription();
