@@ -1,6 +1,11 @@
 ﻿using BLL.Helpers;
 using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.DiyInfo;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.User
@@ -41,6 +46,11 @@ namespace TrainSchdule.ViewModels.User
 		///
 		/// </summary>
 		public string Avatar { get; set; }
+
+		/// <summary>
+		/// 第三方账号列表
+		/// </summary>
+		public IEnumerable<ThirdpardAccount> ThirdpardAccounts { get; set; }
 	}
 
 	/// <summary>
@@ -59,7 +69,8 @@ namespace TrainSchdule.ViewModels.User
 			return new UserDiyInfoDataModel()
 			{
 				About = model.About,
-				Avatar = model.Avatar?.Id.ToString()
+				Avatar = model.Avatar?.Id.ToString(),
+				ThirdpardAccounts = model.ThirdpardAccount
 			};
 		}
 
@@ -67,12 +78,16 @@ namespace TrainSchdule.ViewModels.User
 		/// 将传入信息转换为UserDiyInfo
 		/// </summary>
 		/// <param name="model"></param>
+		/// <param name="db"></param>
 		/// <returns></returns>
-		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model)
+		public static UserDiyInfo ToModel(this UserDiyInfoDataModel model, DbSet<ThirdpardAccount> db)
 		{
 			var r = new UserDiyInfo()
 			{
-				About = model.About
+				About = model.About,
+				ThirdpardAccount = model.ThirdpardAccounts
+				.Select(i => db.FirstOrDefault(a => a.Id == i.Id))
+				.Where(i => i != null)
 			};
 			return r;
 		}

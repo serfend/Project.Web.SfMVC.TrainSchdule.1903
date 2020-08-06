@@ -639,7 +639,7 @@ namespace TrainSchdule.Controllers
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, $"通过{authByUser.Id}", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions);
+			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts);
 
 			var modefyUser = await _usersService.ModifyAsync(prevUser, false);
 
@@ -668,7 +668,7 @@ namespace TrainSchdule.Controllers
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions), model.Password);
+			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.GetById(user.UserName);
 			CheckCurrentUserData(toRegisterUser);

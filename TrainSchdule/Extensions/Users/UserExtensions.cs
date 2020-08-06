@@ -7,6 +7,7 @@ using TrainSchdule.ViewModels.Account;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels.User;
 using TrainSchdule.Extensions.Users.Social;
+using DAL.Entities.UserInfo.DiyInfo;
 
 namespace TrainSchdule.Extensions
 {
@@ -20,9 +21,10 @@ namespace TrainSchdule.Extensions
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="invitedBy"></param>
-		/// <param name="db"></param>
+		/// <param name="dbAdmin"></param>
+		/// <param name="dbThidpardAccount"></param>
 		/// <returns></returns>
-		public static User ToModel(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> db)
+		public static User ToModel(this UserModefyDataModel model, string invitedBy, DbSet<AdminDivision> dbAdmin, DbSet<ThirdpardAccount> dbThidpardAccount)
 		{
 			if (model == null) return null;
 			var u = new User()
@@ -46,9 +48,9 @@ namespace TrainSchdule.Extensions
 				},
 				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,
-				SocialInfo = model.Social?.ToModel(db),
+				SocialInfo = model.Social?.ToModel(dbAdmin),
 				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
-				DiyInfo = model.Diy?.ToModel()
+				DiyInfo = model.Diy?.ToModel(dbThidpardAccount)
 			};
 			if (u.BaseInfo != null) u.BaseInfo.Id = Guid.Empty;
 			return u;

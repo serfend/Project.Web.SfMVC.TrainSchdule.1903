@@ -1,4 +1,5 @@
 ﻿using DAL.Entities.UserInfo;
+using DAL.Entities.UserInfo.DiyInfo;
 using DAL.Entities.UserInfo.Settle;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,5 +25,6 @@ namespace DAL.Data
 
 		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
 		public DbSet<Avatar> AppUserDiyAvatars { get; set; }
+		public DbSet<ThirdpardAccount> ThirdpardAccounts { get; set; }
 	}
 }

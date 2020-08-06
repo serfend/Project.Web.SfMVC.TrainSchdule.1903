@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200803131250_user_diy_thirdpardAccount")]
+    partial class user_diy_thirdpardAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1529,7 +1531,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserDiyInfoId");
 
-                    b.ToTable("ThirdpardAccounts");
+                    b.ToTable("ThirdpardAccount");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.AppUsersSettleModefyRecord", b =>
