@@ -29,12 +29,12 @@ namespace BLL.Services.ApplyServices
 				var success = int.TryParse(model.ExecuteStatus.Value, out var executeStatusInt);
 				list = list.Where(a => (int)a.ExecuteStatus == executeStatusInt);
 			}
-			if (model.NowAuditBy != null) list = list.Where(a => EF.Functions.Like(a.NowAuditStep.MembersFitToAudit, $"%{model.NowAuditBy.Value }% "));
+			if (model.NowAuditBy != null) list = list.Where(a => EF.Functions.Like(a.NowAuditStep.MembersFitToAudit, $"%{model.NowAuditBy.Value }%"));
 			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => EF.Functions.Like(s.MembersFitToAudit, $"%{model.AuditBy.Value}%")));
 			if (model.CompanyType != null)
-				list = list.Where(a => EF.Functions.Contains(a.BaseInfo.From.CompanyInfo.Company.Tag, model.CompanyType.Value));
+				list = list.Where(a => EF.Functions.Like(a.BaseInfo.From.CompanyInfo.Company.Tag, $"%{model.CompanyType.Value}%"));
 			if (model.DutiesType != null)
-				list = list.Where(a => EF.Functions.Contains(a.BaseInfo.From.CompanyInfo.Duties.Tags, model.DutiesType.Value));
+				list = list.Where(a => EF.Functions.Like(a.BaseInfo.From.CompanyInfo.Duties.Tags, $"%{model.DutiesType.Value}%"));
 			if (model.CreateCompany != null)
 			{
 				var arr = model.CreateCompany?.Arrays?.Select(i => $"{i}%");

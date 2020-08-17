@@ -24,7 +24,7 @@ namespace TrainSchdule.Controllers
 	/// 单位管理
 	/// </summary>
 	[Route("[controller]/[action]")]
-	public class CompanyController : Controller
+	public partial class CompanyController : Controller
 	{
 		private readonly ICompaniesService _companiesService;
 		private readonly ICurrentUserService _currentUserService;
@@ -50,70 +50,25 @@ namespace TrainSchdule.Controllers
 		}
 
 		/// <summary>
-		/// 获取指定岗位名称的详细信息
+		/// 单位类别查询
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult DutiesDetail(string name)
-		{
-			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Duties.Name;
-			var duty = _context.Duties.Where(d => d.Name == name).FirstOrDefault();
-			if (duty == null) return new JsonResult(ActionStatusMessage.CompanyMessage.DutyMessage.NotExist);
-			var r = duty.ToDataModel();
-			return new JsonResult(new DutyViewModel()
-			{
-				Data = r
-			});
-		}
-
-		/// <summary>
-		/// 获取指定名称可能的岗位
-		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="tag"></param>
 		/// <param name="pageIndex"></param>
-		/// <param name="pageNum"></param>
+		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult DutiesQuery(string name, int pageIndex = 0, int pageNum = 20)
+		public IActionResult CompanyTag(string tag, int pageIndex = 0, int pageSize = 20)
 		{
-			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet");
-			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
-			var data = new EntitiesListDataModel<DutyDataModel>()
-			{
-				List = result.Item1.Select(d => d.ToDataModel()),
-				TotalCount = result.Item2
-			};
-			return new JsonResult(new DutiesViewModel()
-			{
-				Data = data
-			});
-		}
-
-		/// <summary>
-		/// 检索可能的职务等级
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="pageIndex"></param>
-		/// <param name="pageNum"></param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult TitleQuery(string name, int pageIndex = 0, int pageNum = 20)
-		{
-			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet");
-			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageNum });
-			var data = new EntitiesListDataModel<UserTitleDataModel>()
-			{
-				List = result.Item1.Select(d => d.ToDataModel()),
-				TotalCount = result.Item2
-			};
-			return new JsonResult(new UserTitlesViewModel()
-			{
-				Data = data
-			});
+			var pattern = $"%{tag}%";
+			var companyQuery = _context.Companies.AsQueryable();
+			if (!tag.IsNullOrEmpty()) companyQuery = companyQuery.Where(d => EF.Functions.Like(d.Tag, pattern));
+			var result = companyQuery.AsEnumerable()
+				.SelectMany(d => d.Tag?.Split("##", StringSplitOptions.RemoveEmptyEntries) ?? new List<string>().ToArray())
+				.Where(d => EF.Functions.Like(d, pattern))
+				.Distinct()
+				.OrderBy(a => a)
+				.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
+			return new JsonResult(new EntitiesListViewModel<string>(result.Item1, result.Item2));
 		}
 
 		/// <summary>
