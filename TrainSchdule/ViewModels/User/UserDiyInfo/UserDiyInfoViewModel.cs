@@ -85,7 +85,7 @@ namespace TrainSchdule.ViewModels.User
 			var r = new UserDiyInfo()
 			{
 				About = model.About,
-				ThirdpardAccount = model.ThirdpardAccounts
+				ThirdpardAccount = model.ThirdpardAccounts?
 				.Select(i => db.FirstOrDefault(a => a.Id == i.Id))
 				.Where(i => i != null)
 			};

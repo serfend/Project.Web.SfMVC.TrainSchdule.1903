@@ -38,7 +38,7 @@ namespace TrainSchdule.Extensions
 				Code = model.Code,
 				IsMajorManager = model.IsMajorManager,
 				Name = model.Name,
-				Tags = model.Tags?.Length == 0 ? Array.Empty<string>() : model.Tags.Split("##")
+				Tags = model.Tags?.Length == 0 ? Array.Empty<string>() : model.Tags?.Split("##")
 			};
 		}
 
