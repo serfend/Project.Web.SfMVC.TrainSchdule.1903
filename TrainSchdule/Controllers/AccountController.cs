@@ -389,7 +389,7 @@ namespace TrainSchdule.Controllers
 			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
 			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
 			// it seems if use persistent , cookie cant save expectly
-			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, false, lockoutOnFailure: true);
+			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, false, lockoutOnFailure: false);
 			if (result.Succeeded)
 			{
 				_logger.LogInformation($"用户登录:{userid}");
