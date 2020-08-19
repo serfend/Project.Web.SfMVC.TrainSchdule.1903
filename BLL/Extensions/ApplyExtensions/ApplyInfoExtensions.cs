@@ -27,7 +27,6 @@ namespace BLL.Extensions.ApplyExtensions
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
-				Hidden = model.Hidden,
 				RequestInfo = model.RequestInfo,
 				Response = model.Response.Select(r => r.ToResponseDto()),
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
@@ -42,12 +41,17 @@ namespace BLL.Extensions.ApplyExtensions
 				ExecuteStatusId = model.ExecuteStatusDetailId,
 				UserVacationDescription = info
 			};
-
+			if (model.Status == AuditStatus.Withdrew)
+			{
+				b.RequestInfo = null;
+			}
 			return b;
 		}
 
 		public static ApplySummaryDto ToSummaryDto(this Apply model)
 		{
+			if (model == null) return null;
+
 			var b = new ApplySummaryDto()
 			{
 				Create = model?.Create,
@@ -63,6 +67,8 @@ namespace BLL.Extensions.ApplyExtensions
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
 				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程"
 			};
+			if (b.Status == AuditStatus.Withdrew)
+				b.Request = null;
 			return b;
 		}
 
