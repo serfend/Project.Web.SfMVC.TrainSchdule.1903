@@ -148,7 +148,6 @@ namespace BLL.Services.ApplyServices
 			{
 				BaseInfo = _context.ApplyBaseInfos.Find(model.BaseInfoId),
 				Create = DateTime.Now,
-				Hidden = false,
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
 				Status = AuditStatus.NotSave
 			};

@@ -56,11 +56,6 @@ namespace DAL.Entities.ApplyInfo
 		/// 被召回的id
 		/// </summary>
 		public Guid? RecallId { get; set; }
-
-		/// <summary>
-		/// 申请是否可见（当用户尝试删除申请，且申请的状态为【已通过】时，将不删除，而改为隐藏
-		/// </summary>
-		public bool Hidden { get; set; }
 	}
 
 	public enum AuditStatus
