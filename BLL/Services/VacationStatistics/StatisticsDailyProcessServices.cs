@@ -45,7 +45,7 @@ namespace BLL.Services.VacationStatistics
 			if (db.CheckDb(companyCode, target).Any()) return new Tuple<IEnumerable<T>, bool>(db.CheckDb(companyCode, target), false);
 			var records = applies.Select(a => new StatisticsAppliesInfo()
 			{
-				Type = a.BaseInfo.From.CompanyInfo.Duties.Type,
+				Type = a.BaseInfo.Duties.Type,
 				From = a.BaseInfo.From,
 				Days = a.RequestInfo.VacationLength,
 				// 此处未考虑召回导致的假期损失

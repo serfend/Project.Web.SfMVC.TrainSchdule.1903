@@ -68,7 +68,7 @@ namespace BLL.Services.VacationStatistics
 				To = (byte)(a.RequestInfo.VacationPlace.Code / 10000),
 				CompanyCode = companyCode,
 				Target = target,
-				Type = a.BaseInfo.From.CompanyInfo.Duties.Type,
+				Type = a.BaseInfo.Duties.Type,
 				Day = a.RequestInfo.VacationLength // 此处可能需要仅计算主假
 			}).ToList(); // TODO client side query should diabled
 			var groupRecords = records.GroupBy(a => new { a.From, a.To, a.Type }).ToList();

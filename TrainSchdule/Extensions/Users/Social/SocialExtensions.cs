@@ -28,7 +28,8 @@ namespace TrainSchdule.Extensions.Users.Social
 				Address = model.Address,
 				AddressDetail = model.AddressDetail,
 				Phone = model.Phone,
-				Settle = model.Settle.ToDto()
+				Settle = model.Settle.ToDto(),
+				Status = model.Status
 			};
 		}
 
