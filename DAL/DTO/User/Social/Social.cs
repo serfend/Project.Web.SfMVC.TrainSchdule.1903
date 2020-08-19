@@ -28,5 +28,10 @@ namespace DAL.DTO.User.Social
 		/// 家庭详细地址
 		/// </summary>
 		public string AddressDetail { get; set; }
+
+		/// <summary>
+		/// SocialStatus【冗余字段 需要联动更新】
+		/// </summary>
+		public int Status { get; set; }
 	}
 }

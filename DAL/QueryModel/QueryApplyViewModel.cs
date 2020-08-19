@@ -44,6 +44,11 @@ namespace DAL.QueryModel
 		public QueryByString CreateBy { get; set; }
 
 		/// <summary>
+		/// 申请人状态
+		/// </summary>
+		public QueryByIntOrEnum UserStatus { get; set; }
+
+		/// <summary>
 		/// 申请创建人所在的单位(多选)
 		/// </summary>
 		public QueryByString CreateCompany { get; set; }
@@ -57,6 +62,11 @@ namespace DAL.QueryModel
 		/// 创建人的单位类型
 		/// </summary>
 		public QueryByString CompanyType { get; set; }
+
+		/// <summary>
+		/// 单位状态
+		/// </summary>
+		public QueryByIntOrEnum CompanyStatus { get; set; }
 
 		/// <summary>
 		/// 具有审批此申请权限的审批人

@@ -208,7 +208,7 @@ namespace BLL.Extensions
 			return 0;
 		}
 
-		private static bool IsAllopatry(Moment d1, Moment d2)
+		public static bool IsAllopatry(this Moment d1, Moment d2)
 		{
 			var a1 = d1?.Address;
 			var a2 = d2?.Address;

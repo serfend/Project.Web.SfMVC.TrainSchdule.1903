@@ -24,7 +24,23 @@ namespace DAL.Entities
 		/// </summary>
 		public string Tag { get; set; }
 
-		public bool IsPrivate { get; set; }
 		public string Description { get; set; }
+
+		/// <summary>
+		/// 单位地点
+		/// </summary>
+		public virtual AdminDivision Location { get; set; }
+
+		/// <summary>
+		/// 单位属性
+		/// </summary>
+		public int CompanyStatus { get; set; }
+	}
+
+	public enum CompanyStatus
+	{
+		IsRemote = 1,
+		IsPrivate = 2,
+		IgnoreCaculateStatistics = 4
 	}
 }

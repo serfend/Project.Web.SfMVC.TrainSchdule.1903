@@ -15,7 +15,7 @@ namespace DAL.Entities.ApplyInfo
 		public virtual DAL.Entities.UserInfo.User From { get; set; }
 
 		/// <summary>
-		/// 声请人单位情况
+		/// 申请人单位情况
 		/// </summary>
 		public virtual Company Company { get; set; }
 

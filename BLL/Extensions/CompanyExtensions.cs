@@ -26,6 +26,8 @@ namespace BLL.Extensions
 				Code = company.Code,
 				Name = company.Name,
 				Description = company.Description,
+				CompanyStatus = company.CompanyStatus,
+				Location = company.Location,
 				Tags = (company.Tag?.Length ?? 0) == 0 ? Array.Empty<string>() : company.Tag.Split("##")
 			};
 			return b;

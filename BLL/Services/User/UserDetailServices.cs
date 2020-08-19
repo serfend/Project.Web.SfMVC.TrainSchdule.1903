@@ -70,16 +70,50 @@ namespace BLL.Services
 				.Where(a => a.Status == AuditStatus.Accept)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == nowY)
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
-
-			var r = targetUser.SocialInfo.Settle.GetYearlyLength(targetUser);
+			var targetSocial = targetUser.SocialInfo;
+			var targetSettle = targetSocial.Settle;
+			var r = targetSettle.GetYearlyLength(targetUser);
 			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;
 			var yearlyLength = r.Item1 < 0 ? 0 : r.Item1;
+			bool requireUpdate = false;
+			if (targetSettle.Lover?.Valid ?? false)
+			{
+				// 已婚
+				requireUpdate |= (targetSocial.Status & (int)SocialStatus.IsMarried) == 0;
+				targetSocial.Status |= (int)SocialStatus.IsMarried;
+
+				if (targetSettle.Self.IsAllopatry(targetSettle.Lover))
+				{
+					// 分居
+					requireUpdate |= (targetSocial.Status & (int)SocialStatus.IsApart) == 0;
+					targetSocial.Status |= (int)SocialStatus.IsApart;
+				}
+				else
+				{
+					// 同居
+					requireUpdate |= (targetSocial.Status & (int)SocialStatus.IsApart) > 0;
+					targetSocial.Status -= (int)SocialStatus.IsApart;
+				}
+			}
+			else
+			{
+				// 未婚
+				requireUpdate |= (targetSocial.Status & (int)SocialStatus.IsMarried) > 0;
+				targetSocial.Status -= (int)SocialStatus.IsMarried;
+			}
+
 			if (requireAddRecord != null)
 			{
-				var list = new List<AppUsersSettleModefyRecord>(targetUser.SocialInfo.Settle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
+				var list = new List<AppUsersSettleModefyRecord>(targetSettle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
 				list.Add(requireAddRecord);
-				targetUser.SocialInfo.Settle.PrevYealyLengthHistory = list;
-				_context.AppUserSocialInfoSettles.Update(targetUser.SocialInfo.Settle);
+				targetSettle.PrevYealyLengthHistory = list;
+				_context.AppUserSocialInfoSettles.Update(targetSettle);
+				requireUpdate |= true;
+			}
+
+			if (requireUpdate)
+			{
+				_context.AppUserSocialInfos.Update(targetSocial);
 				_context.SaveChanges();
 			}
 			var vacationInfo = VacationInfoInRange(applies, yearlyLength);

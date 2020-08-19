@@ -31,21 +31,30 @@ namespace BLL.Services.ApplyServices
 			}
 			if (model.NowAuditBy != null) list = list.Where(a => EF.Functions.Like(a.NowAuditStep.MembersFitToAudit, $"%{model.NowAuditBy.Value }%"));
 			if (model.AuditBy != null) list = list.Where(a => a.ApplyAllAuditStep.Any(s => EF.Functions.Like(s.MembersFitToAudit, $"%{model.AuditBy.Value}%")));
+			if (model.UserStatus != null)
+			{
+				var status = model.UserStatus.Arrays.FirstOrDefault();
+				list = list.Where(a => (a.BaseInfo.From.SocialInfo.Status & status) > 0);
+			}
+			if (model.CompanyStatus != null)
+			{
+				var status = model.CompanyStatus.Arrays.FirstOrDefault();
+				list = list.Where(a => (a.BaseInfo.Company.CompanyStatus & status) > 0);
+			}
 			if (model.CompanyType != null)
-				list = list.Where(a => EF.Functions.Like(a.BaseInfo.From.CompanyInfo.Company.Tag, $"%{model.CompanyType.Value}%"));
+				list = list.Where(a => EF.Functions.Like(a.BaseInfo.Company.Tag, $"%{model.CompanyType.Value}%"));
 			if (model.DutiesType != null)
-				list = list.Where(a => EF.Functions.Like(a.BaseInfo.From.CompanyInfo.Duties.Tags, $"%{model.DutiesType.Value}%"));
+				list = list.Where(a => EF.Functions.Like(a.BaseInfo.Duties.Tags, $"%{model.DutiesType.Value}%"));
 			if (model.CreateCompany != null)
 			{
 				var arr = model.CreateCompany?.Arrays?.Select(i => $"{i}%");
 				var exp = PredicateBuilder.New<Apply>(false);
 				foreach (var item in arr)
-					exp = exp.Or(p => EF.Functions.Like(p.BaseInfo.From.CompanyInfo.Company.Code, item));
+					exp = exp.Or(p => EF.Functions.Like(p.BaseInfo.Company.Code, item));
 				if (arr != null)
 					list = list.Where(a => a.BaseInfo != null)
 						.Where(a => a.BaseInfo.From != null)
-						.Where(a => a.BaseInfo.From.CompanyInfo != null)
-						.Where(a => a.BaseInfo.From.CompanyInfo.Company != null)
+						.Where(a => a.BaseInfo.Company != null)
 						.Where(exp);
 			}
 
