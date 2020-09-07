@@ -25,6 +25,7 @@ namespace BLL.Services
 		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
 		public int CheckAuthorizedToUser(User authUser, User modefyUser)
 		{
+			if (authUser?.Id == "root") return int.MaxValue;
 			var result = InMyManage(authUser).Result;
 			var myManages = result.Item1.ToList();
 			if (result.Item2 == 0) return -1;

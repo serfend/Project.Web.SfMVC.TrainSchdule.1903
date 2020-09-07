@@ -41,10 +41,10 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 修改用户信息
 		/// </summary>
-		/// <param name="user"></param>
+		/// <param name="newUser"></param>
 		/// <param name="update"></param>
 		/// <returns></returns>
-		Task<User> ModifyAsync(User user, bool update);
+		Task<User> ModifyAsync(User newUser, bool update);
 
 		bool Edit(User newUser);
 

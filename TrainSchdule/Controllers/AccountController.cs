@@ -636,25 +636,28 @@ namespace TrainSchdule.Controllers
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.GetById(model.Application.UserName);
+			// TODO 因lazyload导致无法加载原信息
+			if (localUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
+
 			// 获取需要修改的目标用户
 			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, $"通过{authByUser.Id}", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var prevUser = model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts);
+			var newUser = model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts);
+			var to_modify_NewUser = await _usersService.ModifyAsync(newUser, false);
 
-			var modefyUser = await _usersService.ModifyAsync(prevUser, false);
-
+			// 检查修改后的用户的权限
 			var invalidAccount = localUser.Application.InvalidAccount();
-			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, modefyUser);
+			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, to_modify_NewUser);
+			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改后权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
+			canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, localUser);
+			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改前权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 
-			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
-			CheckCurrentUserData(modefyUser);
-			if (invalidAccount == AccountType.Deny) modefyUser.Application.InvitedBy = null;//  重新提交
-
-			_logger.LogInformation($"用户信息被修改:{modefyUser.Id}");
+			CheckCurrentUserData(to_modify_NewUser);
+			if (invalidAccount == AccountType.Deny) to_modify_NewUser.Application.InvitedBy = null;//  重新提交
+			_logger.LogInformation($"用户信息被修改:{to_modify_NewUser.Id}");
 			_context.Entry(localUser).State = EntityState.Detached;
-			_context.AppUsers.Update(modefyUser);
+			_context.AppUsers.Update(to_modify_NewUser);
 			await _context.SaveChangesAsync();
-
 			_userActionServices.Status(actionRecord, true, modefyDescription);
 		}
 
@@ -672,6 +675,11 @@ namespace TrainSchdule.Controllers
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.GetById(user.UserName);
 			CheckCurrentUserData(toRegisterUser);
+			var cmpCode = toRegisterUser?.CompanyInfo?.Company?.Code;
+			if (cmpCode == null || cmpCode == "" || cmpCode == "root")
+			{
+				if (authByUser?.Id != "root") throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.RootCompanyRequireAdminRight);
+			}
 			if (!ModelState.IsValid)
 			{
 				await _usersService.RemoveAsync(model.Application.UserName);

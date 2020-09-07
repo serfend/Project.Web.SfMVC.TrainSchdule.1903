@@ -193,14 +193,12 @@ namespace BLL.Services
 			return identity;
 		}
 
-		public async Task<User> ModifyAsync(User user, bool update)
+		public async Task<User> ModifyAsync(User newUser, bool update)
 		{
-			if (user == null) return null;
-			var lastCreateTime = user?.Application?.Create;
-			var lastSettleHistory = user?.SocialInfo?.Settle?.PrevYealyLengthHistory;
-			var appUser = CreateAppUser(user);
+			if (newUser == null) return null;
+			var lastCreateTime = newUser?.Application?.Create;
+			var appUser = CreateAppUser(newUser);
 			appUser.Application.Create = lastCreateTime; // create time should not modify
-			appUser.SocialInfo.Settle.PrevYealyLengthHistory = lastSettleHistory;// settle history shouldnot modify
 			if (update)
 			{
 				_context.AppUsers.Update(appUser);
@@ -247,11 +245,15 @@ namespace BLL.Services
 			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);
 			var social = user.SocialInfo;
 			social.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
-			if (social.Settle?.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
-			if (social.Settle?.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
-			if (social.Settle?.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
-			if (social.Settle?.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
-			if (social.Settle != null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModefyRecord>();
+			if (social.Settle != null)
+			{
+				if (social.Settle.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
+				if (social.Settle.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
+				if (social.Settle.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
+				if (social.Settle.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
+				// if prev yealy history not set , then build new one
+				if (social.Settle.PrevYealyLengthHistory == null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModefyRecord>();
+			}
 			return user;
 		}
 
