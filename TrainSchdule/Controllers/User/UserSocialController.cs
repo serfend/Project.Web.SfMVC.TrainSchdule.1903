@@ -76,8 +76,10 @@ namespace TrainSchdule.Controllers
 			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);
 
 			var newR = model.Record;
-			if (newR == null) return new JsonResult(newR.NotExist());
-			var targetUser = _context.AppUsers.Where(u => u.SocialInfo.Settle.PrevYealyLengthHistory.Any(r => r.Id == newR.Id)).FirstOrDefault();
+			var new_record_id = newR?.Code;
+			if (new_record_id == null | new_record_id == 0) return new JsonResult(newR.NotExist());
+
+			var targetUser = _context.AppUsers.FirstOrDefault(u => u.SocialInfo.Settle.PrevYealyLengthHistory.FirstOrDefault(r => r.Code == new_record_id) != null);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
