@@ -671,6 +671,7 @@ namespace TrainSchdule.Controllers
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
+
 			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password);
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.GetById(user.UserName);
@@ -678,7 +679,7 @@ namespace TrainSchdule.Controllers
 			var cmpCode = toRegisterUser?.CompanyInfo?.Company?.Code;
 			if (cmpCode == null || cmpCode == "" || cmpCode == "root")
 			{
-				if (authByUser?.Id != "root") throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.RootCompanyRequireAdminRight);
+				if (authByUser?.Id != "root") ModelState.AddModelError("用户", ActionStatusMessage.Account.Register.RootCompanyRequireAdminRight.Message);
 			}
 			if (!ModelState.IsValid)
 			{
