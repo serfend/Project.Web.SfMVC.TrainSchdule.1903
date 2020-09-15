@@ -45,7 +45,7 @@ namespace BLL.Extensions
 			var result = ((12 - newDate.Month) * newLength + newDate.Month * lastestModefy.Length) / 12;
 			var weightDescriptionB = new StringBuilder();
 			weightDescriptionB.Append($"因今年发生{records.Count()}次变化，全年假期应加权计算：");
-			weightDescriptionB.Append($"新长度=(老长度*新长度月份+新长度*(12-新长度月份) ) /12=({(int)lastestModefy.Length}*{newDate.Month}+{(int)newLength}*(12-{newDate.Month}))={(int)(result)}");
+			weightDescriptionB.Append($"新长度=(老长度*新长度月份+新长度*(12-新长度月份) ) /12=({(int)lastestModefy.Length}*{newDate.Month}+{(int)newLength}*(12-{newDate.Month}))={(int)(result)}天");
 			weightDescription = weightDescriptionB.ToString();
 			return result;
 		}
@@ -65,7 +65,7 @@ namespace BLL.Extensions
 		{
 			if (settle == null) throw new ArgumentNullException(nameof(settle));
 			AppUsersSettleModefyRecord requireToAdd;
-			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out int maxOnTripTime, out string description); // 本次应休假长度
+			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out int maxOnTripTime, out string description, out var actionOnDate); // 本次应休假长度
 			var userFinnalModefyDate = TargetUser.CheckUpdateDate(); // 本次用户家庭最后变更时间
 			var vacationModefyRecords = settle.PrevYealyLengthHistory?.OrderByDescending(rec => rec.UpdateDate); // 用户假期变更记录
 			var lastVacationModefy = vacationModefyRecords?.FirstOrDefault(); // 上次假期变更记录
@@ -90,6 +90,13 @@ namespace BLL.Extensions
 					var thisYearModefyRecords = vacationModefyRecords.Where(rec => rec.UpdateDate.Year == nowY); // 今年以来的变更记录
 					var newLength = thisYearModefyRecords.CaculateLengthByWeight(userFinnalModefyDate, nowVacationLength, out var weightDescription);
 
+					// 如果最新更新时间早于上次更新时间，则使用当期时间作为基准，且天数不进行加权处理
+					if (userFinnalModefyDate.Year != nowY)
+					{
+						newLength = nowVacationLength;
+						weightDescription = "";
+						userFinnalModefyDate = thisYearModefyRecords.LastOrDefault()?.UpdateDate ?? SystemNowDate();
+					}
 					requireToAdd = new AppUsersSettleModefyRecord()
 					{
 						Description = $"{description} {weightDescription}",
@@ -147,10 +154,11 @@ namespace BLL.Extensions
 		/// <param name="maxOnTripTime"></param>
 		/// <param name="description"></param>
 		/// <returns></returns>
-		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description)
+		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description, out DateTime actionOnDate)
 		{
 			maxOnTripTime = 0;
 			description = "无休假：本人地址无效，请填写正确地址。";
+			actionOnDate = SystemNowDate();
 			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
 
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
@@ -160,10 +168,12 @@ namespace BLL.Extensions
 				{
 					maxOnTripTime = 1;
 					description = $"未婚，且职务为{title.Name}，假期天数{title.VacationDay}天";
+					actionOnDate = targetUser.CompanyInfo.TitleDate ?? SystemNowDate();
 					return title.VacationDay;
 				}
 				description = "未婚，探父母假30天。";
 				maxOnTripTime = 1;
+				actionOnDate = settle?.Self?.Date ?? SystemNowDate();
 				return 30;
 			}
 
@@ -174,12 +184,14 @@ namespace BLL.Extensions
 			if (dis_lover && dis_parent && dis_l_p)
 			{
 				maxOnTripTime = 3;
+				actionOnDate = Max(settle.Lover.Date, settle.Self.Date, settle.Parent.Date, settle.LoversParent.Date);
 				description = "已婚且三方异地，探父母假、探配偶假共计45天。"; return 45;
 			}
 
 			if (dis_lover)
 			{
 				maxOnTripTime = 2;
+				actionOnDate = Max(settle.Lover.Date, settle.Self.Date, settle.Parent.Date, settle.LoversParent.Date);
 				description = "已婚两方异地，探父母假、探配偶假共计40天。"; return 40;
 			}
 
@@ -187,6 +199,7 @@ namespace BLL.Extensions
 			if (workYears > 20 || (workYears == 20 && SystemNowDate().Month >= targetUser?.BaseInfo.Time_Work.Month))
 			{
 				maxOnTripTime = 0;
+				actionOnDate = SystemNowDate();
 				description = "工作满20年，驻地假30天。"; return 30;
 			}
 
@@ -195,6 +208,7 @@ namespace BLL.Extensions
 				if (dis_l_p)
 				{
 					maxOnTripTime = 1;
+					actionOnDate = Max(settle.Lover.Date, settle.Self.Date, settle.Parent.Date, settle.LoversParent.Date);
 					description = "已婚且与配偶同地，与父母异地，探父母假计20天。"; return 20;
 				}
 				else
@@ -205,7 +219,16 @@ namespace BLL.Extensions
 			}
 
 			description = "无休假：异常的个人信息，请核实。";
+
 			return 0;
+		}
+
+		public static DateTime Max(params DateTime[] dates)
+		{
+			DateTime max = DateTime.MinValue;
+			foreach (var d in dates)
+				if (max < d) max = d;
+			return max;
 		}
 
 		public static bool IsAllopatry(this Moment d1, Moment d2)
@@ -229,7 +252,7 @@ namespace BLL.Extensions
 
 		public static DateTime SystemNowDate()
 		{
-			return DateTime.Now.AddDays(5);
+			return DateTime.Now.XjxtNow();
 		}
 	}
 }
