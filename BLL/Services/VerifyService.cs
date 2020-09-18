@@ -159,7 +159,7 @@ namespace BLL.Services
 			var left = src.Left;
 			var top = src.Top;
 			//创建剪影
-			var gp = new GraphicsPath(FillMode.Winding);
+			using var gp = new GraphicsPath(FillMode.Winding);
 			gp.StartFigure();
 			var r = (float)(width * 0.2);
 
@@ -205,7 +205,8 @@ namespace BLL.Services
 				{
 					back.FillPath(sb, gp);
 					back.FillPath(pg, gp);
-					front.FillPath(new TextureBrush(srcImg), gp);
+					using var f = new TextureBrush(srcImg);
+					front.FillPath(f, gp);
 				}
 			}
 		}
@@ -218,12 +219,12 @@ namespace BLL.Services
 		public VerifyImg(Image raw)
 		{
 			if (raw == null) return;
-			var imgBack = Compress(raw, 260);
+			using var imgBack = Compress(raw, 260);
 			var size = imgBack.Size;
 			var width = (int)(size.Height * 0.3);
 			InitCodeValue(size.Width, width);
 
-			var imgFront = new Bitmap(width, width);
+			using var imgFront = new Bitmap(width, width);
 
 			var gBack = Graphics.FromImage(imgBack);
 			var gFront = Graphics.FromImage(imgFront);
@@ -251,7 +252,7 @@ namespace BLL.Services
 		/// <returns>字节数组</returns>
 		private static byte[] ImageToBytes(Image image)
 		{
-			var ms = new MemoryStream();
+			using var ms = new MemoryStream();
 			image.Save(ms, ImageFormat.Jpeg);
 			return ms.ToArray();
 		}
