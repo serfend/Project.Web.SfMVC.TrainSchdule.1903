@@ -171,7 +171,7 @@ namespace BLL.Services
 				MaxTripTimes = maxOnTripTimeGainForRecall,
 				NowTimes = nowTimes,
 				OnTripTimes = onTripTime,
-				YearlyLength = (int)Math.Floor(yearlyLength),
+				YearlyLength = (int)Math.Round(yearlyLength, 0),
 				Description = description,
 				Additionals = userAdditions
 			};
