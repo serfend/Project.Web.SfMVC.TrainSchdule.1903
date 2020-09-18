@@ -68,7 +68,7 @@ namespace BLL.Services.VacationStatistics
 				foreach (var u in companyAtTypeMembers.ToList())
 					userYealyStatisticsDict[u.Id] = new YearlyStatistics()
 					{
-						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d)
+						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d, out var actionOnDate)
 					};
 				foreach (var p in users)
 				{
