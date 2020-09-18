@@ -218,21 +218,30 @@ namespace BLL.Services.ApplyServices
 			var userid = apply.BaseInfo.From.Id;
 			var recallDb = _context.RecallOrders;
 			var execDb = _context.ApplyExcuteStatus;
+			/* 20200917@胡琪blanche881
+			 * 两个日期范围存在冲突的条件：
+			!(A2<=B1||B2<=A1)
+			*
+			*/
 			var userVacationsInTime = _context.AppliesDb
 				.Where(a => a.BaseInfo.From.Id == userid)
-				.Where(a => a.RequestInfo.StampLeave <= r.StampLeave && a.RequestInfo.StampReturn >= r.StampLeave)
-				.Where(a => a.RequestInfo.StampLeave <= r.StampReturn)
 				.Where(a =>
 				   (
-						(a.ExecuteStatusDetailId == null && a.RecallId == null && a.RequestInfo.StampReturn >= r.StampReturn)  // 不存在召回时间，则判断应归队时间（必定不晚于确认时间）
-
-					   || (a.RecallId ==null && a.ExecuteStatusDetailId != null && execDb.FirstOrDefault(exec => exec.Id == a.ExecuteStatusDetailId).ReturnStamp >= r.StampReturn) // 存在确认时间，则判断确认时间
-
-					   || (a.RecallId != null && recallDb.FirstOrDefault(rec => rec.Id == a.RecallId).ReturnStamp >= r.StampLeave)
-
-				   ) // 如果存在召回，则判断召回时间
+						// 不存在召回时间，则判断应归队时间（必定不晚于确认时间）
+						(a.ExecuteStatusDetailId == null && a.RecallId == null && !(a.RequestInfo.StampLeave >= r.StampReturn || a.RequestInfo.StampReturn <= r.StampLeave))
+					   // 存在确认时间，则判断确认时间
+					   || (a.RecallId == null && a.ExecuteStatusDetailId != null && !(execDb.FirstOrDefault(exec => exec.Id == a.ExecuteStatusDetailId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn))
+					   // 如果存在召回，则判断召回时间
+					   || (a.RecallId != null && !(recallDb.FirstOrDefault(rec => rec.Id == a.RecallId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn))
+				   )
 			).Where(a => list.Contains(a.Status));
-			if (userVacationsInTime.Any()) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation);
+			if (userVacationsInTime.Any())
+			{
+				var v = userVacationsInTime.FirstOrDefault();
+				var des = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : null;
+				var acturalReturn = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : "";
+				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation, $"(与{v.RequestInfo.StampLeave} 到 {v.RequestInfo.StampReturn} 的假期冲突)", true));
+			}
 		}
 
 		public void ModifyAuditStatus(Apply model, AuditStatus status, string authUser = null)
