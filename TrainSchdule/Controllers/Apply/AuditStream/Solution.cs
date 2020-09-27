@@ -179,11 +179,13 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		/// <returns></returns>
 		[HttpGet]
 		[Route("ApplyAuditStream/StreamSolutionQuery")]
-		public IActionResult StreamSolutionQuery(string companyRegion)
+		public IActionResult StreamSolutionQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
 			var result = context.ApplyAuditStreams
-					.Where(n => EF.Functions.Like(n.RegionOnCompany, $"{companyRegion}%"))
+					.Where(n => companyRegion.Contains(n.RegionOnCompany))
 					.OrderByDescending(a => a.Create)
+					.Skip(pageSize * pageIndex)
+					.Take(pageSize)
 					.Select(s => s.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService))
 					.AsEnumerable();
 			return new JsonResult(new EntitiesListViewModel<ApplyAuditStreamVDto>(result));

@@ -154,12 +154,14 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		/// <returns></returns>
 		[HttpGet]
 		[Route("ApplyAuditStream/StreamSolutionRuleQuery")]
-		public IActionResult StreamSolutionRuleQuery(string companyRegion)
+		public IActionResult StreamSolutionRuleQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
 			var result = context.ApplyAuditStreamSolutionRules
-					.Where(n => EF.Functions.Like(n.RegionOnCompany, $"{companyRegion}%"))
+					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)
+					.Skip(pageIndex * pageSize)
+					.Take(pageSize)
 					.ToList().Select(r => r.ToSolutionRuleDtoModel().ToSolutionRuleVDtoModel(usersService, companiesService))
 					.AsEnumerable();
 			return new JsonResult(new EntitiesListViewModel<ApplyAuditStreamSolutionRuleVDto>(result));
