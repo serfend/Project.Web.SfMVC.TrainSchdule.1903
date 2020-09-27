@@ -521,12 +521,14 @@ namespace TrainSchdule.Controllers
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
+			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Data.Application.UserName, $"通过{authByUser.Id}修改用户信息", false, ActionRank.Danger);
 			try
 			{
-				await ModifySingleUser(model.Data, authByUser, $"{authByUser.Id}修改用户信息");
+				await ModifySingleUser(model.Data, authByUser);
 			}
 			catch (ModelStateException mse)
 			{
+				_userActionServices.Status(actionRecord, false, $"失败:{JsonConvert.SerializeObject(mse.Data)}");
 				return new JsonResult(mse.Model);
 			}
 			return new JsonResult(ActionStatusMessage.Success);
@@ -549,18 +551,24 @@ namespace TrainSchdule.Controllers
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
+			var actionRecord = _userActionServices.Log(UserOperation.Register, model?.Data?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}常规注册", false, ActionRank.Warning);
+
 			try
 			{
-				await RegisterSingle(model.Data, authByUser, $"{authByUser.Id}常规注册");
+				await RegisterSingle(model.Data, authByUser);
 			}
 			catch (ActionStatusMessageException ex)
 			{
+				_userActionServices.Status(actionRecord, false, ex.Message);
 				return new JsonResult(ex.Status);
 			}
 			catch (ModelStateException mse)
 			{
+				_userActionServices.Status(actionRecord, false, $"失败:{JsonConvert.SerializeObject(mse.Model)}");
 				return new JsonResult(mse.Model);
 			}
+			_userActionServices.Status(actionRecord, true);
+
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -603,21 +611,29 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
+
 			foreach (var m in model.Data.List)
+			{
+				var actionRecord = _userActionServices.Log(UserOperation.Register, m?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}批量注册", false, ActionRank.Warning);
 				try
 				{
-					await RegisterSingle(m, authByUser, $"{authByUser.Id}批量注册");
+					await RegisterSingle(m, authByUser);
+					_userActionServices.Status(actionRecord, true);
 				}
 				catch (ActionStatusMessageException ex)
 				{
+					_userActionServices.Status(actionRecord, false, ex.Message);
 					exStatus.Add(m.Application?.UserName, ex.Status);
 				}
 				catch (ModelStateException mse)
 				{
+					_userActionServices.Status(actionRecord, false, JsonConvert.SerializeObject(mse.Model.Data));
 					exMSE.Add(m.Application?.UserName, mse.Model.Data);
 					ModelState.Clear();
 				}
 				finally { }
+			}
+
 			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(exMSE.Count > 0 || exStatus.Count > 0 ? ActionStatusMessage.Fail : ActionStatusMessage.Success)
 			{
 				ModelStateException = exMSE,
@@ -632,7 +648,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="authByUser"></param>
 		/// <param name="modefyDescription">备注</param>
 		/// <returns></returns>
-		private async Task ModifySingleUser(UserModefyDataModel model, User authByUser, string modefyDescription)
+		private async Task ModifySingleUser(UserModefyDataModel model, User authByUser)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.GetById(model.Application.UserName);
@@ -640,7 +656,6 @@ namespace TrainSchdule.Controllers
 			if (localUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 
 			// 获取需要修改的目标用户
-			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Application.UserName, $"通过{authByUser.Id}", false, ActionRank.Danger);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			var newUser = model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts);
 			var to_modify_NewUser = await _usersService.ModifyAsync(newUser, false);
@@ -658,14 +673,12 @@ namespace TrainSchdule.Controllers
 			_context.Entry(localUser).State = EntityState.Detached;
 			_context.AppUsers.Update(to_modify_NewUser);
 			await _context.SaveChangesAsync();
-			_userActionServices.Status(actionRecord, true, modefyDescription);
 		}
 
-		private async Task RegisterSingle(UserCreateDataModel model, User authByUser, string regDescription)
+		private async Task RegisterSingle(UserCreateDataModel model, User authByUser)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var regUser = _usersService.GetById(model.Application.UserName);
-			var actionRecord = _userActionServices.Log(UserOperation.Register, model.Application.UserName, "", false, ActionRank.Warning);
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
 			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
@@ -677,13 +690,13 @@ namespace TrainSchdule.Controllers
 			var toRegisterUser = _usersService.GetById(user.UserName);
 			CheckCurrentUserData(toRegisterUser);
 			var cmpCode = toRegisterUser?.CompanyInfo?.Company?.Code;
-			if (cmpCode == null || cmpCode == "" || cmpCode == "root")
+			if (cmpCode == null || cmpCode == "" || cmpCode.ToLower() == "root")
 			{
 				if (authByUser?.Id != "root") ModelState.AddModelError("用户", ActionStatusMessage.Account.Register.RootCompanyRequireAdminRight.Message);
 			}
 			if (!ModelState.IsValid)
 			{
-				await _usersService.RemoveAsync(model.Application.UserName);
+				await _usersService.RemoveAsync(toRegisterUser.Id);
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			}
 			// 若当前用户不具有权限，不允许邀请注册时通过
@@ -698,7 +711,6 @@ namespace TrainSchdule.Controllers
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
 			await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
-			_userActionServices.Status(actionRecord, true, regDescription);
 		}
 
 		private void CheckCurrentUserData(User currentUser)
