@@ -112,8 +112,8 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				CheckApplyModelAndDoTask(id, (x, u) =>
 				{
+					_userActionServices.Status(ua, false, $"通过{u}");
 					_applyService.ModifyAuditStatus(x, AuditStatus.Cancel, u);
-					_userActionServices.Status(ua, true, $"通过{u}");
 				}, false);  // 无需授权，因为ModifyAuditStatus已判断权限问题
 			}
 			catch (ActionStatusMessageException e)
@@ -121,6 +121,7 @@ namespace TrainSchdule.Controllers.Apply
 				_userActionServices.Status(ua, false, e.Status.Message);
 				return new JsonResult(e.Status);
 			}
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
