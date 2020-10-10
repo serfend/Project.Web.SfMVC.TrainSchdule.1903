@@ -41,13 +41,13 @@ namespace BLL.Extensions
 				DutiesName = user.CompanyInfo?.Duties?.Name ?? "无职务",
 				UserTitle = user.CompanyInfo?.Title?.Name ?? "无等级",
 				UserTitleDate = user.CompanyInfo?.TitleDate,
-				Gender = user.BaseInfo.Gender,
+				Gender = user.BaseInfo?.Gender ?? GenderEnum.Unknown,
 				RealName = user.BaseInfo?.RealName ?? "无姓名",
 				TimeBirth = user.BaseInfo?.Time_BirthDay,
 				TimeWork = user.BaseInfo?.Time_Work,
 				Hometown = user.BaseInfo?.Hometown,
 				Id = user.Id,
-				IsInitPassword = user.BaseInfo.PasswordModefy,
+				IsInitPassword = user.BaseInfo?.PasswordModefy ?? false,
 				InviteBy = inviteBy
 			};
 			return b;

@@ -79,7 +79,8 @@ namespace BLL.Services.ApplyServices
 					model.VacationAdditionals = lawVacations;//执行完crossVacation后已经处于加载完毕状态可直接使用
 					vacationLength += model.VacationAdditionals.Sum(v => v.Length);
 				}
-				model.StampReturn = model.StampLeave.Value.AddDays(vacationLength - 1);
+				// 到归队日期前一天的23:59:59
+				model.StampReturn = model.StampLeave.Value.AddDays(vacationLength).AddSeconds(-1);
 
 				model.VacationDescriptions = vacationCheckServices.VacationDesc.CombineVacationDescription();
 			}
@@ -90,7 +91,7 @@ namespace BLL.Services.ApplyServices
 		{
 			if (model == null) return null;
 			var vacationInfo = _usersService.VacationInfo(targetUser);
-			if (vacationInfo.Description.Contains("无休假：")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description, true));
+			if (vacationInfo.Description == null || vacationInfo.Description.Contains("无休假")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description ?? "休假信息生效中", true));
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;
 			if (type?.Disabled ?? true) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
