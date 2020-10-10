@@ -167,6 +167,7 @@ namespace TrainSchdule.Controllers
 			var request = HttpContext.Request;
 			return new JsonResult(new
 			{
+				Client = HttpContext.Connection.RemoteIpAddress.ToString(),
 				Header = request.Headers,
 				Query = request.Query,
 				Cookies = request.Cookies,
