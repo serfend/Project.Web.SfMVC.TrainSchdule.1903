@@ -143,6 +143,7 @@ namespace TrainSchdule
 				.AddMvc(option =>
 			{
 				option.Filters.Add<ActionStatusMessageExceptionFilter>();
+				option.MaxValidationDepth = 1024; // https://stackoverflow.com/questions/63112368/asp-net-core-api-validationvisitor-exceeded-the-maximum-configured-validation
 			})
 				.AddNewtonsoftJson(opt =>
 				{
