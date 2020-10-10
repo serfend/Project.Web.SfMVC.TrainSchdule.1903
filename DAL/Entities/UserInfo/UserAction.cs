@@ -64,6 +64,7 @@ namespace DAL.Entities.UserInfo
 		ModifyApply = 19,
 		Permission = 32,
 		FromUserReport = 64,
-		FromSystemReport = 65
+		FromSystemReport = 65,
+		FileInspect = 128
 	}
 }

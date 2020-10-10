@@ -25,16 +25,24 @@ namespace TrainSchdule.Controllers.File
 	{
 		private readonly IFileServices fileServices;
 		private readonly IGoogleAuthService googleAuthService;
+		private readonly IUsersService usersService;
+		private readonly ICurrentUserService currentUserService;
+		private readonly IUserActionServices userActionServices;
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="fileServices"></param>
 		/// <param name="googleAuthService"></param>
-		public FileController(IFileServices fileServices, IGoogleAuthService googleAuthService)
+		/// <param name="usersService"></param>
+		/// <param name="currentUserService"></param>
+		public FileController(IFileServices fileServices, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices)
 		{
 			this.fileServices = fileServices;
 			this.googleAuthService = googleAuthService;
+			this.usersService = usersService;
+			this.currentUserService = currentUserService;
+			this.userActionServices = userActionServices;
 		}
 
 		/// <summary>
@@ -133,13 +141,25 @@ namespace TrainSchdule.Controllers.File
 		/// 获取文件夹下的文件
 		/// </summary>
 		/// <param name="path"></param>
+		/// <param name="createBy">文件创建者的用户名，需权限支持</param>
 		/// <param name="pageSize"></param>
 		/// <param name="pageIndex"></param>
 		/// <returns></returns>
 		[Authorize]
 		[HttpGet]
-		public IActionResult FolderFiles(string path, int pageSize = 20, int pageIndex = 0)
+		public IActionResult FolderFiles(string path, string createBy, int pageSize = 20, int pageIndex = 0)
 		{
+			var user = createBy == null ? null : usersService.GetById(createBy);
+			if (user == null && createBy != null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			if (user != null)
+			{
+				// 权限判断，后续应改成全局过滤器判断
+				var currentUser = currentUserService.CurrentUser;
+				var permission = usersService.CheckAuthorizedToUser(currentUser, user);
+				var ua = userActionServices.Log(DAL.Entities.UserInfo.UserOperation.FileInspect, user.Id, $"通过 {currentUser?.Id} -> {permission}");
+				if (permission == -1) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				userActionServices.Status(ua, true);
+			}
 			var result = fileServices.FolderFiles(path, new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
 			return new JsonResult(new FileInfosViewModel()
 			{
