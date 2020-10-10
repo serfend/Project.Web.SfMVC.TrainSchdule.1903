@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.UserInfo;
+using System;
 
 namespace DAL.Entities.FileEngine
 {
@@ -28,6 +29,11 @@ namespace DAL.Entities.FileEngine
 		/// 路径
 		/// </summary>
 		public string Path { get; set; }
+
+		/// <summary>
+		/// 创建人可查询本人创建的文件
+		/// </summary>
+		public virtual User CreateBy { get; set; }
 
 		/// <summary>
 		/// 父文件夹（文件=id=f.Parent.id&&path=f.path）

@@ -20,6 +20,7 @@ namespace BLL.Services.File
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IHttpContextAccessor httpContext;
+		private readonly CurrentUserService currentUserService;
 		private const string upload_file_cache = "upload_file_cache";
 
 		/// <summary>
@@ -27,10 +28,11 @@ namespace BLL.Services.File
 		/// </summary>
 		private const int upload_bufsize = 1024 * 128;
 
-		public FileServices(ApplicationDbContext context, IHttpContextAccessor httpContext)
+		public FileServices(ApplicationDbContext context, IHttpContextAccessor httpContext, CurrentUserService currentUserService)
 		{
 			this.context = context;
 			this.httpContext = httpContext;
+			this.currentUserService = currentUserService;
 		}
 
 		public UserFile Download(Guid id) => context.UserFiles.Where(f => f.Id == id).FirstOrDefault();
@@ -159,7 +161,10 @@ namespace BLL.Services.File
 					fi.Length = file.Length;
 					fi.FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString();
 					fi.ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey;
+					fi.CreateBy = currentUserService?.CurrentUser;
 					if (fi != null) context.UserFileInfos.Add(fi);
+					// by serfend @ 202010092054 保存新的文件夹状态，防止多个文件夹被创建
+					context.SaveChangesAsync().ConfigureAwait(true);
 				}
 			}
 			using (var inputStream = file.OpenReadStream())
