@@ -63,7 +63,7 @@ namespace DAL.Entities.ZX.Phy
 	{
 		public static int ToValue(this GradePhyStandard standard, string raw)
 		{
-			if (standard == null || raw == null) return -1;
+			if (standard == null || raw == null || raw == string.Empty || raw == "-") return -1;
 			switch (standard.BelongTo.ValueFormat)
 			{
 				case ValueFormat.Default:

@@ -77,10 +77,10 @@ namespace BLL.Services.ZX
 			if (!has) model.Names = new QueryByString() { Arrays = new List<string>() { "*" } };
 			var group = model.Groups?.Value;
 			var subjectN = model.Names.Arrays;
-			var list = _context.GradePhySubjects.AsQueryable();
 			var result = new List<GradePhySubject>();
 			foreach (var sn in subjectN)
 			{
+				var list = _context.GradePhySubjects.AsQueryable();
 				if (sn != "*") list = list.Where(s => s.Name == sn);
 				if (group != null) list = list.Where(s => s.Group == group);
 				var r = list.GetSubjectsByUser(userBase).SplitPage(pages);
