@@ -24,7 +24,7 @@ namespace TrainSchdule.System
 		{
 			var httpcontext = context.GetHttpContext();
 			var auth = httpcontext.Request.Cookies?["Auth"];
-			return auth == "199500616";
+			return auth == "XJXT@1995#00616";
 		}
 	}
 }

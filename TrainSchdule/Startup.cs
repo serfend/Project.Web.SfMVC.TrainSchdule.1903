@@ -25,6 +25,7 @@ using TrainSchdule.Controllers.Log;
 using TrainSchdule.Controllers.Statistics;
 using TrainSchdule.Crontab;
 using TrainSchdule.System;
+using TsWebSocket.WebSockets;
 
 namespace TrainSchdule
 {
@@ -158,6 +159,7 @@ namespace TrainSchdule
 			//);
 			//.AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
 			// TODO use yyyy-mm-ddThh:ii:ssZ (UTC)
+			services.AddWebSocketManager();
 		}
 
 		private void AddSwaggerServices(IServiceCollection services)
@@ -241,16 +243,15 @@ namespace TrainSchdule
 		/// </summary>
 		/// <param name="app"></param>
 		/// <param name="env"></param>
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		/// <param name="serviceProvider"></param>
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
 		{
-			app.Map("/ws/log", WebSocketLog.Map);// 连接到资源上报的ws
-
 			app.UseHangfireServer();
 			app.UseHangfireDashboard("/schdule", new DashboardOptions()
 			{
 				Authorization = new[] { new HangfireAuthorizeFilter() },
 				DashboardTitle = "sf task manager",
-				DisplayStorageConnectionString = true
+				DisplayStorageConnectionString = false,
 			});
 			ConfigureHangfireServices();
 
@@ -292,10 +293,21 @@ namespace TrainSchdule
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
+			// websocket
+			var wsOptions = new WebSocketOptions()
+			{
+				KeepAliveInterval = TimeSpan.FromSeconds(60),
+				ReceiveBufferSize = 4 * 1024
+			};
+			app.UseWebSockets(wsOptions);
+			app.MapWebSocketManager("/nebula", serviceProvider.GetService<MessageNotifyHandler>());
 
 			// 其他中间件 #n
 			//启用中间件服务生成Swagger作为JSON终结点
-			app.UseSwagger();
+			app.UseSwagger(a =>
+			{
+				//a.PreSerializeFilters.Add((swdoc, http) => swdoc.);
+			});
 			//启用中间件服务对swagger-ui，指定Swagger JSON终结点
 			app.UseSwaggerUI(c =>
 			{
