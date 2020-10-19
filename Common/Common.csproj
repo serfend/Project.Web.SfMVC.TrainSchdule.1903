@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="5.10.1" />
+    <PackageReference Include="Abp" Version="5.14.0" />
   </ItemGroup>
 </Project>

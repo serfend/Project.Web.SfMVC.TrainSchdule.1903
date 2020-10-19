@@ -43,10 +43,10 @@ namespace TrainSchdule.ViewModels.ZX
 			if (m == null) m = new GradeExam();
 			m.Name = model.Name;
 			m.IsRemoved = model.IsRemoved;
-			m.HandleBy = context.AppUsers.Where(u => u.Id == model.HoldBy).FirstOrDefault();
+			m.HandleBy = context.AppUsersDb.Where(u => u.Id == model.HoldBy).FirstOrDefault();
 			m.HoldBy = context.Companies.Where(c => c.Code == model.HoldBy).FirstOrDefault();
 			m.Create = model.Create ?? DateTime.MinValue;
-			m.CreateBy = context.AppUsers.Where(u => u.Id == model.CreateBy).FirstOrDefault();
+			m.CreateBy = context.AppUsersDb.Where(u => u.Id == model.CreateBy).FirstOrDefault();
 			m.Description = model.Description;
 			m.ExecuteTime = model.ExecuteTime ?? DateTime.MinValue;
 			return m;
@@ -66,14 +66,14 @@ namespace TrainSchdule.ViewModels.ZX
 			if (m == null) m = new GradePhyRecord();
 			m.IsRemoved = model.IsRemoved;
 			m.Create = model.Create;
-			m.CreateBy = context.AppUsers.Where(u => u.Id == model.CreateBy).FirstOrDefault();
+			m.CreateBy = context.AppUsersDb.Where(u => u.Id == model.CreateBy).FirstOrDefault();
 			m.Exam = context.GradeExams.Where(e => e.Name == model.Exam).FirstOrDefault();
 			m.Id = model.Id;
 			m.RawValue = model.RawValue;
 			m.Remark = model.Remark;
 			m.Score = model.Score;
 			m.Subject = context.GradePhySubjects.Where(s => s.Name == model.Subject).FirstOrDefault();
-			m.User = context.AppUsers.Where(u => u.Id == model.User).FirstOrDefault();
+			m.User = context.AppUsersDb.Where(u => u.Id == model.User).FirstOrDefault();
 			return m;
 		}
 	}

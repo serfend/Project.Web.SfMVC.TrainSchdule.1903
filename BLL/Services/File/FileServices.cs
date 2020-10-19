@@ -1,5 +1,6 @@
 ﻿using BLL.Extensions.Common;
 using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Interfaces.File;
 using Castle.Core.Internal;
 using DAL.Data;
@@ -20,7 +21,7 @@ namespace BLL.Services.File
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IHttpContextAccessor httpContext;
-		private readonly CurrentUserService currentUserService;
+		private readonly ICurrentUserService currentUserService;
 		private const string upload_file_cache = "upload_file_cache";
 
 		/// <summary>
@@ -28,7 +29,7 @@ namespace BLL.Services.File
 		/// </summary>
 		private const int upload_bufsize = 1024 * 128;
 
-		public FileServices(ApplicationDbContext context, IHttpContextAccessor httpContext, CurrentUserService currentUserService)
+		public FileServices(ApplicationDbContext context, IHttpContextAccessor httpContext, ICurrentUserService currentUserService)
 		{
 			this.context = context;
 			this.httpContext = httpContext;
