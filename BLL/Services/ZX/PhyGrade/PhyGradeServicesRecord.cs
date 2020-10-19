@@ -35,11 +35,11 @@ namespace BLL.Services.ZX
 		private GradePhyRecord MapPhyRecordModel(GradePhyRecord model)
 		{
 			var createById = model.CreateBy.Id;
-			model.CreateBy = _context.AppUsers.Where(u => u.Id == createById).FirstOrDefault();
+			model.CreateBy = _context.AppUsersDb.Where(u => u.Id == createById).FirstOrDefault();
 			var examId = model.Exam.Id;
 			model.Exam = _context.GradeExams.Where(e => e.Id == examId).FirstOrDefault();
 			var userId = model.User.Id;
-			model.User = _context.AppUsers.Where(u => u.Id == userId).FirstOrDefault();
+			model.User = _context.AppUsersDb.Where(u => u.Id == userId).FirstOrDefault();
 			var subjectId = model.Subject.Id;
 			model.Subject = _context.GradePhySubjects.Where(s => s.Id == subjectId).FirstOrDefault();
 			return model;

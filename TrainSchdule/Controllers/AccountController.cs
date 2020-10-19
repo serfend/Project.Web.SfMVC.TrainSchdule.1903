@@ -27,6 +27,7 @@ using DAL.DTO.User;
 using BLL.Extensions.Common;
 using static BLL.Extensions.UserExtensions;
 using BLL.Interfaces.Common;
+using Abp.Extensions;
 
 namespace TrainSchdule.Controllers
 {
@@ -131,8 +132,8 @@ namespace TrainSchdule.Controllers
 		{
 			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
 			var isAdmin = realName.ToLower() == "admin";
-			var users = isAdmin ? new List<User>() { _usersService.GetById("root") }.AsQueryable() : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName);
-			if (!users.Any()) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName));
+			var users = isAdmin ? new List<User>() { _usersService.GetById("root") }.AsQueryable() : _context.AppUsersDb.Where(u => u.BaseInfo.RealName == realName);
+			if (!users.Any()) users = _context.AppUsersDb.Where(u => u.BaseInfo.RealName.Contains(realName));
 			if (!isAdmin) users = users.OrderByCompanyAndTitle();
 			var result = users.SplitPage(pageIndex, pageSize);
 			var r = result.Item1.ToList();
@@ -152,7 +153,7 @@ namespace TrainSchdule.Controllers
 		{
 			if (cid == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
 			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.UserMessage.NotCrrectCid);
-			var user = _context.AppUsers.FirstOrDefault(u => u.BaseInfo.Cid == cid);
+			var user = _context.AppUsersDb.FirstOrDefault(u => u.BaseInfo.Cid == cid);
 			if (user == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
@@ -252,7 +253,7 @@ namespace TrainSchdule.Controllers
 			string userid = null;
 			var isCid = model.Id.Length == 18;
 			// 身份证转id
-			if (isCid) userid = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
+			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
 			else userid = model.Id;
 			// 目标用户权限判断
 			var currentUser = currentUserService.CurrentUser;
@@ -364,6 +365,12 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
 
+		private ApiResult LogNewActionInfo(UserAction action, ApiResult message)
+		{
+			_userActionServices.Status(action, message.Status == 0, message.Message.IsNullOrEmpty() ? null : message.Message);
+			return message;
+		}
+
 		/// <summary>
 		/// 用户登录
 		/// </summary>
@@ -377,17 +384,20 @@ namespace TrainSchdule.Controllers
 			string userid = null;
 			bool isCid = model.UserName.Length == 18;
 			string loginType = isCid ? "身份证登录" : "用户登录";
-			if (isCid) userid = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
+			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 			else userid = model.UserName;
 			var actionRecord = _userActionServices.Log(UserOperation.Login, userid, $"{loginType}", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
 			var targetUser = _usersService.GetById(userid);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			if (targetUser == null) return new JsonResult(LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
 			var accountType = targetUser.Application.InvalidAccount();
-			if (accountType == AccountType.NotBeenAuth) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemInvalid);
-			if (accountType == AccountType.Deny) return new JsonResult(ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid);
+			if (accountType == AccountType.NotBeenAuth)
+				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemInvalid));
+			if (accountType == AccountType.Deny) return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid));
 			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
-			if (model.Password == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
+			if (model.Password == null) return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
+			if (((int)targetUser.AccountStatus & (int)AccountStatus.Banned) > 0)
+				return new JsonResult(LogNewActionInfo(actionRecord, new ApiResult(ActionStatusMessage.Account.Login.BeenBanned, $"于{targetUser.StatusBeginDate}被封禁，{targetUser.StatusEndDate}解除", true)));
 			// it seems if use persistent , cookie cant save expectly
 			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, false, lockoutOnFailure: false);
 			if (result.Succeeded)
@@ -397,20 +407,11 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ActionStatusMessage.Success);
 			}
 			else if (result.RequiresTwoFactor)
-			{
-				_userActionServices.Status(actionRecord, false, "账号需要二次验证");
-				return new JsonResult(ActionStatusMessage.Account.Login.AuthException);
-			}
+				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthException));
 			else if (result.IsLockedOut)
-			{
-				_logger.LogWarning("账号异常");
-				_userActionServices.Status(actionRecord, false, "账号已处于锁定状态");
-				return new JsonResult(ActionStatusMessage.Account.Login.AuthBlock);
-			}
+				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthBlock));
 			else
-			{
-				return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-			}
+				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
 		}
 
 		/// <summary>
@@ -681,7 +682,7 @@ namespace TrainSchdule.Controllers
 			var regUser = _usersService.GetById(model.Application.UserName);
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
-			var checkIfCidIsUsed = _context.AppUsers.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
+			var checkIfCidIsUsed = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 

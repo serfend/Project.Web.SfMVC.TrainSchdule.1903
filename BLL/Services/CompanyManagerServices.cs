@@ -42,9 +42,9 @@ namespace BLL.Services
 			if (model == null) return null;
 			var manager = new CompanyManagers()
 			{
-				AuthBy = _context.AppUsers.Find(model.AuditById),
+				AuthBy = _context.AppUsersDb.FirstOrDefault(u => u.Id == model.AuditById),
 				Company = _context.Companies.Find(model.CompanyCode),
-				User = _context.AppUsers.Find(model.UserId)
+				User = _context.AppUsersDb.FirstOrDefault(u => u.Id == model.UserId)
 			};
 			if (manager.Company == null || manager.User == null) return null;
 			return Create(manager);
@@ -68,7 +68,7 @@ namespace BLL.Services
 
 		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
 		{
-			var list = _context.AppUsers.Where(u => u.CompanyInfo.Company.Code == code).OrderByCompanyAndTitle();
+			var list = _context.AppUsersDb.Where(u => u.CompanyInfo.Company.Code == code).OrderByCompanyAndTitle();
 			totalCount = list.Count();
 			return list.Skip(page * pageSize).Take(pageSize);
 		}

@@ -12,6 +12,12 @@ namespace DAL.Data
 	public partial class ApplicationDbContext
 	{
 		public DbSet<User> AppUsers { get; set; }
+
+		/// <summary>
+		/// 显示非已被删除的账号
+		/// </summary>
+		public IQueryable<User> AppUsersDb => AppUsers.Where(u => ((int)u.AccountStatus & (int)AccountStatus.Abolish) == 0);
+
 		public DbSet<UserBaseInfo> AppUserBaseInfos { get; set; }
 		public DbSet<UserCompanyInfo> AppUserCompanyInfos { get; set; }
 		public DbSet<UserCompanyTitle> UserCompanyTitles { get; set; }

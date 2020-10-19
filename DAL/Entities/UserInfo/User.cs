@@ -1,7 +1,26 @@
-﻿namespace DAL.Entities.UserInfo
+﻿using System;
+
+namespace DAL.Entities.UserInfo
 {
 	public class User : UserID
 	{
+		public bool PrivateAccount { get; set; }
+
+		/// <summary>
+		/// 用户状态
+		/// </summary>
+		public AccountStatus AccountStatus { get; set; }
+
+		/// <summary>
+		/// 当状态为封禁时需要有此字段
+		/// </summary>
+		public DateTime StatusBeginDate { get; set; }
+
+		/// <summary>
+		/// 当状态为封禁时需要有此字段
+		/// </summary>
+		public DateTime StatusEndDate { get; set; }
+
 		#region Properties
 
 		public virtual UserApplicationInfo Application { get; set; }
@@ -12,5 +31,12 @@
 		public virtual UserDiyInfo DiyInfo { get; set; }
 
 		#endregion Properties
+	}
+
+	public enum AccountStatus
+	{
+		Normal = 0,
+		Banned = 1,
+		Abolish = 2,
 	}
 }

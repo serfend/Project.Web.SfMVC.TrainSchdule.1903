@@ -63,11 +63,11 @@ namespace BLL.Services.ZX.Grade
 		private GradeExam MapGradeExamModel(GradeExam model)
 		{
 			var createById = model.CreateBy?.Id;
-			if (createById != null) model.CreateBy = _context.AppUsers.Where(u => u.Id == createById).FirstOrDefault();
+			if (createById != null) model.CreateBy = _context.AppUsersDb.Where(u => u.Id == createById).FirstOrDefault();
 			var holdById = model.HoldBy?.Code;
 			if (holdById != null) model.HoldBy = _context.Companies.Where(u => u.Code == holdById).FirstOrDefault();
 			var handleById = model.HandleBy?.Id;
-			if (handleById != null) model.HandleBy = _context.AppUsers.Where(u => u.Id == handleById).FirstOrDefault();
+			if (handleById != null) model.HandleBy = _context.AppUsersDb.Where(u => u.Id == handleById).FirstOrDefault();
 			return model;
 		}
 	}

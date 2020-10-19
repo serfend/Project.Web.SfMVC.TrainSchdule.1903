@@ -142,7 +142,7 @@ namespace BLL.Services.ApplyServices
 			var filter = filterRaw.ToDtoModel();
 			if (filter == null || company == null) return null;
 			if (filter.AuditMembers != null && filter.AuditMembers.Any()) return filter.AuditMembers;
-			var result = context.AppUsers.Where(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyRegion}%"));
+			var result = context.AppUsersDb.Where(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyRegion}%"));
 
 			// 指定单位
 			string target = null;

@@ -28,7 +28,7 @@ namespace BLL.Services
 				Create = DateTime.Now,
 				ReturnStamp = recallOrder.ReturnStamp,
 				Reason = recallOrder.Reason,
-				HandleBy = _context.AppUsers.Find(recallOrder.HandleBy.Id)
+				HandleBy = _context.AppUsersDb.FirstOrDefault(u => u.Id == recallOrder.HandleBy.Id)
 			};
 			var apply = _context.AppliesDb.Where(a => a.Id == recallOrder.Apply).FirstOrDefault();
 			if (apply == null) throw new ActionStatusMessageException(apply.NotExist());
@@ -55,7 +55,7 @@ namespace BLL.Services
 			var m = new ApplyExecuteStatus()
 			{
 				Create = DateTime.Now,
-				HandleBy = _context.AppUsers.Find(status.HandleBy.Id),
+				HandleBy = _context.AppUsersDb.FirstOrDefault(u => u.Id == status.HandleBy.Id),
 				ReturnStamp = status.ReturnStamp,
 				Reason = status.Reason
 			};

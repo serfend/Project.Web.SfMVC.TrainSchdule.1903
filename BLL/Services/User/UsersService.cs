@@ -59,7 +59,7 @@ namespace BLL.Services
 		/// </summary>
 		public IEnumerable<User> GetAll(int page, int pageSize)
 		{
-			var users = _context.AppUsers.Skip(page * pageSize).Take(pageSize);
+			var users = _context.AppUsersDb.Skip(page * pageSize).Take(pageSize);
 			return users.ToList();
 		}
 
@@ -74,7 +74,7 @@ namespace BLL.Services
 				case "root": return UserRoot();
 				case "audit_skipper": return UserSkip();
 			}
-			var user = _context.AppUsers.Where(u => u.Id == id).FirstOrDefault();
+			var user = _context.AppUsersDb.Where(u => u.Id == id).FirstOrDefault();
 			return user;
 		}
 
@@ -162,7 +162,7 @@ namespace BLL.Services
 
 		public IQueryable<User> Find(Expression<Func<User, bool>> predict)
 		{
-			return _context.AppUsers.Where(predict).OrderBy(u => u.BaseInfo.RealName);
+			return _context.AppUsersDb.Where(predict).OrderBy(u => u.BaseInfo.RealName);
 		}
 
 		public ApplicationUser ApplicaitonUser(string id)
@@ -210,7 +210,7 @@ namespace BLL.Services
 		public async Task RemoveNoRelateInfo()
 		{
 			// 所有在用的用户
-			var users = _context.AppUsers;
+			var users = _context.AppUsersDb;
 			// 删除没有引用了的子表项（脏数据）
 			var list_app = _context.AppUserApplicationInfos.Where(a => !users.Any(u => u.Application.Id == a.Id));
 			_context.AppUserApplicationInfos.RemoveRange(list_app);
@@ -304,24 +304,26 @@ namespace BLL.Services
 
 		public async Task<bool> RemoveAsync(string id)
 		{
-			var user = await _context.AppUsers.FindAsync(id).ConfigureAwait(true);
+			var user = await _context.AppUsersDb.FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(true);
 			if (user == null) return false;
-			await RemoveUser(user).ConfigureAwait(true);
+			RemoveUser(user);
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
 
 		/// <summary>
 		/// 删除用户
+		/// 20201019@serfend:改为仅修改用户删除属性为已删除
 		/// </summary>
 		/// <param name="user"></param>
 		/// <returns></returns>
-		private async Task RemoveUser(User user)
+		private void RemoveUser(User user)
 		{
-			_context.AppUsers.Remove(user);
-			RemoveUserInfo(user);
-			var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
-			_context.Users.Remove(appUser);
+			user.AccountStatus += (int)AccountStatus.Abolish;
+			//_context.AppUsersDb.Remove(user);
+			//RemoveUserInfo(user);
+			//var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
+			//_context.Users.Remove(appUser);
 		}
 
 		private void RemoveUserInfo(User user)
