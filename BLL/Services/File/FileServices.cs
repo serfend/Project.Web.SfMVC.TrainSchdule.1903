@@ -165,7 +165,7 @@ namespace BLL.Services.File
 					fi.CreateBy = currentUserService?.CurrentUser;
 					if (fi != null) context.UserFileInfos.Add(fi);
 					// by serfend @ 202010092054 保存新的文件夹状态，防止多个文件夹被创建
-					context.SaveChangesAsync().ConfigureAwait(true);
+					context.SaveChanges();
 				}
 			}
 			using (var inputStream = file.OpenReadStream())
@@ -242,7 +242,8 @@ namespace BLL.Services.File
 				return s;
 			}
 			var id = Encoding.UTF8.GetString(status);
-			var item = context.UploadCaches.Find(Guid.Parse(id));
+			var idGuid = Guid.Parse(id);
+			var item = context.UploadCaches.FirstOrDefault(i => i.Id == idGuid);
 			if (item == null)
 			{
 				httpContext.HttpContext.Session.Remove(upload_file_cache);
