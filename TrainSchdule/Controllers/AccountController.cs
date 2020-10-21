@@ -560,7 +560,7 @@ namespace TrainSchdule.Controllers
 			}
 			catch (ActionStatusMessageException ex)
 			{
-				_userActionServices.Status(actionRecord, false, ex.Message);
+				_userActionServices.Status(actionRecord, false, ex.Status.Message);
 				return new JsonResult(ex.Status);
 			}
 			catch (ModelStateException mse)
@@ -623,7 +623,7 @@ namespace TrainSchdule.Controllers
 				}
 				catch (ActionStatusMessageException ex)
 				{
-					_userActionServices.Status(actionRecord, false, ex.Message);
+					_userActionServices.Status(actionRecord, false, ex.Status.Message);
 					exStatus.Add(m.Application?.UserName, ex.Status);
 				}
 				catch (ModelStateException mse)
@@ -647,7 +647,6 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <param name="model">修改实体</param>
 		/// <param name="authByUser"></param>
-		/// <param name="modefyDescription">备注</param>
 		/// <returns></returns>
 		private async Task ModifySingleUser(UserModefyDataModel model, User authByUser)
 		{
@@ -685,28 +684,29 @@ namespace TrainSchdule.Controllers
 			var checkIfCidIsUsed = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-
-			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password);
+			if (!ModelState.IsValid)
+				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
+			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password, CheckCurrentUserData);
+			if (!ModelState.IsValid)
+				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
 			var toRegisterUser = _usersService.GetById(user.UserName);
-			CheckCurrentUserData(toRegisterUser);
 			var cmpCode = toRegisterUser?.CompanyInfo?.Company?.Code;
 			if (cmpCode == null || cmpCode == "" || cmpCode.ToLower() == "root")
 			{
 				if (authByUser?.Id != "root") ModelState.AddModelError("用户", ActionStatusMessage.Account.Register.RootCompanyRequireAdminRight.Message);
 			}
-			if (!ModelState.IsValid)
-			{
-				await _usersService.RemoveAsync(toRegisterUser.Id);
-				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
-			}
+
 			// 若当前用户不具有权限，不允许邀请注册时通过
 			if (toRegisterUser.Application.InvitedBy != null)
 			{
 				var authUserPermissionRank = _usersService.CheckAuthorizedToUser(authByUser, toRegisterUser);
-				if (authUserPermissionRank < 1) toRegisterUser.Application.InvitedBy = null;
-				_context.AppUserApplicationInfos.Update(toRegisterUser.Application);
-				_context.SaveChanges();
+				if (authUserPermissionRank < 1)
+				{
+					toRegisterUser.Application.InvitedBy = null;
+					_context.AppUserApplicationInfos.Update(toRegisterUser.Application);
+					_context.SaveChanges();
+				}
 			}
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
@@ -714,8 +714,11 @@ namespace TrainSchdule.Controllers
 			_logger.LogInformation($"新的用户创建:{user.UserName}");
 		}
 
-		private void CheckCurrentUserData(User currentUser)
+		private bool CheckCurrentUserData(User currentUser)
 		{
+			if (!BLL.Extensions.IDCardValidation.CheckIDCard(currentUser.BaseInfo.Cid)) ModelState.AddModelError("基本信息", "身份证号有误");
+			if (currentUser.BaseInfo.RealName == null || currentUser.BaseInfo.RealName.Length > 8 || currentUser.BaseInfo.RealName.Length <= 1) ModelState.AddModelError("基本信息", $"真实姓名[{currentUser.BaseInfo.RealName}]无效");
+			//if (currentUser.BaseInfo.Hometown == null) ModelState.AddModelError("基本信息", "籍贯信息未填写"); // 已在Model中校验过
 			//if (currentUser.Application.Email == null || currentUser.Application.Email == "") ModelState.AddModelError("系统信息","认证邮箱为空");
 			if (currentUser.BaseInfo.Time_Work.Year < 1950) ModelState.AddModelError("基本信息", "工作时间格式错误");
 			if (currentUser.BaseInfo.Time_BirthDay.Year < 1900) ModelState.AddModelError("基本信息", "出生日期格式错误");
@@ -724,7 +727,9 @@ namespace TrainSchdule.Controllers
 			if (currentUser.CompanyInfo.Duties == null) ModelState.AddModelError("单位信息", "职务不存在");
 			if (currentUser.CompanyInfo.Title == null) ModelState.AddModelError("单位信息", "职务等级不存在");
 			var anyCodeInvalid = currentUser.SocialInfo.Settle.AnyCodeInvalid();
+			if (currentUser.SocialInfo.Phone == null || currentUser.SocialInfo.Phone.Length < 5) ModelState.AddModelError("家庭情况", "联系方式未正确填写");
 			if (anyCodeInvalid != null) ModelState.AddModelError("家庭情况", $"无效的行政区划:{anyCodeInvalid}");
+			return ModelState.IsValid;
 		}
 
 		#endregion Rest

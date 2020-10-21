@@ -28,15 +28,16 @@ namespace BLL.Interfaces
 
 		ApplicationUser ApplicaitonUser(string id);
 
-		ApplicationUser Create(User user, string password);
+		ApplicationUser Create(User user, string password, Func<User, bool> checkUserValid);
 
 		/// <summary>
 		/// 创建一个新的用户
 		/// </summary>
 		/// <param name="user"></param>
 		/// <param name="password"></param>
+		/// <param name="checkUserValid">检查用户是否有效的回调</param>
 		/// <returns></returns>
-		Task<ApplicationUser> CreateAsync(User user, string password);
+		Task<ApplicationUser> CreateAsync(User user, string password, Func<User, bool> checkUserValid);
 
 		/// <summary>
 		/// 修改用户信息
@@ -50,9 +51,21 @@ namespace BLL.Interfaces
 
 		Task<bool> EditAsync(User newUser);
 
-		bool Remove(string id);
+		/// <summary>
+		/// 删除用户
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="RemoveEneity">是否完全删除</param>
+		/// <returns></returns>
+		bool Remove(string id, bool RemoveEneity = false);
 
-		Task<bool> RemoveAsync(string id);
+		/// <summary>
+		/// 删除用户
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="RemoveEneity">是否完全删除</param>
+		/// <returns></returns>
+		Task<bool> RemoveAsync(string id, bool RemoveEneity = false);
 
 		/// <summary>
 		/// 删除已经没有任何引用了的子表项

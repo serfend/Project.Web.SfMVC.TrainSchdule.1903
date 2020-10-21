@@ -18,13 +18,14 @@ namespace BLL.Extensions
 		{
 			var info = moment?.Address.CheckValid($"{alertName}地址");
 			if (info != null) return info;
-			if (moment.Valid && moment.Address.Code == 0) return $"{alertName}需要填写的市县";
+			if (moment.Valid && moment.Address.Code == 0) return $"{alertName}需要填写到区/县层级";
 			return null;
 		}
 
 		public static string AnyCodeInvalid(this Settle settle)
 		{
 			var result = settle == null ? "未设置家庭信息" : $"{settle.Self?.CheckValid("本人")}{settle.Lover?.CheckValid("配偶")}{settle.Parent?.CheckValid("父母")}{settle.LoversParent.CheckValid("岳父岳母")}";
+			if (settle?.Self?.Valid == false) result += " 本人地址信息必须为[启用]";
 			return result.Length == 0 ? null : result;
 		}
 

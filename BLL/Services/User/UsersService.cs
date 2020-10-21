@@ -173,19 +173,19 @@ namespace BLL.Services
 		/// <summary>
 		/// Creates user.
 		/// </summary>
-		public ApplicationUser Create(User user, string password) =>
-			CreateAsync(user, password).Result;
+		public ApplicationUser Create(User user, string password, Func<User, bool> checkUserValid) =>
+			CreateAsync(user, password, checkUserValid).Result;
 
 		/// <summary>
 		/// Async creates user.
 		/// </summary>
-		public async Task<ApplicationUser> CreateAsync(User user, string password)
+		public async Task<ApplicationUser> CreateAsync(User user, string password, Func<User, bool> checkUserValid)
 		{
 			if (user == null) return null;
 			var identity = CreateUser(user, password);
 			if (identity == null) return null;
 			var appUser = CreateAppUser(user);
-
+			if (!checkUserValid?.Invoke(appUser) ?? true) return null;
 			await _context.Users.AddAsync(identity).ConfigureAwait(true);
 			await _context.AppUsers.AddAsync(appUser).ConfigureAwait(true);
 			await _context.SaveChangesAsync().ConfigureAwait(true);
@@ -300,13 +300,13 @@ namespace BLL.Services
 			return true;
 		}
 
-		public bool Remove(string id) => RemoveAsync(id).Result;
+		public bool Remove(string id, bool RemoveEntity = false) => RemoveAsync(id, RemoveEntity).Result;
 
-		public async Task<bool> RemoveAsync(string id)
+		public async Task<bool> RemoveAsync(string id, bool RemoveEntity = false)
 		{
 			var user = await _context.AppUsersDb.FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(true);
 			if (user == null) return false;
-			RemoveUser(user);
+			RemoveUser(user, RemoveEntity);
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
@@ -314,16 +314,24 @@ namespace BLL.Services
 		/// <summary>
 		/// 删除用户
 		/// 20201019@serfend:改为仅修改用户删除属性为已删除
+		/// 20201021@serfend:保留两种删除方式
 		/// </summary>
 		/// <param name="user"></param>
+		/// <param name="RemoveEntity">是否完全删除</param>
 		/// <returns></returns>
-		private void RemoveUser(User user)
+		private void RemoveUser(User user, bool RemoveEntity = false)
 		{
-			user.AccountStatus += (int)AccountStatus.Abolish;
-			//_context.AppUsersDb.Remove(user);
-			//RemoveUserInfo(user);
-			//var appUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Id).ConfigureAwait(true);
-			//_context.Users.Remove(appUser);
+			if (RemoveEntity)
+			{
+				user.AccountStatus += (int)AccountStatus.Abolish;
+			}
+			else
+			{
+				_context.AppUsers.Remove(user);
+				RemoveUserInfo(user);
+				var appUser = _context.Users.FirstOrDefault(u => u.UserName == user.Id);
+				_context.Users.Remove(appUser);
+			}
 		}
 
 		private void RemoveUserInfo(User user)
@@ -351,7 +359,11 @@ namespace BLL.Services
 					if (user.SocialInfo.Settle.LoversParent != null) _context.AppUserSocialInfoSettleMoments.Remove(user.SocialInfo.Settle.LoversParent);
 				}
 			}
-			if (user.DiyInfo != null) _context.AppUserDiyInfos.Remove(user.DiyInfo);
+			if (user.DiyInfo != null)
+			{
+				_context.AppUserDiyInfos.Remove(user.DiyInfo);
+				if (user.DiyInfo.Avatar != null) _context.AppUserDiyAvatars.Remove(user.DiyInfo.Avatar);
+			}
 		}
 
 		public async Task<Avatar> UpdateAvatar(User targetUser, string newAvatar)
