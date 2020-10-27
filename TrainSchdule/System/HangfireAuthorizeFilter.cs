@@ -15,6 +15,14 @@ namespace TrainSchdule.System
 	/// </summary>
 	public class HangfireAuthorizeFilter : IDashboardAuthorizationFilter
 	{
+		private string AuthCode = "XJXT@1994#00801";
+
+		public HangfireAuthorizeFilter(string authCode)
+		{
+			if (authCode != null)
+				AuthCode = authCode;
+		}
+
 		/// <summary>
 		///
 		/// </summary>
@@ -24,7 +32,8 @@ namespace TrainSchdule.System
 		{
 			var httpcontext = context.GetHttpContext();
 			var auth = httpcontext.Request.Cookies?["Auth"];
-			return auth == "XJXT@1995#00616";
+
+			return auth == AuthCode;
 		}
 	}
 }
