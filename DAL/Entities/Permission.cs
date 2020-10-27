@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 using Newtonsoft.Json;
 
 namespace DAL.Entities
@@ -75,9 +76,10 @@ namespace DAL.Entities
 		/// <returns></returns>
 		public static bool Update(this Permissions permissions, string newSerializeRaw, Permissions grantBy)
 		{
-			if (grantBy.Role != "Admin")
+			if (grantBy.Role.ToLower() != "admin")
 			{
 				var dicList = permissions.GetRegionList();
+
 				var grantList = grantBy.GetRegionList();
 
 				var askForList = ToRegionList(newSerializeRaw);
@@ -116,14 +118,16 @@ namespace DAL.Entities
 		/// <returns></returns>
 		public static IDictionary<string, PermissionRegion> GetRegionList(this Permissions permissions)
 		{
-			var raw = permissions.Regions;
+			var raw = permissions?.Regions;
 			if (raw == null) return new Dictionary<string, PermissionRegion>();
 			return ToRegionList(raw);
 		}
 
 		public static IDictionary<string, PermissionRegion> ToRegionList(string raw)
 		{
-			return JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw ?? "{}") ?? new Dictionary<string, PermissionRegion>();
+			if (raw.IsNullOrEmpty()) raw = "{}";
+			var r = JsonConvert.DeserializeObject<IDictionary<string, PermissionRegion>>(raw);
+			return r ?? new Dictionary<string, PermissionRegion>();
 		}
 
 		/// <summary>
