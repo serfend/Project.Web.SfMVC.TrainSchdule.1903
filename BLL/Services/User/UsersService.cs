@@ -210,7 +210,7 @@ namespace BLL.Services
 		public async Task RemoveNoRelateInfo()
 		{
 			// 所有在用的用户
-			var users = _context.AppUsersDb;
+			var users = _context.AppUsers;
 			// 删除没有引用了的子表项（脏数据）
 			var list_app = _context.AppUserApplicationInfos.Where(a => !users.Any(u => u.Application.Id == a.Id));
 			_context.AppUserApplicationInfos.RemoveRange(list_app);
