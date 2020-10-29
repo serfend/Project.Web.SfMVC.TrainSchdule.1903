@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,11 @@ namespace TrainSchdule.System
 				{
 					context.Result = new JsonResult(ex.Status);
 					context.ExceptionHandled = true;//异常已处理
+				}
+				else if (context.Exception is DbUpdateConcurrencyException ex2)
+				{
+					context.Result = new JsonResult(ActionStatusMessage.StaticMessage.System.SystemBusy);
+					context.ExceptionHandled = true;
 				}
 			}
 		}
