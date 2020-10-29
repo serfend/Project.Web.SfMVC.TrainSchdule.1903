@@ -27,7 +27,7 @@ namespace TrainSchdule.ViewModels.User.Social
 		/// <summary>
 		///
 		/// </summary>
-		public IEnumerable<AppUsersSettleModefyRecord> Records { get; set; }
+		public IEnumerable<AppUsersSettleModifyRecord> Records { get; set; }
 	}
 
 	/// <summary>
@@ -49,7 +49,7 @@ namespace TrainSchdule.ViewModels.User.Social
 		/// <summary>
 		///
 		/// </summary>
-		public AppUsersSettleModefyRecord Record { get; set; }
+		public AppUsersSettleModifyRecord Record { get; set; }
 	}
 
 	/// <summary>
@@ -60,6 +60,6 @@ namespace TrainSchdule.ViewModels.User.Social
 		/// <summary>
 		///
 		/// </summary>
-		public AppUsersSettleModefyRecord Record { get; set; }
+		public AppUsersSettleModifyRecord Record { get; set; }
 	}
 }

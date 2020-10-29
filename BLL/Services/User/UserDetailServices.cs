@@ -105,7 +105,7 @@ namespace BLL.Services
 
 			if (requireAddRecord != null)
 			{
-				var list = new List<AppUsersSettleModefyRecord>(targetSettle.PrevYealyLengthHistory ?? new List<AppUsersSettleModefyRecord>());
+				var list = new List<AppUsersSettleModifyRecord>(targetSettle.PrevYealyLengthHistory ?? new List<AppUsersSettleModifyRecord>());
 				list.Add(requireAddRecord);
 				targetSettle.PrevYealyLengthHistory = list;
 				_context.AppUserSocialInfoSettles.Update(targetSettle);
@@ -179,7 +179,7 @@ namespace BLL.Services
 			return vacationInfo;
 		}
 
-		public IEnumerable<AppUsersSettleModefyRecord> ModefyUserSettleModefyRecord(User user, Action<IEnumerable<AppUsersSettleModefyRecord>> Callback = null)
+		public IEnumerable<AppUsersSettleModifyRecord> ModefyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null)
 		{
 			if (user == null) return null;
 			var records = user.SocialInfo.Settle.PrevYealyLengthHistory;
@@ -193,9 +193,9 @@ namespace BLL.Services
 			return records;
 		}
 
-		public AppUsersSettleModefyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModefyRecord> Callback = null, bool isDelete = false)
+		public AppUsersSettleModifyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false)
 		{
-			var record = _context.AppUsersSettleModefyRecordDb.Where(r => r.Code == code).FirstOrDefault();
+			var record = _context.AppUsersSettleModifyRecordDb.Where(r => r.Code == code).FirstOrDefault();
 			if (Callback != null || isDelete)
 			{
 				Callback?.Invoke(record);

@@ -26,14 +26,14 @@ namespace TrainSchdule.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[Route("Social/UserModefyRecord")]
+		[Route("Social/UserModifyRecord")]
 		[AllowAnonymous]
-		public IActionResult SocialModefyRecord(string id)
+		public IActionResult SocialModifyRecord(string id)
 		{
 			var userid = id ?? _currentUserService.CurrentUser?.Id;
 			var u = _usersService.GetById(id);
 			if (u == null) return new JsonResult(id == null ? ActionStatusMessage.Account.Auth.Invalid.NotLogin : ActionStatusMessage.UserMessage.NotExist);
-			var records = userServiceDetail.ModefyUserSettleModefyRecord(u);
+			var records = userServiceDetail.ModefyUserSettleModifyRecord(u);
 			return new JsonResult(new SettleModefyRecordViewModel()
 			{
 				Data = new SettleModefyRecordDataModel()
@@ -49,8 +49,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="code"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[Route("Social/ModefyRecord")]
-		public IActionResult SingleSocialModefyRecord(int code)
+		[Route("Social/ModifyRecord")]
+		public IActionResult SingleSocialModifyRecord(int code)
 		{
 			var record = userServiceDetail.ModefySettleModeyRecord(code);
 			if (record == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
@@ -69,8 +69,8 @@ namespace TrainSchdule.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[Route("Social/ModefyRecord")]
-		public IActionResult SingleSocialModefyRecord([FromBody] ModefySingleSettleModefyRecordViewModel model)
+		[Route("Social/ModifyRecord")]
+		public IActionResult SingleSocialModifyRecord([FromBody] ModefySingleSettleModefyRecordViewModel model)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);

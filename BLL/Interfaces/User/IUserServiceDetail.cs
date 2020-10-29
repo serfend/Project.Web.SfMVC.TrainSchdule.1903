@@ -55,7 +55,7 @@ namespace BLL.Interfaces
 		/// <param name="user"></param>
 		/// <param name="Callback"></param>
 		/// <returns></returns>
-		IEnumerable<AppUsersSettleModefyRecord> ModefyUserSettleModefyRecord(User user, Action<IEnumerable<AppUsersSettleModefyRecord>> Callback = null);
+		IEnumerable<AppUsersSettleModifyRecord> ModefyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null);
 
 		/// <summary>
 		/// 获取指定家庭变更记录并进行修改
@@ -64,6 +64,6 @@ namespace BLL.Interfaces
 		/// <param name="Callback"></param>
 		/// <param name="isDelete"></param>
 		/// <returns></returns>
-		AppUsersSettleModefyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModefyRecord> Callback = null, bool isDelete = false);
+		AppUsersSettleModifyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false);
 	}
 }

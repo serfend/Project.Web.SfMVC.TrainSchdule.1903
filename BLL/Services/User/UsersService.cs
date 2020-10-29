@@ -252,7 +252,7 @@ namespace BLL.Services
 				if (social.Settle.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
 				if (social.Settle.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
 				// if prev yealy history not set , then build new one
-				if (social.Settle.PrevYealyLengthHistory == null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModefyRecord>();
+				if (social.Settle.PrevYealyLengthHistory == null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModifyRecord>();
 			}
 			return user;
 		}

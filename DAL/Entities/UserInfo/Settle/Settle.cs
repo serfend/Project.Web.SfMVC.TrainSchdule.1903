@@ -38,7 +38,7 @@ namespace DAL.Entities.UserInfo.Settle
 		/// <summary>
 		/// 全年发生变化的记录
 		/// </summary>
-		public virtual IEnumerable<AppUsersSettleModefyRecord> PrevYealyLengthHistory { get; set; }
+		public virtual IEnumerable<AppUsersSettleModifyRecord> PrevYealyLengthHistory { get; set; }
 
 		/// <summary>
 		/// 年初因上一年度休事假消耗的天数
