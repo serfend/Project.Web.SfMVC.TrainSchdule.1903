@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,7 +53,13 @@ namespace TsWebSocket.WebSockets
 			{
 				if (result.MessageType == WebSocketMessageType.Text)
 				{
-					await _webSocketHandler.ReceiveAsync(socket, result, buffer);
+					var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+					await _webSocketHandler.ReceiveTextAsync(socket, message);
+					return;
+				}
+				else if (result.MessageType == WebSocketMessageType.Binary)
+				{
+					await _webSocketHandler.ReceiveBinaryAsync(socket, buffer);
 					return;
 				}
 				else if (result.MessageType == WebSocketMessageType.Close)
@@ -71,17 +78,17 @@ namespace TsWebSocket.WebSockets
 			try
 			{
 				var buffer = new byte[1024 * 4];
-
-				while (socket.State == WebSocketState.Open)
+				WebSocketReceiveResult result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+				while (!result.CloseStatus.HasValue)
 				{
-					var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
-														   cancellationToken: CancellationToken.None);
-
-					handleMessage(result, buffer);
+					await socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+					result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 				}
+				await socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 			}
 			catch (Exception ex)
 			{
+				Console.WriteLine($"ws receive:{ex.Message}");
 			}
 		}
 	}

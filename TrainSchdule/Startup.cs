@@ -293,6 +293,7 @@ namespace TrainSchdule
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
+
 			// websocket
 			var wsOptions = new WebSocketOptions()
 			{
@@ -300,20 +301,20 @@ namespace TrainSchdule
 				ReceiveBufferSize = 4 * 1024
 			};
 			app.UseWebSockets(wsOptions);
-			app.MapWebSocketManager("/nebula", serviceProvider.GetService<MessageNotifyHandler>());
+			// 消息处理中心
+			app.MapWebSocketManager("/nebula/message", serviceProvider.GetService<MessageNotifyHandler>());
 
 			// 其他中间件 #n
-			//启用中间件服务生成Swagger作为JSON终结点
+			// 启用中间件服务生成Swagger作为JSON终结点
 			app.UseSwagger(a =>
 			{
-				//a.PreSerializeFilters.Add((swdoc, http) => swdoc.);
+				// a.PreSerializeFilters.Add((swdoc, http) => swdoc.);
 			});
-			//启用中间件服务对swagger-ui，指定Swagger JSON终结点
+			// 启用中间件服务对swagger-ui，指定Swagger JSON终结点
 			app.UseSwaggerUI(c =>
 			{
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
-
 			//seeder.Seed().Wait();
 			//seeder.CreateUserRoles(services).Wait();
 		}

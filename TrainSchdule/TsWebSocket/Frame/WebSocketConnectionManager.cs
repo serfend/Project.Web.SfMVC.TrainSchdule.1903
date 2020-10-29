@@ -22,29 +22,21 @@ namespace TsWebSocket.WebSockets
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public WebSocketConnection GetSocketById(string id)
-		{
-			return _sockets.FirstOrDefault(p => p.Key == id).Value;
-		}
+		public WebSocketConnection GetSocketById(string id) => _sockets.ContainsKey(id) ? _sockets[id] : null;
+		
 
 		/// <summary>
 		/// 获取所有连接
 		/// </summary>
 		/// <returns></returns>
-		public ConcurrentDictionary<string, WebSocketConnection> GetAll()
-		{
-			return _sockets;
-		}
+		public ConcurrentDictionary<string, WebSocketConnection> GetAll() => _sockets;
 
 		/// <summary>
 		/// 通过socket获取id
 		/// </summary>
 		/// <param name="socket"></param>
 		/// <returns></returns>
-		public string GetId(WebSocket socket)
-		{
-			return _sockets.FirstOrDefault(p => p.Value?.Socket == socket).Key;
-		}
+		public string GetId(WebSocket socket) => _sockets.FirstOrDefault(p => p.Value?.Socket == socket).Key;
 
 		/// <summary>
 		/// 添加新的连接
