@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.CreateClientInfo;
+﻿using Abp.Extensions;
+using BLL.Extensions.CreateClientInfo;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
@@ -113,6 +114,12 @@ namespace BLL.Services
 			_context.UserActions.Update(action);
 			_context.SaveChanges();
 			return action;
+		}
+
+		public ApiResult LogNewActionInfo(UserAction action, ApiResult message)
+		{
+			Status(action, message.Status == 0, message.Message.IsNullOrEmpty() ? null : message.Message);
+			return message;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using DAL.Entities;
+﻿using BLL.Helpers;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using System;
@@ -14,6 +15,15 @@ namespace BLL.Interfaces
 	/// </summary>
 	public interface IUserActionServices
 	{
+		/// <summary>
+		/// 登记日志并返回失败信息
+		/// </summary>
+		/// <param name="action"></param>
+		/// <param name="message"></param>
+		/// <param name="_userActionServices"></param>
+		/// <returns></returns>
+		ApiResult LogNewActionInfo(UserAction action, ApiResult message);
+
 		/// <summary>
 		/// 创建一个记录
 		/// </summary>

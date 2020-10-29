@@ -198,6 +198,8 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Logout()
 		{
+			if (currentUserService.CurrentUser?.Id == null) return new JsonResult(new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin));
+			_userActionServices.Log(UserOperation.Logout, currentUserService.CurrentUser?.Id, "退出登录", true);
 			await _signInManager.SignOutAsync();
 			_logger.LogInformation("User logged out.");
 
@@ -235,7 +237,8 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var authUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var ua = _userActionServices.Log(UserOperation.Permission, targetUser.Id, $"通过{authUser.Id}");
+			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission)) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -258,36 +261,37 @@ namespace TrainSchdule.Controllers
 			// 目标用户权限判断
 			var currentUser = currentUserService.CurrentUser;
 			var targetUser = _usersService.GetById(userid);
-			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var ua = _userActionServices.Log(UserOperation.AuditApply, targetUser.Id, $"通过{currentUser?.Id}");
+			var ua = _userActionServices.Log(UserOperation.ModifyPsw, userid, $"通过{currentUser?.Id}");
+			if (targetUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
 			var authUser = currentUser;
 			bool authUserPermission = false;
-			if (model.Auth.AuthByUserID != null)
+			if (model.Auth?.AuthByUserID != null)
 			{
 				authUser = _usersService.GetById(model.Auth.AuthByUserID);
-				if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+				_userActionServices.Status(ua, false, $"授权自{model.Auth.AuthByUserID}");
+				if (authUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
+				if (!model.Auth.Verify(_authService, currentUser?.Id)) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.AuthCode.Invalid));
 				// 允许本人修改本人密码，允许本级以上修改密码
 				authUserPermission = authUser.Id == userid;
 			}
-			if (authUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			if (authUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.NotLogin));
 			if (!authUserPermission) authUserPermission = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code, $"修改{targetUser.Id}密码");
-			if (!authUserPermission) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!authUserPermission) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 
 			// 密码修改判断
 			var appUser = _context.Users.Where(u => u.UserName == targetUser.Id).FirstOrDefault();
 
 			model.ConfirmNewPassword = model.ConfirmNewPassword.FromCipperToString(model.Id, cipperServices);
 			model.NewPassword = model.NewPassword.FromCipperToString(model.Id, cipperServices);
-			if (model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(ActionStatusMessage.Account.Login.AuthFormat);
-			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(ActionStatusMessage.Account.Register.ConfirmPasswordNotSame);
+			if (model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Login.AuthFormat));
+			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Register.ConfirmPasswordNotSame));
 			model.OldPassword = model.OldPassword.FromCipperToString(model.Id, cipperServices);
 			// 本人修改密码，则判断旧密码
 			if (userid == authUser.Id)
 			{
 				var sign = await _signInManager.PasswordSignInAsync(appUser, model.OldPassword, false, false);
-				if (!sign.Succeeded && !authUserPermission) return new JsonResult(ActionStatusMessage.Account.Login.AuthAccountOrPsw);
-				if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(ActionStatusMessage.Account.Login.PasswordIsSame);
+				if (!sign.Succeeded && !authUserPermission) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
+				if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Login.PasswordIsSame));
 			}
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
@@ -365,12 +369,6 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 		}
 
-		private ApiResult LogNewActionInfo(UserAction action, ApiResult message)
-		{
-			_userActionServices.Status(action, message.Status == 0, message.Message.IsNullOrEmpty() ? null : message.Message);
-			return message;
-		}
-
 		/// <summary>
 		/// 用户登录
 		/// </summary>
@@ -389,15 +387,15 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Login, userid, $"{loginType}", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
 			var targetUser = _usersService.GetById(userid);
-			if (targetUser == null) return new JsonResult(LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
+			if (targetUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
 			var accountType = targetUser.Application.InvalidAccount();
 			if (accountType == AccountType.NotBeenAuth)
-				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemInvalid));
-			if (accountType == AccountType.Deny) return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid));
+				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemInvalid));
+			if (accountType == AccountType.Deny) return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemAllReadyInvalid));
 			model.Password = model.Password.FromCipperToString(model.UserName, cipperServices);
-			if (model.Password == null) return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
+			if (model.Password == null) return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
 			if (((int)targetUser.AccountStatus & (int)AccountStatus.Banned) > 0)
-				return new JsonResult(LogNewActionInfo(actionRecord, new ApiResult(ActionStatusMessage.Account.Login.BeenBanned, $"于{targetUser.StatusBeginDate}被封禁，{targetUser.StatusEndDate}解除", true)));
+				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, new ApiResult(ActionStatusMessage.Account.Login.BeenBanned, $"于{targetUser.StatusBeginDate}被封禁，{targetUser.StatusEndDate}解除", true)));
 			// it seems if use persistent , cookie cant save expectly
 			var result = await _signInManager.PasswordSignInAsync(userid, model.Password, false, lockoutOnFailure: false);
 			if (result.Succeeded)
@@ -407,11 +405,11 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(ActionStatusMessage.Success);
 			}
 			else if (result.RequiresTwoFactor)
-				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthException));
+				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthException));
 			else if (result.IsLockedOut)
-				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthBlock));
+				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthBlock));
 			else
-				return new JsonResult(LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
+				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Login.AuthAccountOrPsw));
 		}
 
 		/// <summary>
@@ -428,7 +426,8 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var statusME = new Dictionary<string, ApiResult>();
-
+			var id_str = string.Join("##", model.Data?.Id);
+			var ua = _userActionServices.Log(UserOperation.Remove, authByUser?.Id, $"批量移除账号 {id_str}");
 			foreach (var u in model.Data?.Id)
 				try
 				{
@@ -439,7 +438,8 @@ namespace TrainSchdule.Controllers
 					statusME.Add(u, ex.Status);
 				}
 				finally { }
-
+			if (statusME.Count == 0)
+				_userActionServices.Status(ua, true);
 			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(statusME.Count > 0 ? ActionStatusMessage.Fail : ActionStatusMessage.Success)
 			{
 				StatusException = statusME
@@ -457,16 +457,18 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var ua = _userActionServices.Log(UserOperation.Remove, currentUserService.CurrentUser?.Id, $"常规移除账号 {model?.Id}");
 			try
 			{
 				var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
-				if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+				if (authByUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
 				await RemoveSingle(model.Id, authByUser);
 			}
 			catch (ActionStatusMessageException ex)
 			{
-				return new JsonResult(ex.Status);
+				return new JsonResult(_userActionServices.LogNewActionInfo(ua, ex.Status));
 			}
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -475,8 +477,8 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "", false, ActionRank.Danger);
 			var targetUser = _usersService.GetById(id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
+			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
+			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
 			_userActionServices.Status(actionRecord, true);
 		}
 
@@ -494,14 +496,15 @@ namespace TrainSchdule.Controllers
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			var targetUser = _usersService.GetById(model.Id);
 			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-
-			if (_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code, $"修改{targetUser.Id}系统信息")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var ua = _userActionServices.Log(UserOperation.Permission, authByUser.Id, $"修改{targetUser.Id}系统信息");
+			if (_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.Company.Code, $"修改{targetUser.Id}系统信息")) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 			var app = targetUser.Application;
 			app.Email = model.Data.Email;
 			app.AuthKey = model.Data.AuthKey;
 			app.ApplicationSetting.LastSubmitApplyTime = model.Data.ApplicationSetting.LastSubmitApplyTime;
 			_context.AppUserApplicationInfos.Update(app);
 			await _context.SaveChangesAsync();
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -513,7 +516,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> ModefyUser([FromBody] UserModefyViewModel model)
+		public async Task<IActionResult> ModifyUser([FromBody] UserModefyViewModel model)
 		{
 			model.Verify?.Verify(_verifyService);
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
@@ -522,16 +525,16 @@ namespace TrainSchdule.Controllers
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
-			var actionRecord = _userActionServices.Log(UserOperation.ModifyUser, model.Data.Application.UserName, $"通过{authByUser.Id}修改用户信息", false, ActionRank.Danger);
+			var ua = _userActionServices.Log(UserOperation.ModifyUser, model.Data.Application.UserName, $"通过{authByUser.Id}修改用户信息", false, ActionRank.Danger);
 			try
 			{
 				await ModifySingleUser(model.Data, authByUser);
 			}
-			catch (ModelStateException mse)
+			catch (ActionStatusMessageException ex)
 			{
-				_userActionServices.Status(actionRecord, false, $"失败:{JsonConvert.SerializeObject(mse.Data)}");
-				return new JsonResult(mse.Model);
+				return new JsonResult(_userActionServices.LogNewActionInfo(ua, ex.Status));
 			}
+			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -552,7 +555,7 @@ namespace TrainSchdule.Controllers
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
-			var actionRecord = _userActionServices.Log(UserOperation.Register, model?.Data?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}常规注册", false, ActionRank.Warning);
+			var ua = _userActionServices.Log(UserOperation.Register, model?.Data?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}常规注册", false, ActionRank.Warning);
 
 			try
 			{
@@ -560,15 +563,15 @@ namespace TrainSchdule.Controllers
 			}
 			catch (ActionStatusMessageException ex)
 			{
-				_userActionServices.Status(actionRecord, false, ex.Status.Message);
-				return new JsonResult(ex.Status);
+				_userActionServices.Status(ua, false, ex.Status.Message);
+				return new JsonResult(_userActionServices.LogNewActionInfo(ua, ex.Status));
 			}
 			catch (ModelStateException mse)
 			{
-				_userActionServices.Status(actionRecord, false, $"失败:{JsonConvert.SerializeObject(mse.Model)}");
+				_userActionServices.Status(ua, false, $"失败:{JsonConvert.SerializeObject(mse.Model)}");
 				return new JsonResult(mse.Model);
 			}
-			_userActionServices.Status(actionRecord, true);
+			_userActionServices.Status(ua, true);
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
