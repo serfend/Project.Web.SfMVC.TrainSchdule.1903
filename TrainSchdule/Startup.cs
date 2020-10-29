@@ -247,9 +247,10 @@ namespace TrainSchdule
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
 		{
 			app.UseHangfireServer();
+			var code = Configuration["Configuration:Permission:schdule_authcode"];
 			app.UseHangfireDashboard("/schdule", new DashboardOptions()
 			{
-				Authorization = new[] { new HangfireAuthorizeFilter() },
+				Authorization = new[] { new HangfireAuthorizeFilter(code) },
 				DashboardTitle = "sf task manager",
 				DisplayStorageConnectionString = false,
 			});
