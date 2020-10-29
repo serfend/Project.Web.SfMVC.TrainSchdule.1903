@@ -37,6 +37,7 @@ namespace DAL.Entities
 		{
 			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的权限");
 			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请审批流的权限");
+			public static PermissionDescription AttachInfo = new PermissionDescription("Apply.AttachInfo", "申请附加信息的权限");
 		}
 
 		public static class Grade

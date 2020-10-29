@@ -24,6 +24,8 @@ namespace DAL.Data
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationType> VacationTypes { get; set; }
+		public DbSet<ApplyComment> ApplyComments { get; set; }
+		public DbSet<ApplyCommentLike> ApplyCommentLikes { get; set; }
 
 		private void Configuration_Applies(ModelBuilder builder)
 		{

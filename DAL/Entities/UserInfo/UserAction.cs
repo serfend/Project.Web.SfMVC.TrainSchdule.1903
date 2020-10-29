@@ -62,6 +62,7 @@ namespace DAL.Entities.UserInfo
 		RemoveApply = 17,
 		AuditApply = 18,
 		ModifyApply = 19,
+		AttachInfoToApply = 20,
 		Permission = 32,
 		FromUserReport = 64,
 		FromSystemReport = 65,

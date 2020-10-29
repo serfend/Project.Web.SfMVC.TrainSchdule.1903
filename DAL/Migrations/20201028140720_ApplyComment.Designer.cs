@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201028140720_ApplyComment")]
+    partial class ApplyComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -381,9 +383,6 @@ namespace DAL.Migrations
                     b.Property<DateTime>("LastModify")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
-
                     b.Property<string>("ModifyById")
                         .HasColumnType("nvarchar(450)");
 
@@ -396,37 +395,6 @@ namespace DAL.Migrations
                     b.HasIndex("ModifyById");
 
                     b.ToTable("ApplyComments");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyCommentLike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<Guid?>("CommentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Create")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("IsRemovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("CreateById");
-
-                    b.ToTable("ApplyCommentLikes");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExecuteStatus", b =>
@@ -2871,17 +2839,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "ModifyBy")
                         .WithMany()
                         .HasForeignKey("ModifyById");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyCommentLike", b =>
-                {
-                    b.HasOne("DAL.Entities.ApplyInfo.ApplyComment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId");
-
-                    b.HasOne("DAL.Entities.UserInfo.User", "CreateBy")
-                        .WithMany()
-                        .HasForeignKey("CreateById");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyExecuteStatus", b =>
