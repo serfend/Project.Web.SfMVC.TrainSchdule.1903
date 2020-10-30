@@ -1,6 +1,8 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions;
+using BLL.Helpers;
 using DAL.DTO.Apply;
 using DAL.DTO.User;
+using DAL.Entities.ApplyInfo;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,33 @@ using TrainSchdule.ViewModels.User;
 
 namespace TrainSchdule.ViewModels.Apply.ApplyDetail
 {
+	/// <summary>
+	///
+	/// </summary>
+	public static class ApplyCommentExtensions
+	{
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="likesDb">点赞库</param>
+		/// <param name="currentUser">当前登录的用户</param>
+		/// <returns></returns>
+		public static ApplyCommentVDataModel ToDataModel(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, string currentUser) =>
+			 new ApplyCommentVDataModel()
+			 {
+				 Id = i.Id,
+				 Apply = i.Apply.Id,
+				 Content = i.Content,
+				 Create = i.Create,
+				 From = i.From.ToSummaryDto(),
+				 LastModify = i.LastModify,
+				 ModifyBy = i.ModifyBy.ToSummaryDto(),
+				 Like = i.Likes,
+				 MyLike = currentUser == null ? false : likesDb.Where(like => like.Comment.Id == i.Id).Any(like => like.CreateBy.Id == currentUser)
+			 };
+	}
+
 	/// <summary>
 	///
 	/// </summary>
