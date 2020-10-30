@@ -25,6 +25,7 @@ namespace DAL.Data
 		#region Properties
 
 		public DbSet<Company> Companies { get; set; }
+		public IQueryable<Company> CompaniesDb => Companies.Where(f => ((int)f.CompanyStatus | (int)CompanyStatus.IsRemoved) == 0);
 		public DbSet<CompanyManagers> CompanyManagers { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
 		public DbSet<Permissions> Permissions { get; set; }

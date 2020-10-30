@@ -239,7 +239,7 @@ namespace BLL.Services
 				Regions = "",
 				Role = "User"
 			};
-			user.CompanyInfo.Company = _context.Companies.Find(user.CompanyInfo.Company.Code);
+			user.CompanyInfo.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == user.CompanyInfo.Company.Code);
 			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
 			var title = user.CompanyInfo.Title;
 			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);

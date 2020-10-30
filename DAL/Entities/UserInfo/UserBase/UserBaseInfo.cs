@@ -45,7 +45,7 @@ namespace DAL.Entities.UserInfo
 		/// <summary>
 		/// 是否修改过密码
 		/// </summary>
-		public bool PasswordModefy { get; set; }
+		public bool PasswordModify { get; set; }
 	}
 
 	public enum GenderEnum

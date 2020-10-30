@@ -60,7 +60,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult CompanyTag(string tag, int pageIndex = 0, int pageSize = 20)
 		{
 			var pattern = $"%{tag}%";
-			var companyQuery = _context.Companies.AsQueryable();
+			var companyQuery = _context.CompaniesDb.AsQueryable();
 			if (!tag.IsNullOrEmpty()) companyQuery = companyQuery.Where(d => EF.Functions.Like(d.Tag, pattern));
 			var result = companyQuery.AsEnumerable()
 				.SelectMany(d => d.Tag?.Split("##", StringSplitOptions.RemoveEmptyEntries) ?? new List<string>().ToArray())

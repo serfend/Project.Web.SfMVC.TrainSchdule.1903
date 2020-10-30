@@ -295,7 +295,7 @@ namespace TrainSchdule.Controllers
 			}
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
 			_context.Users.Update(appUser);
-			targetUser.BaseInfo.PasswordModefy = true;
+			targetUser.BaseInfo.PasswordModify = true;
 			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
 			_userActionServices.Status(ua, true);

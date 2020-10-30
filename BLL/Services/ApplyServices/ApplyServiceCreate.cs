@@ -25,7 +25,7 @@ namespace BLL.Services.ApplyServices
 			if (model == null) return null;
 			var m = new ApplyBaseInfo()
 			{
-				Company = await _context.Companies.FindAsync(model.Company).ConfigureAwait(true),
+				Company = await _context.CompaniesDb.FirstOrDefaultAsync(c => c.Code == model.Company).ConfigureAwait(true),
 				Duties = await _context.Duties.FirstOrDefaultAsync(d => d.Name == model.Duties).ConfigureAwait(true),
 				From = model.From,
 				CreateBy = model.CreateBy,
@@ -187,7 +187,7 @@ namespace BLL.Services.ApplyServices
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
 				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.GetById(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
 
-				var firstMemberCompany = _context.Companies.Where(c => c.Code == nextNodeUsrCmp).FirstOrDefault();
+				var firstMemberCompany = _context.CompaniesDb.FirstOrDefault(c => c.Code == nextNodeUsrCmp);
 				var item = new ApplyAuditStep()
 				{
 					Index = stepIndex++,

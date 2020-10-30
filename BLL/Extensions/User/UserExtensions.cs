@@ -47,7 +47,7 @@ namespace BLL.Extensions
 				TimeWork = user.BaseInfo?.Time_Work,
 				Hometown = user.BaseInfo?.Hometown,
 				Id = user.Id,
-				IsInitPassword = user.BaseInfo?.PasswordModefy ?? false,
+				IsInitPassword = user.BaseInfo?.PasswordModify ?? false,
 				InviteBy = inviteBy
 			};
 			return b;

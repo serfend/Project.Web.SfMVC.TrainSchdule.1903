@@ -28,26 +28,26 @@ namespace BLL.Services
 
 		public IEnumerable<Company> GetAll(int page, int pageSize)
 		{
-			var list = _context.Companies.Skip(page * pageSize).Take(pageSize).ToList();
+			var list = _context.CompaniesDb.Skip(page * pageSize).Take(pageSize).ToList();
 			return list;
 		}
 
 		public IEnumerable<Company> GetAll(Expression<Func<Company, bool>> predicate, int page, int pageSize)
 		{
-			var list = _context.Companies.Where(predicate).Skip(page * pageSize).Take(pageSize);
+			var list = _context.CompaniesDb.Where(predicate).Skip(page * pageSize).Take(pageSize);
 
 			return list;
 		}
 
 		public Company GetById(string code)
 		{
-			var company = _context.Companies.Find(code);
+			var company = _context.CompaniesDb.FirstOrDefault(c => c.Code == code);
 			return company;
 		}
 
 		public IEnumerable<Company> FindAllChild(string code)
 		{
-			var list = _context.Companies.AsQueryable();
+			var list = _context.CompaniesDb.AsQueryable();
 			if (code.IsNullOrEmpty() || code.ToLower() == "root") return new List<Company>();
 			else
 			{
@@ -60,7 +60,7 @@ namespace BLL.Services
 		public Company FindParent(string code)
 		{
 			if (code == null) return null;
-			var list = _context.Companies.AsQueryable();
+			var list = _context.CompaniesDb.AsQueryable();
 			var parentCodeLength = code.Length - 1;
 			var parentCode = code.Substring(0, parentCodeLength);
 			list = list.Where(x => x.Code == parentCode);
@@ -94,7 +94,7 @@ namespace BLL.Services
 		public bool Edit(string code, Action<Company> editCallBack)
 		{
 			if (editCallBack == null) return true;
-			var target = _context.Companies.Find(code);
+			var target = _context.CompaniesDb.FirstOrDefault(c => c.Code == code);
 			if (target == null) return false;
 			editCallBack.Invoke(target);
 			_context.Companies.Update(target);
@@ -103,7 +103,7 @@ namespace BLL.Services
 
 		public async Task<bool> EditAsync(string code, Action<Company> editCallBack)
 		{
-			var target = await _context.Companies.FindAsync(code).ConfigureAwait(true);
+			var target = await _context.CompaniesDb.FirstOrDefaultAsync(c => c.Code == code).ConfigureAwait(true);
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
 			_context.Companies.Update(target);
@@ -112,7 +112,7 @@ namespace BLL.Services
 
 		public IEnumerable<User> GetCompanyManagers(string code)
 		{
-			var target = _context.Companies.Find(code);
+			var target = _context.CompaniesDb.FirstOrDefault(c => c.Code == code);
 			if (target == null) return null;
 			return _context.CompanyManagers.Where(m => m.Company.Code == target.Code).Select(m => m.User);
 		}

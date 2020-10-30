@@ -44,7 +44,7 @@ namespace TrainSchdule.ViewModels.ZX
 			m.Name = model.Name;
 			m.IsRemoved = model.IsRemoved;
 			m.HandleBy = context.AppUsersDb.Where(u => u.Id == model.HoldBy).FirstOrDefault();
-			m.HoldBy = context.Companies.Where(c => c.Code == model.HoldBy).FirstOrDefault();
+			m.HoldBy = context.CompaniesDb.Where(c => c.Code == model.HoldBy).FirstOrDefault();
 			m.Create = model.Create ?? DateTime.MinValue;
 			m.CreateBy = context.AppUsersDb.Where(u => u.Id == model.CreateBy).FirstOrDefault();
 			m.Description = model.Description;
