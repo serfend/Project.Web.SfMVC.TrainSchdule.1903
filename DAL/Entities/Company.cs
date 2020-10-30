@@ -34,13 +34,14 @@ namespace DAL.Entities
 		/// <summary>
 		/// 单位属性
 		/// </summary>
-		public int CompanyStatus { get; set; }
+		public CompanyStatus CompanyStatus { get; set; }
 	}
 
 	public enum CompanyStatus
 	{
 		IsRemote = 1,
 		IsPrivate = 2,
-		IgnoreCaculateStatistics = 4
+		IgnoreCaculateStatistics = 4,
+		IsRemoved = 8
 	}
 }

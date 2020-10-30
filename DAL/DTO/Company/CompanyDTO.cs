@@ -13,7 +13,7 @@ namespace DAL.DTO.Company
 		/// <summary>
 		/// 单位情况<see cref="CompanyStatus"/>
 		/// </summary>
-		public int CompanyStatus { get; set; }
+		public CompanyStatus CompanyStatus { get; set; }
 
 		/// <summary>
 		/// 单位所在位置

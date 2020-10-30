@@ -39,7 +39,7 @@ namespace BLL.Services.ApplyServices
 			if (model.CompanyStatus != null)
 			{
 				var status = model.CompanyStatus.Arrays.FirstOrDefault();
-				list = list.Where(a => (a.BaseInfo.Company.CompanyStatus & status) > 0);
+				list = list.Where(a => ((int)a.BaseInfo.Company.CompanyStatus & status) > 0);
 			}
 			if (model.CompanyType != null)
 				list = list.Where(a => EF.Functions.Like(a.BaseInfo.Company.Tag, $"%{model.CompanyType.Value}%"));
