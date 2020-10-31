@@ -5,6 +5,7 @@ using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.DTO.User;
 using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using Hangfire;
@@ -302,6 +303,30 @@ namespace BLL.Services
 
 		public bool Remove(string id, bool RemoveEntity = false) => RemoveAsync(id, RemoveEntity).Result;
 
+		public bool RestoreUser(string id)
+		{
+			var user = _context.AppUsers.FirstOrDefault(u => u.Id == id);
+			if (user == null) return false;
+			if (((int)user.AccountStatus & (int)AccountStatus.Abolish) > 0)
+			{
+				user.AccountStatus -= (int)AccountStatus.Abolish;
+				SetUserAppliesStatus(id, false);
+			}
+			return true;
+		}
+
+		private void SetUserAppliesStatus(string id, bool abolish)
+		{
+			int status = (abolish ? 1 : -1) * (int)MainStatus.Invalid;
+			var user_applies = _context.Applies.Where(a => a.BaseInfo.From.Id == id);
+			foreach (var a in user_applies)
+			{
+				if (((int)a.MainStatus & status) > 0) continue;
+				a.MainStatus += status;
+			}
+			_context.Applies.UpdateRange(user_applies);
+		}
+
 		public async Task<bool> RemoveAsync(string id, bool RemoveEntity = false)
 		{
 			var user = await _context.AppUsersDb.FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(true);
@@ -321,9 +346,10 @@ namespace BLL.Services
 		/// <returns></returns>
 		private void RemoveUser(User user, bool RemoveEntity = false)
 		{
-			if (RemoveEntity)
+			if (!RemoveEntity)
 			{
 				user.AccountStatus += (int)AccountStatus.Abolish;
+				SetUserAppliesStatus(user.Id, true);
 			}
 			else
 			{

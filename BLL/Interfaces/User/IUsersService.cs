@@ -60,6 +60,13 @@ namespace BLL.Interfaces
 		bool Remove(string id, bool RemoveEneity = false);
 
 		/// <summary>
+		/// 恢复已删除的用户
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		bool RestoreUser(string id);
+
+		/// <summary>
 		/// 删除用户
 		/// </summary>
 		/// <param name="id"></param>

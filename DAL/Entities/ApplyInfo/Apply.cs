@@ -42,6 +42,11 @@ namespace DAL.Entities.ApplyInfo
 		public AuditStatus Status { get; set; }
 
 		/// <summary>
+		/// 假期主状态，根据人员情况联动
+		/// </summary>
+		public MainStatus MainStatus { get; set; }
+
+		/// <summary>
 		/// 休假落实状态
 		/// </summary>
 		public ExecuteStatus ExecuteStatus { get; set; }
@@ -56,6 +61,12 @@ namespace DAL.Entities.ApplyInfo
 		/// 被召回的id
 		/// </summary>
 		public Guid? RecallId { get; set; }
+	}
+
+	public enum MainStatus
+	{
+		Normal = 0,
+		Invalid = 1
 	}
 
 	public enum AuditStatus
