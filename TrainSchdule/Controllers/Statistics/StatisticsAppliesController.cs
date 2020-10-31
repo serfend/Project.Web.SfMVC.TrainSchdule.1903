@@ -1,4 +1,5 @@
 ﻿using BLL.Helpers;
+using DAL.Data;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +22,9 @@ namespace TrainSchdule.Controllers.Statistics
 		/// <returns></returns>
 		[RequireHttps]
 		[HttpPost]
-		public async Task<IActionResult> ReloadAllStatistics(DateTime from, DateTime to)
+		public IActionResult ReloadAllStatistics(DateTime from, DateTime to)
 		{
-			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", "更新统计情况", false);
+			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", $"更新统计情况", false);
 			if (HttpContext?.Connection?.RemoteIpAddress != HttpContext?.Connection?.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var removeActions = new Task[]
 			{
@@ -35,13 +36,12 @@ namespace TrainSchdule.Controllers.Statistics
 			foreach (var t in removeActions)
 			{
 				t.Start();
-				await t.ConfigureAwait(true);
+				t.Wait();
 			}
 			_userActionServices.Status(ua, false, "删除原记录");
-			var allCompanies = context.Companies.Select(c => c.Code).ToList();
+			var allCompanies = context.CompaniesDb.Select(c => c.Code).ToList();
 			_userActionServices.Status(ua, false, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, $"重建{allCompanies.Count}个单位的记录")));
 			var reloadActions = new List<Task>();
-			int total = allCompanies.Count * 4;
 			int current = 0;
 			foreach (var c in allCompanies)
 			{
@@ -49,17 +49,20 @@ namespace TrainSchdule.Controllers.Statistics
 				reloadActions.Add(new Task(() => statisticsAppliesServices.CaculateNewApplies(c, from, to)));
 				reloadActions.Add(new Task(() => statisticsAppliesProcessServices.CaculateCompleteApplies(c, from, to)));
 				reloadActions.Add(new Task(() => statisticsDailyProcessServices.CaculateCompleteApplies(c, from, to)));
-				if (reloadActions.Count > 8)
+			}
+			int total = reloadActions.Count;
+			while (current < total)
+			{
+				var left = total - current; ;
+				var take = 4 > left ? left : 4;
+				var list = reloadActions.GetRange(current, take);
+				foreach (var t in list)
 				{
-					foreach (var t in reloadActions)
-					{
-						t.Start();
-						await t.ConfigureAwait(true);
-					}
-					current += reloadActions.Count;
-					_userActionServices.Status(ua, false, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, $"{Math.Round((100 * current / (decimal)total), 2)}% ")));
-					reloadActions.Clear();
-				}
+					t.Start();
+					t.Wait();
+				};
+				current += take;
+				_userActionServices.Status(ua, false, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, $"{Math.Round((100 * current / (decimal)total), 2)}% ")));
 			}
 			_userActionServices.Status(ua, true, JsonConvert.SerializeObject(new Tuple<DateTime, string>(DateTime.Now, "完成重新加载")));
 			return new JsonResult(ActionStatusMessage.Success);
