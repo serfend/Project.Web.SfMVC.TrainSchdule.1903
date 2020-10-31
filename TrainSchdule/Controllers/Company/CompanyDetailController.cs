@@ -124,7 +124,7 @@ namespace TrainSchdule.Controllers
 			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
 			var data = new EntitiesListDataModel<UserTitleDataModel>()
 			{
-				List = result.Item1.Select(d => d.ToDataModel()),
+				List = result.Item1.OrderByDescending(d => d.Level).Select(d => d.ToDataModel()),
 				TotalCount = result.Item2
 			};
 			return new JsonResult(new UserTitlesViewModel()
