@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.UserInfo.Resume;
+using System;
 
 namespace DAL.Entities.UserInfo
 {
@@ -27,8 +28,8 @@ namespace DAL.Entities.UserInfo
 		public virtual UserBaseInfo BaseInfo { get; set; }
 		public virtual UserCompanyInfo CompanyInfo { get; set; }
 		public virtual UserSocialInfo SocialInfo { get; set; }
-		public virtual UserTrainInfo TrainInfo { get; set; }
 		public virtual UserDiyInfo DiyInfo { get; set; }
+		public virtual UserResumeInfo ResumeInfo { get; set; }
 
 		#endregion Properties
 	}

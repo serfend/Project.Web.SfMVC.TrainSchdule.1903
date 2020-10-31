@@ -49,7 +49,6 @@ namespace TrainSchdule.Extensions
 				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,
 				SocialInfo = model.Social?.ToModel(dbAdmin),
-				TrainInfo = new UserTrainInfo(),//TODO 后期可能需要加上受训情况
 				DiyInfo = model.Diy?.ToModel(dbThidpardAccount)
 			};
 			if (u.BaseInfo != null) u.BaseInfo.Id = Guid.Empty;

@@ -1,5 +1,6 @@
 ﻿using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.DiyInfo;
+using DAL.Entities.UserInfo.Resume;
 using DAL.Entities.UserInfo.Settle;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,6 +25,9 @@ namespace DAL.Data
 		public DbSet<UserApplicationInfo> AppUserApplicationInfos { get; set; }
 		public DbSet<UserApplicationSetting> AppUserApplicationSettings { get; set; }
 		public DbSet<UserSocialInfo> AppUserSocialInfos { get; set; }
+		public DbSet<UserResumeInfo> AppUserResumeInfos { get; set; }
+		public DbSet<UserTitleResume> AppUserTitleResumes { get; set; }
+		public DbSet<UserSocialResume> UserSocialResumes { get; set; }
 		public DbSet<Settle> AppUserSocialInfoSettles { get; set; }
 		public DbSet<Moment> AppUserSocialInfoSettleMoments { get; set; }
 		public DbSet<AppUsersSettleModifyRecord> AppUsersSettleModefyRecord { get; set; }
