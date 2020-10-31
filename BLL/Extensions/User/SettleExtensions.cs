@@ -143,7 +143,7 @@ namespace BLL.Extensions
 			if (maxDate < TargetUser.SocialInfo?.Settle?.Parent?.Date) maxDate = TargetUser.SocialInfo?.Settle?.Parent?.Date ?? maxDate;
 			if (maxDate < TargetUser.SocialInfo?.Settle?.Lover?.Date) maxDate = TargetUser.SocialInfo?.Settle?.Lover?.Date ?? maxDate;
 			if (maxDate < TargetUser.SocialInfo?.Settle?.LoversParent?.Date) maxDate = TargetUser.SocialInfo?.Settle?.LoversParent?.Date ?? maxDate;
-			if (maxDate < TargetUser.CompanyInfo.TitleDate) maxDate = TargetUser.CompanyInfo.TitleDate ?? maxDate;
+			//if (maxDate < TargetUser.CompanyInfo.TitleDate) maxDate = TargetUser.CompanyInfo.TitleDate ?? maxDate; // 职务变更不应作为变更条件
 			return maxDate;
 		}
 
@@ -161,11 +161,15 @@ namespace BLL.Extensions
 			description = "无休假：本人地址无效，请填写正确地址。";
 			actionOnDate = SystemNowDate();
 			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
-
+			var title = targetUser.CompanyInfo.Title;
+			if (title.DisableVacation)
+			{
+				description = $"职务为{title.Name}，无假期。";
+				return 0;
+			}
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
 			{
-				var title = targetUser.CompanyInfo.Title;
-				if (title != null && title.VacationDay != 0)
+				if (title != null && title.EnableVacationDay)
 				{
 					maxOnTripTime = 1;
 					description = $"未婚，且职务为{title.Name}，假期天数{title.VacationDay}天";

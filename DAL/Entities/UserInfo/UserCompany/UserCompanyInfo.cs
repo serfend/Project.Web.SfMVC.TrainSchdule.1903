@@ -25,33 +25,4 @@ namespace DAL.Entities.UserInfo
 		//[Required(ErrorMessage = "未输入职务等级时间")]
 		public DateTime? TitleDate { get; set; }
 	}
-
-	/// <summary>
-	/// 职务等级
-	/// </summary>
-	public class UserCompanyTitle
-	{
-		[Key]
-		public int Code { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// 级别
-		/// </summary>
-		public int Level { get; set; }
-
-		/// <summary>
-		/// 职务等级对应的休假天数（专用）
-		/// </summary>
-		public int VacationDay { get; set; }
-
-		/// <summary>
-		/// 职务等级类别，用于统计中进行分类（专用）
-		/// </summary>
-		public string TitleType { get; set; }
-	}
 }

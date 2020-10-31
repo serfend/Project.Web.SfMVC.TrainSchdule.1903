@@ -65,6 +65,8 @@
     <Compile Remove="Migrations\20200723154844_VacationType_newProp_background2.Designer.cs" />
     <Compile Remove="Migrations\20201031015420_Company.cs" />
     <Compile Remove="Migrations\20201031015420_Company.Designer.cs" />
+    <Compile Remove="Migrations\20201031015929_Company2.cs" />
+    <Compile Remove="Migrations\20201031015929_Company2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

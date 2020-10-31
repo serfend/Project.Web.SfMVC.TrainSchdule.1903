@@ -217,7 +217,7 @@ namespace BLL.Extensions.ApplyExtensions
 		public static IQueryable<Apply> GetCompletedApplies(this IQueryable<Apply> applies, IQueryable<RecallOrder> recallDb, IQueryable<ApplyExecuteStatus> executeDb, DateTime pDate, DateTime pDateEnd)
 		=> applies.Where(
 				a =>
-				(((int)a.ExecuteStatus & (int)a.ExecuteStatus) > 0
+				(((int)a.ExecuteStatus & (int)ExecuteStatus.BeenSet) > 0
 				&& executeDb.First(e => e.Id == a.ExecuteStatusDetailId).ReturnStamp >= pDate
 				&& executeDb.First(e => e.Id == a.ExecuteStatusDetailId).ReturnStamp <= pDateEnd
 				)

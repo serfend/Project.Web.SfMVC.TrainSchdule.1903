@@ -56,6 +56,7 @@ namespace BLL.Services.VacationStatistics
 			var companyLength = companyCode.Length;
 			var companyAllMembers = _context.AppUsersDb
 				.Where(u => u.Application.Create <= target)
+				.Where(u => !u.CompanyInfo.Title.DisableVacation)
 				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
 				&& EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyCode}%"));
 			var result = groupRecords.ToList().Select(r =>

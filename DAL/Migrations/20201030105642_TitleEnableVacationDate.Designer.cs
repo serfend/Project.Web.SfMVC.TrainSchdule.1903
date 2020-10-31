@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201030105642_TitleEnableVacationDate")]
+    partial class TitleEnableVacationDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,9 +75,6 @@ namespace DAL.Migrations
 
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("MainStatus")
-                        .HasColumnType("int");
 
                     b.Property<Guid?>("NowAuditStepId")
                         .HasColumnType("uniqueidentifier");
@@ -1978,8 +1977,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("PasswordModify")
-                        .HasColumnName("PasswodModify")
+                    b.Property<bool>("PasswordModefy")
                         .HasColumnType("bit");
 
                     b.Property<string>("RealName")

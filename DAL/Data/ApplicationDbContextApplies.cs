@@ -14,7 +14,7 @@ namespace DAL.Data
 		public DbSet<RecallOrder> RecallOrders { get; set; }
 		public DbSet<ApplyExecuteStatus> ApplyExcuteStatus { get; set; }
 		public DbSet<Apply> Applies { get; set; }
-		public IQueryable<Apply> AppliesDb { get => Applies.Where(a => !a.IsRemoved); }
+		public IQueryable<Apply> AppliesDb => Applies.Where(a => !a.IsRemoved).Where(a => ((int)a.MainStatus & (int)MainStatus.Invalid) == 0);
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
 		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
