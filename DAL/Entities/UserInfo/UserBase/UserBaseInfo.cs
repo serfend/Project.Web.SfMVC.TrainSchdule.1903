@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.UserInfo
 {
@@ -45,6 +46,7 @@ namespace DAL.Entities.UserInfo
 		/// <summary>
 		/// 是否修改过密码
 		/// </summary>
+		[Column("PasswodModify")]
 		public bool PasswordModify { get; set; }
 	}
 

@@ -63,6 +63,8 @@
     <Compile Remove="Migrations\20200718134901_typo_appUserInfo.Designer.cs" />
     <Compile Remove="Migrations\20200723154844_VacationType_newProp_background2.cs" />
     <Compile Remove="Migrations\20200723154844_VacationType_newProp_background2.Designer.cs" />
+    <Compile Remove="Migrations\20201031015420_Company.cs" />
+    <Compile Remove="Migrations\20201031015420_Company.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
