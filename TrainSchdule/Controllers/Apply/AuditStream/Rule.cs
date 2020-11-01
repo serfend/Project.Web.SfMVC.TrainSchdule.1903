@@ -1,6 +1,7 @@
 ﻿using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
+using DAL.DTO.Apply.ApplyAuditStreamDTO;
 using DAL.Entities.ApplyInfo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -142,9 +143,12 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			ApplyAuditStreamSolutionRule node = applyAuditStreamServices.EditSolutionRule(name);
 			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			var result = CheckPermission(auditUser, node.ToDtoModel(), node.RegionOnCompany, node.RegionOnCompany);
+
+			if (result != null && result.Status != 0) return new JsonResult(result);
 			node.Remove();
 			context.ApplyAuditStreamSolutionRules.Update(node);
-			if (result != null && result.Status != 0) return new JsonResult(result);
+			context.SaveChanges();
+
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -156,7 +160,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamSolutionRuleQuery")]
 		public IActionResult StreamSolutionRuleQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamSolutionRules
+			var result = context.ApplyAuditStreamSolutionRulesDb
 					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)

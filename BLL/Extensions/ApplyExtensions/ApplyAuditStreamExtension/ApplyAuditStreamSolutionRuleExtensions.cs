@@ -23,6 +23,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			raw.Duties = model.Duties;
 			raw.DutiesTags = model.DutiesTags;
 			raw.DutyIsMajor = model.DutyIsMajor;
+			raw.RegionOnCompany = model.RegionOnCompany;
 			return raw;
 		}
 
@@ -46,7 +47,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Enable = model.Enable,
 				Name = model.Name,
 				Priority = model.Priority,
-				SolutionName = model.Solution.Name
+				SolutionName = model.Solution.Name,
+				CompanyRegion = model.RegionOnCompany
 			};
 		}
 
@@ -70,7 +72,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Enable = model.Enable,
 				Name = model.Name,
 				Priority = model.Priority,
-				SolutionName = model.SolutionName
+				SolutionName = model.SolutionName,
+				RegionOnCompany = model.CompanyRegion
 			};
 		}
 	}

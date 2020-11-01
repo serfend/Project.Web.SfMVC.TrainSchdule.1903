@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,9 +22,10 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 		public IEnumerable<string> Nodes { get; set; }
 
 		public DateTime Create { get; set; }
+		public string CompanyRegion { get; set; }
 	}
 
-	public class ApplyAuditStreamVDto
+	public class ApplyAuditStreamVDto : IRegion
 	{
 		/// <summary>
 		/// id
@@ -40,5 +42,6 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 		public IEnumerable<ApplyAuditStreamNodeActionVDto> Nodes { get; set; }
 
 		public DateTime Create { get; set; }
+		public string RegionOnCompany { get; set; }
 	}
 }

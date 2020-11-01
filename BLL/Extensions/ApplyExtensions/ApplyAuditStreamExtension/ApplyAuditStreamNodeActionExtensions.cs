@@ -24,6 +24,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			raw.Duties = model.Duties;
 			raw.DutiesTags = model.DutiesTags;
 			raw.DutyIsMajor = model.DutyIsMajor;
+			raw.RegionOnCompany = model.RegionOnCompany;
 			return raw;
 		}
 
@@ -44,6 +45,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			raw.DutyTags = (model.DutiesTags?.Length ?? 0) == 0 ? Array.Empty<string>() : model.DutiesTags?.Split("##");
 			raw.DutyIsMajor = model.DutyIsMajor;
 			raw.Name = model.Name;
+			raw.CompanyRegion = model.RegionOnCompany;
 			return raw;
 		}
 
@@ -65,6 +67,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			raw.DutyIsMajor = model.DutyIsMajor;
 			raw.DutyTags = model.DutyTags;
 			raw.Name = model.Name;
+			raw.RegionOnCompany = model.CompanyRegion;
 			return raw;
 		}
 	}

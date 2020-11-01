@@ -163,11 +163,12 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			if (result != null && result.Status != 0) return new JsonResult(result);
 
 			var nStr = (node.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : node.Nodes.Split("##");
-			var nList = context.ApplyAuditStreamNodeActions.Where(node => nStr.Contains(node.Name));
+			var nList = context.ApplyAuditStreamNodeActionsDb.Where(node => nStr.Contains(node.Name));
 			// 检查包含节点的权限
 			result = CheckPermissionNodes(auditUser, nList);
 			if (result != null && result.Status != 0) return new JsonResult(result);
-			context.ApplyAuditStreams.Remove(node);
+			node.Remove();
+			context.ApplyAuditStreams.Update(node);
 			context.SaveChanges();
 
 			return new JsonResult(ActionStatusMessage.Success);
@@ -181,7 +182,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamSolutionQuery")]
 		public IActionResult StreamSolutionQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreams
+			var result = context.ApplyAuditStreamsDb
 					.Where(n => companyRegion.Contains(n.RegionOnCompany))
 					.OrderByDescending(a => a.Create)
 					.Skip(pageSize * pageIndex)

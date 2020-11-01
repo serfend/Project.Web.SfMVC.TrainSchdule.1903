@@ -1,6 +1,7 @@
 ﻿using DAL.DTO.Company;
 using DAL.DTO.User;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -60,7 +61,7 @@ namespace DAL.DTO.Apply
 		public string CompanyRegion { get; set; }
 	}
 
-	public class MembersFilterVDto
+	public class MembersFilterVDto : IRegion
 	{
 		/// <summary>
 		/// 职务范围
@@ -106,5 +107,7 @@ namespace DAL.DTO.Apply
 		/// 精确设置需要审批的人，当设置此属性，其他设置均失效
 		/// </summary>
 		public IEnumerable<UserSummaryDto> AuditMembers { get; set; }
+
+		public string RegionOnCompany { get; set; }
 	}
 }

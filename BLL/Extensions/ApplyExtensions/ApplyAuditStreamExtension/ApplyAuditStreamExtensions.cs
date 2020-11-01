@@ -19,7 +19,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,
-				Nodes = (model.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Nodes.Split("##")
+				Nodes = (model.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : model.Nodes.Split("##"),
+				CompanyRegion = model.RegionOnCompany
 			};
 		}
 
@@ -32,7 +33,8 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,
-				Nodes = model.Nodes?.Select(n => applyAuditStreamServices.EditNode(n).ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService))
+				Nodes = model.Nodes?.Select(n => applyAuditStreamServices.EditNode(n).ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService)),
+				RegionOnCompany = model.CompanyRegion
 			};
 		}
 	}

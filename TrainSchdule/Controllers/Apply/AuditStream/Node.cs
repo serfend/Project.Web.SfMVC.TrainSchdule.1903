@@ -69,6 +69,8 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			// 判断新增实体的权限
 			var permit = CheckPermission(auditUser, model?.Filter, model.CompanyRegion, n.RegionOnCompany);
 			if (permit.Status != 0) return new JsonResult(permit);
+			// 通过ToModel将前端Filter注入到原库内
+			model.Filter.ToModel<ApplyAuditStreamNodeAction>().ToApplyAuditStreamNodeAction(n);
 			n.Description = model.Description;
 			n.Create = n.Create;
 			n.Name = model.Name;
@@ -149,7 +151,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamNodeQuery")]
 		public IActionResult StreamNodeQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamNodeActions
+			var result = context.ApplyAuditStreamNodeActionsDb
 					.Where(n => companyRegion.Contains(n.RegionOnCompany))
 					.OrderByDescending(a => a.Create)
 					.Skip(pageIndex * pageSize)

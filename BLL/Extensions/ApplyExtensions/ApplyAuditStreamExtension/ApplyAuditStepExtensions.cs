@@ -8,20 +8,16 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 {
 	public static class ApplyAuditStepExtensions
 	{
-		public static ApplyAuditStepDto ToDtoModel(this ApplyAuditStep model)
+		public static ApplyAuditStepDto ToDtoModel(this ApplyAuditStep model) => model == null ? null : new ApplyAuditStepDto()
 		{
-			if (model == null) return null;
-			return new ApplyAuditStepDto()
-			{
-				Id = model.Id,
-				MembersAcceptToAudit = (model.MembersAcceptToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersAcceptToAudit.Split("##"),
-				MembersFitToAudit = (model.MembersFitToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersFitToAudit.Split("##"),
-				RequireMembersAcceptCount = model.RequireMembersAcceptCount,
-				Index = model.Index,
-				Name = model.Name,
-				FirstMemberCompanyName = model.FirstMemberCompanyName,
-				FirstMemberCompanyCode = model.FirstMemberCompanyCode
-			};
-		}
+			Id = model.Id,
+			MembersAcceptToAudit = (model.MembersAcceptToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersAcceptToAudit.Split("##"),
+			MembersFitToAudit = (model.MembersFitToAudit?.Length ?? 0) == 0 ? Array.Empty<string>() : model.MembersFitToAudit.Split("##"),
+			RequireMembersAcceptCount = model.RequireMembersAcceptCount,
+			Index = model.Index,
+			Name = model.Name,
+			FirstMemberCompanyName = model.FirstMemberCompanyName,
+			FirstMemberCompanyCode = model.FirstMemberCompanyCode
+		};
 	}
 }
