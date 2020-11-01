@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Data;
+using DAL.Entities;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations.Statistics.StatisticsNewApply;
 using Microsoft.AspNetCore.Mvc;

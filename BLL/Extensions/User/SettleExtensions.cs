@@ -162,14 +162,14 @@ namespace BLL.Extensions
 			actionOnDate = SystemNowDate();
 			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
 			var title = targetUser.CompanyInfo.Title;
-			if (title.DisableVacation)
+			if (title?.DisableVacation ?? false)
 			{
 				description = $"职务为{title.Name}，无假期。";
 				return 0;
 			}
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))
 			{
-				if (title != null && title.EnableVacationDay)
+				if (title?.EnableVacationDay ?? false)
 				{
 					maxOnTripTime = 1;
 					description = $"未婚，且职务为{title.Name}，假期天数{title.VacationDay}天";
