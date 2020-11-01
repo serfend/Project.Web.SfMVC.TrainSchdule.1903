@@ -43,7 +43,7 @@ namespace BLL.Services
 			var manager = new CompanyManagers()
 			{
 				AuthBy = _context.AppUsersDb.FirstOrDefault(u => u.Id == model.AuditById),
-				Company = _context.Companies.Find(model.CompanyCode),
+				Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == model.CompanyCode),
 				User = _context.AppUsersDb.FirstOrDefault(u => u.Id == model.UserId)
 			};
 			if (manager.Company == null || manager.User == null) return null;

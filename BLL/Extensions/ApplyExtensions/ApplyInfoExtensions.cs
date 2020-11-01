@@ -51,7 +51,6 @@ namespace BLL.Extensions.ApplyExtensions
 		public static ApplySummaryDto ToSummaryDto(this Apply model)
 		{
 			if (model == null) return null;
-
 			var b = new ApplySummaryDto()
 			{
 				Create = model?.Create,
@@ -67,6 +66,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
 				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程"
 			};
+			// 不显示已撤回的信息
 			if (b.Status == AuditStatus.Withdrew)
 				b.Request = null;
 			return b;

@@ -22,8 +22,8 @@ namespace TrainSchdule.Extensions.Users.Social
 		{
 			if (model == null) return raw;
 			if (raw == null) raw = new Moment();
-
-			raw.Address = db.Where(a => a.Code == model.Address.Code).FirstOrDefault();
+			var address = model?.Address?.Code;
+			raw.Address = db.FirstOrDefault(a => a.Code == address);
 			raw.AddressDetail = model.AddressDetail;
 			raw.Date = model.Date;
 			raw.Valid = model.Valid;

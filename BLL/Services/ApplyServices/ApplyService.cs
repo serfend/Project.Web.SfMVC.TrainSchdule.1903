@@ -59,12 +59,11 @@ namespace BLL.Services.ApplyServices
 		public Apply Create(Apply item)
 		{
 			if (item == null) return null;
-			_context.Applies.Add(item);
-			if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
-				DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
+			//if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
+			//	DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
 			if (item.BaseInfo.From.Application.ApplicationSetting != null)
 				item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime = DateTime.Now;
-
+			_context.Applies.Add(item);
 			_context.AppUsers.Update(item.BaseInfo.From);
 			_context.SaveChanges();
 			return item;

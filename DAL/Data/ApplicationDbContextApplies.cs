@@ -16,8 +16,11 @@ namespace DAL.Data
 		public DbSet<Apply> Applies { get; set; }
 		public IQueryable<Apply> AppliesDb => Applies.Where(a => !a.IsRemoved).Where(a => ((int)a.MainStatus & (int)MainStatus.Invalid) == 0);
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
+		public IQueryable<ApplyAuditStream> ApplyAuditStreamsDb => ApplyAuditStreams.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
+		public IQueryable<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRulesDb => ApplyAuditStreamSolutionRules.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
+		public IQueryable<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActionsDb => ApplyAuditStreamNodeActions.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStep> ApplyAuditSteps { get; set; }
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
