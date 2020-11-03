@@ -44,10 +44,10 @@ namespace BLL.Interfaces
 		/// 检查是否有权限操作用户
 		/// </summary>
 		/// <param name="authUser"></param>
-		/// <param name="modefyUser"></param>
+		/// <param name="modifyUser"></param>
 		/// <param name="requireAuthRank"></param>
 		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
-		int CheckAuthorizedToUser(User authUser, User modefyUser);
+		int CheckAuthorizedToUser(User authUser, User modifyUser);
 
 		/// <summary>
 		/// 获取指定用户的家庭情况变更记录并进行修改
@@ -55,7 +55,7 @@ namespace BLL.Interfaces
 		/// <param name="user"></param>
 		/// <param name="Callback"></param>
 		/// <returns></returns>
-		IEnumerable<AppUsersSettleModifyRecord> ModefyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null);
+		IEnumerable<AppUsersSettleModifyRecord> ModifyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null);
 
 		/// <summary>
 		/// 获取指定家庭变更记录并进行修改
@@ -64,6 +64,6 @@ namespace BLL.Interfaces
 		/// <param name="Callback"></param>
 		/// <param name="isDelete"></param>
 		/// <returns></returns>
-		AppUsersSettleModifyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false);
+		AppUsersSettleModifyRecord ModifySettleModifyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false);
 	}
 }

@@ -24,7 +24,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	///
 	/// </summary>
-	public class UserDiyInfoModefyModel : GoogleAuthViewModel
+	public class UserDiyInfoModifyModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		///

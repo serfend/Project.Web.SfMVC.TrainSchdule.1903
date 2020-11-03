@@ -67,6 +67,18 @@
     <Compile Remove="Migrations\20201031015420_Company.Designer.cs" />
     <Compile Remove="Migrations\20201031015929_Company2.cs" />
     <Compile Remove="Migrations\20201031015929_Company2.Designer.cs" />
+    <Compile Remove="Migrations\20201102140511_UserStatusMergePrivateAccountProperty.cs" />
+    <Compile Remove="Migrations\20201102140511_UserStatusMergePrivateAccountProperty.Designer.cs" />
+    <Compile Remove="Migrations\20201102141555_UserStatusMergePrivateAccountProperty.cs" />
+    <Compile Remove="Migrations\20201102141555_UserStatusMergePrivateAccountProperty.Designer.cs" />
+    <Compile Remove="Migrations\20201102173807_UserStatusMergePrivateAccountProperty.cs" />
+    <Compile Remove="Migrations\20201102173807_UserStatusMergePrivateAccountProperty.Designer.cs" />
+    <Compile Remove="Migrations\20201102174058_UserStatusMergePrivateAccount.cs" />
+    <Compile Remove="Migrations\20201102174058_UserStatusMergePrivateAccount.Designer.cs" />
+    <Compile Remove="Migrations\20201102174459_UserStatusMergePrivateAccount.cs" />
+    <Compile Remove="Migrations\20201102174459_UserStatusMergePrivateAccount.Designer.cs" />
+    <Compile Remove="Migrations\20201102175703_UserStatusMergePrivateAccountw.cs" />
+    <Compile Remove="Migrations\20201102175703_UserStatusMergePrivateAccountw.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

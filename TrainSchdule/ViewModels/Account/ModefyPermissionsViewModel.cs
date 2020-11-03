@@ -6,7 +6,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 修改权限
 	/// </summary>
-	public class ModefyPermissionsViewModel : GoogleAuthViewModel
+	public class ModifyPermissionsViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		/// 指定id
@@ -22,7 +22,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 修改密码
 	/// </summary>
-	public class ModefyPasswordViewModel : GoogleAuthViewModel
+	public class ModifyPasswordViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		/// 用户id

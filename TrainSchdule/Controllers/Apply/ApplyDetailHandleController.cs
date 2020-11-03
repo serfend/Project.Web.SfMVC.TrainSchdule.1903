@@ -24,7 +24,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpGet]
 		public IActionResult Comment(Guid id, int pageIndex = 0, int pageSize = 20, string order = null)
 		{
-			var list_raw = _context.ApplyComments.Where(a => a.Apply.Id == id);
+			var list_raw = _context.ApplyCommentsDb.Where(a => a.Apply.Id == id);
 			Tuple<IQueryable<ApplyComment>, int> list;
 			if ("as_date" == order) list = list_raw.OrderByDescending(a => a.Create).SplitPage(pageIndex, pageSize);
 			else list = list_raw.OrderByDescending(a => a.Likes).SplitPage(pageIndex, pageSize);
@@ -44,12 +44,13 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			ApplyComment m = null;
 			if (model.Id != null)
-				m = _context.ApplyComments.FirstOrDefault(i => i.Id == model.Id);
+				m = _context.ApplyCommentsDb.FirstOrDefault(i => i.Id == model.Id);
 			var actionUser = _currentUserService.CurrentUser;
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var apply = _applyService.GetById(model.Apply);
-			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
-			var ua = _userActionServices.Log(UserOperation.AttachInfoToApply, actionUser.Id, $"编辑假期{apply.Id}的评论");
+			var apply =model.IsRemove?null:  _applyService.GetById(model.Apply);
+			if (apply == null&&!model.IsRemove) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
+			var act = model.IsRemove ? "删除" : "添加";
+			var ua = _userActionServices.Log(UserOperation.AttachInfoToApply, actionUser.Id, $"{act}假期{apply?.Id??m?.Apply?.Id}的评论");
 			if (m == null)
 			{
 				if (model.IsRemove) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.StaticMessage.ResourceNotExist));
@@ -96,7 +97,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			if (currentUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var comment = _context.ApplyComments.FirstOrDefault(i => i.Id == model.Id);
+			var comment = _context.ApplyCommentsDb.FirstOrDefault(i => i.Id == model.Id);
 			if (comment == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			var like = _context.ApplyCommentLikes.Where(i => i.Comment.Id == comment.Id).FirstOrDefault(i => i.CreateBy.Id == currentUser.Id);
 			if (like == null && model.Like) _context.ApplyCommentLikes.Add(new ApplyCommentLike() { Comment = comment, Create = DateTime.Now, CreateBy = currentUser });

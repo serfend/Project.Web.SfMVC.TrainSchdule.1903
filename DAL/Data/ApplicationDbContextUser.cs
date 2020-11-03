@@ -30,8 +30,8 @@ namespace DAL.Data
 		public DbSet<UserSocialResume> UserSocialResumes { get; set; }
 		public DbSet<Settle> AppUserSocialInfoSettles { get; set; }
 		public DbSet<Moment> AppUserSocialInfoSettleMoments { get; set; }
-		public DbSet<AppUsersSettleModifyRecord> AppUsersSettleModefyRecord { get; set; }
-		public IQueryable<AppUsersSettleModifyRecord> AppUsersSettleModifyRecordDb => AppUsersSettleModefyRecord.ToExistDbSet();
+		public DbSet<AppUsersSettleModifyRecord> AppUsersSettleModifyRecord { get; set; }
+		public IQueryable<AppUsersSettleModifyRecord> AppUsersSettleModifyRecordDb => AppUsersSettleModifyRecord.ToExistDbSet();
 
 		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
 		public DbSet<Avatar> AppUserDiyAvatars { get; set; }

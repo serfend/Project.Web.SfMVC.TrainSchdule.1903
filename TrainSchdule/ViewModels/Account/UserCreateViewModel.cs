@@ -27,7 +27,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	/// 修改单个账号
 	/// </summary>
-	public class UserModefyViewModel : GoogleAuthViewModel
+	public class UserModifyViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		///
@@ -37,7 +37,7 @@ namespace TrainSchdule.ViewModels.Account
 		/// <summary>
 		///
 		/// </summary>
-		public UserModefyDataModel Data { get; set; }
+		public UserModifyDataModel Data { get; set; }
 	}
 
 	/// <summary>
@@ -70,7 +70,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	///
 	/// </summary>
-	public class UserCreateDataModel : UserModefyDataModel
+	public class UserCreateDataModel : UserModifyDataModel
 	{
 		/// <summary>
 		/// 输入密码
@@ -90,7 +90,7 @@ namespace TrainSchdule.ViewModels.Account
 	/// <summary>
 	///
 	/// </summary>
-	public class UserModefyDataModel
+	public class UserModifyDataModel
 	{
 		/// <summary>
 		///

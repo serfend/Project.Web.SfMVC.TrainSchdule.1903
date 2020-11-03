@@ -11,18 +11,18 @@ namespace TrainSchdule.ViewModels.User.Social
 	/// <summary>
 	///
 	/// </summary>
-	public class SettleModefyRecordViewModel : ApiResult
+	public class SettleModifyRecordViewModel : ApiResult
 	{
 		/// <summary>
 		///
 		/// </summary>
-		public SettleModefyRecordDataModel Data { get; set; }
+		public SettleModifyRecordDataModel Data { get; set; }
 	}
 
 	/// <summary>
 	///
 	/// </summary>
-	public class SettleModefyRecordDataModel
+	public class SettleModifyRecordDataModel
 	{
 		/// <summary>
 		///
@@ -33,18 +33,18 @@ namespace TrainSchdule.ViewModels.User.Social
 	/// <summary>
 	///
 	/// </summary>
-	public class SingleSettleModefyRecordViewModel
+	public class SingleSettleModifyRecordViewModel
 	{
 		/// <summary>
 		///
 		/// </summary>
-		public SingleSettleModefyRecordDataModel Data { get; set; }
+		public SingleSettleModifyRecordDataModel Data { get; set; }
 	}
 
 	/// <summary>
 	///
 	/// </summary>
-	public class SingleSettleModefyRecordDataModel
+	public class SingleSettleModifyRecordDataModel
 	{
 		/// <summary>
 		///
@@ -55,7 +55,7 @@ namespace TrainSchdule.ViewModels.User.Social
 	/// <summary>
 	///
 	/// </summary>
-	public class ModefySingleSettleModefyRecordViewModel : GoogleAuthViewModel
+	public class ModifySingleSettleModifyRecordViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		///

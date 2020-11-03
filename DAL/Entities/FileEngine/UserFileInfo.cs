@@ -23,7 +23,7 @@ namespace DAL.Entities.FileEngine
 		/// <summary>
 		/// 上次修改时间
 		/// </summary>
-		public DateTime LastModefy { get; set; }
+		public DateTime LastModify { get; set; }
 
 		/// <summary>
 		/// 路径

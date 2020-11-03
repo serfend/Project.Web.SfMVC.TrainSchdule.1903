@@ -33,10 +33,10 @@ namespace TrainSchdule.Controllers
 			var userid = id ?? _currentUserService.CurrentUser?.Id;
 			var u = _usersService.GetById(id);
 			if (u == null) return new JsonResult(id == null ? ActionStatusMessage.Account.Auth.Invalid.NotLogin : ActionStatusMessage.UserMessage.NotExist);
-			var records = userServiceDetail.ModefyUserSettleModifyRecord(u);
-			return new JsonResult(new SettleModefyRecordViewModel()
+			var records = userServiceDetail.ModifyUserSettleModifyRecord(u);
+			return new JsonResult(new SettleModifyRecordViewModel()
 			{
-				Data = new SettleModefyRecordDataModel()
+				Data = new SettleModifyRecordDataModel()
 				{
 					Records = records.OrderByDescending(r => r.UpdateDate)
 				}
@@ -52,11 +52,11 @@ namespace TrainSchdule.Controllers
 		[Route("Social/ModifyRecord")]
 		public IActionResult SingleSocialModifyRecord(int code)
 		{
-			var record = userServiceDetail.ModefySettleModeyRecord(code);
+			var record = userServiceDetail.ModifySettleModifyRecord(code);
 			if (record == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			return new JsonResult(new SingleSettleModefyRecordViewModel()
+			return new JsonResult(new SingleSettleModifyRecordViewModel()
 			{
-				Data = new SingleSettleModefyRecordDataModel()
+				Data = new SingleSettleModifyRecordDataModel()
 				{
 					Record = record
 				}
@@ -70,7 +70,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("Social/ModifyRecord")]
-		public IActionResult SingleSocialModifyRecord([FromBody] ModefySingleSettleModefyRecordViewModel model)
+		public IActionResult SingleSocialModifyRecord([FromBody] ModifySingleSettleModifyRecordViewModel model)
 		{
 			var currentUser = _currentUserService.CurrentUser;
 			var authUser = model.Auth?.AuthUser(_authService, _usersService, currentUser?.Id);
@@ -83,7 +83,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
-			var record = userServiceDetail.ModefySettleModeyRecord(newR.Code, (r) =>
+			var record = userServiceDetail.ModifySettleModifyRecord(newR.Code, (r) =>
 			{
 				if (r == null) return;
 				r.IsNewYearInitData = newR.IsNewYearInitData;
@@ -122,7 +122,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("social/[action]")]
-		public IActionResult Settle([FromBody] UserSocialSettleModefyViewModel model)
+		public IActionResult Settle([FromBody] UserSocialSettleModifyViewModel model)
 		{
 			var authUser = model?.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
 			var data = model?.Data;

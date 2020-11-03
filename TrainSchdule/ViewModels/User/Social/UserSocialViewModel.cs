@@ -23,7 +23,7 @@ namespace TrainSchdule.ViewModels.User
 	/// <summary>
 	///
 	/// </summary>
-	public class UserSocialSettleModefyViewModel : GoogleAuthViewModel
+	public class UserSocialSettleModifyViewModel : GoogleAuthViewModel
 	{
 		/// <summary>
 		///

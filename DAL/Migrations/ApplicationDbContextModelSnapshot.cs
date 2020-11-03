@@ -297,7 +297,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("SolutionId");
 
-                    b.ToTable("ApplyAuditStreamSolutionRulesDb");
+                    b.ToTable("ApplyAuditStreamSolutionRules");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyBaseInfo", b =>
@@ -1276,7 +1276,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("LastModefy")
+                    b.Property<DateTime>("LastModify")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("Length")
@@ -1724,7 +1724,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("SettleId");
 
-                    b.ToTable("AppUsersSettleModefyRecord");
+                    b.ToTable("AppUsersSettleModifyRecord");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>
@@ -1817,9 +1817,6 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("DiyInfoId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("PrivateAccount")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ResumeInfoId")
                         .HasColumnType("uniqueidentifier");

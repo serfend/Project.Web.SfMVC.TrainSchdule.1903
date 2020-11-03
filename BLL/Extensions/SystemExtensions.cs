@@ -67,7 +67,7 @@ namespace BLL.Extensions
 			raw.IsRemoved = model.IsRemoved;
 			raw.IsRemovedDate = model.IsRemovedDate;
 			raw.FromClient = model.FromClient;
-			raw.LastModefy = model.LastModefy;
+			raw.LastModify = model.LastModify;
 			raw.Length = model.Length;
 			raw.Name = model.Name;
 			raw.Path = model.Path;

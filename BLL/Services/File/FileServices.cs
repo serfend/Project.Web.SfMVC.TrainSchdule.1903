@@ -158,7 +158,7 @@ namespace BLL.Services.File
 						};
 						context.UserFiles.Add(f);
 					}
-					fi.LastModefy = DateTime.Now;
+					fi.LastModify = DateTime.Now;
 					fi.Length = file.Length;
 					fi.FromClient = httpContext.HttpContext.Connection.RemoteIpAddress.ToString();
 					fi.ClientKey = clientKey == Guid.Empty ? Guid.NewGuid() : clientKey;

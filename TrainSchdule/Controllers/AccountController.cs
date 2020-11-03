@@ -230,7 +230,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult Permission([FromBody] ModefyPermissionsViewModel model)
+		public IActionResult Permission([FromBody] ModifyPermissionsViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.GetById(model.Id);
@@ -251,7 +251,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> Password([FromBody] ModefyPasswordViewModel model)
+		public async Task<IActionResult> Password([FromBody] ModifyPasswordViewModel model)
 		{
 			string userid = null;
 			var isCid = model.Id.Length == 18;
@@ -516,7 +516,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> ModifyUser([FromBody] UserModefyViewModel model)
+		public async Task<IActionResult> ModifyUser([FromBody] UserModifyViewModel model)
 		{
 			model.Verify?.Verify(_verifyService);
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
@@ -651,7 +651,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="model">修改实体</param>
 		/// <param name="authByUser"></param>
 		/// <returns></returns>
-		private async Task ModifySingleUser(UserModefyDataModel model, User authByUser)
+		private async Task ModifySingleUser(UserModifyDataModel model, User authByUser)
 		{
 			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var localUser = _usersService.GetById(model.Application.UserName);
