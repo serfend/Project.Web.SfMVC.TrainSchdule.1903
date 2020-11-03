@@ -59,12 +59,18 @@ namespace BLL.Services.ApplyServices
 		public Apply Create(Apply item)
 		{
 			if (item == null) return null;
-			//if (item.BaseInfo.From.Application.ApplicationSetting?.LastSubmitApplyTime != null && item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime.Value.AddMinutes(1) >
-			//	DateTime.Now) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
-			if (item.BaseInfo.From.Application.ApplicationSetting != null)
-				item.BaseInfo.From.Application.ApplicationSetting.LastSubmitApplyTime = DateTime.Now;
+			var appSetting = item.BaseInfo.From.Application.ApplicationSetting;
+			if (appSetting != null)
+			{
+				var time = appSetting.LastSubmitApplyTime;
+				// 若1分钟内连续提交两次，则下次提交限定到10分钟后
+				if (time == null) appSetting.LastSubmitApplyTime = DateTime.Now;
+				else if (time > DateTime.Now.AddMinutes(10)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
+				else if (time?.AddMinutes(1) > DateTime.Now)
+					appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
+			}
 			_context.Applies.Add(item);
-			_context.AppUsers.Update(item.BaseInfo.From);
+			_context.AppUserApplicationSettings.Update(appSetting);
 			_context.SaveChanges();
 			return item;
 		}
