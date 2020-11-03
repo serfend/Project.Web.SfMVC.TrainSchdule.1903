@@ -40,13 +40,13 @@ namespace BLL.Extensions
 		public static double CaculateLengthByWeight(this IEnumerable<AppUsersSettleModifyRecord> records, DateTime newDate, double newLength, out string weightDescription)
 		{
 			weightDescription = "";
-			var lastestModefy = records?.FirstOrDefault();
-			if (lastestModefy == null || lastestModefy.UpdateDate.Year < newDate.Year) return newLength;
+			var lastestModify = records?.FirstOrDefault();
+			if (lastestModify == null || lastestModify.UpdateDate.Year < newDate.Year) return newLength;
 
-			var result = ((12 - newDate.Month) * newLength + newDate.Month * lastestModefy.Length) / 12;
+			var result = ((12 - newDate.Month) * newLength + newDate.Month * lastestModify.Length) / 12;
 			var weightDescriptionB = new StringBuilder();
 			weightDescriptionB.Append($"因今年发生{records.Count()}次变化，全年假期应加权计算：");
-			weightDescriptionB.Append($"新长度=(老长度*新长度月份+新长度*(12-新长度月份) ) /12=({(int)lastestModefy.Length}*{newDate.Month}+{(int)newLength}*(12-{newDate.Month}))={(int)(result)}天");
+			weightDescriptionB.Append($"新长度=(老长度*新长度月份+新长度*(12-新长度月份) ) /12=({(int)lastestModify.Length}*{newDate.Month}+{(int)newLength}*(12-{newDate.Month}))={(int)(result)}天");
 			weightDescription = weightDescriptionB.ToString();
 			return result;
 		}
@@ -62,48 +62,48 @@ namespace BLL.Extensions
 		/// <param name="maxOnTripTime">全年可休几次路途</param>
 		/// <param name="description">全年假期的描述</param>
 		/// </returns>
-		public static Tuple<double, AppUsersSettleModifyRecord, int, string> GetYearlyLength(this Settle settle, User TargetUser)
+		public static Tuple<double, AppUsersSettleModifyRecord, int, string> GetYearlyLength(this Settle settle, User TargetUser, out bool requireUpdate)
 		{
 			if (settle == null) throw new ArgumentNullException(nameof(settle));
 			AppUsersSettleModifyRecord requireToAdd;
-			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out int maxOnTripTime, out string description, out var actionOnDate); // 本次应休假长度
-			var userFinnalModefyDate = TargetUser.CheckUpdateDate(); // 本次用户家庭最后变更时间
+			var nowVacationLength = settle.GetYearlyLengthInner(TargetUser, out int maxOnTripTime, out string description, out var actionOnDate, out requireUpdate); // 本次应休假长度
+			var userFinnalModifyDate = TargetUser.CheckUpdateDate(); // 本次用户家庭最后变更时间
 			var vacationModifyRecords = settle.PrevYealyLengthHistory?.OrderByDescending(rec => rec.UpdateDate); // 用户假期变更记录
-			var lastVacationModefy = vacationModifyRecords?.FirstOrDefault(); // 上次假期变更记录
-			var lastFamilyVacationModefy = vacationModifyRecords?.FirstOrDefault(rec => !rec.IsNewYearInitData); // 上次因家庭变更而假期变更记录
+			var lastVacationModify = vacationModifyRecords?.FirstOrDefault(); // 上次假期变更记录
+			var lastFamilyVacationModify = vacationModifyRecords?.FirstOrDefault(rec => !rec.IsNewYearInitData); // 上次因家庭变更而假期变更记录
 
 			// 通过用户家庭情况变更记录来计算
 
 			// 如果今年已有变更记录
-			if (lastVacationModefy != null && lastVacationModefy.UpdateDate.Year == DateTime.Now.XjxtNow().Year)
+			if (lastVacationModify != null && lastVacationModify.UpdateDate.Year == DateTime.Now.XjxtNow().Year)
 			{
 				// 本次假期长度同上次，则无更改
-				if (lastVacationModefy.Length == nowVacationLength)
+				if (lastVacationModify.Length == nowVacationLength)
 				{
-					description = lastVacationModefy.Description;
+					description = lastVacationModify.Description;
 					requireToAdd = null;
 					return new Tuple<double, AppUsersSettleModifyRecord, int, string>(nowVacationLength, requireToAdd, maxOnTripTime, description);
 				}
 				// 上次是否是新年初始化 或 上次的家庭情况时间不同于本次
-				else if (lastVacationModefy.IsNewYearInitData || lastVacationModefy.UpdateDate != userFinnalModefyDate)
+				else if (lastVacationModify.IsNewYearInitData || lastVacationModify.UpdateDate != userFinnalModifyDate)
 				{
 					var nowY = DateTime.Now.XjxtNow().Year;
 					var thisYearModifyRecords = vacationModifyRecords.Where(rec => rec.UpdateDate.Year == nowY); // 今年以来的变更记录
-					var newLength = thisYearModifyRecords.CaculateLengthByWeight(userFinnalModefyDate, nowVacationLength, out var weightDescription);
+					var newLength = thisYearModifyRecords.CaculateLengthByWeight(userFinnalModifyDate, nowVacationLength, out var weightDescription);
 
 					// 如果最新更新时间早于上次更新时间，则使用当期时间作为基准，且天数不进行加权处理
-					if (userFinnalModefyDate.Year != nowY)
+					if (userFinnalModifyDate.Year != nowY)
 					{
 						newLength = nowVacationLength;
 						weightDescription = "";
-						userFinnalModefyDate = thisYearModifyRecords.LastOrDefault()?.UpdateDate ?? SystemNowDate();
+						userFinnalModifyDate = thisYearModifyRecords.LastOrDefault()?.UpdateDate ?? SystemNowDate();
 					}
 					requireToAdd = new AppUsersSettleModifyRecord()
 					{
 						Description = $"{description} {weightDescription}",
 						IsNewYearInitData = false,
 						Length = newLength,
-						UpdateDate = userFinnalModefyDate
+						UpdateDate = userFinnalModifyDate
 					};
 					return new Tuple<double, AppUsersSettleModifyRecord, int, string>(newLength, requireToAdd, maxOnTripTime, description);
 				}
@@ -111,8 +111,8 @@ namespace BLL.Extensions
 				else
 				{
 					requireToAdd = null;
-					description = lastVacationModefy.Description;
-					return new Tuple<double, AppUsersSettleModifyRecord, int, string>(lastVacationModefy.Length, requireToAdd, maxOnTripTime, description);
+					description = lastVacationModify.Description;
+					return new Tuple<double, AppUsersSettleModifyRecord, int, string>(lastVacationModify.Length, requireToAdd, maxOnTripTime, description);
 				}
 			}
 			// 若今年无变更记录，则创建一条记录
@@ -155,16 +155,27 @@ namespace BLL.Extensions
 		/// <param name="maxOnTripTime"></param>
 		/// <param name="description"></param>
 		/// <returns></returns>
-		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description, out DateTime actionOnDate)
+		public static int GetYearlyLengthInner(this Settle settle, User targetUser, out int maxOnTripTime, out string description, out DateTime actionOnDate, out bool requireUpdate)
 		{
 			maxOnTripTime = 0;
-			description = "无休假：本人地址无效，请填写正确地址。";
 			actionOnDate = SystemNowDate();
-			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false)) return 0;
+			requireUpdate = false;
+			if (targetUser == null || settle?.Self == null || (!settle.Self?.Valid ?? false))
+			{
+				description = "无休假：本人地址无效，请填写正确地址。";
+				return 0;
+			}
 			var title = targetUser.CompanyInfo.Title;
+			var isNoVacationOptionSet = ((int)targetUser.AccountStatus & (int)AccountStatus.DisableVacation) > 0;
 			if (title?.DisableVacation ?? false)
 			{
+				if (!isNoVacationOptionSet) { targetUser.AccountStatus += (int)AccountStatus.DisableVacation; requireUpdate = true; }
 				description = $"职务为{title.Name}，无假期。";
+				return 0;
+			}
+			if (isNoVacationOptionSet)
+			{
+				description = "当年无假期选项已设定，无假期";
 				return 0;
 			}
 			if (settle?.Lover == null || (!settle.Lover?.Valid ?? false))

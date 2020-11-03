@@ -41,6 +41,21 @@ namespace TrainSchdule.ViewModels.User
 		///
 		/// </summary>
 		public string Email { get; set; }
+
+		/// <summary>
+		/// 用户状态
+		/// </summary>
+		public AccountStatus AccountStatus { get; set; }
+
+		/// <summary>
+		/// 当状态为封禁时需要有此字段
+		/// </summary>
+		public DateTime StatusBeginDate { get; set; }
+
+		/// <summary>
+		/// 当状态为封禁时需要有此字段
+		/// </summary>
+		public DateTime StatusEndDate { get; set; }
 	}
 
 	/// <summary>
@@ -61,7 +76,10 @@ namespace TrainSchdule.ViewModels.User
 				UserName = user.Id,
 				Create = model.Create,
 				Email = model.Email,
-				InvitedBy = model.InvitedBy
+				InvitedBy = model.InvitedBy,
+				AccountStatus = user.AccountStatus,
+				StatusBeginDate = user.StatusBeginDate,
+				StatusEndDate = user.StatusEndDate,
 			};
 		}
 

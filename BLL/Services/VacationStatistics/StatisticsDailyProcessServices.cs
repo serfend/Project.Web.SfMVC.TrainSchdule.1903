@@ -4,6 +4,7 @@ using BLL.Interfaces.IVacationStatistics;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations.Statistics;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -56,7 +57,7 @@ namespace BLL.Services.VacationStatistics
 			var companyLength = companyCode.Length;
 			var companyAllMembers = _context.AppUsersDb
 				.Where(u => u.Application.Create <= target)
-				.Where(u => !u.CompanyInfo.Title.DisableVacation)
+				.Where(u => ((int)u.AccountStatus &(int)AccountStatus.DisableVacation)==0)
 				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
 				&& EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyCode}%"));
 			var result = groupRecords.ToList().Select(r =>
@@ -69,7 +70,7 @@ namespace BLL.Services.VacationStatistics
 				foreach (var u in companyAtTypeMembers.ToList())
 					userYealyStatisticsDict[u.Id] = new YearlyStatistics()
 					{
-						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d, out var actionOnDate)
+						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d, out var actionOnDate,out var requireUpdate)
 					};
 				foreach (var p in users)
 				{

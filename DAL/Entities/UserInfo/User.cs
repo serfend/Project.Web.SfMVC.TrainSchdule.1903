@@ -5,8 +5,6 @@ namespace DAL.Entities.UserInfo
 {
 	public class User : UserID
 	{
-		public bool PrivateAccount { get; set; }
-
 		/// <summary>
 		/// 用户状态
 		/// </summary>
@@ -39,5 +37,7 @@ namespace DAL.Entities.UserInfo
 		Normal = 0,
 		Banned = 1,
 		Abolish = 2,
+		DisableVacation = 4, // 当所选职务的 DisabledVacation 设置为True时，同步为所选职务的设置
+		PrivateAccount = 8
 	}
 }

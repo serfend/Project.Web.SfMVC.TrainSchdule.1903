@@ -20,17 +20,17 @@ namespace BLL.Services
 		/// 检查是否有权限操作用户
 		/// </summary>
 		/// <param name="authUser"></param>
-		/// <param name="modefyUser"></param>
+		/// <param name="modifyUser"></param>
 		/// <param name="requireAuthRank"></param>
 		/// <returns>当无权限时返回-1，否则返回当前授权用户可操作单位与目标用户的级别差</returns>
-		public int CheckAuthorizedToUser(User authUser, User modefyUser)
+		public int CheckAuthorizedToUser(User authUser, User modifyUser)
 		{
 			if (authUser?.Id == "root") return int.MaxValue;
 			var result = InMyManage(authUser).Result;
 			var myManages = result.Item1.ToList();
 			if (result.Item2 == 0) return -1;
-			if (modefyUser == null) return 1;
-			var targetCompany = modefyUser.CompanyInfo.Company.Code;
+			if (modifyUser == null) return 1;
+			var targetCompany = modifyUser.CompanyInfo.Company.Code;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			return myManages.Max(m => targetCompany.StartsWith(m.Code) ? targetCompany.Length - m.Code.Length : -1);
 		}
@@ -73,10 +73,10 @@ namespace BLL.Services
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 			var targetSocial = targetUser.SocialInfo;
 			var targetSettle = targetSocial.Settle;
-			var r = targetSettle.GetYearlyLength(targetUser);
+			bool requireUpdate = false;
+			var r = targetSettle.GetYearlyLength(targetUser, out requireUpdate);
 			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;
 			var yearlyLength = r.Item1 < 0 ? 0 : r.Item1;
-			bool requireUpdate = false;
 			if (targetSettle.Lover?.Valid ?? false)
 			{
 				// 已婚
@@ -179,7 +179,7 @@ namespace BLL.Services
 			return vacationInfo;
 		}
 
-		public IEnumerable<AppUsersSettleModifyRecord> ModefyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null)
+		public IEnumerable<AppUsersSettleModifyRecord> ModifyUserSettleModifyRecord(User user, Action<IEnumerable<AppUsersSettleModifyRecord>> Callback = null)
 		{
 			if (user == null) return null;
 			var records = user.SocialInfo.Settle.PrevYealyLengthHistory;
@@ -193,7 +193,7 @@ namespace BLL.Services
 			return records;
 		}
 
-		public AppUsersSettleModifyRecord ModefySettleModeyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false)
+		public AppUsersSettleModifyRecord ModifySettleModifyRecord(int code, Action<AppUsersSettleModifyRecord> Callback = null, bool isDelete = false)
 		{
 			var record = _context.AppUsersSettleModifyRecordDb.Where(r => r.Code == code).FirstOrDefault();
 			if (Callback != null || isDelete)
@@ -206,7 +206,7 @@ namespace BLL.Services
 					settlePre.PrevYealyLengthHistory = settlePre.PrevYealyLengthHistory.Where(rec => rec.Code != code).ToList();
 					_context.AppUserSocialInfoSettles.Update(settlePre);
 				}
-				_context.AppUsersSettleModefyRecord.Update(record);
+				_context.AppUsersSettleModifyRecord.Update(record);
 				_context.SaveChanges();
 			}
 			return record;
