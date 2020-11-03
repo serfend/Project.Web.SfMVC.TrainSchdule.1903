@@ -18,9 +18,12 @@ namespace DAL.Data
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
 		public IQueryable<ApplyAuditStream> ApplyAuditStreamsDb => ApplyAuditStreams.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }
-		public IQueryable<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRulesDb => ApplyAuditStreamSolutionRules.Where(a => !a.IsRemoved);
+		public IQueryable<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRuleDb => ApplyAuditStreamSolutionRules.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActions { get; set; }
-		public IQueryable<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActionsDb => ApplyAuditStreamNodeActions.Where(a => !a.IsRemoved);
+
+		public IQueryable<ApplyAuditStreamNodeAction> ApplyAuditStreamNodeActionDb
+			=> ApplyAuditStreamNodeActions.Where(a => !a.IsRemoved);
+
 		public DbSet<ApplyAuditStep> ApplyAuditSteps { get; set; }
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
@@ -28,6 +31,7 @@ namespace DAL.Data
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationType> VacationTypes { get; set; }
 		public DbSet<ApplyComment> ApplyComments { get; set; }
+		public IQueryable<ApplyComment> ApplyCommentsDb => ApplyComments.Where(c => !c.IsRemoved);
 		public DbSet<ApplyCommentLike> ApplyCommentLikes { get; set; }
 
 		private void Configuration_Applies(ModelBuilder builder)

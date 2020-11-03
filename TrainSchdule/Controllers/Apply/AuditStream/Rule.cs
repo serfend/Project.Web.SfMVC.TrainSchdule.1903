@@ -160,7 +160,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamSolutionRuleQuery")]
 		public IActionResult StreamSolutionRuleQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamSolutionRulesDb
+			var result = context.ApplyAuditStreamSolutionRuleDb
 					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201031141327_CompanyTitleDisabledVacation")]
-    partial class CompanyTitleDisabledVacation
+    [Migration("20201103233317_ModefyToModify_Typo")]
+    partial class ModefyToModify_Typo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1278,7 +1278,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("LastModefy")
+                    b.Property<DateTime>("LastModify")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("Length")
@@ -1726,7 +1726,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("SettleId");
 
-                    b.ToTable("AppUsersSettleModefyRecord");
+                    b.ToTable("AppUsersSettleModifyRecord");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserInfo.Settle.Moment", b =>
@@ -1819,9 +1819,6 @@ namespace DAL.Migrations
 
                     b.Property<Guid?>("DiyInfoId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("PrivateAccount")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ResumeInfoId")
                         .HasColumnType("uniqueidentifier");

@@ -28,7 +28,7 @@ namespace BLL.Services.ApplyServices
 
 		public ApplyAuditStreamNodeAction EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback)
 		{
-			var node = context.ApplyAuditStreamNodeActionsDb.Where(a => a.Name == nodeName).FirstOrDefault();
+			var node = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == nodeName).FirstOrDefault();
 			if (callback != null && callback.Invoke(node)) context.SaveChanges();
 			return node;
 		}
@@ -42,7 +42,7 @@ namespace BLL.Services.ApplyServices
 
 		public ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback)
 		{
-			var rule = context.ApplyAuditStreamSolutionRulesDb.Where(r => r.Name == solutionRuleName).FirstOrDefault();
+			var rule = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == solutionRuleName).FirstOrDefault();
 			if (callback != null && callback.Invoke(rule)) context.SaveChanges();
 			return rule;
 		}
@@ -52,7 +52,7 @@ namespace BLL.Services.ApplyServices
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.Company.Code;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
-			var auditRule = context.ApplyAuditStreamSolutionRulesDb
+			var auditRule = context.ApplyAuditStreamSolutionRuleDb
 				.Where(r => r.Enable)
 				.Where(r => cmp.StartsWith(r.RegionOnCompany))
 				.OrderByDescending(a => a.Priority).ToList();
@@ -67,7 +67,7 @@ namespace BLL.Services.ApplyServices
 
 		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null)
 		{
-			var prev = context.ApplyAuditStreamNodeActionsDb.Where(a => a.Name == name).FirstOrDefault();
+			var prev = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
 			var result = new ApplyAuditStreamNodeAction()
 			{
@@ -111,7 +111,7 @@ namespace BLL.Services.ApplyServices
 
 		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false)
 		{
-			var prev = context.ApplyAuditStreamSolutionRulesDb.Where(r => r.Name == name).FirstOrDefault();
+			var prev = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
 			var result = new ApplyAuditStreamSolutionRule()
 			{
@@ -226,10 +226,10 @@ namespace BLL.Services.ApplyServices
 		}
 
 		public ApplyAuditStreamNodeAction GetNode(Guid id)
-			=> context.ApplyAuditStreamNodeActionsDb.FirstOrDefault(i => i.Id == id);
+			=> context.ApplyAuditStreamNodeActionDb.FirstOrDefault(i => i.Id == id);
 
 		public ApplyAuditStreamSolutionRule GetRule(Guid id)
-			=> context.ApplyAuditStreamSolutionRulesDb.FirstOrDefault(i => i.Id == id);
+			=> context.ApplyAuditStreamSolutionRuleDb.FirstOrDefault(i => i.Id == id);
 
 		public ApplyAuditStream GetSolution(Guid id)
 			=> context.ApplyAuditStreamsDb.FirstOrDefault(i => i.Id == id);

@@ -144,7 +144,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(UserDiyInfoViewModel), 0)]
 		[Route("[action]")]
-		public IActionResult DiyInfo(string id, [FromBody] UserDiyInfoModefyModel model)
+		public IActionResult DiyInfo(string id, [FromBody] UserDiyInfoModifyModel model)
 		{
 			var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;

@@ -151,7 +151,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamNodeQuery")]
 		public IActionResult StreamNodeQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamNodeActionsDb
+			var result = context.ApplyAuditStreamNodeActionDb
 					.Where(n => companyRegion.Contains(n.RegionOnCompany))
 					.OrderByDescending(a => a.Create)
 					.Skip(pageIndex * pageSize)

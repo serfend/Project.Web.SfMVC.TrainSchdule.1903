@@ -163,7 +163,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			if (result != null && result.Status != 0) return new JsonResult(result);
 
 			var nStr = (node.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : node.Nodes.Split("##");
-			var nList = context.ApplyAuditStreamNodeActionsDb.Where(node => nStr.Contains(node.Name));
+			var nList = context.ApplyAuditStreamNodeActionDb.Where(node => nStr.Contains(node.Name));
 			// 检查包含节点的权限
 			result = CheckPermissionNodes(auditUser, nList);
 			if (result != null && result.Status != 0) return new JsonResult(result);

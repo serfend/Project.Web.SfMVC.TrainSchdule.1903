@@ -171,7 +171,7 @@ namespace BLL.Services.ApplyServices
 			int stepIndex = 0;
 			foreach (var nStr in (rule.Solution?.Nodes?.Length ?? 0) == 0 ? Array.Empty<string>() : rule.Solution?.Nodes?.Split("##"))
 			{
-				var n = _context.ApplyAuditStreamNodeActionsDb.Where(a => a.Name == nStr).FirstOrDefault();
+				var n = _context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == nStr).FirstOrDefault();
 				if (n == null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.Node.NotExist, $"无效的节点：{nStr}", true));
 
 				// 当前单位设定为审批流最新节点的第一个符合条件的人，若此人不存在，则为上一节点的单位。
