@@ -21,6 +21,17 @@ namespace BLL.Services
 			_context = context;
 		}
 
+		private const string pc = "Company.View";
+
+		public List<Company> PermissionViewCompanies(User currentUser)
+		{
+			if (currentUser == null) return new List<Company>();
+			var permit = currentUser.Application.Permission.GetRegionList();
+			if (!permit.ContainsKey(pc)) return new List<Company>();
+			var c = permit[pc];
+			return c.Query.Select(i => GetById(i)).ToList();
+		}
+
 		public Duties GetDuties(int code)
 		{
 			return _context.Duties.Find(code);

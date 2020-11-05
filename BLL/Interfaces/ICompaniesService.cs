@@ -16,6 +16,13 @@ namespace BLL.Interfaces
 	/// </remarks>
 	public interface ICompaniesService
 	{
+		/// <summary>
+		/// 获取授权可访问的单位
+		/// </summary>
+		/// <param name="currentUser"></param>
+		/// <returns></returns>
+		List<Company> PermissionViewCompanies(User currentUser);
+
 		Duties GetDuties(int code);
 
 		/// <summary>

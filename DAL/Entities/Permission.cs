@@ -33,6 +33,11 @@ namespace DAL.Entities
 			public static PermissionDescription SocialInfo = new PermissionDescription("User.SocialInfo", "用户的家庭情况信息");
 		}
 
+		public static class Company
+		{
+			public static PermissionDescription View = new PermissionDescription("Company.View", "单位视图信息");
+		}
+
 		public static class Apply
 		{
 			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的权限");

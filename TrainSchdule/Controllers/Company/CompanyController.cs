@@ -10,6 +10,7 @@ using Castle.Core.Internal;
 using DAL.Data;
 using DAL.DTO.User;
 using DAL.Entities;
+using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,21 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(new EntitiesListViewModel<string>(result.Item1, result.Item2));
 		}
 
+		private int AddCompanyList(Dictionary<string, Company> list, List<Company> raw_list)
+		{
+			int result = 0;
+			foreach (var c in raw_list)
+			{
+				c.Name = $"*{c.Name}";
+				if (!list.TryAdd(c.Code, c))
+				{
+					result--;
+					list[c.Code] = c;
+				}
+			}
+			return result;
+		}
+
 		/// <summary>
 		/// 获取单位的子层级单位
 		/// 默认返回用户自身单位及用户可管辖单位
@@ -91,15 +107,10 @@ namespace TrainSchdule.Controllers
 				manageCount = mymanage_result.Item2;
 				var uc = currentUser.CompanyInfo.Company;
 				list[uc.Code] = uc;
-				foreach (var c in mymanage_result.Item1)
-				{
-					c.Name = $"*{c.Name}";
-					if (!list.TryAdd(c.Code, c))
-					{
-						manageCount--;
-						list[c.Code] = c;
-					}
-				}
+				manageCount -= AddCompanyList(list, mymanage_result.Item1.ToList());
+				var permissionCompanies = _companiesService.PermissionViewCompanies(currentUser);
+				manageCount += permissionCompanies.Count;
+				manageCount -= AddCompanyList(list, permissionCompanies));
 			}
 			return new JsonResult(new AllChildViewModel()
 			{
