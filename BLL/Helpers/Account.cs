@@ -47,6 +47,7 @@
 				public static readonly ApiResult ConfirmPasswordNotSame = new ApiResult(13200, "两次输入的密码不一致");
 				public static readonly ApiResult CidExist = new ApiResult(13300, "身份证已被使用");
 				public static readonly ApiResult RootCompanyRequireAdminRight = new ApiResult(13400, "注册为最高层级单位时需要管理员权限。如需选择子层级单位，请登录您同事的账号后刷新页面选取。");
+				public static readonly ApiResult PasswordTooSimple = new ApiResult(13400, "密码太过简单");
 			}
 		}
 	}

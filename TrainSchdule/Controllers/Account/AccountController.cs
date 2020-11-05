@@ -36,7 +36,7 @@ namespace TrainSchdule.Controllers
 	/// </summary>
 	[Authorize]
 	[Route("[controller]/[action]")]
-	public class AccountController : Controller
+	public partial class AccountController : Controller
 	{
 		#region Fields
 
@@ -284,6 +284,7 @@ namespace TrainSchdule.Controllers
 			model.ConfirmNewPassword = model.ConfirmNewPassword.FromCipperToString(model.Id, cipperServices);
 			model.NewPassword = model.NewPassword.FromCipperToString(model.Id, cipperServices);
 			if (model.NewPassword == null || model.ConfirmNewPassword == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Login.AuthFormat));
+			if (model.NewPassword.Length < 8) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Register.PasswordTooSimple));
 			if (model.NewPassword != model.ConfirmNewPassword) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Register.ConfirmPasswordNotSame));
 			model.OldPassword = model.OldPassword.FromCipperToString(model.Id, cipperServices);
 			// 本人修改密码，则判断旧密码
@@ -548,6 +549,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
+			if (!ModelState.IsValid) return new JsonResult(ModelState.AllModelStateErrors());
 			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
@@ -556,7 +558,6 @@ namespace TrainSchdule.Controllers
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
 			var ua = _userActionServices.Log(UserOperation.Register, model?.Data?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}常规注册", false, ActionRank.Warning);
-
 			try
 			{
 				await RegisterSingle(model.Data, authByUser);
@@ -572,7 +573,6 @@ namespace TrainSchdule.Controllers
 				return new JsonResult(mse.Model);
 			}
 			_userActionServices.Status(ua, true);
-
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -610,12 +610,10 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> RegisterMutil([FromBody] UsersCreateMutilViewModel model)
 		{
 			model.Verify.Verify(_verifyService);
-
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			var exStatus = new Dictionary<string, ApiResult>();
 			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
-
 			foreach (var m in model.Data.List)
 			{
 				var actionRecord = _userActionServices.Log(UserOperation.Register, m?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}批量注册", false, ActionRank.Warning);
@@ -637,7 +635,6 @@ namespace TrainSchdule.Controllers
 				}
 				finally { }
 			}
-
 			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(exMSE.Count > 0 || exStatus.Count > 0 ? ActionStatusMessage.Fail : ActionStatusMessage.Success)
 			{
 				ModelStateException = exMSE,
