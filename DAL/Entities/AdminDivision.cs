@@ -49,9 +49,7 @@ namespace DAL.Entities
 
 		public override bool IsValid(object value)
 		{
-			var vmodel = value as MomentDto;
-			if (vmodel == null) return true;
-
+			if (!(value is MomentDto vmodel)) return true;
 			if (!vmodel.Valid)
 			{
 				NowErrorType = "{0}地址的有效性必须为启用";
@@ -59,8 +57,8 @@ namespace DAL.Entities
 				return true;
 			}
 			var v = vmodel.Address?.Code;
-			NowErrorType = "当{0}地址填写时，需要选中具体地址（不可仅选中中国）";
-			return v / 100 >= 1000;
+			NowErrorType = "当{0}地址填写时，需要选中具体地址（精确到区县级）";
+			return v % 100 != 0; // 精确到区县时必然末尾两数有值
 		}
 	}
 }
