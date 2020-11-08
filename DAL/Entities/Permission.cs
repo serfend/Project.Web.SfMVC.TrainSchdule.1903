@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
@@ -26,6 +27,7 @@ namespace DAL.Entities
 
 	public static class DictionaryAllPermission
 	{
+		[Description("用户")]
 		public static class User
 		{
 			public static PermissionDescription Application = new PermissionDescription("User.Application", "用户的密码、安全码等敏感信息");
@@ -33,29 +35,33 @@ namespace DAL.Entities
 			public static PermissionDescription SocialInfo = new PermissionDescription("User.SocialInfo", "用户的家庭情况信息");
 		}
 
+		[Description("单位")]
 		public static class Company
 		{
 			public static PermissionDescription View = new PermissionDescription("Company.View", "单位视图信息");
 		}
 
+		[Description("休假")]
 		public static class Apply
 		{
-			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请的权限");
-			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请审批流的权限");
-			public static PermissionDescription AttachInfo = new PermissionDescription("Apply.AttachInfo", "申请附加信息的权限");
+			public static PermissionDescription Default = new PermissionDescription("Apply.Default", "休假申请通用");
+			public static PermissionDescription AuditStream = new PermissionDescription("Apply.AuditStream", "申请的审批流");
+			public static PermissionDescription AttachInfo = new PermissionDescription("Apply.AttachInfo", "申请的附加信息");
 		}
 
+		[Description("成绩")]
 		public static class Grade
 		{
-			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "科目标准的权限");
-			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "考核的权限");
-			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩记录的权限");
+			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "成绩-科目标准");
+			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "成绩-考核");
+			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩-记录");
 		}
 
+		[Description("资源")]
 		public static class Resources
 		{
-			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "资源的权限");
-			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址的权限");
+			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "常规资源");
+			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址");
 		}
 	}
 
@@ -225,7 +231,7 @@ namespace DAL.Entities
 				default: return false;
 			}
 			if (targetUserCompanyCode == null) return list.Count() > 0;
-			return list.Any(targetUserCompanyCode.StartsWith);
+			return list?.Any(targetUserCompanyCode.StartsWith) ?? false;
 		}
 	}
 

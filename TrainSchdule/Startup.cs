@@ -93,9 +93,10 @@ namespace TrainSchdule
 
 		private void ConfigureHangfireServices()
 		{
+			// UTC time need +8
 			BackgroundJob.Enqueue<UserActionServices>(ua => ua.Log(UserOperation.FromSystemReport, "#System#", "Start", true, ActionRank.Infomation));
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily(16, 5));
-			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today), Cron.Daily(19, 30));
+			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today.AddDays(1)), Cron.Daily(17, 30));
 			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
 			BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));

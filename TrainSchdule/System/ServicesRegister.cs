@@ -4,6 +4,7 @@ using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
 using BLL.Interfaces.IVacationStatistics;
+using BLL.Interfaces.Permission;
 using BLL.Interfaces.ZX;
 using BLL.Interfaces.ZX.IGrade;
 using BLL.Services;
@@ -12,6 +13,7 @@ using BLL.Services.BBS;
 using BLL.Services.Common;
 using BLL.Services.File;
 using BLL.Services.GameR3;
+using BLL.Services.Permission;
 using BLL.Services.VacationStatistics;
 using BLL.Services.ZX;
 using BLL.Services.ZX.Grade;
@@ -94,6 +96,7 @@ namespace TrainSchdule.System
 			services.AddSingleton<IVerifyService, VerifyService>();
 			services.AddSingleton<ICipperServices, CipperServices>();
 			services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.AddSingleton<IPermissionServices, PermissionServices>();
 		}
 
 		/// <summary>

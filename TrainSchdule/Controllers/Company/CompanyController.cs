@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Permission;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.DTO.User;
@@ -110,7 +111,7 @@ namespace TrainSchdule.Controllers
 				manageCount -= AddCompanyList(list, mymanage_result.Item1.ToList());
 				var permissionCompanies = _companiesService.PermissionViewCompanies(currentUser);
 				manageCount += permissionCompanies.Count;
-				manageCount -= AddCompanyList(list, permissionCompanies));
+				manageCount -= AddCompanyList(list, permissionCompanies);
 			}
 			return new JsonResult(new AllChildViewModel()
 			{
