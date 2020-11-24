@@ -22,7 +22,7 @@ namespace BLL.Extensions
 			if (company == null) return null;
 			var b = new CompanyDto()
 			{
-				Managers = companiesService?.GetCompanyManagers(company.Code).Select(u => u.ToSummaryDto()),
+				Managers = companiesService?.GetCompanyManagers(company.Code, null).Select(u => u.ToSummaryDto()),
 				Code = company.Code,
 				Name = company.Name,
 				Description = company.Description,

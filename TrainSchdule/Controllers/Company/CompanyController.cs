@@ -142,15 +142,16 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 获取单位的主管
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="id">单位代码</param>
+		/// <param name="userid">用户代码</param>
 		/// <returns></returns>
 		[HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(CompanyManagerDataModel), 0)]
-		public IActionResult Managers(string id)
+		public IActionResult Managers(string id, string userid)
 		{
 			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
-			var list = _companiesService.GetCompanyManagers(id);
+			var list = _companiesService.GetCompanyManagers(id, userid);
 			if (list == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			return new JsonResult(new CompanyManagerViewModel()
 			{
@@ -173,12 +174,13 @@ namespace TrainSchdule.Controllers
 		{
 			var companiesCode = ids?.Split("##") ?? Array.Empty<string>();
 			companiesCode.Distinct();
+			if (companiesCode.Length > 20) return new JsonResult(ActionStatusMessage.Success);
 			var cmps = new Dictionary<string, CompanyManagerDataModel>();
 			foreach (var c in companiesCode)
 			{
 				cmps.Add(c, new CompanyManagerDataModel()
 				{
-					List = _companiesService.GetCompanyManagers(c)?.Select(u => u.ToSummaryDto())
+					List = _companiesService.GetCompanyManagers(c, null)?.Select(u => u.ToSummaryDto())
 				});
 			}
 			var result = new CompaniesManagerDataModel() { Companies = cmps };

@@ -36,6 +36,12 @@ namespace BLL.Interfaces
 		Task<int> RemoveAllNoneFromUserApply(TimeSpan interval);
 
 		/// <summary>
+		/// 移除已删除的用户所对应的申请
+		/// </summary>
+		/// <returns></returns>
+		Task<int> RemoveAllRemovedUsersApply();
+
+		/// <summary>
 		/// 删除指定申请
 		/// </summary>
 		/// <param name="Applies"></param>

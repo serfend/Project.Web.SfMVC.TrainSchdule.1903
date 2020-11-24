@@ -51,26 +51,28 @@ namespace BLL.Services.VacationStatistics
 				Days = a.RequestInfo.VacationLength,
 				// 此处未考虑召回导致的假期损失
 				// 后续可以通过将RecallDb加以考虑
-				RecallReduceDay = 0
+				// @serfend 20201111 添加召回数据
+				RecallReduceDay = recallDb.Where(r => r.Id == a.RecallId).Sum(r => r.ReturnStamp.Subtract(a.RequestInfo.StampLeave.Value).Days)
 			}).ToList();
 			var groupRecords = records.GroupBy(a => new { a.Type });
 			var companyLength = companyCode.Length;
 			var companyAllMembers = _context.AppUsersDb
 				.Where(u => u.Application.Create <= target)
-				.Where(u => ((int)u.AccountStatus &(int)AccountStatus.DisableVacation)==0)
+				.Where(u => ((int)u.AccountStatus & (int)AccountStatus.DisableVacation) == 0)
 				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
 				&& EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyCode}%"));
 			var result = groupRecords.ToList().Select(r =>
 			{
 				var users = r.GroupBy(a => a.From.Id);
 				var companyAtTypeMembers = companyAllMembers.Where(u => u.CompanyInfo.Duties.Type == r.Key.Type);
-				var memberCount = companyAtTypeMembers.Count();
+				var companyAtTypeMembersList = companyAtTypeMembers.ToList();
+				var memberCount = companyAtTypeMembersList.Count;
 				// 每个人的 -> 全年假天，已休天，被召回天
 				var userYealyStatisticsDict = new Dictionary<string, YearlyStatistics>();
-				foreach (var u in companyAtTypeMembers.ToList())
+				foreach (var u in companyAtTypeMembersList)
 					userYealyStatisticsDict[u.Id] = new YearlyStatistics()
 					{
-						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d, out var actionOnDate,out var requireUpdate)
+						YearlyLength = u.SocialInfo.Settle.GetYearlyLengthInner(u, out var m, out var d, out var actionOnDate, out var requireUpdate)
 					};
 				foreach (var p in users)
 				{

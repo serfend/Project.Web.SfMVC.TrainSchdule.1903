@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using BLL.Extensions.Common;
 using Microsoft.EntityFrameworkCore;
 using Abp.Linq.Expressions;
+using DAL.Entities.UserInfo;
 
 namespace BLL.Services.ApplyServices
 {
@@ -110,6 +111,19 @@ namespace BLL.Services.ApplyServices
 						 .Where(a => a.Create.HasValue && a.Create.Value < outofDate).ToList();
 			await RemoveApplies(list).ConfigureAwait(true);
 			return list.Count;
+		}
+
+		public async Task<int> RemoveAllRemovedUsersApply()
+		{
+			var applies = _context.Applies;
+			var to_remove = applies.Where(a =>
+				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.Abolish) > 0 ||
+				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.DisableVacation) > 0 ||
+				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.PrivateAccount) > 0 ||
+				 a.BaseInfo.From.CompanyInfo.Title.DisableVacation
+			);
+			await RemoveApplies(to_remove).ConfigureAwait(false);
+			return to_remove.Count();
 		}
 
 		public async Task<int> RemoveAllNoneFromUserApply(TimeSpan interval)

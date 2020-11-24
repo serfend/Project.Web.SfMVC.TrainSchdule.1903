@@ -72,8 +72,9 @@ namespace BLL.Interfaces
 		/// 返回显示指定的管理
 		/// </summary>
 		/// <param name="code"></param>
+		/// <param name="userid"></param>
 		/// <returns></returns>
-		IEnumerable<User> GetCompanyManagers(string code);
+		IEnumerable<User> GetCompanyManagers(string code, string userid);
 
 		bool CheckManagers(string code, string userid);
 	}
