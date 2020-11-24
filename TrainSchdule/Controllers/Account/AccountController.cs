@@ -517,7 +517,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(ModelState.AllModelStateErrors());
+			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
