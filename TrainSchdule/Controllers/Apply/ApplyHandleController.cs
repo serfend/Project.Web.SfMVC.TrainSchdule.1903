@@ -26,6 +26,37 @@ namespace TrainSchdule.Controllers.Apply
 {
 	public partial class ApplyController
 	{
+		private void CheckValidQuery(QueryApplyViewModel model)
+        {
+			var auditUser = _currentUserService.CurrentUser;
+			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			{
+				if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
+					auditUser = _usersService.GetById(model.Auth.AuthByUserID);
+				else throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			}
+			if (auditUser == null) throw new ActionStatusMessageException(auditUser.NotLogin());
+			// 检查查询的单位范围，如果范围是空，则需要root权限
+			var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
+			foreach (var c in permitCompanies)
+			{
+				var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c, "审批列表");
+				var cItem = _companiesService.GetById(c);
+				if (!permit) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
+			}
+		}
+		/// <summary>
+		/// 条件快速查询
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		public IActionResult ListShadow([FromBody] QueryApplyViewModel model) {
+			CheckValidQuery(model);
+			var list = _applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToShadowDto());
+			return new JsonResult(new EntitiesListViewModel<ApplyShadowDto>(list, totalCount));
+		}
 		/// <summary>
 		/// 条件查询申请
 		/// </summary>
@@ -35,41 +66,10 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult List([FromBody] QueryApplyViewModel model)
 		{
-			try
-			{
-				var auditUser = _currentUserService.CurrentUser;
-				if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
-				{
-					if (model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id))
-						auditUser = _usersService.GetById(model.Auth.AuthByUserID);
-					else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-				}
-				if (auditUser == null) return new JsonResult(auditUser.NotLogin());
-				// 检查查询的单位范围，如果范围是空，则需要root权限
-				var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
-				foreach (var c in permitCompanies)
-				{
-					var permit = _userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c, "审批列表");
-					var cItem = _companiesService.GetById(c);
-					if (!permit) return new JsonResult(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
-				}
-
-				var list = _applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto());
-				return new JsonResult(new ApplyListViewModel()
-				{
-					Data = new EntitiesListDataModel<ApplySummaryDto>()
-					{
-						List = list,
-						TotalCount = totalCount
-					}
-				});
-			}
-			catch (ActionStatusMessageException ex)
-			{
-				return new JsonResult(new ApiResult(-1, ex.Message));
-			}
+			CheckValidQuery(model);
+			var list = _applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto());
+            return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(list, totalCount));
 		}
-
 		/// <summary>
 		/// 查询当前用户自己的申请
 		/// </summary>
@@ -95,14 +95,7 @@ namespace TrainSchdule.Controllers.Apply
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
 			_userActionServices.Status(ua, true);
-			return new JsonResult(new ApplyListViewModel()
-			{
-				Data = new EntitiesListDataModel<ApplySummaryDto>()
-				{
-					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
-					TotalCount = result.Item2
-				}
-			});
+			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2));
 		}
 
 		/// <summary>
@@ -165,15 +158,8 @@ namespace TrainSchdule.Controllers.Apply
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
-
-			return new JsonResult(new ApplyListViewModel()
-			{
-				Data = new EntitiesListDataModel<ApplySummaryDto>()
-				{
-					List = result.Item1.ToList()?.Select(a => a.ToSummaryDto()),
-					TotalCount = result.Item2
-				}
-			});
+			var f_result = new EntitiesListDataModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2);
+			return new JsonResult(f_result);
 		}
 
 		/// <summary>
@@ -229,14 +215,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var list = _context.Applies.Where(a => a.IsRemoved).OrderByDescending(a => a.IsRemovedDate);
 			var result = list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
-			return new JsonResult(new ApplyListViewModel()
-			{
-				Data = new EntitiesListDataModel<ApplySummaryDto>()
-				{
-					List = result.Item1.ToList().Select(c => c.ToSummaryDto()),
-					TotalCount = result.Item2
-				}
-			});
+			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList().Select(c => c.ToSummaryDto()),result.Item2));
 		}
 
 		/// <summary>
