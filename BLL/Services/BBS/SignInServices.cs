@@ -17,7 +17,7 @@ namespace BLL.Services.BBS
 			this.context = context;
 		}
 
-		private IQueryable<SignIn> Query(string signId, DateTime startDate, DateTime endDate)
+		private IQueryable<SignIn> Query(string signId, DateTime? startDate, DateTime? endDate)
 		{
 			var list = context.SignIns.AsQueryable();
 			if (signId != null) list = list.Where(s => s.SignId == signId);

@@ -216,7 +216,6 @@ namespace BLL.Services.File
 			catch (Exception ex)
 			{
 				Console.WriteLine($"UplloadInner.Exception:{ex.Message}");
-				throw ex;
 			}
 			finally
 			{
