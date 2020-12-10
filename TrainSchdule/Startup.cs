@@ -14,6 +14,7 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -151,6 +152,10 @@ namespace TrainSchdule
 				{
 					opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
 				});
+			services.Configure<FormOptions>(options =>
+			{
+				options.MultipartBodyLengthLimit = long.MaxValue;
+			});
 			//.AddJsonOptions(opt =>
 			//	{
 			//		opt.JsonSerializerOptions.Converters.Add(new DateTimeConverter());

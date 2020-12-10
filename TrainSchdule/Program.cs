@@ -27,14 +27,16 @@ namespace TrainSchdule
 		   .UseContentRoot(Directory.GetCurrentDirectory())
 		   .ConfigureWebHostDefaults(webBuilder =>
 		   {
-			   webBuilder.UseKestrel((context, serverOptions) =>
-			   {
-				   serverOptions.Configure(context.Configuration.GetSection("Kestrel"))
-					   .Endpoint("HTTPS", listenOptions =>
-					   {
-						   listenOptions.HttpsOptions.SslProtocols = SslProtocols.Tls12;
-					   });
-			   })
+			   //webBuilder.UseKestrel((context, serverOptions) =>
+			   //{
+				  // serverOptions.Configure(context.Configuration.GetSection("Kestrel"))
+					 //  .Endpoint("HTTPS", listenOptions =>
+					 //  {
+						//   listenOptions.HttpsOptions.SslProtocols = SslProtocols.Tls12;
+					 //  });
+				  // serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
+			   //});
+			   webBuilder
 			   .UseIISIntegration()
 			   .UseStartup<Startup>();
 		   })
