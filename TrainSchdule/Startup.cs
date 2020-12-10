@@ -305,7 +305,6 @@ namespace TrainSchdule
 			var wsOptions = new WebSocketOptions()
 			{
 				KeepAliveInterval = TimeSpan.FromSeconds(60),
-				ReceiveBufferSize = 4 * 1024
 			};
 			app.UseWebSockets(wsOptions);
 			// 消息处理中心

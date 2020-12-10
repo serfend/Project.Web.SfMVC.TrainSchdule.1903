@@ -34,7 +34,7 @@ namespace BLL.Services.ZX.Grade
 			if (model.Name.Valid())
 			{
 				var nameLen = model.Name.Value.Length;
-				result = result.Where(r => r.Name.Length >= nameLen).Where(r => EF.Functions.Like(r.Name, $"{ model.Name.Value}%"));
+				result = result.Where(r => r.Name.Length >= nameLen).Where(r => r.Name.StartsWith(model.Name.Value));
 			}
 
 			if (!model.Create.Valid()) model.Create = new QueryByDate() { Start = DateTime.Now.AddYears(-1), End = DateTime.Now };

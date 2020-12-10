@@ -36,8 +36,7 @@ namespace BLL.Services.VacationStatistics
 
 		public void RemoveCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
-			var pattern = $"{companyCode}%";
-			var list = _context.StatisticsAppliesProcesses.Where(s => EF.Functions.Like(s.CompanyCode, pattern)).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
+			var list = _context.StatisticsAppliesProcesses.Where(s => s.CompanyCode.StartsWith(companyCode)).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
 			_context.StatisticsAppliesProcesses.RemoveRange(list);
 		}
 

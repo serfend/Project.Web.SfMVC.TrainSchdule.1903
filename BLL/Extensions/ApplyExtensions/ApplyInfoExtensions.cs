@@ -71,7 +71,20 @@ namespace BLL.Extensions.ApplyExtensions
 				b.Request = null;
 			return b;
 		}
-
+		public static ApplyShadowDto ToShadowDto(this Apply model)
+			=> new()
+			{
+				Id=model.Id,
+				AuditLeader=model.AuditLeader,
+				Create=model.Create,
+				ExecuteStatus=model.ExecuteStatus,
+				ExecuteStatusDetailId=model.ExecuteStatusDetailId,
+				IsRemoved=model.IsRemoved,
+				IsRemovedDate=model.IsRemovedDate,
+				MainStatus=model.MainStatus,
+				RecallId=model.RecallId,
+				Status=model.Status
+			};
 		/// <summary>
 		/// 获取当前统计单位所有已通过的假期
 		/// </summary>
@@ -82,7 +95,7 @@ namespace BLL.Extensions.ApplyExtensions
 			if (companyCode == null) return db.Where(a => false);
 			var codeLen = companyCode.Length;
 			return db.Where(a => a.Status == AuditStatus.Accept)
-				.Where(s => EF.Functions.Like(s.BaseInfo.Company.Code, $"{companyCode}%"));
+				.Where(s => s.BaseInfo.Company.Code.StartsWith(companyCode));
 		}
 
 		/// <summary>

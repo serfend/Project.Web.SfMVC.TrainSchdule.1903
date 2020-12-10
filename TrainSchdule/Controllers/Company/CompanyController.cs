@@ -61,14 +61,13 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult CompanyTag(string tag, int pageIndex = 0, int pageSize = 20)
 		{
-			var pattern = $"%{tag}%";
 			var companyQuery = _context.CompaniesDb.AsQueryable();
-			if (!tag.IsNullOrEmpty()) companyQuery = companyQuery.Where(d => EF.Functions.Like(d.Tag, pattern));
-			var result = companyQuery.AsEnumerable()
-				.SelectMany(d => d.Tag?.Split("##", StringSplitOptions.RemoveEmptyEntries) ?? new List<string>().ToArray())
-				.Where(d => EF.Functions.Like(d, pattern))
+			if (!tag.IsNullOrEmpty()) companyQuery = companyQuery.Where(d => d.Tag.Contains(tag));
+			var result = companyQuery
+				.Where(d=>d.Tag!=null && d.Tag.Contains(tag))
+				.Select(d => d.Tag)
 				.Distinct()
-				.OrderBy(a => a)
+				.OrderBy(d=>d)
 				.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
 			return new JsonResult(new EntitiesListViewModel<string>(result.Item1, result.Item2));
 		}

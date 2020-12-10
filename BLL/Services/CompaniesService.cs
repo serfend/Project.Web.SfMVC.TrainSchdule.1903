@@ -63,7 +63,7 @@ namespace BLL.Services
 			else
 			{
 				var childCodeLength = code.Length + 1;
-				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => EF.Functions.Like(x.Code, $"{code}%"));
+				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => x.Code.StartsWith(code));
 			}
 			return list.OrderByDescending(x => x.Priority).ToList();
 		}

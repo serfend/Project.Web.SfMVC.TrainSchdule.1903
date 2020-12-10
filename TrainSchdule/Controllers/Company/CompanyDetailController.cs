@@ -50,7 +50,7 @@ namespace TrainSchdule.Controllers
 		{
 			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet");
 			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => EF.Functions.Like(d.Tags, $"%{tag}%"));
+			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Tags.Contains(tag));
 			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
 			var data = new EntitiesListDataModel<DutyDataModel>()
 			{
@@ -73,12 +73,12 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult DutiesTag(string tag, int pageIndex = 0, int pageSize = 20)
 		{
-			var pattern = $"%{tag}%";
 			var dutiesQuery = _context.Duties.Where(d => d.Name != "NotSet");
-			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => EF.Functions.Like(d.Tags, pattern));
-			var result = dutiesQuery.AsEnumerable()
-				.SelectMany(d => d.Tags?.Split("##", StringSplitOptions.RemoveEmptyEntries) ?? new List<string>().ToArray())
-				.Where(d => EF.Functions.Like(d, pattern))
+			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Tags.Contains(tag));
+			var result = dutiesQuery
+				.Select(d=>d.Tags)
+				.AsEnumerable()
+				.SelectMany(d=>d.Split("##",StringSplitOptions.RemoveEmptyEntries))
 				.Distinct()
 				.OrderBy(a => a)
 				.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
@@ -95,12 +95,11 @@ namespace TrainSchdule.Controllers
 		[HttpGet]
 		public IActionResult DutiesTtileTag(string tag, int pageIndex = 0, int pageSize = 20)
 		{
-			var pattern = $"%{tag}%";
 			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet");
-			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => EF.Functions.Like(d.TitleType, pattern));
+			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d =>d.TitleType.Contains(tag));
 			var result = dutiesQuery.AsEnumerable()
 				.SelectMany(d => d.TitleType?.Split("##", StringSplitOptions.RemoveEmptyEntries) ?? new List<string>().ToArray())
-				.Where(d => EF.Functions.Like(d, pattern))
+				.Where(d => d.Contains(tag))
 				.Distinct()
 				.OrderBy(a => a)
 				.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
@@ -120,7 +119,7 @@ namespace TrainSchdule.Controllers
 		{
 			var dutiesQuery = _context.UserCompanyTitles.Where(d => d.Name != "NotSet");
 			if (!name.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.Name.Contains(name));
-			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => EF.Functions.Like(d.TitleType, $"%{tag}%"));
+			if (!tag.IsNullOrEmpty()) dutiesQuery = dutiesQuery.Where(d => d.TitleType.Contains(tag));
 			var result = dutiesQuery.SplitPage(new DAL.QueryModel.QueryByPage() { PageIndex = pageIndex, PageSize = pageSize });
 			var data = new EntitiesListDataModel<UserTitleDataModel>()
 			{

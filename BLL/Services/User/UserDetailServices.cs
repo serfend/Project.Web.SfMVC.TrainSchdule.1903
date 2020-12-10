@@ -72,7 +72,8 @@ namespace BLL.Services
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == nowY)
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 			var targetSocial = targetUser.SocialInfo;
-			var targetSettle = targetSocial.Settle;
+			var targetSettle = targetSocial?.Settle;
+			if (targetSettle == null) return null;
 			bool requireUpdate = false;
 			var r = targetSettle.GetYearlyLength(targetUser, out requireUpdate);
 			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;

@@ -29,14 +29,15 @@ namespace TrainSchdule.Controllers.File
 		private readonly ICurrentUserService currentUserService;
 		private readonly IUserActionServices userActionServices;
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="fileServices"></param>
-		/// <param name="googleAuthService"></param>
-		/// <param name="usersService"></param>
-		/// <param name="currentUserService"></param>
-		public FileController(IFileServices fileServices, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="fileServices"></param>
+        /// <param name="googleAuthService"></param>
+        /// <param name="usersService"></param>
+        /// <param name="currentUserService"></param>
+        /// <param name="userActionServices"></param>
+        public FileController(IFileServices fileServices, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices)
 		{
 			this.fileServices = fileServices;
 			this.googleAuthService = googleAuthService;

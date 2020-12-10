@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.DTO.Apply;
 using DAL.QueryModel;
+using System;
 using System.Collections.Generic;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
@@ -17,15 +18,15 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		public GoogleAuthDataModel Auth { get; set; }
 	}
-
 	/// <summary>
-	///
+	/// 
 	/// </summary>
-	public class ApplyListViewModel : ApiResult
+	public class QueryApplyByIdViewModel
 	{
 		/// <summary>
-		///
+		/// 
 		/// </summary>
-		public EntitiesListDataModel<ApplySummaryDto> Data { get; set; }
-	}
+		public IEnumerable<Guid> Id { get; set; }
+    }
+
 }

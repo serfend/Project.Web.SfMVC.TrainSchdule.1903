@@ -144,8 +144,7 @@ namespace BLL.Services.ApplyServices
 			if (filter == null || company == null) return null;
 			if (filter.AuditMembers != null && filter.AuditMembers.Any()) return filter.AuditMembers;
 			// 下级作用域节点应可作用到上级，否则将可能导致无法选中成员
-			var result = context.AppUsersDb;//.Where(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyRegion}%"));
-											// 指定单位
+			var result = context.AppUsersDb;
 			string target = null;
 			if (!filter.CompanyRefer.IsNullOrEmpty())
 			{
@@ -159,7 +158,7 @@ namespace BLL.Services.ApplyServices
 				{
 					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.Companies)
-						expC = expC.Or(u => EF.Functions.Like(u.CompanyInfo.Company.Code, $"{c}%"));
+                        expC = expC.Or(u => u.CompanyInfo.Company.Code.StartsWith(c));
 					result = result.Where(expC);
 				}
 				// CompanyTag
@@ -167,7 +166,7 @@ namespace BLL.Services.ApplyServices
 				{
 					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.CompanyTags)
-						expC = expC.Or(u => EF.Functions.Like(u.CompanyInfo.Company.Tag, $"%{c}%"));
+                        expC = expC.Or(u => u.CompanyInfo.Company.Tag.Contains(c));
 					result = result.Where(expC);
 				}
 
@@ -195,7 +194,7 @@ namespace BLL.Services.ApplyServices
 			{
 				var expD = PredicateBuilder.New<User>(false);
 				foreach (var d in filter.DutyTags)
-					expD = expD.Or(u => EF.Functions.Like(u.CompanyInfo.Duties.Tags, $"%{d}%"));
+					expD = expD.Or(u => u.CompanyInfo.Duties.Tags.Contains(d));
 				result = result.Where(expD);
 			}
 

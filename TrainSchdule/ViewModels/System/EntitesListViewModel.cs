@@ -10,7 +10,7 @@ namespace TrainSchdule.ViewModels.System
 	/// 任意实体列表的一般返回
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class EntitiesListViewModel<T> : ApiResult where T : class
+	public class EntitiesListViewModel<T> : ApiResult
 	{
 		/// <summary>
 		///

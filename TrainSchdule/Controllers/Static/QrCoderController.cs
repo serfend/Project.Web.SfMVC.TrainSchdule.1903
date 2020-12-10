@@ -38,7 +38,7 @@ namespace TrainSchdule.Controllers
 			if (model.Icon?.FileName != null)
 			{
 				Guid.TryParse(model.Icon.FileName, out var fid);
-				if (fid != null)
+				if (fid != Guid.Empty)
 				{
 					iconFileRaw = _fileServices.Download(fid);
 				}

@@ -100,7 +100,7 @@ namespace BLL.Services.Common
 			if (model.CreateBy != null) res = res.Where(s => s.CreateBy.Id == model.CreateBy.Value);
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Key != null) res = res.Where(s => s.Key == model.Key.Value);
-			if (model.Target != null) res = res.Where(s => EF.Functions.Contains(s.Target, model.Target.Value));
+			if (model.Target != null) res = res.Where(s => s.Target.Contains( model.Target.Value));
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
 			res = res.OrderByDescending(s => s.Create);
 			var result = res.SplitPage(model.Pages);

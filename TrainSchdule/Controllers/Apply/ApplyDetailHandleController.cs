@@ -43,7 +43,7 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult Comment([FromBody] ApplyCommentDataModel model)
 		{
 			ApplyComment m = null;
-			if (model.Id != null)
+			if (model?.Id !=Guid.Empty)
 				m = _context.ApplyCommentsDb.FirstOrDefault(i => i.Id == model.Id);
 			var actionUser = _currentUserService.CurrentUser;
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
