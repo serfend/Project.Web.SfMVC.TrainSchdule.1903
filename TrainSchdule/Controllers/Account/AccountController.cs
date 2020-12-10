@@ -634,7 +634,7 @@ namespace TrainSchdule.Controllers
 			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改后权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
 			canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, localUser);
 			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改前权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
-
+			to_modify_NewUser.Application.Create = localUser.Application.Create; // 注册日期不允许修改
 			CheckCurrentUserData(to_modify_NewUser);
 			if (invalidAccount == AccountType.Deny) to_modify_NewUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{to_modify_NewUser.Id}");
