@@ -36,8 +36,7 @@ namespace BLL.Services.VacationStatistics
 
 		public void RemoveCompleteApplies(string companyCode, DateTime vStart, DateTime vEnd)
 		{
-			var pattern = $"{companyCode}%";
-			var list = _context.StatisticsDailyProcessRates.Where(s => EF.Functions.Like(s.CompanyCode, pattern)).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
+			var list = _context.StatisticsDailyProcessRates.Where(s => s.CompanyCode.StartsWith(companyCode)).Where(s => s.Target >= vStart).Where(s => s.Target <= vEnd);
 			_context.StatisticsDailyProcessRates.RemoveRange(list);
 		}
 
@@ -49,18 +48,22 @@ namespace BLL.Services.VacationStatistics
 				Type = a.BaseInfo.Duties.Type,
 				From = a.BaseInfo.From,
 				Days = a.RequestInfo.VacationLength,
-				// 此处未考虑召回导致的假期损失
-				// 后续可以通过将RecallDb加以考虑
-				// @serfend 20201111 添加召回数据
-				RecallReduceDay = recallDb.Where(r => r.Id == a.RecallId).Sum(r => r.ReturnStamp.Subtract(a.RequestInfo.StampLeave.Value).Days)
-			}).ToList();
+                // 此处未考虑召回导致的假期损失
+                // 后续可以通过将RecallDb加以考虑
+                // @serfend 20201111 添加召回数据
+                // @serfend 20201207 bug fix use EF.Functions
+                // @serfend 20201208 TODO 后续应将每个假期信息加以统计以减少动态统计
+                //RecallReduceDay = recallDb
+                //    .Where(r => r.Id == a.RecallId)
+                //    .Sum(r => EF.Functions.DateDiffDay(a.RequestInfo.StampLeave, r.ReturnStamp) ?? 0)
+            }).ToList();
 			var groupRecords = records.GroupBy(a => new { a.Type });
 			var companyLength = companyCode.Length;
 			var companyAllMembers = _context.AppUsersDb
 				.Where(u => u.Application.Create <= target)
 				.Where(u => ((int)u.AccountStatus & (int)AccountStatus.DisableVacation) == 0)
 				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
-				&& EF.Functions.Like(u.CompanyInfo.Company.Code, $"{companyCode}%"));
+				&& u.CompanyInfo.Company.Code.StartsWith(companyCode));
 			var result = groupRecords.ToList().Select(r =>
 			{
 				var users = r.GroupBy(a => a.From.Id);
