@@ -12,12 +12,14 @@ namespace DAL.Entities.BBS
 
 		public string Title { get; set; }
 		public string Contents { get; set; }
-
 		/// <summary>
-		/// 阅读次数
+		/// 点赞次数（冗余存储）
 		/// </summary>
-		public int ViewCount { get; set; }
-
+		public int LikeCount { get; set; }
+		/// <summary>
+		/// 评论次数（冗余存储）
+		/// </summary>
+		public int ReplyCount { get; set; }
 		/// <summary>
 		/// 动态图片文件id，通过FileEngine获取对应文件，以##分割
 		/// </summary>

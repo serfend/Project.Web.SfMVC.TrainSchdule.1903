@@ -2,6 +2,7 @@
 using DAL.Data;
 using DAL.Entities.BBS;
 using DAL.Entities.UserInfo;
+using DAL.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace BLL.Services.BBS
 		{
 			if (content == null) return null;
 			var post = (Post)content;
+			post.Create = DateTime.Now;
 			post.ChildContents = new List<PostContent>();
 			_context.Posts.Add(post);
 			_context.SaveChanges();
@@ -55,23 +57,33 @@ namespace BLL.Services.BBS
 
 		public void LikeContent(PostContent target, User CreateBy, bool LikeAction)
 		{
-			var like = _context.PostLikes.Where(l => l.Content.Id == target.Id).FirstOrDefault();
+			var like = _context.PostInteracts.Where(l => l.Content.Id == target.Id).FirstOrDefault();
 			if (like == null && LikeAction)
 			{
-				like = new Like()
+				like = new PostInteractStatus()
 				{
 					CreateBy = CreateBy,
 					Content = target,
 					Create = DateTime.Now,
 				};
-				_context.PostLikes.Add(like);
+				_context.PostInteracts.Add(like);
 			}
 			else if (like != null && !LikeAction)
 			{
-				_context.PostLikes.Remove(like);
+				_context.PostInteracts.Remove(like);
 			}
 			else return;
 			_context.SaveChanges();
 		}
-	}
+
+        public Post GetPostById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Post> QueryPost(QueryContentViewModel model)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

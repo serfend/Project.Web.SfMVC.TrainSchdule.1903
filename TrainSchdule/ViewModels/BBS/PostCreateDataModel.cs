@@ -20,6 +20,18 @@ namespace TrainSchdule.ViewModels.BBS
 		/// 动态内容
 		/// </summary>
 		public string Content { get; set; }
+		/// <summary>
+		/// FileEngine链接的图片，以##分割
+		/// </summary>
+		public string Images { get; set; }
+		/// <summary>
+		/// 回复何主题
+		/// </summary>
+		public Guid ReplySubject { get; set; }
+		/// <summary>
+		/// 回复何人
+		/// </summary>
+		public string ReplyTo { get; set; }
 	}
 
 	/// <summary>

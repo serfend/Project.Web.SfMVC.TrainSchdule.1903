@@ -63,6 +63,11 @@ namespace DAL.Entities
 			public static PermissionDescription Default = new PermissionDescription("Resources.Default", "常规资源");
 			public static PermissionDescription ShortUrl = new PermissionDescription("Resources.ShortUrl", "短网址");
 		}
+		[Description("动态")]
+		public static class Post
+        {
+			public static PermissionDescription Default = new PermissionDescription("Post.Default","常规动态");
+		}
 	}
 
 	public class PermissionDescription
