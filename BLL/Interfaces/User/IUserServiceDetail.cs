@@ -22,8 +22,9 @@ namespace BLL.Interfaces
 		/// 获取用户的休假概况
 		/// </summary>
 		/// <param name="targetUser"></param>
+		/// <param name="vacationYear">休假年度</param>
 		/// <returns></returns>
-		UserVacationInfoVDto VacationInfo(User targetUser);
+		UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear);
 
 		/// <summary>
 		/// 更新头像

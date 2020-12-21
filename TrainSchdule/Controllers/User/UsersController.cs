@@ -292,20 +292,22 @@ namespace TrainSchdule.Controllers
 			});
 		}
 
-		/// <summary>
-		/// 获取用户休假情况
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[ProducesResponseType(typeof(UserVacationInfoViewModel), 0)]
+        /// <summary>
+        /// 获取用户休假情况
+        /// </summary>
+        /// <param name="id">用户id</param>
+        /// <param name="vacationYear">休假年份</param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(UserVacationInfoViewModel), 0)]
 		[AllowAnonymous]
 		[HttpGet]
 		[Route("[action]")]
-		public IActionResult Vacation(string id)
+		public IActionResult Vacation(string id,int vacationYear)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
+			if (vacationYear == 0) vacationYear = DateTime.Now.XjxtNow().Year;
+			 var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var vacationInfo = _usersService.VacationInfo(targetUser);
+			var vacationInfo = _usersService.VacationInfo(targetUser, vacationYear);
 			return new JsonResult(new UserVacationInfoViewModel()
 			{
 				Data = vacationInfo

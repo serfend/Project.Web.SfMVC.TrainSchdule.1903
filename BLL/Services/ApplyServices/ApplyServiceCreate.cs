@@ -90,7 +90,7 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			var vacationInfo = _usersService.VacationInfo(targetUser);
+			var vacationInfo = _usersService.VacationInfo(targetUser,model?.StampLeave?.Year??DateTime.Now.XjxtNow().Year);
 			if (vacationInfo.Description == null || vacationInfo.Description.Contains("无休假")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description ?? "休假信息生效中", true));
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;

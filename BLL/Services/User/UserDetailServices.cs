@@ -61,22 +61,21 @@ namespace BLL.Services
 		/// 获取全年休假天数同时，更新休假天数
 		/// </summary>
 		/// <param name="targetUser"></param>
+		/// <param name="vacationYear">休假年份</param>
 		/// <returns></returns>
-		public UserVacationInfoVDto VacationInfo(User targetUser)
+		public UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear)
 		{
 			if (targetUser == null) return null;
-			var nowY = DateTime.Now.XjxtNow().Year;
 			var applies = _context.AppliesDb
 				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
-				.Where(a => a.RequestInfo.StampLeave.Value.Year == nowY)
+				.Where(a => a.RequestInfo.StampLeave.Value.Year == vacationYear)
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 			var targetSocial = targetUser.SocialInfo;
 			var targetSettle = targetSocial?.Settle;
 			if (targetSettle == null) return null;
-			bool requireUpdate = false;
-			var r = targetSettle.GetYearlyLength(targetUser, out requireUpdate);
-			var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;
+            var r = targetSettle.GetYearlyLength(targetUser, out bool requireUpdate);
+            var requireAddRecord = r.Item2; var maxOnTripTime = r.Item3; var description = r.Item4;
 			var yearlyLength = r.Item1 < 0 ? 0 : r.Item1;
 			if (targetSettle.Lover?.Valid ?? false)
 			{

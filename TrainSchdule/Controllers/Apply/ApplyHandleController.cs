@@ -177,7 +177,7 @@ namespace TrainSchdule.Controllers.Apply
 			apply.ApplyAllAuditStep = apply.ApplyAllAuditStep.OrderBy(s => s.Index);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(_usersService.VacationInfo(apply.BaseInfo.From), _context)
+				Data = apply.ToDetaiDto(_usersService.VacationInfo(apply.BaseInfo.From, apply.RequestInfo.StampLeave?.Year??DateTime.Now.XjxtNow().Year), _context)
 			});
 		}
 
