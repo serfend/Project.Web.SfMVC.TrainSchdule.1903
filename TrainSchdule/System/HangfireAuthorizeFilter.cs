@@ -16,8 +16,11 @@ namespace TrainSchdule.System
 	public class HangfireAuthorizeFilter : IDashboardAuthorizationFilter
 	{
 		private string AuthCode = "XJXT@1994#00801";
-
-		public HangfireAuthorizeFilter(string authCode)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="authCode"></param>
+        public HangfireAuthorizeFilter(string authCode)
 		{
 			if (authCode != null)
 				AuthCode = authCode;

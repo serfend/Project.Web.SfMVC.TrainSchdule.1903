@@ -11,6 +11,11 @@ namespace TrainSchdule.TsWebSocket.Frame
 	/// </summary>
 	public class WebSocketApiResult : ApiResult
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="content"></param>
 		public WebSocketApiResult(string path, string content)
 		{
 			Path = path;

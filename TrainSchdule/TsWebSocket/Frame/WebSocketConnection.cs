@@ -13,6 +13,11 @@ namespace TrainSchdule.TsWebSocket
 	/// </summary>
 	public class WebSocketConnection
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="webSocket"></param>
 		public WebSocketConnection(User user, WebSocket webSocket)
 		{
 			User = user;
