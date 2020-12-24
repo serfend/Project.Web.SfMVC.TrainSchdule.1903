@@ -85,8 +85,11 @@ namespace BLL.Services.ApplyServices
 				list = list.Where(a => (a.RequestInfo.StampReturn >= model.StampReturn.Start && a.RequestInfo.StampReturn <= model.StampReturn.End));
 				anyDateFilterIsLessThan30Days |= model.StampReturn.End.Subtract(model.StampReturn.Start).Days <= 360;
 			}
-			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days) list = list.Where(a => a.RequestInfo.StampLeave >= new DateTime(DateTime.Now.Year, 1, 1)); //默认返回今年以来所有假期
-
+			if (!getAllAppliesPermission && !anyDateFilterIsLessThan30Days)
+            {
+				var yearFirstDay = new DateTime(DateTime.Now.XjxtNow().Year, 1, 1);
+				list = list.Where(a => a.RequestInfo.StampLeave >= yearFirstDay); //默认返回今年以来所有假期
+			}
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
