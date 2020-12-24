@@ -26,25 +26,32 @@ namespace BLL.Extensions
 			return AccountType.BeenAuth;
 		}
 
-		public static UserSummaryDto ToSummaryDto(this User user) => user == null ? null : new UserSummaryDto()
+		public static UserSummaryDto ToSummaryDto(this User user)
 		{
-			About = user.DiyInfo?.About ?? "无简介",
-			Avatar = user.DiyInfo?.Avatar?.Id.ToString(),
-			CompanyCode = user.CompanyInfo?.Company?.Code,
-			DutiesCode = user.CompanyInfo?.Duties?.Code,
-			CompanyName = user.CompanyInfo?.Company?.Name ?? "无单位",
-			DutiesName = user.CompanyInfo?.Duties?.Name ?? "无职务",
-			UserTitle = user.CompanyInfo?.Title?.Name ?? "无等级",
-			UserTitleDate = user.CompanyInfo?.TitleDate,
-			Gender = user.BaseInfo?.Gender ?? GenderEnum.Unknown,
-			RealName = user.BaseInfo?.RealName ?? "无姓名",
-			TimeBirth = user.BaseInfo?.Time_BirthDay,
-			TimeWork = user.BaseInfo?.Time_Work,
-			Hometown = user.BaseInfo?.Hometown,
-			Id = user.Id,
-			IsInitPassword = user.BaseInfo?.PasswordModify ?? false,
-			InviteBy = user.Application?.InvitedBy
-		};
+			if (user == null) return null;
+			var diyInfo = user.DiyInfo ?? new UserDiyInfo() { Avatar = new Avatar() };
+			var companyInfo = user.CompanyInfo ?? new UserCompanyInfo() { Company = new DAL.Entities.Company(),Duties = new DAL.Entities.Duties(),Title=new UserCompanyTitle()};
+			var baseInfo = user.BaseInfo ?? new UserBaseInfo() { Gender=GenderEnum.Unknown };
+			return new UserSummaryDto()
+			{
+				About = diyInfo.About ?? "无简介",
+				Avatar = diyInfo.Avatar?.Id.ToString(),
+				CompanyCode = companyInfo.Company?.Code,
+				DutiesCode = companyInfo.Duties?.Code,
+				CompanyName = companyInfo.Company?.Name ?? "无单位",
+				DutiesName = companyInfo.Duties?.Name ?? "无职务",
+				UserTitle = companyInfo.Title?.Name ?? "无等级",
+				UserTitleDate = companyInfo.TitleDate,
+				Gender = baseInfo.Gender,
+				RealName = baseInfo.RealName ?? "无姓名",
+				TimeBirth = baseInfo.Time_BirthDay,
+				TimeWork = baseInfo.Time_Work,
+				Hometown = baseInfo.Hometown,
+				Id = user.Id,
+				IsInitPassword = baseInfo.PasswordModify ,
+				InviteBy = user.Application?.InvitedBy
+			};
+		}
 
 		/// <summary>
 		/// 按单位-职务等级-职级等级的顺序依次排序
