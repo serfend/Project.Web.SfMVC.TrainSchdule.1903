@@ -22,9 +22,9 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Comment(Guid id, int pageIndex = 0, int pageSize = 20, string order = null)
+		public IActionResult Comment(string id, int pageIndex = 0, int pageSize = 20, string order = null)
 		{
-			var list_raw = _context.ApplyCommentsDb.Where(a => a.Apply.Id == id);
+			var list_raw = _context.ApplyCommentsDb.Where(a => a.Apply == id);
 			Tuple<IQueryable<ApplyComment>, int> list;
 			if ("as_date" == order) list = list_raw.OrderByDescending(a => a.Create).SplitPage(pageIndex, pageSize);
 			else list = list_raw.OrderByDescending(a => a.Likes).SplitPage(pageIndex, pageSize);
@@ -47,10 +47,10 @@ namespace TrainSchdule.Controllers.Apply
 				m = _context.ApplyCommentsDb.FirstOrDefault(i => i.Id == model.Id);
 			var actionUser = _currentUserService.CurrentUser;
 			if (actionUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-			var apply =model.IsRemove?null:  _applyService.GetById(model.Apply);
-			if (apply == null&&!model.IsRemove) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
+			var apply =model.IsRemove?null:  _applyService.GetById(Guid.Parse(model.Apply));
+			//if (apply == null&&!model.IsRemove) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			var act = model.IsRemove ? "删除" : "添加";
-			var ua = _userActionServices.Log(UserOperation.AttachInfoToApply, actionUser.Id, $"{act}假期{apply?.Id??m?.Apply?.Id}的评论");
+			var ua = _userActionServices.Log(UserOperation.AttachInfoToApply, actionUser.Id, $"{act}假期{apply?.Id.ToString()??m?.Apply}的评论");
 			if (m == null)
 			{
 				if (model.IsRemove) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.StaticMessage.ResourceNotExist));
@@ -60,7 +60,7 @@ namespace TrainSchdule.Controllers.Apply
 					{
 						Content = model.Content,
 						From = actionUser,
-						Apply = apply,
+						Apply = model.Apply,
 						Create = DateTime.Now
 					};
 					_context.ApplyComments.Add(m);

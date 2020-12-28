@@ -28,7 +28,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
 			 new ApplyCommentVDataModel()
 			 {
 				 Id = i.Id,
-				 Apply = i.Apply.Id,
+				 Apply = i.Apply,
 				 Content = i.Content,
 				 Create = i.Create,
 				 From = i.From.ToSummaryDto(),
@@ -75,7 +75,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
 		/// <summary>
 		/// 作用对象
 		/// </summary>
-		public Guid Apply { get; set; }
+		public string Apply { get; set; }
 
 		/// <summary>
 		/// 是否是删除
@@ -126,7 +126,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
 		/// <summary>
 		/// 作用到
 		/// </summary>
-		public Guid Apply { get; set; }
+		public string Apply { get; set; }
 
 		/// <summary>
 		/// 点赞

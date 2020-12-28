@@ -39,7 +39,21 @@ namespace TrainSchdule.Controllers.BBS
             this.currentUserService = currentUserService;
             this.userActionServices = userActionServices;
         }
-
+		/// <summary>
+		/// 点赞
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="like"></param>
+		/// <returns></returns>
+		[Authorize]
+		[HttpPost]
+		public IActionResult Like([FromBody]Guid id,[FromBody]bool like)
+        {
+			var u = currentUserService.CurrentUser;
+			var post = postServices.GetPostById(id);
+			postServices.LikeContent(post,u, like);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
         /// <summary>
         /// 发布动态
         /// </summary>
@@ -72,7 +86,7 @@ namespace TrainSchdule.Controllers.BBS
 		{
 			var list = postServices.QueryPost(model);
 			// TODO 应按人员单位及好友关系划分是否可见
-			return new JsonResult(new EntitiesListViewModel<Post>(list));
+			return new JsonResult(new EntitiesListViewModel<PostContent>(list.Item1,list.Item2));
 		}
 
 		/// <summary>
@@ -89,7 +103,8 @@ namespace TrainSchdule.Controllers.BBS
 			var targetUser = post.CreateBy;
 			var user = currentUserService.CurrentUser;
 			var permit = userActionServices.Permission(targetUser.Application.Permission, DictionaryAllPermission.Post.Default,Operation.Remove,user.Id,targetUser.CompanyInfo.Company.Code);
-			return  new JsonResult(new { });
+			if (permit) postServices.RemoveContent(post);
+			return  new JsonResult(ActionStatusMessage.Success);
 		}
 	}
 }

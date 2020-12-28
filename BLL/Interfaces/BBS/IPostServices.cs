@@ -15,36 +15,25 @@ namespace BLL.Interfaces.BBS
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		Post GetPostById(Guid id);
+		PostContent GetPostById(Guid id);
 		/// <summary>
 		/// 条件查询动态
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		IQueryable<Post> QueryPost(QueryContentViewModel model);
-		/// <summary>
-		/// 创建一个动态
-		/// </summary>
-		/// <param name="content"></param>
-		/// <returns></returns>
-		Post CreatePost(PostContent content);
-
+		Tuple<IQueryable<PostContent>, int> QueryPost(QueryContentViewModel model);
 		/// <summary>
 		/// 创建一个回复
 		/// </summary>
-		/// <param name="createBy"></param>
 		/// <param name="targetPost"></param>
-		/// <param name="ReplyTo"></param>
-		/// <param name="title"></param>
-		/// <param name="content"></param>
 		/// <returns></returns>
-		PostContent CreateReply(User createBy, Post targetPost, User ReplyTo, string title, string content);
+		PostContent CreatePost( PostContent targetPost);
 
 		/// <summary>
 		/// 删除回复/动态
 		/// </summary>
 		/// <param name="target"></param>
-		void RemoveReply(PostContent target);
+		void RemoveContent(PostContent target);
 
 		/// <summary>
 		/// 点/取消 赞     回复/动态

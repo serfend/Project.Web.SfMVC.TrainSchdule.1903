@@ -20,6 +20,6 @@ namespace DAL.Entities.ApplyInfo
 		/// <summary>
 		/// 作用到
 		/// </summary>
-		public virtual Apply Apply { get; set; }
+		public string Apply { get; set; }
 	}
 }

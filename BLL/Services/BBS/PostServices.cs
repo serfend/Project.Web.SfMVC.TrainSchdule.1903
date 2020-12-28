@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces.BBS;
+﻿using BLL.Extensions.Common;
+using BLL.Interfaces.BBS;
 using DAL.Data;
 using DAL.Entities.BBS;
 using DAL.Entities.UserInfo;
@@ -19,38 +20,23 @@ namespace BLL.Services.BBS
 			_context = context;
 		}
 
-		public PostContent CreateReply(User createBy, Post targetPost, User ReplyTo, string title, string content)
+		public PostContent CreatePost(PostContent targetPost)
 		{
-			var model = new PostContent()
-			{
-				ReplySubject = targetPost,
-				Create = DateTime.Now,
-				Contents = content,
-				CreateBy = createBy,
-				ReplyTo = ReplyTo,
-				Title = title
-			};
-			_context.PostContents.Add(model);
+			_context.PostContents.Add(targetPost);
+			targetPost.ReplyCount++;
+			_context.PostContents.Update(targetPost);
 			_context.SaveChanges();
-			return model;
+			return targetPost;
 		}
 
-		public Post CreatePost(PostContent content)
-		{
-			if (content == null) return null;
-			var post = (Post)content;
-			post.Create = DateTime.Now;
-			post.ChildContents = new List<PostContent>();
-			_context.Posts.Add(post);
-			_context.SaveChanges();
-			return post;
-		}
 
-		public void RemoveReply(PostContent target)
+		public void RemoveContent(PostContent target)
 		{
 			var reply = _context.PostContentsDb.Where(p => p.Id == target.Id).FirstOrDefault();
 			if (reply == null) return;
 			reply.Remove();
+			var c = reply.ReplySubject;
+			if (c!=null)c.ReplyCount--;
 			_context.PostContents.Update(reply);
 			_context.SaveChanges();
 		}
@@ -67,23 +53,38 @@ namespace BLL.Services.BBS
 					Create = DateTime.Now,
 				};
 				_context.PostInteracts.Add(like);
+				target.LikeCount++;
 			}
 			else if (like != null && !LikeAction)
 			{
 				_context.PostInteracts.Remove(like);
+				target.LikeCount--;
 			}
 			else return;
 			_context.SaveChanges();
 		}
 
-        public Post GetPostById(Guid id)
+        public PostContent GetPostById(Guid id)
         {
-            throw new NotImplementedException();
+			if (id == Guid.Empty) return null;
+			return _context.PostContentsDb.FirstOrDefault(i => i.Id == id);
         }
 
-        public IQueryable<Post> QueryPost(QueryContentViewModel model)
+        public Tuple<IQueryable<PostContent>,int> QueryPost(QueryContentViewModel model)
         {
-            throw new NotImplementedException();
-        }
-    }
+			var db = _context.PostContentsDb;
+			if (model.Create != null)
+				db = db.Where(i => i.Create >= model.Create.Start).Where(i => i.Create <= model.Create.End);
+			if (model.CreateBy != null)
+				db = db.Where(i => i.CreateBy.BaseInfo.RealName.Contains(model.CreateBy.Value));
+			if(model.ReplyTo!=null)
+				db = db.Where(i=>i.ReplyTo!=null).Where(i => i.ReplyTo.BaseInfo.RealName.Contains(model.ReplyTo.Value));
+			if (model.ReplySubject != null)
+				db = db.Where(i => i.ReplySubject.Id == Guid.Parse(model.ReplySubject.Value));
+            if (model.Page?.PageSize <= 0) {
+				model.Page = new QueryByPage();
+			}
+			return db.SplitPage(model.Page);
+		}
+	}
 }

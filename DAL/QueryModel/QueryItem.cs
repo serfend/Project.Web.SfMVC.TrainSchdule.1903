@@ -30,6 +30,11 @@ namespace DAL.QueryModel
 	/// </summary>
 	public class QueryByPage
 	{
+		public QueryByPage()
+        {
+			PageIndex = 0;
+			PageSize = 20;
+        }
 		/// <summary>
 		/// 页面号，从0开始
 		/// </summary>

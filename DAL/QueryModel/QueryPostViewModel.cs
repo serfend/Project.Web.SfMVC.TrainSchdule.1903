@@ -13,5 +13,6 @@
 		public QueryByDate Create { get; set; }
 		public QueryByString CreateBy { get; set; }
 		public QueryByString ReplyTo { get; set; }
+		public QueryByString ReplySubject { get; set; }
 	}
 }

@@ -10,7 +10,6 @@ namespace DAL.Data
 {
    public partial class ApplicationDbContext
     {
-		public DbSet<Post> Posts { get; set; }
 		public DbSet<DAL.Entities.BBS.PostContent> PostContents { get; set; }
 		public IQueryable<DAL.Entities.BBS.PostContent> PostContentsDb => PostContents.ToExistDbSet();
 		public DbSet<DAL.Entities.BBS.PostInteractStatus> PostInteracts { get; set; }
