@@ -91,8 +91,11 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				if (!_userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			var list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == c.Id).Where(a => a.Create >= start).Where(a => a.Create <= end);
-			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
+			var list = _context.AppliesDb
+				.Where(a => a.BaseInfo.From.Id == c.Id)
+				.Where(a => a.RequestInfo.StampLeave >= start)
+				.Where(a => a.RequestInfo.StampLeave <= end);
+			list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2));

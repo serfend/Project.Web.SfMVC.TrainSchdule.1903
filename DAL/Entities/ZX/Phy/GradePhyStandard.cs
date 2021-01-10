@@ -113,9 +113,9 @@ namespace DAL.Entities.ZX.Phy
 			return "未设计分法";
 		}
 
-		public static int Age(this DateTime birthDay)
+		public static int Age(this DateTime birthDay,DateTime? till=null)
 		{
-			DateTime now = DateTime.Now;
+			DateTime now = till??DateTime.Now;
 			int age = now.Year - birthDay.Year;
 			if (birthDay > now.AddYears(-age)) age--;
 			return age;
