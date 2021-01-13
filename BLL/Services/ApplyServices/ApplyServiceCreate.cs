@@ -90,7 +90,7 @@ namespace BLL.Services.ApplyServices
 		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
 		{
 			if (model == null) return null;
-			var vacationInfo = _usersService.VacationInfo(targetUser,model?.StampLeave?.Year??DateTime.Now.XjxtNow().Year);
+			var vacationInfo = _usersService.VacationInfo(targetUser,model?.StampLeave?.Year??DateTime.Now.XjxtNow().Year,model.IsPlan?MainStatus.IsPlan:MainStatus.Normal);
 			if (vacationInfo.Description == null || vacationInfo.Description.Contains("无休假")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description ?? "休假信息生效中", true));
 			model = await CaculateVacation(model).ConfigureAwait(true);
 			var type = model.VacationType;
@@ -150,7 +150,8 @@ namespace BLL.Services.ApplyServices
 				BaseInfo = _context.ApplyBaseInfos.Find(model.BaseInfoId),
 				Create = DateTime.Now,
 				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
-				Status = AuditStatus.NotSave
+				Status = AuditStatus.NotSave,
+				MainStatus = model.IsPlan?MainStatus.IsPlan:MainStatus.Normal
 			};
 			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
 			var company = apply.BaseInfo?.Company;

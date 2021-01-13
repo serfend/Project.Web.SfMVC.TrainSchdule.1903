@@ -62,7 +62,11 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 休假原因
 		/// </summary>
 		public string Reason { get; set; }
-
+		/// <summary>
+		/// 是否是休假计划
+		/// </summary>
+		[Required(ErrorMessage = "未选择填报类型")]
+		public bool? IsPlan { get; set; }
 		/// <summary>
 		/// 用户需要休的福利假列表
 		/// </summary>

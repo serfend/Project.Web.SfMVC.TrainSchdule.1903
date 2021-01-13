@@ -24,5 +24,9 @@ namespace DAL.DTO.Apply
 		public string Reason { get; set; }
 		public Transportation ByTransportation { get; set; }
 		public IEnumerable<VacationAdditional> VacationAdditionals { get; set; }
+		/// <summary>
+		/// 是否是计划休假
+		/// </summary>
+		public bool IsPlan { get; set; }
 	}
 }

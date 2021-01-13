@@ -33,6 +33,10 @@ namespace DAL.DTO.Apply
 		public AuditStatus Status { get; set; }
 
 		/// <summary>
+		/// 假期主状态，根据人员情况联动
+		/// </summary>
+		public MainStatus MainStatus { get; set; }
+		/// <summary>
 		/// 休假落实情况
 		/// </summary>
 		public ExecuteStatus ExecuteStatus { get; set; }

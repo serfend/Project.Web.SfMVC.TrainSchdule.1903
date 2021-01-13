@@ -58,7 +58,7 @@ namespace TrainSchdule.Controllers
 			{
 				var uid = a.BaseInfo.From.Id;
 				if (user_infos.ContainsKey(uid)) continue;
-				var info = _usersService.VacationInfo(a.BaseInfo.From, a.RequestInfo.StampLeave?.Year ?? nowY);
+				var info = _usersService.VacationInfo(a.BaseInfo.From, a.RequestInfo.StampLeave?.Year ?? nowY,a.MainStatus);
 				user_infos[uid] = info;
 			}
 			return user_infos;

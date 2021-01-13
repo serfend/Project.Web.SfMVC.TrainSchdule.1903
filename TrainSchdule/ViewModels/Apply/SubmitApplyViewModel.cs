@@ -24,6 +24,10 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		[Required]
 		public Guid? RequestId { get; set; }
+		/// <summary>
+		/// 是否是休假计划
+		/// </summary>
+		public bool IsPlan { get; set; }
 	}
 
 }

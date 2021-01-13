@@ -58,7 +58,8 @@ namespace TrainSchdule.Extensions
 				VacationPlaceName = model.VacationPlaceName,
 				VacationType = context.VacationTypes.Where(t => t.Name == model.VacationType).FirstOrDefault(),
 				ByTransportation = model.ByTransportation,
-				VacationAdditionals = model.VacationAdditionals
+				VacationAdditionals = model.VacationAdditionals,
+				IsPlan=model.IsPlan??false
 			};
 			return b;
 		}
@@ -73,7 +74,8 @@ namespace TrainSchdule.Extensions
 			var b = new ApplyVdto()
 			{
 				BaseInfoId = model.BaseId ?? Guid.Empty,
-				RequestInfoId = model.RequestId ?? Guid.Empty
+				RequestInfoId = model.RequestId ?? Guid.Empty,
+				IsPlan = model.IsPlan
 			};
 			return b;
 		}

@@ -66,7 +66,14 @@ namespace DAL.Entities.ApplyInfo
 	public enum MainStatus
 	{
 		Normal = 0,
-		Invalid = 1
+		/// <summary>
+		/// 无效
+		/// </summary>
+		Invalid = 1,
+		/// <summary>
+		/// 休假计划
+		/// </summary>
+		IsPlan=2
 	}
 
 	public enum AuditStatus

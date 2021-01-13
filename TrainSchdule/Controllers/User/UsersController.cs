@@ -9,6 +9,7 @@ using BLL.Interfaces;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -297,17 +298,18 @@ namespace TrainSchdule.Controllers
         /// </summary>
         /// <param name="id">用户id</param>
         /// <param name="vacationYear">休假年份</param>
+        /// <param name="isPlan">是否查看计划休假的</param>
         /// <returns></returns>
         [ProducesResponseType(typeof(UserVacationInfoViewModel), 0)]
 		[AllowAnonymous]
 		[HttpGet]
 		[Route("[action]")]
-		public IActionResult Vacation(string id,int vacationYear)
+		public IActionResult Vacation(string id,int vacationYear,bool isPlan)
 		{
 			if (vacationYear == 0) vacationYear = DateTime.Now.XjxtNow().Year;
 			 var targetUser = GetCurrentQueryUser(id, out var result);
 			if (targetUser == null) return result;
-			var vacationInfo = _usersService.VacationInfo(targetUser, vacationYear);
+			var vacationInfo = _usersService.VacationInfo(targetUser, vacationYear,isPlan?MainStatus.IsPlan:MainStatus.Normal);
 			return new JsonResult(new UserVacationInfoViewModel()
 			{
 				Data = vacationInfo

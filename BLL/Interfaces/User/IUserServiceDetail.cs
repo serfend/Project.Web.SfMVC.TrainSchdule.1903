@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DAL.DTO.User;
 using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.UserInfo.Settle;
 using Microsoft.AspNetCore.Http;
@@ -23,8 +24,9 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <param name="vacationYear">休假年度</param>
+		/// <param name="vacationStatus">统计何种类型</param>
 		/// <returns></returns>
-		UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear);
+		UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear,MainStatus vacationStatus);
 
 		/// <summary>
 		/// 更新头像

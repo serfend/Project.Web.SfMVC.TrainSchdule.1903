@@ -75,7 +75,7 @@ namespace TrainSchdule.Controllers.Apply
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20, DateTime? start = null, DateTime? end = null)
+		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20,int? MainStatus=null, DateTime? start = null, DateTime? end = null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			if (start == null) start = new DateTime(DateTime.Today.XjxtNow().Year, 1, 1);
@@ -95,23 +95,25 @@ namespace TrainSchdule.Controllers.Apply
 				.Where(a => a.BaseInfo.From.Id == c.Id)
 				.Where(a => a.RequestInfo.StampLeave >= start)
 				.Where(a => a.RequestInfo.StampLeave <= end);
+			if (MainStatus != null) list = list.Where(a => (int)a.MainStatus == MainStatus);
 			list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2));
 		}
 
-		/// <summary>
-		/// 查询当前用户可审批的申请
-		/// </summary>
-		/// <param name="pageIndex"></param>
-		/// <param name="pageSize"></param>
-		/// <param name="status">审批的状态，以##分割</param>
-		/// <param name="actionStatus">我对此审批的状态</param>
-		/// <param name="executeStatus"></param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, string actionStatus = null, string executeStatus = null)
+        /// <summary>
+        /// 查询当前用户可审批的申请
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="status">审批的状态，以##分割</param>
+        /// <param name="MainStatus">申请的主要状态，可选项</param>
+        /// <param name="actionStatus">我对此审批的状态</param>
+        /// <param name="executeStatus"></param>
+        /// <returns></returns>
+        [HttpGet]
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null,int? MainStatus=null, string actionStatus = null, string executeStatus = null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var c = _currentUserService.CurrentUser;
@@ -121,10 +123,11 @@ namespace TrainSchdule.Controllers.Apply
 			var statusArr = status?.Split("##")?.Select(i => Convert.ToInt32(i));
 			var r = _context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
 			if (statusArr != null && statusArr.Any()) r = r.Where(a => statusArr.Contains((int)a.Status)); // 查出所有状态符合的
-			r = r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
+			if (MainStatus != null)r = r.Where(a => (int)a.MainStatus == MainStatus);
+				r=r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
 			if (executeStatus != null)
 			{
-				int.TryParse(executeStatus, out var executeStatusInt);
+                _ = int.TryParse(executeStatus, out var executeStatusInt);
 				r = r.Where(a => (int)a.ExecuteStatus == executeStatusInt);
 			}
 			if (actionStatus != null)
@@ -158,6 +161,7 @@ namespace TrainSchdule.Controllers.Apply
 					default: return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Default);
 				}
 			}
+
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
@@ -178,9 +182,10 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = _applyService.GetById(aId);
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			apply.ApplyAllAuditStep = apply.ApplyAllAuditStep.OrderBy(s => s.Index);
+			var vacationInfoDto = _usersService.VacationInfo(apply.BaseInfo.From, apply.RequestInfo.StampLeave?.Year ?? DateTime.Now.XjxtNow().Year,apply.MainStatus);
 			return new JsonResult(new InfoApplyDetailViewModel()
 			{
-				Data = apply.ToDetaiDto(_usersService.VacationInfo(apply.BaseInfo.From, apply.RequestInfo.StampLeave?.Year??DateTime.Now.XjxtNow().Year), _context)
+				Data = apply.ToDetaiDto(vacationInfoDto, _context)
 			});
 		}
 
@@ -279,7 +284,6 @@ namespace TrainSchdule.Controllers.Apply
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var authUser = model.Auth.AuthUser(_authService, _usersService, _currentUserService.CurrentUser?.Id);
 			if (authUser.Id != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
-
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();
 			var apply = _applyService.GetById(m.Apply);
 			var targetUser = apply.BaseInfo.From;

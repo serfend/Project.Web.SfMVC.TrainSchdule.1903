@@ -62,13 +62,15 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="targetUser"></param>
 		/// <param name="vacationYear">休假年份</param>
+		/// <param name="vacationStatus">统计何种类型</param>
 		/// <returns></returns>
-		public UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear)
+		public UserVacationInfoVDto VacationInfo(User targetUser,int vacationYear, MainStatus vacationStatus)
 		{
 			if (targetUser == null) return null;
 			var applies = _context.AppliesDb
 				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
+				.Where(a => a.MainStatus == vacationStatus)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == vacationYear)
 				.Where(a => _context.VacationTypes.Any(t => t.Primary && t.Name == a.RequestInfo.VacationType)).ToList(); // 仅主要假期计算天数
 			var targetSocial = targetUser.SocialInfo;

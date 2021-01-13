@@ -21,7 +21,10 @@ namespace DAL.QueryModel
 		/// 申请的状态
 		/// </summary>
 		public QueryByIntOrEnum Status { get; set; }
-
+		/// <summary>
+		/// 申请的主状态
+		/// </summary>
+		public QueryByIntOrEnum MainStatus { get; set; }
 		/// <summary>
 		/// 落实状态，单选
 		/// </summary>

@@ -37,6 +37,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Status = model.Status,
 				AuditLeader = model.AuditLeader,
 				ExecuteStatus = model.ExecuteStatus,
+				MainStatus=model.MainStatus,
 				RecallId = model.RecallId,
 				ExecuteStatusId = model.ExecuteStatusDetailId,
 				UserVacationDescription = info
@@ -55,6 +56,7 @@ namespace BLL.Extensions.ApplyExtensions
 			{
 				Create = model?.Create,
 				Status = model.Status,
+				MainStatus=model.MainStatus,
 				Base = model.BaseInfo.ToDto(),
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
@@ -94,7 +96,9 @@ namespace BLL.Extensions.ApplyExtensions
 		{
 			if (companyCode == null) return db.Where(a => false);
 			var codeLen = companyCode.Length;
-			return db.Where(a => a.Status == AuditStatus.Accept)
+			return db
+				.Where(a => a.Status == AuditStatus.Accept)
+				.Where(a=>a.MainStatus==MainStatus.Normal) // 仅统计状态为Normal的休假
 				.Where(s => s.BaseInfo.Company.Code.StartsWith(companyCode));
 		}
 

@@ -6,5 +6,6 @@ namespace DAL.DTO.Apply
 	{
 		public Guid BaseInfoId { get; set; }
 		public Guid RequestInfoId { get; set; }
+		public bool IsPlan { get; set; }
 	}
 }

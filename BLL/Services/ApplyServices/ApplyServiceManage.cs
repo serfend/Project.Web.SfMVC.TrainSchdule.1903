@@ -25,6 +25,7 @@ namespace BLL.Services.ApplyServices
 			var list = _context.AppliesDb;
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
+			if (model.MainStatus != null) list = list.Where(a => (int)a.MainStatus == model.MainStatus.Start);
 			if (model.ExecuteStatus?.Value != null)
 			{
 				var success = int.TryParse(model.ExecuteStatus.Value, out var executeStatusInt);
