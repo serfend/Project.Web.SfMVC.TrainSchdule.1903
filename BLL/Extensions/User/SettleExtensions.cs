@@ -212,8 +212,8 @@ namespace BLL.Extensions
 				description = "已婚两方异地，探父母假、探配偶假共计40天。"; return 40;
 			}
 
-			var workYears = SystemNowDate().Age(targetUser?.BaseInfo.Time_Work);
-			if (workYears > 20)
+			var workYears = SystemNowDate().Year - targetUser?.BaseInfo.Time_Work.Year;
+			if (workYears >= 20)
 			{
 				maxOnTripTime = 0;
 				actionOnDate = SystemNowDate();
