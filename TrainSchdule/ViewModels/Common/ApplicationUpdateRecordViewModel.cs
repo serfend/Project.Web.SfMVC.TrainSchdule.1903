@@ -84,6 +84,10 @@ namespace TrainSchdule.ViewModels.Common
 		/// 是否删除
 		/// </summary>
 		public bool IsRemoved { get; set; }
+		/// <summary>
+		/// 应用名称
+		/// </summary>
+		public string AppName { get; set; }
 	}
 
 	/// <summary>
@@ -106,6 +110,7 @@ namespace TrainSchdule.ViewModels.Common
 			raw.Description = model.Description;
 			raw.IsRemoved = model.IsRemoved;
 			raw.Version = model.Version;
+			raw.AppName = model.AppName;
 			return raw;
 		}
 	}

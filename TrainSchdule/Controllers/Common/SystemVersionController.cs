@@ -46,12 +46,13 @@ namespace TrainSchdule.Controllers.Static
 		/// </summary>
 		/// <param name="pageIndex"></param>
 		/// <param name="pageSize"></param>
+		/// <param name="appName"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[Route("UpdateVersion")]
-		public IActionResult GetUpdateVersion(int pageIndex = 0, int pageSize = 20)
+		public IActionResult GetUpdateVersion(int pageIndex = 0, int pageSize = 20,string appName)
 		{
-			var list = context.ApplicationUpdateRecordsDb.OrderByDescending(r => r.Create).SplitPage(pageIndex, pageSize);
+			var list = context.ApplicationUpdateRecordsDb.Where(r=>r.AppName== appName).OrderByDescending(r => r.Create).SplitPage(pageIndex, pageSize);
 			return new JsonResult(new ApplicationUpdateRecordViewModel()
 			{
 				Data = new ApplicationUpdateRecordDataModel()
