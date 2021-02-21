@@ -54,9 +54,10 @@ namespace BLL.Interfaces
 		/// 删除用户
 		/// </summary>
 		/// <param name="id"></param>
+		/// <param name="reason"></param>
 		/// <param name="RemoveEneity">是否完全删除</param>
 		/// <returns></returns>
-		bool Remove(string id, bool RemoveEneity = false);
+		bool Remove(string id,string reason, bool RemoveEneity = false);
 
 		/// <summary>
 		/// 恢复已删除的用户
@@ -69,9 +70,10 @@ namespace BLL.Interfaces
 		/// 删除用户
 		/// </summary>
 		/// <param name="id"></param>
+		/// <param name="reason"></param>
 		/// <param name="RemoveEneity">是否完全删除</param>
 		/// <returns></returns>
-		Task<bool> RemoveAsync(string id, bool RemoveEneity = false);
+		Task<bool> RemoveAsync(string id,string reason, bool RemoveEneity = false);
 
 		/// <summary>
 		/// 删除已经没有任何引用了的子表项

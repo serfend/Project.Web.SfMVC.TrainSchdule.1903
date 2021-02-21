@@ -304,7 +304,7 @@ namespace BLL.Services
 			return true;
 		}
 
-		public bool Remove(string id, bool RemoveEntity = false) => RemoveAsync(id, RemoveEntity).Result;
+		public bool Remove(string id,string reason, bool RemoveEntity = false) => RemoveAsync(id, reason, RemoveEntity).Result;
 
 		public bool RestoreUser(string id)
 		{
@@ -330,11 +330,11 @@ namespace BLL.Services
 			_context.Applies.UpdateRange(user_applies);
 		}
 
-		public async Task<bool> RemoveAsync(string id, bool RemoveEntity = false)
+		public async Task<bool> RemoveAsync(string id,string reason, bool RemoveEntity = false)
 		{
 			var user = await _context.AppUsersDb.FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(true);
 			if (user == null) return false;
-			RemoveUser(user, RemoveEntity);
+			RemoveUser(user, reason, RemoveEntity);
 			await _context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
@@ -345,13 +345,16 @@ namespace BLL.Services
 		/// 20201021@serfend:保留两种删除方式
 		/// </summary>
 		/// <param name="user"></param>
+		/// <param name="reason"></param>
 		/// <param name="RemoveEntity">是否完全删除</param>
 		/// <returns></returns>
-		private void RemoveUser(User user, bool RemoveEntity = false)
+		private void RemoveUser(User user,string reason, bool RemoveEntity = false)
 		{
 			if (!RemoveEntity)
 			{
 				user.AccountStatus += (int)AccountStatus.Abolish;
+				user.Application.UserRemoveReason = reason;
+				_context.AppUsers.Update(user);
 				SetUserAppliesStatus(user.Id, true);
 			}
 			else

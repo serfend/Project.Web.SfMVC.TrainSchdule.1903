@@ -13,6 +13,10 @@ namespace DAL.Entities.UserInfo
 		public DateTime? Create { get; set; }
 		public string Email { get; set; }
 		public string AuthKey { get; set; }
+		/// <summary>
+		/// 用户被移除的原因
+		/// </summary>
+		public string UserRemoveReason { get; set; }
 
 		public virtual UserApplicationSetting ApplicationSetting { get; set; }
 	}
