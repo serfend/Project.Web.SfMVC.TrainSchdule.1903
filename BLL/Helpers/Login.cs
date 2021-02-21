@@ -14,6 +14,7 @@
 				public static readonly ApiResult AuthAccountOrPsw = new ApiResult(11500, "账号或密码错误");
 				public static readonly ApiResult PasswordIsSame = new ApiResult(11600, "新的密码与旧密码相同");
 				public static readonly ApiResult BeenBanned = new ApiResult(11700, "账号已被封禁");
+				public static readonly ApiResult AccountRemoved = new ApiResult(11700, "账号已被移除，请联系管理员");
 			}
 		}
 	}

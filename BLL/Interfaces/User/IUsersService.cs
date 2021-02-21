@@ -23,7 +23,6 @@ namespace BLL.Interfaces
 		IEnumerable<User> GetAll(int page, int pageSize);
 
 		User GetById(string Id);
-
 		IQueryable<User> Find(Expression<Func<User, bool>> predict);
 
 		ApplicationUser ApplicaitonUser(string id);

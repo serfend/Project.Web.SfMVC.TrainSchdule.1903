@@ -44,10 +44,14 @@
 			{
 				public static readonly ApiResult Default = new ApiResult(13000, "未知的注册错误");
 				public static readonly ApiResult UserExist = new ApiResult(13100, "用户已存在");
+				public static readonly ApiResult AccountExist = new ApiResult(13110, "此账号已存在");
 				public static readonly ApiResult ConfirmPasswordNotSame = new ApiResult(13200, "两次输入的密码不一致");
 				public static readonly ApiResult CidExist = new ApiResult(13300, "身份证已被使用");
 				public static readonly ApiResult RootCompanyRequireAdminRight = new ApiResult(13400, "注册为最高层级单位时需要管理员权限。如需选择子层级单位，请登录您同事的账号后刷新页面选取。");
 				public static readonly ApiResult PasswordTooSimple = new ApiResult(13400, "密码太过简单");
+				public static readonly ApiResult IdentityFail = new ApiResult(13500, "添加用户被系统驳回");
+				public static readonly ApiResult UserInvalid = new ApiResult(13600, "用户信息被识别为无效");
+				
 			}
 		}
 	}

@@ -63,7 +63,6 @@ namespace BLL.Services
 			var users = _context.AppUsersDb.Skip(page * pageSize).Take(pageSize);
 			return users.ToList();
 		}
-
 		/// <summary>
 		/// Loads user by username, returns user DTO.
 		/// </summary>
@@ -182,9 +181,9 @@ namespace BLL.Services
 		/// </summary>
 		public async Task<ApplicationUser> CreateAsync(User user, string password, Func<User, bool> checkUserValid)
 		{
-			if (user == null) return null;
+			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserInvalid);
 			var identity = CreateUser(user, password);
-			if (identity == null) return null;
+			if (identity == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.IdentityFail);
 			var appUser = CreateAppUser(user);
 			if (!checkUserValid?.Invoke(appUser) ?? true) return null;
 			await _context.Users.AddAsync(identity).ConfigureAwait(true);
@@ -260,7 +259,11 @@ namespace BLL.Services
 
 		private ApplicationUser CreateUser(User user, string password)
 		{
-			if (_context.Users.Where(u => u.UserName == user.Id).FirstOrDefault() != null) return null;
+			if (_context.Users.Where(u => u.UserName == user.Id).FirstOrDefault() != null)
+            {
+				var check_removed_user = _context.AppUsersDb.Where(u => u.Id == user.Id) == null?"原用户已被移除，如需继续使用，请联系管理员恢复。":null;
+				throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.AccountExist, check_removed_user);
+			}
 
 			var identity = new ApplicationUser
 			{
