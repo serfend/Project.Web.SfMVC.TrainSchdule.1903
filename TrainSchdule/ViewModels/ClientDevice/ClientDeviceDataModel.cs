@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions.Common;
+using BLL.Interfaces;
 using DAL.Entities.ClientDevice;
 using DAL.QueryModel;
 using System;
@@ -49,7 +50,7 @@ namespace TrainSchdule.ViewModels.BBS
 		/// 所属单位
 		/// </summary>
 		public  string Company { get; set; }
-		/// <summary>----------
+		/// <summary>
 		/// 是否删除
 		/// </summary>
 		public bool IsRemoved { get; set; }
@@ -120,15 +121,18 @@ namespace TrainSchdule.ViewModels.BBS
         /// 
         /// </summary>
         /// <param name="client"></param>
+        /// <param name="usersService"></param>
         /// <param name="companies"></param>
-        /// <param name="users"></param>
         /// <param name="raw"></param>
         /// <returns></returns>
-        public static Client ToModel(this ClientDeviceDataModel client, IQueryable<DAL.Entities.Company> companies, IQueryable<DAL.Entities.UserInfo.User> users, Client raw = null)
+        public static Client ToModel(this ClientDeviceDataModel client,IUsersService usersService, IQueryable<DAL.Entities.Company> companies,  Client raw = null)
 		{
 			if (raw == null) raw = new Client();
 			raw.Company = companies.FirstOrDefault(i => i.Code == client.Company);
-			raw.Owner = users.FirstOrDefault(i => i.Id == client.Owner);
+			if (client.Owner == null)
+				raw.Owner = usersService.GetUserByRealname(client.OwnerRealName).FirstOrDefault();
+			else
+				raw.Owner = usersService.GetById(client.Owner);
 			raw.OwnerId = raw.Owner?.Id ;
 			raw.DeviceType = client.DeviceType ?? raw.DeviceType;
 			raw.Ip = client.Ip ?? raw.Ip;
