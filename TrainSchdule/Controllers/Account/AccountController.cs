@@ -356,7 +356,13 @@ namespace TrainSchdule.Controllers
 			var actionRecord = _userActionServices.Log(UserOperation.Login, userid, $"{loginType}", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
 			var targetUser = _usersService.GetById(userid);
-			if (targetUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
+			if (targetUser == null) {
+				var check_user_exist = _context.AppUsers.FirstOrDefault(u=>u.Id==userid);
+				if(check_user_exist==null)
+					return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.Account.Login.AccountRemoved)));
+				else
+					return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
+			}
 			var accountType = targetUser.Application.InvalidAccount();
 			if (accountType == AccountType.NotBeenAuth)
 				return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Permission.SystemInvalid));
@@ -389,22 +395,22 @@ namespace TrainSchdule.Controllers
 		[HttpDelete]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public async Task<IActionResult> RemoveMutil([FromBody] UserRemoveMutiViewMode model)
+		public async Task<IActionResult> RemoveMutil([FromBody] UsersRemoveViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var statusME = new Dictionary<string, ApiResult>();
-			var id_str = string.Join("##", model.Data?.Id);
+			var id_str = string.Join("##", model.Data?.Select(i=>i.Id));
 			var ua = _userActionServices.Log(UserOperation.Remove, authByUser?.Id, $"批量移除账号 {id_str}");
-			foreach (var u in model.Data?.Id)
+			foreach (var u in model.Data)
 				try
 				{
 					await RemoveSingle(u, authByUser);
 				}
 				catch (ActionStatusMessageException ex)
 				{
-					statusME.Add(u, ex.Status);
+					statusME.Add(u?.Id, ex.Status);
 				}
 				finally { }
 			if (statusME.Count == 0)
@@ -426,12 +432,37 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Remove([FromBody] UserRemoveViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			var ua = _userActionServices.Log(UserOperation.Remove, currentUserService.CurrentUser?.Id, $"常规移除账号 {model?.Id}");
+			var ua = _userActionServices.Log(UserOperation.Remove, currentUserService.CurrentUser?.Id, $"常规移除账号 {model?.Data?.Id}");
 			try
 			{
 				var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 				if (authByUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
-				await RemoveSingle(model.Id, authByUser);
+				await RemoveSingle(model.Data, authByUser);
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(_userActionServices.LogNewActionInfo(ua, ex.Status));
+			}
+			_userActionServices.Status(ua, true);
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		/// <summary>
+		/// 恢复账号
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPut]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), 0)]
+		public async Task<IActionResult> Restore([FromBody] UserRemoveViewModel model)
+		{
+			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
+			var ua = _userActionServices.Log(UserOperation.Restore, currentUserService.CurrentUser?.Id, $"恢复账号 {model?.Data?.Id}");
+			try
+			{
+				var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
+				if (authByUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
+				await RemoveSingle(model.Data, authByUser,false);
 			}
 			catch (ActionStatusMessageException ex)
 			{
@@ -441,13 +472,14 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		private async Task RemoveSingle(string id, User authByUser)
+		private async Task RemoveSingle(UserRemoveDataModel u, User authByUser,bool isRemove = true)
 		{
-			var actionRecord = _userActionServices.Log(UserOperation.Remove, id, "", false, ActionRank.Danger);
-			var targetUser = _usersService.GetById(id);
+			var actionRecord = _userActionServices.Log(isRemove?UserOperation.Remove:UserOperation.Restore, u.Id, $"因：${u.Reason}", false, ActionRank.Danger);
+			var targetUser = _usersService.GetById(u.Id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
-			if (!await _usersService.RemoveAsync(id)) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
+			var result = isRemove ? await _usersService.RemoveAsync(u.Id, u.Reason) :  _usersService.RestoreUser(u.Id);
+			if (result) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
 			_userActionServices.Status(actionRecord, true);
 		}
 
