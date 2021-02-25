@@ -37,16 +37,18 @@ namespace ExcelReport.Renderers
 
             if (!DataSource.IsNull())
             {
-                foreach (var item in DataSource)
+                DataSource.All(item =>
                 {
                     sheetContext.CopyRepeaterTemplate(repeater, () =>
                     {
-                        foreach (var renderer in RendererList.OrderBy(renderer => renderer.SortNum(sheetContext)))
+                        RendererList.OrderBy(renderer => renderer.SortNum(sheetContext)).All(renderer =>
                         {
                             renderer.Render(sheetContext, item);
-                        }
+                            return true;
+                        });
                     });
-                }
+                    return true;
+                });
             }
 
             sheetContext.RemoveRepeaterTemplate(repeater);
@@ -88,18 +90,19 @@ namespace ExcelReport.Renderers
             var items = DgSetDataSource(dataSource);
             if (!items.IsNull())
             {
-                foreach (var item in items)
+                items.All(i =>
                 {
                     sheetContext.CopyRepeaterTemplate(repeater, () =>
                     {
-                        foreach (var renderer in RendererList.OrderBy(renderer => renderer.SortNum(sheetContext)))
+                        RendererList.OrderBy(renderer => renderer.SortNum(sheetContext)).All(renderer =>
                         {
-                            renderer.Render(sheetContext, item);
-                        }
+                            renderer.Render(sheetContext, i);
+                            return true;
+                        });
                     });
-                }
+                    return true;
+                });
             }
-
             sheetContext.RemoveRepeaterTemplate(repeater);
         }
 
