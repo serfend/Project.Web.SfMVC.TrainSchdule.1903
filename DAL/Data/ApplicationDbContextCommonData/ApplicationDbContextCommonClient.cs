@@ -120,7 +120,7 @@ namespace DAL.Data
 				{
 					Alias="新增已处置",
 					Key = VirusHandleStatus.ClientDeviceVirusHandle.ToString(),
-					Color=ToHtml(Color.AliceBlue),
+					Color=ToHtml(Color.LightSeaGreen),
 					Description="终端设备新增已处置",
 					Value=(int)VirusHandleStatus.ClientDeviceVirusHandle
 				},
@@ -128,7 +128,7 @@ namespace DAL.Data
 				{
 					Alias="自主处置",
 					Key = VirusHandleStatus.ClientDeviceVirusHandleByUser.ToString(),
-					Color=ToHtml(Color.AliceBlue),
+					Color=ToHtml(Color.LightGreen),
 					Description="自主处置",
 					Value=(int)VirusHandleStatus.ClientDeviceVirusHandleByUser
 				},
