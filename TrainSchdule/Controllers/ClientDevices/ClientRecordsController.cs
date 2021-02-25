@@ -49,31 +49,50 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             var is_edit = model.Id != Guid.Empty;
             var client = is_edit?(context.VirusHandleRecords.FirstOrDefault(i => i.Id == model.Id)) : new VirusHandleRecord();
+            var prev_status = client.HandleStatus;
             model.ToModel(context.Viruses, client);
+            if (client.Virus == null) return new JsonResult(client.Virus.NotExist());
             if (client.IsRemoved && is_edit)
                 client.Remove();
             else
             {
-                if (client.HandleStatus.IsSuccess())
-                    client.Virus.Status &= VirusStatus.Success;
-                else
+                if(prev_status==client.HandleStatus) return new JsonResult(ActionStatusMessage.Success);
+                var lastest = context.VirusHandleRecordsDb.Where(i => i.VirusKey == client.VirusKey).OrderByDescending(i => i.Create).FirstOrDefault();
+                if (lastest.Create <= client.Create)
                 {
-                    switch (client.HandleStatus)
+                    if (client.HandleStatus.IsSuccess())
                     {
-                        case VirusHandleStatus.ClientDeviceVirusMessage:
-                            {
-                                client.Virus.Status &= VirusStatus.MessageSend;
-                                break;
-                            }
-                        case VirusHandleStatus.ClientDeviceVirusNotify:
-                            {
-                                client.Virus.Status &= VirusStatus.ClientNotify;
-                                break;
-                            }
+                        client.Virus.HandleDate = DateTime.Now;
+                        if (((int)client.Virus.Status & (int)VirusStatus.Unhandle) > 0) client.Virus.Status -= VirusStatus.Unhandle;
+                        client.Virus.Status |= VirusStatus.Success;
+                    }
+                    else
+                    {
+                        switch (client.HandleStatus)
+                        {
+                            case VirusHandleStatus.ClientDeviceVirusMessage:
+                                {
+                                    client.Virus.Status |= VirusStatus.MessageSend;
+                                    break;
+                                }
+                            case VirusHandleStatus.ClientDeviceVirusNotify:
+                                {
+                                    client.Virus.Status |= VirusStatus.ClientNotify;
+                                    break;
+                                }
+                            case VirusHandleStatus.ClientDeviceVirusNewUnhandle:
+                                {
+                                    if (((int)client.Virus.Status & (int)VirusStatus.Success) > 0) client.Virus.Status -= VirusStatus.Success;
+                                    client.Virus.Status |= VirusStatus.Unhandle;
+                                    break;
+                                }
+                        }
                     }
                 }
+               
                 if (!is_edit) context.VirusHandleRecords.Add(client);
                 else context.VirusHandleRecords.Update(client);
+                context.Viruses.Update(client.Virus);
             }
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
