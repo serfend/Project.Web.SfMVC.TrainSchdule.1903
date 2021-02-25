@@ -12,7 +12,7 @@ using TrainSchdule.ViewModels.Game;
 namespace TrainSchdule.Controllers.Game_r3
 {
 	/// <summary>
-	/// 忍者必须死3的自动领礼包，需要前端配合
+	/// R3礼包
 	/// </summary>
 	[Route("[controller]/[action]")]
 	public class R3Controller : Controller
