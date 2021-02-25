@@ -47,7 +47,7 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             if (model.Key.IsNullOrEmpty()) return new JsonResult(ActionStatusMessage.StaticMessage.IdIsNull);
             var r = context.VirusesDb.FirstOrDefault(i => i.Key == model.Key);
-            var client = r ?? new Virus();
+            var client = r ?? new Virus() {Status=VirusStatus.Unhandle };
             model.ToModel(context.Clients, client);
             if (client.IsRemoved && r != null) client.Remove();
             else if (r == null) context.Viruses.Add(client);
@@ -83,7 +83,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                 list = list.Where(i => ((int)i.Status & status_int) > 0);
             }
                 
-            var result = list.OrderByDescending(i=> i.Status).ThenByDescending(i => i.Create).SplitPage(model.Pages);
+            var result = list.OrderBy(i=> i.Status).ThenByDescending(i => i.Create).SplitPage(model.Pages);
             return new JsonResult(new EntitiesListViewModel<VirusDataModel>(result.Item1.Select(i => i.ToModel()), result.Item2));
         }
     }
