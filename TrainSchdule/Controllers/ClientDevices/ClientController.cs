@@ -1,5 +1,6 @@
 ﻿using BLL.Extensions.Common;
 using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities.ClientDevice;
 using Microsoft.AspNetCore.Http;
@@ -16,13 +17,15 @@ namespace TrainSchdule.Controllers.ClientDevices
     public partial class ClientController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly IUsersService usersService;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientController(ApplicationDbContext context)
+        public ClientController(ApplicationDbContext context,IUsersService usersService)
         {
             this.context = context;
+            this.usersService = usersService;
         }
     }
     /// <summary>
@@ -42,7 +45,7 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             var r = context.ClientsDb.FirstOrDefault(i => i.MachineId == model.MachineId);
             var client =r ??new Client();
-            model.ToModel(context.CompaniesDb,context.AppUsersDb,client);
+            model.ToModel(usersService, context.CompaniesDb,client);
             if (client.IsRemoved && r != null) client.Remove();
             else if (r == null) context.Clients.Add(client);
             else context.Clients.Update(client);
