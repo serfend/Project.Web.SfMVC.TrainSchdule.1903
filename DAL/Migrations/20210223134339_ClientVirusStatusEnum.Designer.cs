@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210223134339_ClientVirusStatusEnum")]
+    partial class ClientVirusStatusEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -776,9 +778,6 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("VirusId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1164,30 +1163,6 @@ namespace DAL.Migrations
                         new
                         {
                             Id = 26,
-                            Alias = "染毒通告",
-                            Color = "#ffdab9ff",
-                            Description = "通过公告系统发出染毒通告",
-                            GroupName = "clientVirusHandleStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ClientDeviceVirusNotify",
-                            Value = 388
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Alias = "染毒即时消息",
-                            Color = "#9370dbff",
-                            Description = "通过第三方发出染毒即时消息",
-                            GroupName = "clientVirusHandleStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ClientDeviceVirusMessage",
-                            Value = 389
-                        },
-                        new
-                        {
-                            Id = 28,
                             Alias = "新增待处置",
                             Color = "#ff0000ff",
                             Description = "终端设备新增待处置",
@@ -1199,7 +1174,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 29,
+                            Id = 27,
                             Alias = "处置成功",
                             Color = "#228b22ff",
                             Description = "终端设备新增处置成功",
@@ -1211,7 +1186,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 30,
+                            Id = 28,
                             Alias = "新增未处置",
                             Color = "#8b0000ff",
                             Description = "终端设备新增未处置",
@@ -1223,7 +1198,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 31,
+                            Id = 29,
                             Alias = "新增处置失败",
                             Color = "#cd5c5cff",
                             Description = "终端设备新增处置失败",
@@ -1235,7 +1210,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 32,
+                            Id = 30,
                             Alias = "新增已处置",
                             Color = "#f0f8ffff",
                             Description = "终端设备新增已处置",
@@ -1247,7 +1222,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 33,
+                            Id = 31,
                             Alias = "自主处置",
                             Color = "#f0f8ffff",
                             Description = "自主处置",
@@ -1259,7 +1234,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 34,
+                            Id = 32,
                             Alias = "第三方处置",
                             Color = "#1e90ffff",
                             Description = "通过第三方处置",
@@ -1271,7 +1246,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 35,
+                            Id = 33,
                             Alias = "提交处置",
                             Color = "#0000cdff",
                             Description = "通过提交方式处置",

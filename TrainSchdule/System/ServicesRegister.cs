@@ -41,6 +41,7 @@ namespace TrainSchdule.System
 		{
 			services.RegisterServices_Common();
 			services.RegisterServices_User();
+			services.RegisterServices_Client();
 			services.RegisterServices_Company();
 			services.RegisterServices_Apply();
 			services.RegisterServices_Grade();
@@ -124,5 +125,13 @@ namespace TrainSchdule.System
 			services.AddScoped<IPhyGradeServices, PhyGradeServices>();
 			services.AddScoped<IGradeServices, GradeServices>();
 		}
+		/// <summary>
+		/// 终端管控
+		/// </summary>
+		/// <param name="services"></param>
+		private static void RegisterServices_Client(this IServiceCollection services)
+        {
+			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
+        }
 	}
 }

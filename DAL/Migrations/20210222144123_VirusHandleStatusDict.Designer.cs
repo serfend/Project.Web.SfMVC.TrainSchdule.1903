@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210222144123_VirusHandleStatusDict")]
+    partial class VirusHandleStatusDict
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -776,9 +778,6 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("VirusId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1068,66 +1067,6 @@ namespace DAL.Migrations
                         new
                         {
                             Id = 18,
-                            Alias = "无状态",
-                            Color = "#ff0000ff",
-                            Description = "无状态可用",
-                            GroupName = "clientVirusStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "None",
-                            Value = 0
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Alias = "待处理",
-                            Color = "#ff0000ff",
-                            Description = "处于待处理状态",
-                            GroupName = "clientVirusStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "Unhandle",
-                            Value = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Alias = "处置成功",
-                            Color = "#228b22ff",
-                            Description = "此项已处置成功",
-                            GroupName = "clientVirusStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "Success",
-                            Value = 2
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Alias = "终端推送已发出",
-                            Color = "#d3d3d3ff",
-                            Description = "已通过推送系统向终端发送染毒通告待处理中",
-                            GroupName = "clientVirusStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ClientNotify",
-                            Value = 4
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Alias = "第三方消息已发出",
-                            Color = "#d3d3d3ff",
-                            Description = "已通过第三方系统发布消息",
-                            GroupName = "clientVirusStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "MessageSend",
-                            Value = 8
-                        },
-                        new
-                        {
-                            Id = 23,
                             Alias = "无",
                             Color = "#d3d3d3ff",
                             Description = "暂无状态",
@@ -1139,7 +1078,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 19,
                             Alias = "终端设备",
                             Color = "#d3d3d3ff",
                             Description = "终端设备",
@@ -1151,7 +1090,7 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 20,
                             Alias = "终端病毒",
                             Color = "#d3d3d3ff",
                             Description = "终端设备病毒",
@@ -1163,33 +1102,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 26,
-                            Alias = "染毒通告",
-                            Color = "#ffdab9ff",
-                            Description = "通过公告系统发出染毒通告",
-                            GroupName = "clientVirusHandleStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ClientDeviceVirusNotify",
-                            Value = 388
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Alias = "染毒即时消息",
-                            Color = "#9370dbff",
-                            Description = "通过第三方发出染毒即时消息",
-                            GroupName = "clientVirusHandleStatus",
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ClientDeviceVirusMessage",
-                            Value = 389
-                        },
-                        new
-                        {
-                            Id = 28,
+                            Id = 21,
                             Alias = "新增待处置",
-                            Color = "#ff0000ff",
+                            Color = "#d3d3d3ff",
                             Description = "终端设备新增待处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1199,9 +1114,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 29,
+                            Id = 22,
                             Alias = "处置成功",
-                            Color = "#228b22ff",
+                            Color = "#d3d3d3ff",
                             Description = "终端设备新增处置成功",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1211,9 +1126,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 30,
+                            Id = 23,
                             Alias = "新增未处置",
-                            Color = "#8b0000ff",
+                            Color = "#d3d3d3ff",
                             Description = "终端设备新增未处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1223,9 +1138,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 31,
+                            Id = 24,
                             Alias = "新增处置失败",
-                            Color = "#cd5c5cff",
+                            Color = "#d3d3d3ff",
                             Description = "终端设备新增处置失败",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1235,9 +1150,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 32,
+                            Id = 25,
                             Alias = "新增已处置",
-                            Color = "#f0f8ffff",
+                            Color = "#d3d3d3ff",
                             Description = "终端设备新增已处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1247,9 +1162,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 33,
+                            Id = 26,
                             Alias = "自主处置",
-                            Color = "#f0f8ffff",
+                            Color = "#d3d3d3ff",
                             Description = "自主处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1259,9 +1174,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 34,
+                            Id = 27,
                             Alias = "第三方处置",
-                            Color = "#1e90ffff",
+                            Color = "#d3d3d3ff",
                             Description = "通过第三方处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1271,9 +1186,9 @@ namespace DAL.Migrations
                         },
                         new
                         {
-                            Id = 35,
+                            Id = 28,
                             Alias = "提交处置",
-                            Color = "#0000cdff",
+                            Color = "#d3d3d3ff",
                             Description = "通过提交方式处置",
                             GroupName = "clientVirusHandleStatus",
                             IsRemoved = false,
@@ -1313,15 +1228,6 @@ namespace DAL.Migrations
                             Name = "clientVirusHandleStatus",
                             Create = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "病毒处置状态，不应修改",
-                            Id = 0,
-                            IsRemoved = false,
-                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Name = "clientVirusStatus",
-                            Create = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "病毒状态，不应修改",
                             Id = 0,
                             IsRemoved = false,
                             IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
