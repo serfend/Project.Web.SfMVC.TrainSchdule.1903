@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.Common.DataDictionary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -118,26 +119,10 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public string Description { get; set; }
 	}
-
-	public class AuditStatusMessage
+	public class AuditStatusMessage: EnmuDescriptionItem
 	{
-		public AuditStatusMessage()
-		{
-		}
-
-		public AuditStatusMessage(int code, string message, string desc, string color)
-		{
-			Code = code;
-			Message = message;
-			Desc = desc;
-			Color = color;
-		}
-
-		public int Code { get; set; }
-		public string Message { get; set; }
-		public string Desc { get; set; }
-		public string Color { get; set; }
-
+		public AuditStatusMessage() : base() { }
+		public AuditStatusMessage(int code, string message, string desc, string color) : base(code, message, desc, color) { }
 		/// <summary>
 		/// 可进行的操作
 		/// </summary>

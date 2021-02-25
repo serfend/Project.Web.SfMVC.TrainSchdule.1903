@@ -54,6 +54,7 @@ namespace DAL.Entities.UserInfo
 		Default = 0,
 		Register = 1,
 		Remove = 2,
+		Restore = 10,
 		ModifyUser = 3,
 		Login = 4,
 		Logout = 5,
@@ -66,6 +67,6 @@ namespace DAL.Entities.UserInfo
 		Permission = 32,
 		FromUserReport = 64,
 		FromSystemReport = 65,
-		FileInspect = 128
+		FileInspect = 128,
 	}
 }

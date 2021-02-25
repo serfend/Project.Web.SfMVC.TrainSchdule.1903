@@ -13,7 +13,8 @@
 			public static readonly ApiResult ResourceNotExist = new ApiResult(51005, "资源不存在");
 			public static readonly ApiResult FileAllReadyExist = new ApiResult(51006, "文件已存在");
 			public static readonly ApiResult ResourceOutofSize = new ApiResult(51007, "资源尺寸不符");
-
+			public static readonly ApiResult IdIsNull = new ApiResult(51008, "目标id不合法");
+			
 			public static class AdminDivision
 			{
 				public static readonly ApiResult NoSuchArea = new ApiResult(52100, "无此地址");
