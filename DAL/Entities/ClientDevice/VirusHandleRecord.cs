@@ -70,6 +70,6 @@ namespace DAL.Entities.ClientDevice
     }
     public static class VirusHandleStatusExtension
     {
-        public static bool IsSuccess(this VirusHandleStatus model) => model>=VirusHandleStatus.ClientDeviceVirusHandle && model < VirusHandleStatus.Other;
+        public static bool IsSuccess(this VirusHandleStatus model) => (int)model >= ((int)VirusHandleStatus.ClientDeviceVirusHandle) && (int)model < (int)VirusHandleStatus.Other;
     }
 }
