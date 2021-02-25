@@ -18,6 +18,12 @@ namespace BLL.Interfaces
 	public interface IUsersService : IUserServiceDetail
 	{
 		/// <summary>
+		/// 通过姓名获取账号（排除空格）
+		/// </summary>
+		/// <param name="realName"></param>
+		/// <returns></returns>
+		IQueryable<User> GetUserByRealname(string realName);
+		/// <summary>
 		/// 加载所有用户的信息
 		/// </summary>
 		IEnumerable<User> GetAll(int page, int pageSize);

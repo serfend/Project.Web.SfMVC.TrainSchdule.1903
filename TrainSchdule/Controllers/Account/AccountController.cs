@@ -135,11 +135,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
 		public IActionResult GetUserIdByRealName(string realName, int pageIndex = 0, int pageSize = 20)
 		{
-			if (realName == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
-			var isAdmin = realName.ToLower() == "admin";
-			var users = isAdmin ? new List<User>() { _usersService.GetById("root") }.AsQueryable() : _context.AppUsersDb.Where(u => u.BaseInfo.RealName == realName);
-			if (!users.Any()) users = _context.AppUsersDb.Where(u => u.BaseInfo.RealName.Contains(realName));
-			if (!isAdmin) users = users.OrderByCompanyAndTitle();
+			var users = _usersService.GetUserByRealname(realName);
 			var result = users.SplitPage(pageIndex, pageSize);
 			var r = result.Item1.ToList();
 			var list = r.Select(u => u.ToSummaryDto());
@@ -475,11 +471,11 @@ namespace TrainSchdule.Controllers
 		private async Task RemoveSingle(UserRemoveDataModel u, User authByUser,bool isRemove = true)
 		{
 			var actionRecord = _userActionServices.Log(isRemove?UserOperation.Remove:UserOperation.Restore, u.Id, $"因：${u.Reason}", false, ActionRank.Danger);
-			var targetUser = _usersService.GetById(u.Id);
+			var targetUser = isRemove? _usersService.GetById(u.Id):_context.AppUsers.FirstOrDefault(i=>i.Id==u.Id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.Company?.Code, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
 			var result = isRemove ? await _usersService.RemoveAsync(u.Id, u.Reason) :  _usersService.RestoreUser(u.Id);
-			if (result) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
+			if (!result) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
 			_userActionServices.Status(actionRecord, true);
 		}
 

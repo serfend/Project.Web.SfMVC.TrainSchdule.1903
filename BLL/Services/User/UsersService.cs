@@ -63,6 +63,17 @@ namespace BLL.Services
 			var users = _context.AppUsersDb.Skip(page * pageSize).Take(pageSize);
 			return users.ToList();
 		}
+		public IQueryable<User> GetUserByRealname(string realName)
+        {
+			if (realName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
+			realName = realName.Replace(" ", "");
+			var realNameWithSpace = realName.Length==2? $"{realName[0]}  {realName[1]}":null;
+			var isAdmin = realName.ToLower() == "admin";
+			var users = isAdmin ? new List<User>() { GetById("root") }.AsQueryable() : (realName.Length==2? _context.AppUsers.Where(u => u.BaseInfo.RealName == realName || u.BaseInfo.RealName == realNameWithSpace) : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName));
+			if (!users.Any()) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName));
+			if (!isAdmin) users = users.OrderByCompanyAndTitle();
+			return users;
+		}
 		/// <summary>
 		/// Loads user by username, returns user DTO.
 		/// </summary>
