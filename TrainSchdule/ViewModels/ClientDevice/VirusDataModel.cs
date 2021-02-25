@@ -105,18 +105,18 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// <param name="raw"></param>
         /// <returns></returns>
         public static Virus ToModel(this VirusDataModel model,IQueryable<Client>clients,Virus raw=null) {
-            if (raw == null) raw = new Virus() { Create=DateTime.Now};
+            if (raw == null) raw = new Virus();
             raw.Client = clients.FirstOrDefault(i=>i.MachineId==model.Client);
-            raw.ClientIp = raw.Client.Ip;
+            raw.ClientIp = raw.Client?.Ip;
             raw.ClientMachineId = raw.Client.MachineId; // cache client info
             raw.Create = model.Create;
             raw.FileName = model.FileName;
             raw.HandleDate = model.HandleDate;
             raw.Sha1 = model.Sha1;
             raw.Key = model.Key;
-            if (raw.Status != model.Status) raw.HandleDate = DateTime.Now;
-            raw.Status = model.Status;
             raw.Type = model.Type;
+            // if (raw.Status != model.Status) raw.HandleDate = DateTime.Now;
+            // raw.Status = model.Status; // 不应由用户编辑
             return raw;
         }
         /// <summary>
