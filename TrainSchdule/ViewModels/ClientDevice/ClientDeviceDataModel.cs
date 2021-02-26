@@ -91,6 +91,10 @@ namespace TrainSchdule.ViewModels.BBS
 		/// 使用人
 		/// </summary>
 		public QueryByString Owner { get; set; }
+		/// <summary>
+		/// 责任单位
+		/// </summary>
+		public QueryByString Company { get; set; }
 	}
 	/// <summary>
 	/// 

@@ -63,6 +63,8 @@ namespace TrainSchdule.Controllers.ClientDevices
             var list = context.ClientsDb;
             var ip = model.Ip?.Value;
             if (ip != null) list = list.Where(i=>i.Ip.Contains(ip));
+            var company = model.Company?.Value;
+            if (company != null) list = list.Where(i=>i.Company!=null).Where(i => i.Company.Code.StartsWith(company));
             var MachineId = model.MachineId?.Value;
             if (MachineId != null) list = list.Where(i => i.MachineId == MachineId);
             var deviceType = model.DeviceType?.Value;
