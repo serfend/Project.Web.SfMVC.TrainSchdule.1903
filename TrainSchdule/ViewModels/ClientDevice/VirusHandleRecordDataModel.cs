@@ -93,6 +93,7 @@ namespace TrainSchdule.ViewModels.ClientDevice
             raw.Virus = viruses.FirstOrDefault(i => i.Key == model.Virus) ?? raw.Virus;
             raw.VirusKey = raw.Virus?.Key;// cache client info
             raw.ClientMachineId = raw.Virus.ClientMachineId ?? raw.ClientMachineId;
+            raw.IsRemoved = model.IsRemoved;
             return raw;
         }
         /// <summary>

@@ -58,7 +58,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             {
                 if(prev_status==client.HandleStatus) return new JsonResult(ActionStatusMessage.Success);
                 var lastest = context.VirusHandleRecordsDb.Where(i => i.VirusKey == client.VirusKey).OrderByDescending(i => i.Create).FirstOrDefault();
-                if (lastest.Create <= client.Create)
+                if (lastest==null||lastest.Create <= client.Create)
                 {
                     if (client.HandleStatus.IsSuccess())
                     {
