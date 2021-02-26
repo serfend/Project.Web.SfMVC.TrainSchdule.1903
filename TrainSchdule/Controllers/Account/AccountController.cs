@@ -346,15 +346,20 @@ namespace TrainSchdule.Controllers
 		{
 			string userid = null;
 			bool isCid = model.UserName.Length == 18;
-			string loginType = isCid ? "身份证登录" : "用户登录";
 			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 			else userid = model.UserName;
+			if (userid == null)
+            {
+				isCid = false;
+				userid = model.UserName;
+			}
+			string loginType = isCid ? "身份证登录" : "用户登录";
 			var actionRecord = _userActionServices.Log(UserOperation.Login, userid, $"{loginType}", false, ActionRank.Infomation);
 			model.Verify.Verify(_verifyService);
 			var targetUser = _usersService.GetById(userid);
 			if (targetUser == null) {
 				var check_user_exist = _context.AppUsers.FirstOrDefault(u=>u.Id==userid);
-				if(check_user_exist==null)
+				if(check_user_exist!=null)
 					return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.Account.Login.AccountRemoved)));
 				else
 					return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.UserMessage.NotExist)));
