@@ -25,10 +25,6 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// </summary>
         public string Virus { get; set; }
         /// <summary>
-        /// 所属终端mid
-        /// </summary>
-        public string Client { get; set; }
-        /// <summary>
         /// 操作状态
         /// </summary>
         public VirusHandleStatus HandleStatus { get; set; }
@@ -50,10 +46,6 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// 处置状态 array
         /// </summary>
         public QueryByIntOrEnum HandleStatus { get; set; }
-        /// <summary>
-        /// 所属终端mid
-        /// </summary>
-        public QueryByString Client { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>
@@ -92,7 +84,6 @@ namespace TrainSchdule.ViewModels.ClientDevice
             raw.Remark = model.Remark ?? raw.Remark;
             raw.Virus = viruses.FirstOrDefault(i => i.Key == model.Virus) ?? raw.Virus;
             raw.VirusKey = raw.Virus?.Key;// cache client info
-            raw.ClientMachineId = raw.Virus.ClientMachineId ?? raw.ClientMachineId;
             raw.IsRemoved = model.IsRemoved;
             return raw;
         }
@@ -106,7 +97,6 @@ namespace TrainSchdule.ViewModels.ClientDevice
             return new VirusHandleRecordDataModel()
             {
                 Id=model.Id,
-                Client=model.ClientMachineId,
                 Virus=model.VirusKey,
                 HandleStatus=model.HandleStatus,
                 Create=model.Create,

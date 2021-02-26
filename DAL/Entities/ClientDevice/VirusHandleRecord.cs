@@ -32,10 +32,6 @@ namespace DAL.Entities.ClientDevice
         /// 所属病毒Key【冗余】
         /// </summary>
         public string VirusKey { get; set; }
-        /// <summary>
-        /// 所属终端mid【冗余】
-        /// </summary>
-        public string ClientMachineId { get; set; }
     }
     public enum VirusHandleStatus
     {

@@ -52,6 +52,14 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// 来源终端的ip【计算项】
         /// </summary>
         public string ClientIp { get; set; }
+        /// <summary>
+        /// 责任人【冗余】
+        /// </summary>
+        public string Owner { get; set; }
+        /// <summary>
+        /// 责任单位【冗余】
+        /// </summary>
+        public string Company { get; set; }
     }
     /// <summary>
     /// 
@@ -107,7 +115,12 @@ namespace TrainSchdule.ViewModels.ClientDevice
         public static Virus ToModel(this VirusDataModel model,IQueryable<Client>clients,Virus raw=null) {
             if (raw == null) raw = new Virus();
             raw.Client = clients.FirstOrDefault(i=>i.MachineId==model.Client);
-            raw.ClientIp = raw.Client?.Ip;
+            if (raw.Client != null)
+            {
+                raw.ClientIp = raw.Client.Ip;
+                raw.Owner = raw.Client.OwnerId;
+                raw.Company = raw.Client.Company.Code;
+            }
             raw.ClientMachineId = raw.Client.MachineId; // cache client info
             raw.Create = model.Create;
             raw.FileName = model.FileName;
@@ -132,6 +145,8 @@ namespace TrainSchdule.ViewModels.ClientDevice
                 HandleDate = model.HandleDate,
                 Client = model.ClientMachineId,
                 ClientIp=model.ClientIp,
+                Company=model.Company,
+                Owner=model.Owner,
                 Create = model.Create,
                 FileName = model.FileName,
                 Key=model.Key,

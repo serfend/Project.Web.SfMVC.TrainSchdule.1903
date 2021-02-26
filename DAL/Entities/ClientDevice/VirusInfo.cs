@@ -50,6 +50,14 @@ namespace DAL.Entities.ClientDevice
         /// 来源终端ip【冗余】
         /// </summary>
         public string ClientIp { get; set; }
+        /// <summary>
+        /// 责任人【冗余】
+        /// </summary>
+        public string Owner { get; set; }
+        /// <summary>
+        /// 责任单位【冗余】
+        /// </summary>
+        public string Company { get; set; }
     }
     public enum VirusStatus
     {

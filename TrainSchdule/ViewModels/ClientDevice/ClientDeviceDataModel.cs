@@ -133,10 +133,10 @@ namespace TrainSchdule.ViewModels.BBS
 		{
 			if (raw == null) raw = new Client();
 			raw.Company = companies.FirstOrDefault(i => i.Code == client.Company);
-			if (client.Owner == null)
-				raw.Owner = usersService.GetUserByRealname(client.OwnerRealName).FirstOrDefault();
-			else
+			if (client.Owner != null)
 				raw.Owner = usersService.GetById(client.Owner);
+			else if (client.OwnerRealName != null)
+				raw.Owner = usersService.GetUserByRealname(client.OwnerRealName).FirstOrDefault();
 			raw.OwnerId = raw.Owner?.Id ;
 			raw.DeviceType = client.DeviceType ?? raw.DeviceType;
 			raw.Ip = client.Ip ?? raw.Ip;

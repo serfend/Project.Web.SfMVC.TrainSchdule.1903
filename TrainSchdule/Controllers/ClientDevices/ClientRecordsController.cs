@@ -114,8 +114,6 @@ namespace TrainSchdule.Controllers.ClientDevices
                 list = list.Where(i => i.Create >= createStart && i.Create <= createEnd);
             var virus = model.Virus?.Value;
             if (virus != null) list = list.Where(i => i.VirusKey == virus);
-            var client = model.Client?.Value;
-            if (client != null) list = list.Where(i => i.ClientMachineId == client);
             var status = model.HandleStatus?.Arrays;
             if (status != null) list = list.Where(i => status.Contains((int)i.HandleStatus));
             var remark = model.Remark?.Value;
