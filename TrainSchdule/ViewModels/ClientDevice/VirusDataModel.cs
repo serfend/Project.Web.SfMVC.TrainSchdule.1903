@@ -67,6 +67,10 @@ namespace TrainSchdule.ViewModels.ClientDevice
     public class VirusQueryDataModel
     {
         /// <summary>
+        /// 病毒的id
+        /// </summary>
+        public QueryByGuid Id { get; set; }
+        /// <summary>
         /// 创建人用户名
         /// </summary>
         public QueryByString CreateBy { get; set; }

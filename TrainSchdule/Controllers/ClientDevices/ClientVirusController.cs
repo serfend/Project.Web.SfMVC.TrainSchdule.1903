@@ -64,6 +64,8 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Info([FromBody]VirusQueryDataModel model)
         {
             var list = context.VirusesDb;
+            var id = model.Id?.Value;
+            if (id != null) return new JsonResult(new EntityViewModel<VirusDataModel>(list.FirstOrDefault(i=>i.Id==id)?.ToModel()));
             var createStart = model.Create?.Start;
             var createEnd = model.Create?.End;
             if (createStart != null && createEnd != null && createStart > DateTime.MinValue && createEnd > DateTime.MinValue)
@@ -72,6 +74,8 @@ namespace TrainSchdule.Controllers.ClientDevices
             if (client != null) list = list.Where(i => i.ClientMachineId == client);
             var ip = model.Ip?.Value;
             if (ip != null) list = list.Where(i => i.ClientIp.Contains(ip));
+            var createBy = model.CreateBy?.Value;
+            if (createBy != null) list = list.Where(i => i.Owner == createBy);
             var fileName = model.FileName?.Value;
             if (fileName != null) list = list.Where(i => i.FileName.Contains(fileName));
             var type = model.Type?.Value;
@@ -83,7 +87,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                 list = list.Where(i => ((int)i.Status & status_int) > 0);
             }
                 
-            var result = list.OrderBy(i=> i.Status).ThenByDescending(i => i.Create).SplitPage(model.Pages);
+            var result = list.OrderByDescending(i=> (i.Status & VirusStatus.Unhandle)).ThenByDescending(i => i.Create).SplitPage(model.Pages);
             return new JsonResult(new EntitiesListViewModel<VirusDataModel>(result.Item1.Select(i => i.ToModel()), result.Item2));
         }
     }
