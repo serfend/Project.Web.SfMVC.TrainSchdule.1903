@@ -46,7 +46,11 @@ namespace TrainSchdule.Controllers.ClientDevices
             var r = context.ClientsDb.FirstOrDefault(i => i.MachineId == model.MachineId);
             var client =r ??new Client();
             model.ToModel(usersService, context.CompaniesDb,client);
-            if (client.IsRemoved && r != null) client.Remove();
+            if (client.IsRemoved && r != null)
+            {
+                r.Remove();
+                context.Clients.Update(r);
+            }
             else if (r == null) context.Clients.Add(client);
             else context.Clients.Update(client);
             context.SaveChanges();

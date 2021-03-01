@@ -47,13 +47,16 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusHandleRecordDataModel model)
         {
-            var is_edit = model.Id != Guid.Empty;
-            var client = is_edit?(context.VirusHandleRecords.FirstOrDefault(i => i.Id == model.Id)) : new VirusHandleRecord();
+            var r = context.VirusHandleRecords.FirstOrDefault(i => i.Id == model.Id);
+            var client = r ?? new VirusHandleRecord();
             var prev_status = client.HandleStatus;
             model.ToModel(context.Viruses, client);
             if (client.Virus == null) return new JsonResult(client.Virus.NotExist());
-            if (client.IsRemoved && is_edit)
-                client.Remove();
+            if (client.IsRemoved && r != null)
+            {
+                r.Remove();
+                context.VirusHandleRecords.Update(r);
+            }
             else
             {
                 if(prev_status==client.HandleStatus) return new JsonResult(ActionStatusMessage.Success);
@@ -89,8 +92,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                         }
                     }
                 }
-               
-                if (!is_edit) context.VirusHandleRecords.Add(client);
+                if (r == null) context.VirusHandleRecords.Add(client);
                 else context.VirusHandleRecords.Update(client);
                 context.Viruses.Update(client.Virus);
             }

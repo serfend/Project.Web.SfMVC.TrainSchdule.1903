@@ -47,12 +47,16 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <returns></returns>
         [HttpPut]
         public IActionResult Info([FromBody] VirusTypeDataModel model)
-        {
-            var is_edit = model.Id != Guid.Empty;
-            var client = is_edit?  context.VirusTracesDb.FirstOrDefault(i => i.Id == model.Id) : new VirusTrace();
+        { 
+            var r = context.VirusTracesDb.FirstOrDefault(i => i.Id == model.Id);
+            var client = r ?? new VirusTrace();
             model.ToModel(client);
-            if (client.IsRemoved && is_edit) client.Remove();
-            else if (!is_edit) context.VirusTraces.Add(client);
+            if (client.IsRemoved && r != null)
+            {
+                r.Remove();
+                context.VirusTraces.Update(r);
+            }
+            else if (r == null) context.VirusTraces.Add(client);
             else context.VirusTraces.Update(client);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);

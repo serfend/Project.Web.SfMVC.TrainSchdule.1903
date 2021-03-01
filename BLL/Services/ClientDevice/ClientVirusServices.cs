@@ -67,8 +67,12 @@ namespace BLL.Services.ClientDevice
             var r = context.VirusesDb.FirstOrDefault(i => i.Key == model.Key);
             var client = r ?? new Virus() { Status = VirusStatus.Unhandle };
             model.ToModel(context.Clients, client);
-            if (client.IsRemoved && r != null) client.Remove();
-            else if (r == null)
+            if (client.IsRemoved && r != null)
+            {
+                context.Viruses.Update(r);
+                r.Remove();
+            }
+            if (r == null)
             {
                 RelateVirusTrace(client);
                 context.Viruses.Add(client);
