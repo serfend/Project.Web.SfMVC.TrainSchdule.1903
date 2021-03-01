@@ -81,8 +81,13 @@ namespace TrainSchdule.Controllers.ClientDevices
             var fileName = model.FileName?.Value;
             if (fileName != null) list = list.Where(i => i.FileName.Contains(fileName));
             var type = model.Type?.Value;
-            
-            if (type != null) list = list.Where(i => i.Type.Contains(type));
+            if (type != null)
+            {
+                var exp = PredicateBuilder.New<Virus>(false);
+                exp.Or(i => i.Type.Contains(type));
+                exp.Or(i => i.TraceAlias.Contains(type));
+                list = list.Where(exp);
+            }
             var status = model.Status?.Arrays;
             if (status != null)
             {

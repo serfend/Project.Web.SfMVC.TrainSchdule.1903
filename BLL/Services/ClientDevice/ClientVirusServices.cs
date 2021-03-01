@@ -33,7 +33,10 @@ namespace BLL.Services.ClientDevice
                 trace = new VirusTrace() { Type = client.Type, Sha1 = client.Sha1, Create = DateTime.Now };
                 context.VirusTraces.Add(trace);
             }
-            var dispatch = new VirusTypeDispatch() { IsAutoDispatch = true, Virus = client, VirusTrace = trace };
+            var dispatch = context.VirusTypeDispatchesDb.FirstOrDefault(i=>i.Virus.Id==client.Id);
+            if (dispatch != null && !dispatch.IsAutoDispatch) return; // 当用户手动修改过后不再自动同步
+            if (dispatch == null) dispatch = new VirusTypeDispatch() { IsAutoDispatch = true, Virus = client, VirusTrace = trace };
+            else dispatch.VirusTrace = trace;
             context.VirusTypeDispatches.Add(dispatch);
             SynVirusTrace(client, trace);
         }

@@ -113,8 +113,9 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <returns></returns>
         [HttpGet]
         public IActionResult Relate(Guid id,string type,int pageIndex=0,int pageSize=20) {
-            if (!type.IsNullOrEmpty())
+            if (Guid.Empty == id)
             {
+                if (type.IsNullOrEmpty()) type = "";
                 type = type.ToLower();
                 var exp = PredicateBuilder.New<VirusTrace>(false);
                 exp = exp.Or(i => i.Type.Contains(type));
@@ -123,7 +124,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                 var r = list.OrderBy(i => i.Create).SplitPage(pageIndex,pageSize);
                 return new JsonResult(new EntitiesListViewModel<VirusTypeDataModel>(r.Item1.Select(i=>i.ToModel(false)),r.Item2));
             }
-            if (Guid.Empty == id) return new JsonResult(ActionStatusMessage.StaticMessage.IdIsNull);
+            //if (Guid.Empty == id) return new JsonResult(ActionStatusMessage.StaticMessage.IdIsNull);
             var virus = context.VirusesDb.FirstOrDefault(i => i.Id == id);
             if(virus==null) return new JsonResult(new Virus().NotExist());
             var trace = context.VirusTypeDispatchesDb.FirstOrDefault(i => i.Virus.Id == id);
