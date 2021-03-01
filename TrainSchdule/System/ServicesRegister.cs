@@ -1,5 +1,6 @@
 ﻿using BLL.Interfaces;
 using BLL.Interfaces.BBS;
+using BLL.Interfaces.ClientDevice;
 using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
@@ -10,6 +11,7 @@ using BLL.Interfaces.ZX.IGrade;
 using BLL.Services;
 using BLL.Services.ApplyServices;
 using BLL.Services.BBS;
+using BLL.Services.ClientDevice;
 using BLL.Services.Common;
 using BLL.Services.File;
 using BLL.Services.GameR3;
@@ -91,6 +93,7 @@ namespace TrainSchdule.System
 			services.AddScoped<ISignInServices, SignInServices>();
 			services.AddScoped<IFileServices, FileServices>();
 			services.AddScoped<IDWZServices, DWZServices>();
+			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
 
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -131,7 +134,7 @@ namespace TrainSchdule.System
 		/// <param name="services"></param>
 		private static void RegisterServices_Client(this IServiceCollection services)
         {
-			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
+			services.AddScoped<IClientVirusServices, ClientVirusServices>();
         }
 	}
 }

@@ -11,10 +11,14 @@ namespace DAL.Data
     partial class ApplicationDbContext
     {
         public DbSet<Client> Clients { get; set; }
-        public IQueryable<Client> ClientsDb => Clients.Where(i => !i.IsRemoved);
+        public IQueryable<Client> ClientsDb => Clients.ToExistDbSet();
         public DbSet<Virus> Viruses { get; set; }
-        public IQueryable<Virus> VirusesDb => Viruses.Where(i => !i.IsRemoved);
+        public IQueryable<Virus> VirusesDb => Viruses.ToExistDbSet();
         public DbSet<VirusHandleRecord> VirusHandleRecords { get; set; }
-        public IQueryable<VirusHandleRecord> VirusHandleRecordsDb => VirusHandleRecords.Where(i => !i.IsRemoved);
+        public IQueryable<VirusHandleRecord> VirusHandleRecordsDb => VirusHandleRecords.ToExistDbSet();
+        public DbSet<VirusTrace> VirusTraces { get; set; }
+        public IQueryable<VirusTrace> VirusTracesDb => VirusTraces.ToExistDbSet();
+        public DbSet<VirusTypeDispatch> VirusTypeDispatches { get; set; }
+        public IQueryable<VirusTypeDispatch> VirusTypeDispatchesDb => VirusTypeDispatches.ToExistDbSet();
     }
 }
