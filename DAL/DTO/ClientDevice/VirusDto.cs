@@ -57,6 +57,10 @@ namespace DAL.DTO.ClientDevice
         /// 责任单位【冗余】
         /// </summary>
         public string Company { get; set; }
+        /// <summary>
+        /// 病毒类型名称【冗余】
+        /// </summary>
+        public string TraceAlias { get; set; }
     }
     
     /// <summary>
@@ -112,7 +116,8 @@ namespace DAL.DTO.ClientDevice
                 Key = model.Key,
                 Sha1 = model.Sha1,
                 Status = model.Status,
-                Type = model.Type
+                Type = model.Type,
+                TraceAlias=model.TraceAlias
             };
         }
     }

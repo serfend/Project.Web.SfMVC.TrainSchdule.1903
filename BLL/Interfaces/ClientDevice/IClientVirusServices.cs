@@ -16,5 +16,12 @@ namespace BLL.Interfaces.ClientDevice
         /// </summary>
         /// <param name="client"></param>
         void RelateVirusTrace(Virus client);
+        /// <summary>
+        /// 手动关联溯源
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="trace"></param>
+        void RelateVirusTrace(Virus client, VirusTrace trace);
+
     }
 }

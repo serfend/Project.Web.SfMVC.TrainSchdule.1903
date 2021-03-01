@@ -58,6 +58,14 @@ namespace DAL.Entities.ClientDevice
         /// 责任单位【冗余】
         /// </summary>
         public string Company { get; set; }
+        /// <summary>
+        /// 病毒类型【冗余】
+        /// </summary>
+        public virtual VirusTrace TraceType { get; set; }
+        /// <summary>
+        /// 病毒类型名称【冗余】
+        /// </summary>
+        public string TraceAlias { get; set; }
     }
     public enum VirusStatus
     {

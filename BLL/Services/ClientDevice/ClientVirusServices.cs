@@ -16,7 +16,7 @@ namespace BLL.Services.ClientDevice
     {
         private readonly ApplicationDbContext context;
 
-        public ClientVirusServices(ApplicationDbContext 
+        public ClientVirusServices(ApplicationDbContext
             context)
         {
             this.context = context;
@@ -35,6 +35,28 @@ namespace BLL.Services.ClientDevice
             }
             var dispatch = new VirusTypeDispatch() { IsAutoDispatch = true, Virus = client, VirusTrace = trace };
             context.VirusTypeDispatches.Add(dispatch);
+            SynVirusTrace(client, trace);
+        }
+
+        public void RelateVirusTrace(Virus client, VirusTrace trace)
+        {
+            var relate = context.VirusTypeDispatchesDb.FirstOrDefault(i => i.Virus.Id == client.Id);
+            if (relate != null)
+            {
+                if (relate.VirusTrace.Id == trace.Id) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.ResourceAllReadyExist);
+                relate.VirusTrace = trace;
+                relate.IsAutoDispatch = false;
+                context.VirusTypeDispatches.Update(relate);
+            }
+            else
+                context.VirusTypeDispatches.Add(new VirusTypeDispatch() { IsAutoDispatch = false, Virus = client, VirusTrace = trace });
+            SynVirusTrace(client, trace);
+        }
+        public void SynVirusTrace(Virus client,VirusTrace trace)
+        {
+            client.TraceType = trace;
+            client.TraceAlias = trace.Alias;
+            context.Viruses.Update(client);
         }
         public void Edit(VirusDto model)
         {

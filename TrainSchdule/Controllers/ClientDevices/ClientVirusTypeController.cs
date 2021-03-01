@@ -1,4 +1,5 @@
 ﻿using Abp.Extensions;
+using Abp.Linq.Expressions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces.ClientDevice;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
@@ -79,7 +81,26 @@ namespace TrainSchdule.Controllers.ClientDevices
         }
 
     }
-
+    public partial class ClientVirusTypeController
+    {
+        /// <summary>
+        /// 指定关联类型
+        /// </summary>
+        /// <param name="virusId"></param>
+        /// <param name="virusTyppId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Relate(Guid virusId,Guid virusTyppId) {
+            if (virusId == Guid.Empty || virusTyppId == Guid.Empty) return new JsonResult(ActionStatusMessage.StaticMessage.IdIsNull);
+            var virus = context.VirusesDb.FirstOrDefault(i => i.Id == virusId);
+            if (virus == null) return new JsonResult(virus.NotExist());
+            var virusType = context.VirusTracesDb.FirstOrDefault(i => i.Id == virusTyppId);
+            if (virusType == null) return new JsonResult(virusType.NotExist());
+            clientVirusServices.RelateVirusTrace(virus, virusType);
+            context.SaveChanges();
+            return new JsonResult(ActionStatusMessage.Success);
+        }
+    }
     public partial class ClientVirusTypeController
     {
         /// <summary>
@@ -95,7 +116,10 @@ namespace TrainSchdule.Controllers.ClientDevices
             if (!type.IsNullOrEmpty())
             {
                 type = type.ToLower();
-                var list = context.VirusTracesDb.Where(i => i.Type.Contains(type));
+                var exp = PredicateBuilder.New<VirusTrace>(false);
+                exp = exp.Or(i => i.Type.Contains(type));
+                exp = exp.Or(i => i.Alias.Contains(type));
+                var list = context.VirusTracesDb.Where(exp);
                 var r = list.OrderBy(i => i.Create).SplitPage(pageIndex,pageSize);
                 return new JsonResult(new EntitiesListViewModel<VirusTypeDataModel>(r.Item1.Select(i=>i.ToModel(false)),r.Item2));
             }
@@ -107,8 +131,8 @@ namespace TrainSchdule.Controllers.ClientDevices
             {
                 clientVirusServices.RelateVirusTrace(virus);
                 context.SaveChanges();
+                trace = context.VirusTypeDispatchesDb.FirstOrDefault(i => i.Virus.Id == id);
             }
-            trace = context.VirusTypeDispatchesDb.FirstOrDefault(i => i.Virus.Id == id);
             var virusTrace = trace?.VirusTrace;
             var result = virusTrace?.ToModel(trace?.IsAutoDispatch??false);
             return new JsonResult(new EntityViewModel<VirusTypeDataModel>(result));
