@@ -25,9 +25,9 @@ namespace BLL.Services.ClientDevice
         {
             VirusTrace trace = null;
             if (client.Type?.ToLower()?.Equals("trojan.generic") ?? false)
-                trace = context.VirusTracesDb.FirstOrDefault(i => i.Type == client.Type);
-            else
                 trace = context.VirusTracesDb.FirstOrDefault(i => i.Sha1 == client.Sha1);
+            else
+                trace = context.VirusTracesDb.FirstOrDefault(i => i.Type == client.Type);
             if (trace == null)
             {
                 trace = new VirusTrace() { Type = client.Type, Sha1 = client.Sha1, Create = DateTime.Now };
