@@ -325,6 +325,7 @@ namespace BLL.Services
 			{
 				user.AccountStatus -= (int)AccountStatus.Abolish;
 				SetUserAppliesStatus(id, false);
+				_context.AppUsers.Update(user);
 			}
 			return true;
 		}
