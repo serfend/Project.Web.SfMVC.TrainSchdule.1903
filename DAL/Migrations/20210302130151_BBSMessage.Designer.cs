@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210302130151_BBSMessage")]
+    partial class BBSMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1443,8 +1445,8 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ContentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Create")
                         .HasColumnType("datetime2");
@@ -1466,33 +1468,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContentId");
-
                     b.HasIndex("FromId");
 
                     b.HasIndex("ToId");
 
                     b.ToTable("BBSMessages");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Common.Message.AppMessageContent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("IsRemovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppMessageContent");
                 });
 
             modelBuilder.Entity("DAL.Entities.Common.ShortUrl", b =>
@@ -3516,10 +3496,6 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.Common.Message.AppMessage", b =>
                 {
-                    b.HasOne("DAL.Entities.Common.Message.AppMessageContent", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId");
-
                     b.HasOne("DAL.Entities.UserInfo.User", "From")
                         .WithMany()
                         .HasForeignKey("FromId");
@@ -3527,8 +3503,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.UserInfo.User", "To")
                         .WithMany()
                         .HasForeignKey("ToId");
-
-                    b.Navigation("Content");
 
                     b.Navigation("From");
 
