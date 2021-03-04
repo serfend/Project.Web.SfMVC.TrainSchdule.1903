@@ -21,10 +21,10 @@ using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.ZX;
 
-namespace TrainSchdule.Controllers.Zx_GradeManager
+namespace TrainSchdule.Controllers.Zx
 {
 	/// <summary>
-	/// 岞訓用体能成绩
+	/// 体育成绩
 	/// </summary>
 	[Route("ZX/[controller]")]
 	public partial class GradeManagerController : ControllerBase

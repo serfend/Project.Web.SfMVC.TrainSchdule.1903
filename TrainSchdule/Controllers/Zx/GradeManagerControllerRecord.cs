@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.ZX;
 
-namespace TrainSchdule.Controllers.Zx_GradeManager
+namespace TrainSchdule.Controllers.Zx
 {
 	/// <summary>
 	/// 用于记录成绩和考核

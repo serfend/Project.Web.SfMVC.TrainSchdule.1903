@@ -12,7 +12,7 @@ using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.ZX;
 
-namespace TrainSchdule.Controllers.Zx_GradeManager
+namespace TrainSchdule.Controllers.Zx
 {
 	public partial class GradeManagerController
 	{
