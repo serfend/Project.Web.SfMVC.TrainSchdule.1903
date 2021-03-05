@@ -83,7 +83,7 @@ namespace DAL.DTO.ClientDevice
             {
                 raw.ClientIp = raw.Client.Ip;
                 raw.Owner = raw.Client.OwnerId;
-                raw.Company = raw.Client.Company.Code;
+                raw.Company = raw.Client?.Company?.Code;
                 raw.ClientMachineId = raw.Client.MachineId; // cache client info
             }
             raw.Create = model.Create;
