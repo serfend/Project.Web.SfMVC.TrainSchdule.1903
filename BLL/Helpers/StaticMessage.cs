@@ -6,6 +6,7 @@
 		{
 			public static readonly ApiResult TempXlsNotExist = new ApiResult(51000, "未找到Excel模板");
 			public static readonly ApiResult XlsNoData = new ApiResult(51000, "生成的Excel文件无数据");
+			public static readonly ApiResult XlsInvalid = new ApiResult(51000, "Excel中的数据无效");
 			public static readonly ApiResult FileNotExist = new ApiResult(51001, "文件不存在");
 			public static readonly ApiResult CacheIsInvalid = new ApiResult(51002, "断点续传失败，因为缓存已失效");
 			public static readonly ApiResult FileSizeInvalid = new ApiResult(51003, "文件尺寸与要求不符");
