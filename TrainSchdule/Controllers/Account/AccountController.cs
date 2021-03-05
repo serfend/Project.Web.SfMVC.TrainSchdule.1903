@@ -153,7 +153,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult GetUserIdByCid(string cid)
 		{
 			if (cid == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
-			if (cid.Length != 18) return new JsonResult(ActionStatusMessage.UserMessage.NotCrrectCid);
+			if (!cid.CheckIDCard(out var reason)) return new JsonResult(new ApiResult(ActionStatusMessage.UserMessage.NotCrrectCid,reason,true));
 			var user = _context.AppUsersDb.FirstOrDefault(u => u.BaseInfo.Cid == cid);
 			if (user == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
@@ -218,7 +218,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Password([FromBody] ModifyPasswordViewModel model)
 		{
 			string userid = null;
-			var isCid = model.Id.Length == 18;
+			var isCid = model.Id.CheckIDCard(out var _);
 			// 身份证转id
 			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
 			else userid = model.Id;
@@ -345,7 +345,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Login([FromBody] LoginViewModel model)
 		{
 			string userid = null;
-			bool isCid = model.UserName.Length == 18;
+			bool isCid = model.UserName.CheckIDCard(out var _);
 			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 			else userid = model.UserName;
 			if (userid == null)
@@ -717,7 +717,8 @@ namespace TrainSchdule.Controllers
 
 		private bool CheckCurrentUserData(User currentUser)
 		{
-			if (!BLL.Extensions.IDCardValidation.CheckIDCard(currentUser.BaseInfo.Cid)) ModelState.AddModelError("基本信息", "身份证号有误");
+			var reason = string.Empty;
+			if (!(currentUser.BaseInfo.Cid?.CheckIDCard(out reason)??false)) ModelState.AddModelError("基本信息", $"身份证号有误:{reason}");
 			if (currentUser.BaseInfo.RealName == null || currentUser.BaseInfo.RealName.Length > 8 || currentUser.BaseInfo.RealName.Length <= 1) ModelState.AddModelError("基本信息", $"真实姓名[{currentUser.BaseInfo.RealName}]无效");
 			//if (currentUser.BaseInfo.Hometown == null) ModelState.AddModelError("基本信息", "籍贯信息未填写"); // 已在Model中校验过
 			//if (currentUser.Application.Email == null || currentUser.Application.Email == "") ModelState.AddModelError("系统信息","认证邮箱为空");

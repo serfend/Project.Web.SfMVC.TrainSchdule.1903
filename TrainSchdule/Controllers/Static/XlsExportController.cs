@@ -101,23 +101,11 @@ namespace TrainSchdule.Controllers
 		private async Task<IActionResult> ExportXls(byte[] fileContent, string description)
 		{
 			var datetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-			var fileName = $"TS{datetime}-{description}.xlsx";
-			using (var sr = new MemoryStream(fileContent))
-			{
-				var file = new FormFile(sr, 0, fileContent.Length, fileName, fileName);
-				var tmpFile = await _fileServices.Upload(file, XlsExportPath, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
-				var removeTime = TimeSpan.FromDays(7);
-				return new JsonResult(new FileReturnViewModel()
-				{
-					Data = new FileReturnDataModel()
-					{
-						FileName = fileName,
-						RequestUrl = tmpFile.DownloadUrl(FileExtensions.DownloadType.ByStatic),
-						ValidStamp = DateTime.Now.Add(removeTime),
-						Length = tmpFile.Length
-					}
-				});
-			}
-		}
+			var fileName = $"{description}导出{datetime}.xlsx";
+            using var sr = new MemoryStream(fileContent);
+            var file = new FormFile(sr, 0, fileContent.Length, fileName, fileName);
+            var r = await file.UploadToDb(_fileServices, XlsExportPath, fileName);
+            return new JsonResult(r);
+        }
 	}
 }

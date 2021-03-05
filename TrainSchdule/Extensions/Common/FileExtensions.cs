@@ -1,10 +1,12 @@
 ﻿using BLL.Interfaces.File;
 using Castle.Core.Internal;
 using DAL.Entities.FileEngine;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels.Static;
 
 namespace TrainSchdule.Extensions.Common
 {
@@ -76,6 +78,30 @@ namespace TrainSchdule.Extensions.Common
 			var currentNode = file.Path.IsNullOrEmpty() ? null : $"/{file.Path}";
 			var nodePath = nowPath.IsNullOrEmpty() ? null : $"/{nowPath}";
 			return file == null ? nowPath : $"{file.Parent.FullPath()}{currentNode}{nodePath}";
+		}
+        /// <summary>
+        /// 快捷上传文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="fileServices"></param>
+        /// <param name="path"></param>
+        /// <param name="fileName"></param>
+        /// <param name="removeTime"></param>
+        /// <returns></returns>
+        public static async Task<FileReturnViewModel> UploadToDb(this FormFile file,IFileServices fileServices,string path, string fileName,TimeSpan? removeTime=null)
+        {
+			var tmpFile = await fileServices.Upload(file, path, fileName, Guid.Empty, Guid.Empty).ConfigureAwait(true);
+			removeTime ??= TimeSpan.FromDays(7);
+			return new FileReturnViewModel()
+			{
+				Data = new FileReturnDataModel()
+				{
+					FileName = fileName,
+					RequestUrl = tmpFile.DownloadUrl(FileExtensions.DownloadType.ByPath),
+					ValidStamp = DateTime.Now.Add(removeTime.Value),
+					Length = tmpFile.Length
+				}
+			};
 		}
 	}
 }

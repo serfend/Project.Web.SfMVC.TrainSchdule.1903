@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,11 +41,17 @@ namespace DAL.Entities.ZX.MemberRate
         /// <summary>
         /// 评比单位，默认为用户所在单位
         /// </summary>
+        [ForeignKey("CompanyCode")]
         public virtual Company Company { get; set; }
+        [ForeignKey("CompanyCode")]
+        public string CompanyCode { get; set; }
         /// <summary>
         /// 参评人
         /// </summary>
+        [ForeignKey("UserId")]
         public virtual User User { get; set; }
+        [ForeignKey("UserId")]
+        public string UserId { get; set; }
     }
     /// <summary>
     /// 评分模式

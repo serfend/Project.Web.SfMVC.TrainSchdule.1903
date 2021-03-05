@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using TrainSchdule.Controllers.Statistics;
 using TrainSchdule.Crontab;
@@ -267,6 +268,14 @@ namespace TrainSchdule
 
 			// 中间件方法 #1
 			app.UseStaticFiles();
+			// using Microsoft.Extensions.FileProviders;
+			// using System.IO;
+			app.UseStaticFiles(new StaticFileOptions
+			{
+				FileProvider = new PhysicalFileProvider(
+					Path.Combine(env.ContentRootPath, "temp")),
+				RequestPath = "/sftemporary"
+			});
 			app.UseSession();
 
 			// 默认路由 #2

@@ -181,19 +181,13 @@ namespace TrainSchdule.Controllers.File
 		[DisableRequestSizeLimit]
 		public async Task<IActionResult> Upload([FromForm] FileUploadViewModel model)
 		{
-			try
-			{
-				await fileServices.Upload(
-					model.File,
-					model.FilePath,
-					model.FileName,
-					model.ResumeUploadId == null ? Guid.Empty : Guid.Parse(model.ResumeUploadId),
-					model.ClientKey == null ? Guid.Empty : Guid.Parse(model.ClientKey));
-			}
-			catch (ActionStatusMessageException ex)
-			{
-				return new JsonResult(ex.Status);
-			}
+			await fileServices.Upload(
+				model.File,
+				model.FilePath,
+				model.FileName,
+				model.ResumeUploadId == null ? Guid.Empty : Guid.Parse(model.ResumeUploadId),
+				model.ClientKey == null ? Guid.Empty : Guid.Parse(model.ClientKey));
+			
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
