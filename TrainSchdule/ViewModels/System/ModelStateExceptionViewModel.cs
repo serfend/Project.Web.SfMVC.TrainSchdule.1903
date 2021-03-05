@@ -12,12 +12,13 @@ namespace TrainSchdule.ViewModels
 	/// </summary>
 	public static class ModelStateExtensions
 	{
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public static ModelStateExceptionViewModel ToModel(this ModelStateDictionary model) => new ModelStateExceptionViewModel(model);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public static ModelStateExceptionViewModel ToModel(this ModelStateDictionary model, ApiResult status =null) => new ModelStateExceptionViewModel(model, status);
 	}
 
 	/// <summary>
@@ -34,11 +35,15 @@ namespace TrainSchdule.ViewModels
 		///
 		/// </summary>
 		/// <param name="state"></param>
-		public ModelStateExceptionViewModel(ModelStateDictionary state)
-		{
+		public ModelStateExceptionViewModel(ModelStateDictionary state) : this(state, null) { }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="state"></param>
+		/// <param name="status"></param>
+		public ModelStateExceptionViewModel(ModelStateDictionary state,ApiResult status=null) {
+			if (status == null) status = new ApiResult(-1404, "数据格式错误");
 			Data = new ModelStateExceptionDataModel { List = state.AllModelStateErrors() };
-			Status = -1404;
-			Message = "数据格式错误";
 		}
 	}
 
