@@ -1,4 +1,5 @@
 ﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.File;
@@ -29,12 +30,13 @@ namespace TrainSchdule.Controllers.Zx
     /// </summary>
     [Route("[controller]/[action]")]
     [Authorize]
-    public partial class MemberRateController:Controller
+    public partial class MemberRateController : Controller
     {
         private readonly ApplicationDbContext context;
         private readonly ICurrentUserService currentUserService;
         private readonly IFileServices fileServices;
         private readonly IUserActionServices userActionServices;
+        private readonly IUsersService usersService;
 
         /// <summary>
         /// 
@@ -43,12 +45,15 @@ namespace TrainSchdule.Controllers.Zx
         /// <param name="currentUserService"></param>
         /// <param name="fileServices"></param>
         /// <param name="userActionServices"></param>
-        public MemberRateController(ApplicationDbContext context,ICurrentUserService currentUserService,IFileServices fileServices,IUserActionServices userActionServices)
+        /// <param name="usersService"></param>
+        /// <param name=""></param>
+        public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IFileServices fileServices, IUserActionServices userActionServices,IUsersService usersService)
         {
             this.context = context;
             this.currentUserService = currentUserService;
             this.fileServices = fileServices;
             this.userActionServices = userActionServices;
+            this.usersService = usersService;
         }
     }
     public partial class MemberRateController
@@ -63,7 +68,7 @@ namespace TrainSchdule.Controllers.Zx
         [HttpPost]
         public async Task<IActionResult> XlsUpload(MemberRateXlsDto model)
         {
-            if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState)) ;
+            if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
             var importer = new ExcelImporter();
             ImportResult<MemberRateImportDto> data;
             HttpContext.Session.Remove(cacheMemberRate);
@@ -79,21 +84,22 @@ namespace TrainSchdule.Controllers.Zx
         /// </summary>
         /// <param name="data"></param>
         /// <param name="model"></param>
-        private async Task<IActionResult> CheckData(List<MemberRateImportDto>data, MemberRateXlsDto model)
+        private async Task<IActionResult> CheckData(List<MemberRateImportDto> data, MemberRateXlsDto model)
         {
             var currentUser = currentUserService.CurrentUser;
             userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入");
             // convert to data
             var notExistUser = new List<string>();
-            var list = data.Select(i => {
+            var list = data.Select(i =>
+            {
                 var f = i.ToModel(context.CompaniesDb, context.AppUsersDb);
                 if (f.User == null) notExistUser.Add(i.UserCid);
                 return f;
-            }).Select(i => {
+            }).Select(i =>
+            {
                 i.RatingCycleCount = model.RatingCycleCount;
                 i.RatingType = model.RatingType;
-
-                if(!i.CompanyCode.IsNullOrEmpty() && i.CompanyCode != model.Company)
+                if (!i.CompanyCode.IsNullOrEmpty() && i.CompanyCode != model.Company)
                 {
                     userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, i.CompanyCode, "单点授权录入");
                 }
@@ -103,7 +109,7 @@ namespace TrainSchdule.Controllers.Zx
                 return new JsonResult(new EntitiesListViewModel<string>(notExistUser));
 
             // check if exist
-            var currentListRaw = context.NormalRates
+            var currentListRaw = context.NormalRates.ToExistDbSet()
                   .Where(i => i.RatingType == model.RatingType)
                   .Where(i => i.RatingCycleCount == model.RatingCycleCount);
             var currentList = currentListRaw
@@ -113,7 +119,7 @@ namespace TrainSchdule.Controllers.Zx
             {
                 if (model.Confirm)
                 {
-                    context.NormalRates.RemoveRange(currentListRaw);
+                    foreach (var r in currentListRaw) r.Remove();
                 }
                 else
                 {
@@ -122,7 +128,7 @@ namespace TrainSchdule.Controllers.Zx
                     HttpContext.Session.Set(cacheMemberRateXlsModel, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(model)));
                     return new JsonResult(new EntitiesListViewModel<MemberRateDataModel>(currentList));
                 }
-               
+
             }
             // save
             await context.NormalRates.AddRangeAsync(list);
@@ -154,8 +160,41 @@ namespace TrainSchdule.Controllers.Zx
         {
             var importer = new ExcelImporter();
             var content = await importer.GenerateTemplateBytes<MemberRateImportDto>();
-			new FileExtensionContentTypeProvider().TryGetContentType(TemplateName, out var contentType);
+            new FileExtensionContentTypeProvider().TryGetContentType(TemplateName, out var contentType);
             return File(content, contentType ?? "text/plain", TemplateName);
+        }
+    }
+
+
+    public partial class MemberRateController
+    {
+        [HttpPost]
+        public IActionResult Info([FromBody] MemberRateQueryModel model)
+        {
+            var list = context.NormalRates.ToExistDbSet();
+            var currentUser = currentUserService.CurrentUser;
+            
+            var ratingCycleCount = model.RatingCycleCount?.Start;
+            var ratingType = model.RatingType?.Start;
+            if(ratingType != null && ratingCycleCount!=null)
+                list = list.Where(i => (int)i.RatingType == ratingType).Where(i=>i.RatingCycleCount==ratingCycleCount);
+            var user = model.User?.Value;
+            if (user != null)
+            {
+                var userCompany = usersService.GetById(user)?.CompanyInfo?.Company?.Code;
+                userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, userCompany,$"查询{user}");
+                list = list.Where(i => i.UserId == user);
+            }
+            var company = model.Company?.Value;
+            if (user == null && company == null)
+                company = currentUser.CompanyInfo.CompanyCode;
+            if (company != null)  {
+                userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, company);
+                list = list.Where(i => i.CompanyCode.StartsWith(company)); 
+            }
+            list = list.OrderByDescending(i => i.Level).ThenByDescending(i => i.Create);
+            var r = list.SplitPage(model.Page);
+            return new JsonResult(new EntitiesListViewModel<MemberRateDataModel>(r.Item1.Select(i=>i.ToDataModel()),r.Item2));
         }
     }
 }

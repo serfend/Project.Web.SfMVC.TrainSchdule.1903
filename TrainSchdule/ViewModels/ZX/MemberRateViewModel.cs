@@ -1,5 +1,6 @@
 ﻿using DAL.DTO.ZX.MemberRate;
 using DAL.Entities.ZX.MemberRate;
+using DAL.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +33,42 @@ namespace TrainSchdule.ViewModels.ZX
         /// 参评人
         /// </summary>
         public string UserId { get; set; }
+        /// <summary>
+        /// 周期数:当前评分模式下距离 Date(0) 
+        /// </summary>
+        public int RatingCycleCount { get; set; }
+        /// <summary>
+        /// 评分模式
+        /// </summary>
+        public RatingType RatingType { get; set; }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    public class MemberRateQueryModel
+    {
+        /// <summary>
+        /// 评比单位
+        /// </summary>
+        public QueryByString Company { get; set; }
+        /// <summary>
+        /// 被评比人
+        /// </summary>
+        public QueryByString User { get; set; }
+        /// <summary>
+        /// 周期数:当前评分模式下距离 Date(0) 
+        /// </summary>
+        public QueryByIntOrEnum RatingCycleCount { get; set; }
+        /// <summary>
+        /// 评分模式
+        /// </summary>
+        public QueryByIntOrEnum RatingType { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public QueryByPage Page { get; set; }
 
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -59,7 +94,9 @@ namespace TrainSchdule.ViewModels.ZX
                 Level = l,
                 Rank = model.Rank,
                 Remark = model.Remark,
-                UserId = model.UserId
+                UserId = model.UserId,
+                RatingCycleCount=model.RatingCycleCount,
+                RatingType=model.RatingType
             };
         }
         /// <summary>
