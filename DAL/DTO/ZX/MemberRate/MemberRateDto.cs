@@ -50,16 +50,16 @@ namespace DAL.DTO.ZX.MemberRate
     }
     public enum LevelAssign
     {
-        [Display(Name ="无")]
+        [Display(Name ="无", AutoGenerateField = false)]
         None = 0,
         [Display(Name ="不称职")]
         L1 = 100,
-        //[Display(Name ="无")]
-        //L2 = 300,
+        [Display(Name ="较差", AutoGenerateField = false)]
+        L2 = 300,
         [Display(Name ="称职")]
         L3 = 500,
-        //[Display(Name ="无")]
-        //L4 = 700,
+        [Display(Name ="良好",AutoGenerateField =false)]
+        L4 = 700,
         [Display(Name ="优秀")]
         L5 = 900,
     }

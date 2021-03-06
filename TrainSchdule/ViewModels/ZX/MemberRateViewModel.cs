@@ -85,7 +85,9 @@ namespace TrainSchdule.ViewModels.ZX
             ((int)model.Level) switch
             {
                 >= 800 => 900,
+                >=600 => 700,
                 >= 400 => 500,
+                >= 200 => 300,
                 _ => 100,
             };
             return new MemberRateDataModel()

@@ -2,10 +2,12 @@
 using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using DAL.Data;
 using DAL.DTO.ZX.MemberRate;
 using DAL.Entities;
+using DAL.Entities.Common.DataDictionary;
 using DAL.Entities.ZX.MemberRate;
 using Magicodes.ExporterAndImporter.Core.Models;
 using Magicodes.ExporterAndImporter.Excel;
@@ -34,25 +36,25 @@ namespace TrainSchdule.Controllers.Zx
     {
         private readonly ApplicationDbContext context;
         private readonly ICurrentUserService currentUserService;
-        private readonly IFileServices fileServices;
         private readonly IUserActionServices userActionServices;
         private readonly IUsersService usersService;
+        private readonly IDataDictionariesServices dataDictionariesServices;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
         /// <param name="currentUserService"></param>
-        /// <param name="fileServices"></param>
         /// <param name="userActionServices"></param>
         /// <param name="usersService"></param>
-        public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IFileServices fileServices, IUserActionServices userActionServices,IUsersService usersService)
+        /// <param name="dataDictionariesServices"></param>
+        public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices,IUsersService usersService, IDataDictionariesServices dataDictionariesServices)
         {
             this.context = context;
             this.currentUserService = currentUserService;
-            this.fileServices = fileServices;
             this.userActionServices = userActionServices;
             this.usersService = usersService;
+            this.dataDictionariesServices = dataDictionariesServices;
         }
     }
     public partial class MemberRateController
@@ -86,6 +88,8 @@ namespace TrainSchdule.Controllers.Zx
         private async Task<IActionResult> CheckData(List<MemberRateImportDto> data, MemberRateXlsDto model)
         {
             var currentUser = currentUserService.CurrentUser;
+            var c = context.CompaniesDb.FirstOrDefault(i => i.Code == model.Company);
+            if (c==null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
             userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入");
             // convert to data
             var notExistUser = new List<string>();
@@ -102,6 +106,8 @@ namespace TrainSchdule.Controllers.Zx
                 {
                     userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, i.CompanyCode, "单点授权录入");
                 }
+                else
+                    i.CompanyCode = model.Company;
                 return i;
             }).ToList();
             if (notExistUser.Any())
@@ -167,6 +173,11 @@ namespace TrainSchdule.Controllers.Zx
 
     public partial class MemberRateController
     {
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Info([FromBody] MemberRateQueryModel model)
         {
@@ -191,9 +202,28 @@ namespace TrainSchdule.Controllers.Zx
                 userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, company);
                 list = list.Where(i => i.CompanyCode.StartsWith(company)); 
             }
-            list = list.OrderByDescending(i => i.Level).ThenByDescending(i => i.Create);
+            list = list
+                .OrderBy(i=>i.RatingType)
+                .ThenByDescending(i=>i.RatingCycleCount)
+                .ThenBy(i=>i.Rank)
+                .ThenByDescending(i => i.Level)
+                .ThenByDescending(i => i.Create);
             var r = list.SplitPage(model.Page);
             return new JsonResult(new EntitiesListViewModel<MemberRateDataModel>(r.Item1.Select(i=>i.ToDataModel()),r.Item2));
+        }
+    }
+
+    public partial class MemberRateController
+    {
+        /// <summary>
+        /// 获取状态列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult StatusDict()
+        {
+            var dict = dataDictionariesServices.GetByGroupName(ApplicationDbContext.normarRateLevel);
+            return new JsonResult(new EntityViewModel<Dictionary<string, CommonDataDictionary>>(new Dictionary<string, CommonDataDictionary>(dict.Select(s => new KeyValuePair<string, CommonDataDictionary>(s.Value.ToString(), s)))));
         }
     }
 }

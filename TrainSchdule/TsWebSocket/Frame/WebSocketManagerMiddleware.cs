@@ -42,7 +42,7 @@ namespace TsWebSocket.WebSockets
 		{
 			if (!context.WebSockets.IsWebSocketRequest)
 				return;
-			var userid = context.UserIdentity?.Name;
+			var userid = context.User.Identity?.Name;
 			if (userid == null) return;
 			var user = usersService.GetById(userid);
 			if (user == null) return;

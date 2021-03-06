@@ -36,7 +36,7 @@ namespace DAL.Entities.ZX.Grade
 		/// <summary>
 		/// 考核处理人
 		/// </summary>
-		[ForeignKey("CreateById")]
+		[ForeignKey("HandleById")]
 		public virtual User HandleBy { get; set; }
 		public string HandleById { get; set; }
 		/// <summary>

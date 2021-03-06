@@ -12,7 +12,7 @@ namespace DAL.Entities.ApplyInfo
 		/// 召回原因
 		/// </summary>
 		public string Reason { get; set; }
-		[ForeignKey("HandleBy")]
+		[ForeignKey("HandleById")]
 		public virtual User HandleBy { get; set; }
 		public string HandleById { get; set; }
 		/// <summary>
