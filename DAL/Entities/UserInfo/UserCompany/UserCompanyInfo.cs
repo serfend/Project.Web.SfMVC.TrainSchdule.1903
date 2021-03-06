@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.UserInfo
 {
@@ -8,7 +9,9 @@ namespace DAL.Entities.UserInfo
 		/// <summary>
 		/// 用户所处的单位
 		/// </summary>
+		[ForeignKey("CompanyCode")]
 		public virtual Company Company { get; set; }
+		public string CompanyCode { get; set; }
 
 		//[Required(ErrorMessage = "未输入职务信息")]
 		public virtual Duties Duties { get; set; }

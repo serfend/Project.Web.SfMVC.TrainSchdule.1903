@@ -11,7 +11,6 @@ namespace DAL.Entities
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[Key]
 		public string Code { get; set; }
-
 		public string Name { get; set; }
 
 		/// <summary>

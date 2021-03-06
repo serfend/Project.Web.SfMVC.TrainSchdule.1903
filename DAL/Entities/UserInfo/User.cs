@@ -1,5 +1,6 @@
 ﻿using DAL.Entities.UserInfo.Resume;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.UserInfo
 {
@@ -22,15 +23,33 @@ namespace DAL.Entities.UserInfo
 
 		#region Properties
 
+		[ForeignKey("ApplicationId")]
 		public virtual UserApplicationInfo Application { get; set; }
-		public virtual UserBaseInfo BaseInfo { get; set; }
-		public virtual UserCompanyInfo CompanyInfo { get; set; }
-		public virtual UserSocialInfo SocialInfo { get; set; }
-		public virtual UserDiyInfo DiyInfo { get; set; }
-		public virtual UserResumeInfo ResumeInfo { get; set; }
+		public Guid? ApplicationId { get; set; }
 
-		#endregion Properties
-	}
+		[ForeignKey("BaseInfoId")]
+		public virtual UserBaseInfo BaseInfo { get; set; }
+        public Guid? BaseInfoId { get; set; }
+
+        [ForeignKey("CompanyInfoId")]
+		public virtual UserCompanyInfo CompanyInfo { get; set; }
+        public Guid? CompanyInfoId { get; set; }
+
+        [ForeignKey("SocialInfoId")]
+		public virtual UserSocialInfo SocialInfo { get; set; }
+        public Guid? SocialInfoId { get; set; }
+
+        [ForeignKey("DiyInfoId")]
+		public virtual UserDiyInfo DiyInfo { get; set; }
+        public Guid? DiyInfoId { get; set; }
+
+        [ForeignKey("ResumeInfoId")]
+		public virtual UserResumeInfo ResumeInfo { get; set; }
+        public Guid? ResumeInfoId { get; set; }
+
+
+        #endregion Properties
+    }
 
 	public enum AccountStatus
 	{
