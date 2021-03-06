@@ -19,7 +19,7 @@ namespace DAL.DTO.ZX.MemberRate
         /// <summary>
         /// 参评人
         /// </summary>
-        [ImporterHeader(Name = "身份证号",IsInterValidation =true)]
+        [ImporterHeader(Name = "身份证号",IsAllowRepeat = false,IsInterValidation =true)]
         [Required(ErrorMessage = "身份证号未输入")]
         [IDCard]
         public string UserCid { get; set; }

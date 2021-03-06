@@ -55,6 +55,7 @@ namespace DAL.Entities
 			public static PermissionDescription Subject = new PermissionDescription("Grade.Subject", "成绩-科目标准");
 			public static PermissionDescription Exam = new PermissionDescription("Grade.Exam", "成绩-考核");
 			public static PermissionDescription Record = new PermissionDescription("Grade.Record", "成绩-记录");
+			public static PermissionDescription MemberRate = new PermissionDescription("Grade.MemberRate", "成绩-评比与考核成绩");
 		}
 
 		[Description("资源")]

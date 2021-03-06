@@ -24,7 +24,7 @@ namespace DAL.DTO.ZX.MemberRate
         /// <summary>
         /// 评比单位
         /// </summary>
-        [Required(ErrorMessage ="评比单位")]
+        [Required(ErrorMessage = "评比单位")]
         public string Company { get; set; }
         /// <summary>
         /// xls数据文件
