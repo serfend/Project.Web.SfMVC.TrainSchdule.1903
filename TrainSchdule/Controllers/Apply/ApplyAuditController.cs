@@ -133,9 +133,9 @@ namespace TrainSchdule.Controllers.Apply
 			var currentUser = currentUserService.CurrentUser;
 			if (currentUser == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 
-			if (apply.BaseInfo.From.Id != currentUser?.Id)
+			if (apply.BaseInfo.FromId != currentUser?.Id)
 			{
-				var permit = userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.Company.Code, "执行休假申请的操作");
+				var permit = userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.CompanyCode, "执行休假申请的操作");
 				if (!permit && needPermission) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			callBack.Invoke(apply, currentUser.Id);

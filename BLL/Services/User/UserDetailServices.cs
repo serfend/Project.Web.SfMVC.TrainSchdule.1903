@@ -30,7 +30,7 @@ namespace BLL.Services
 			var myManages = result.Item1.ToList();
 			if (result.Item2 == 0) return -1;
 			if (modifyUser == null) return 1;
-			var targetCompany = modifyUser.CompanyInfo.Company.Code;
+			var targetCompany = modifyUser.CompanyInfo.CompanyCode;
 			// 判断是否有管理此单位的权限，并且级别高于此单位至少1级
 			return myManages.Max(m => targetCompany.StartsWith(m.Code) ? targetCompany.Length - m.Code.Length : -1);
 		}
@@ -43,9 +43,9 @@ namespace BLL.Services
 				 var list = new List<Company>();
 				 if (user?.CompanyInfo?.Company != null)
 				 {
-					 list = _context.CompanyManagers.Where(m => m.User.Id == user.Id).Select(m => m.Company).ToList();
+					 list = _context.CompanyManagers.Where(m => m.UserId == user.Id).Select(m => m.Company).ToList();
 					 // 所在单位的主管拥有此单位的管理权
-					 var companyCode = user.CompanyInfo.Company.Code;
+					 var companyCode = user.CompanyInfo.CompanyCode;
 					 if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode))
 					 {
 						 list.Add(user.CompanyInfo.Company);
@@ -68,7 +68,7 @@ namespace BLL.Services
 		{
 			if (targetUser == null) return null;
 			var applies = _context.AppliesDb
-				.Where(a => a.BaseInfo.From.Id == targetUser.Id)
+				.Where(a => a.BaseInfo.FromId == targetUser.Id)
 				.Where(a => a.Status == AuditStatus.Accept)
 				.Where(a => a.MainStatus == vacationStatus)
 				.Where(a => a.RequestInfo.StampLeave.Value.Year == vacationYear)

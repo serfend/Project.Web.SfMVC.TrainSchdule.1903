@@ -46,7 +46,6 @@ namespace TrainSchdule.Controllers.Zx
         /// <param name="fileServices"></param>
         /// <param name="userActionServices"></param>
         /// <param name="usersService"></param>
-        /// <param name=""></param>
         public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IFileServices fileServices, IUserActionServices userActionServices,IUsersService usersService)
         {
             this.context = context;
@@ -181,7 +180,7 @@ namespace TrainSchdule.Controllers.Zx
             var user = model.User?.Value;
             if (user != null)
             {
-                var userCompany = usersService.GetById(user)?.CompanyInfo?.Company?.Code;
+                var userCompany = usersService.GetById(user)?.CompanyInfo?.CompanyCode;
                 userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, userCompany,$"查询{user}");
                 list = list.Where(i => i.UserId == user);
             }

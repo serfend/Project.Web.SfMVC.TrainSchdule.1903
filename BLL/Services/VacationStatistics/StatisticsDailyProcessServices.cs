@@ -62,11 +62,11 @@ namespace BLL.Services.VacationStatistics
 			var companyAllMembers = _context.AppUsersDb
 				.Where(u => u.Application.Create <= target)
 				.Where(u => ((int)u.AccountStatus & (int)AccountStatus.DisableVacation) == 0)
-				.Where(u => u.CompanyInfo.Company.Code.Length >= companyLength
-				&& u.CompanyInfo.Company.Code.StartsWith(companyCode));
+				.Where(u => u.CompanyInfo.CompanyCode.Length >= companyLength
+				&& u.CompanyInfo.CompanyCode.StartsWith(companyCode));
 			var result = groupRecords.ToList().Select(r =>
 			{
-				var users = r.GroupBy(a => a.From.Id);
+				var users = r.GroupBy(a => a.FromId);
 				var companyAtTypeMembers = companyAllMembers.Where(u => u.CompanyInfo.Duties.Type == r.Key.Type);
 				var companyAtTypeMembersList = companyAtTypeMembers.ToList();
 				var memberCount = companyAtTypeMembersList.Count;

@@ -35,7 +35,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
 				 LastModify = i.LastModify,
 				 ModifyBy = i.ModifyBy.ToSummaryDto(),
 				 Like = i.Likes,
-				 MyLike = currentUser == null ? false : likesDb.Where(like => like.Comment.Id == i.Id).Any(like => like.CreateBy.Id == currentUser)
+				 MyLike = currentUser == null ? false : likesDb.Where(like => like.CommentId == i.Id).Any(like => like.CreateById == currentUser)
 			 };
 	}
 

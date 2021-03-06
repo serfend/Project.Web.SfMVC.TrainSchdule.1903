@@ -1,6 +1,7 @@
 ﻿using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DAL.Entities.ZX.Grade
@@ -28,14 +29,16 @@ namespace DAL.Entities.ZX.Grade
 		/// <summary>
 		/// 创建人
 		/// </summary>
-
+		[ForeignKey("CreateById")]
 		public virtual User CreateBy { get; set; }
+		public string CreateById { get; set; }
 
 		/// <summary>
 		/// 考核处理人
 		/// </summary>
+		[ForeignKey("CreateById")]
 		public virtual User HandleBy { get; set; }
-
+		public string HandleById { get; set; }
 		/// <summary>
 		/// 举办时间
 		/// </summary>

@@ -36,7 +36,7 @@ namespace BLL.Extensions
 			{
 				About = diyInfo.About ?? "无简介",
 				Avatar = diyInfo.Avatar?.Id.ToString(),
-				CompanyCode = companyInfo.Company?.Code,
+				CompanyCode = companyInfo.CompanyCode,
 				DutiesCode = companyInfo.Duties?.Code,
 				CompanyName = companyInfo.Company?.Name ?? "无单位",
 				DutiesName = companyInfo.Duties?.Name ?? "无职务",
@@ -58,14 +58,14 @@ namespace BLL.Extensions
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.Code).OrderByLevel();
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.CompanyCode).OrderByLevel();
 
 		/// <summary>
 		/// 按单位-职务等级-职级等级的顺序依次排序
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.ThenBy(u => u.CompanyInfo.Company.Code).OrderByLevel();
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.ThenBy(u => u.CompanyInfo.CompanyCode).OrderByLevel();
 
 		public static IOrderedQueryable<User> OrderByLevel(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level);
 	}

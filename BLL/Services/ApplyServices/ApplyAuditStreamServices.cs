@@ -50,7 +50,7 @@ namespace BLL.Services.ApplyServices
 		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user, bool CheckInvalidAccount)
 		{
 			if (user == null) return null;
-			var cmp = user.CompanyInfo.Company.Code;
+			var cmp = user.CompanyInfo.CompanyCode;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
 			var auditRule = context.ApplyAuditStreamSolutionRuleDb
 				.Where(r => r.Enable)
@@ -158,7 +158,7 @@ namespace BLL.Services.ApplyServices
 				{
 					var expC = PredicateBuilder.New<User>(false);
 					foreach (var c in filter.Companies)
-                        expC = expC.Or(u => u.CompanyInfo.Company.Code.StartsWith(c));
+                        expC = expC.Or(u => u.CompanyInfo.CompanyCode.StartsWith(c));
 					result = result.Where(expC);
 				}
 				// CompanyTag
@@ -175,12 +175,12 @@ namespace BLL.Services.ApplyServices
 				{
 					var expL = PredicateBuilder.New<User>(false);
 					foreach (var l in filter.CompanyCodeLength)
-						expL = expL.Or(u => u.CompanyInfo.Company.Code.Length == l);
+						expL = expL.Or(u => u.CompanyInfo.CompanyCode.Length == l);
 					result = result.Where(expL);
 				}
 			}
 			else
-				result = result.Where(u => u.CompanyInfo.Company.Code == target);
+				result = result.Where(u => u.CompanyInfo.CompanyCode == target);
 
 			// 指定职务
 			if (filter.Duties != null && filter.Duties.Any(a => a > 0))
@@ -218,7 +218,7 @@ namespace BLL.Services.ApplyServices
 			//var managers = companyManagerServices.GetManagers(company).ToList();
 			//if (managers != null)
 			//{
-			//	var m = managers.Select(u => u.User.Id).ToList();
+			//	var m = managers.Select(u => u.UserId).ToList();
 			//	fitUsers = fitUsers.Union(m);
 			//}
 			return rawUser;

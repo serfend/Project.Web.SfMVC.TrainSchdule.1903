@@ -164,7 +164,7 @@ namespace BLL.Services.ApplyServices
 		{
 			var user = model?.BaseInfo?.From;
 			if (user == null) return;
-			var usrCmp = user.CompanyInfo.Company.Code;
+			var usrCmp = user.CompanyInfo.CompanyCode;
 			// 初始化审批流
 			var rule = _applyAuditStreamServices.GetAuditSolutionRule(user, false);
 			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
@@ -180,13 +180,13 @@ namespace BLL.Services.ApplyServices
 				{
 					var currentNodeFitMembers = modelApplyAllAuditStep[modelApplyAllAuditStep.Count - 1].MembersFitToAudit;
 					var firstHandleUsr = (currentNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : currentNodeFitMembers.Split("##");
-					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.GetById(firstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
+					if (firstHandleUsr != null && firstHandleUsr.Length > 0) usrCmp = _usersService.GetById(firstHandleUsr[0])?.CompanyInfo?.CompanyCode ?? usrCmp;
 				}
 
 				var nextNodeUsrCmp = usrCmp;
 				var nextNodeFitMembers = string.Join("##", _applyAuditStreamServices.GetToAuditMembers(usrCmp, n.RegionOnCompany, n, true).ToList());
 				var nextNodeFirstHandleUsr = (nextNodeFitMembers?.Length ?? 0) == 0 ? Array.Empty<string>() : nextNodeFitMembers.Split("##");
-				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.GetById(nextNodeFirstHandleUsr[0])?.CompanyInfo?.Company?.Code ?? usrCmp;
+				if (nextNodeFirstHandleUsr != null && nextNodeFirstHandleUsr.Length > 0) nextNodeUsrCmp = _usersService.GetById(nextNodeFirstHandleUsr[0])?.CompanyInfo?.CompanyCode ?? usrCmp;
 
 				var firstMemberCompany = _context.CompaniesDb.FirstOrDefault(c => c.Code == nextNodeUsrCmp);
 				var item = new ApplyAuditStep()
@@ -217,7 +217,7 @@ namespace BLL.Services.ApplyServices
 					AuditStatus.AcceptAndWaitAdmin,
 					AuditStatus.Auditing
 			};
-			var userid = apply.BaseInfo.From.Id;
+			var userid = apply.BaseInfo.FromId;
 			var recallDb = _context.RecallOrders;
 			var execDb = _context.ApplyExcuteStatus;
 			/* 20200917@胡琪blanche881
@@ -226,7 +226,7 @@ namespace BLL.Services.ApplyServices
 			*
 			*/
 			var userVacationsInTime = _context.AppliesDb
-				.Where(a => a.BaseInfo.From.Id == userid)
+				.Where(a => a.BaseInfo.FromId == userid)
 				.Where(a =>
 				   (
 						// 不存在召回时间，则判断应归队时间（必定不晚于确认时间）
@@ -338,7 +338,7 @@ namespace BLL.Services.ApplyServices
 			if (apply.Status != AuditStatus.AcceptAndWaitAdmin && apply.Status != AuditStatus.Auditing) return ActionStatusMessage.ApplyMessage.Operation.Audit.NotOnAudingStatus;
 			// 如果当前审批人是本单位管理，则本轮审批直接通过
 			var company = nowStep.FirstMemberCompanyCode;
-			var managers = companyManagerServices.GetManagers(company).Select(m => m.User.Id).ToList();
+			var managers = companyManagerServices.GetManagers(company).Select(m => m.UserId).ToList();
 			var isManagerAudit = managers.Contains(AuditUser.Id);
 			if (!isManagerAudit)
 			{

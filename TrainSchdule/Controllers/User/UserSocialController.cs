@@ -81,7 +81,7 @@ namespace TrainSchdule.Controllers
 
 			var targetUser = _context.AppUsersDb.FirstOrDefault(u => u.SocialInfo.Settle.PrevYealyLengthHistory.FirstOrDefault(r => r.Code == new_record_id) != null);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code);
+			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode);
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var record = userServiceDetail.ModifySettleModifyRecord(newR.Code, (r) =>
 			{
@@ -130,7 +130,7 @@ namespace TrainSchdule.Controllers
 			var user = _usersService.GetById(userid);
 			if (user == null) return new JsonResult(user.NotExist());
 			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!_userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.CompanyInfo.Company.Code, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.CompanyInfo.CompanyCode, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			user.SocialInfo.Settle = data.Settle.ToModel(_context.AdminDivisions, user.SocialInfo.Settle);
 			_context.AppUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 			_context.SaveChanges();

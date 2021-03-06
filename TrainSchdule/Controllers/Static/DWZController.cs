@@ -84,7 +84,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.Company.Code);
+			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.CompanyCode);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			await dWZServices.Remove(m).ConfigureAwait(false);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -151,7 +151,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(key).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Query, c.Id, m.CreateBy.CompanyInfo.Company.Code)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Query, c.Id, m.CreateBy.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var result = await dWZServices.QueryStatistics(m, model).ConfigureAwait(true);
 			var statistics = result.Item1;
 			var totalCount = result.Item2;

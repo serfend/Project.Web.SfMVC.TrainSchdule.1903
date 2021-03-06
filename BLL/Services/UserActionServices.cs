@@ -60,7 +60,7 @@ namespace BLL.Services
 			{
 				var uc = u.CompanyInfo;
 				var ud = uc.Duties.IsMajorManager;
-				var ucmp = uc.Company.Code;
+				var ucmp = uc.CompanyCode;
 				if (targetUserCompanyCode == null || (targetUserCompanyCode.Length >= ucmp.Length && targetUserCompanyCode.StartsWith(ucmp)) && ud)
 				{
 					Status(a, true, $"单位主官");

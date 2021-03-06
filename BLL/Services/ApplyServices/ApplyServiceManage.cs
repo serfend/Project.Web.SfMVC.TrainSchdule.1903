@@ -52,7 +52,7 @@ namespace BLL.Services.ApplyServices
 				var arr = model.CreateCompany?.Arrays;
 				var exp = PredicateBuilder.New<Apply>(false);
 				foreach (var item in arr)
-					exp = exp.Or(p => p.BaseInfo.Company.Code.Contains(item));
+					exp = exp.Or(p => p.BaseInfo.CompanyCode.Contains(item));
 				if (arr != null)
 					list = list.Where(a => a.BaseInfo != null)
 						.Where(a => a.BaseInfo.From != null)
@@ -94,11 +94,11 @@ namespace BLL.Services.ApplyServices
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
-				list = _context.AppliesDb.Where(a => a.BaseInfo.CreateBy.Id == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
+				list = _context.AppliesDb.Where(a => a.BaseInfo.CreateById == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
 			}
 			else if (model.CreateFor != null)
 			{
-				list = _context.AppliesDb.Where(a => a.BaseInfo.From.Id == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
+				list = _context.AppliesDb.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(model.Pages);

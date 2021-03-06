@@ -12,6 +12,8 @@ namespace DAL.Entities.UserInfo
 		public string FilePath { get; set; }
 		public DateTime CreateTime { get; set; }
 		public byte[] Img { get; set; }
+		[ForeignKey("UserId")]
 		public virtual User User { get; set; }
+		public string UserId { get; set; }
 	}
 }

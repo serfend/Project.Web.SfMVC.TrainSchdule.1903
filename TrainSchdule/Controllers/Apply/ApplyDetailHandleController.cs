@@ -68,7 +68,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			else
 			{
-				var permission = actionUser.Id == m.From.Id || userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.AttachInfo, model.IsRemove ? Operation.Remove : Operation.Update, actionUser.Id, m.From.CompanyInfo.Company.Code);
+				var permission = actionUser.Id == m.FromId || userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.AttachInfo, model.IsRemove ? Operation.Remove : Operation.Update, actionUser.Id, m.From.CompanyInfo.CompanyCode);
 				if (permission)
 				{
 					m.LastModify = DateTime.Now;
@@ -99,7 +99,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (currentUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var comment = context.ApplyCommentsDb.FirstOrDefault(i => i.Id == model.Id);
 			if (comment == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			var like = context.ApplyCommentLikes.Where(i => i.Comment.Id == comment.Id).FirstOrDefault(i => i.CreateBy.Id == currentUser.Id);
+			var like = context.ApplyCommentLikes.Where(i => i.CommentId == comment.Id).FirstOrDefault(i => i.CreateById == currentUser.Id);
 			if (like == null && model.Like) context.ApplyCommentLikes.Add(new ApplyCommentLike() { Comment = comment, Create = DateTime.Now, CreateBy = currentUser });
 			else if (like != null && !model.Like) context.ApplyCommentLikes.Remove(like);
 			else return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);

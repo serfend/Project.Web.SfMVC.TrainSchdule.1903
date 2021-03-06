@@ -64,7 +64,7 @@ namespace TrainSchdule.Controllers
 			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var manages = _companyManagerServices.GetManagers(model.Code);
-			var manage = manages.Where(u => u.User.Id == targetUser.Id).FirstOrDefault();
+			var manage = manages.Where(u => u.CompanyCode == targetUser.Id).FirstOrDefault();
 			; if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.NotExist);
 			var unused = _companyManagerServices.Delete(manage);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -90,7 +90,7 @@ namespace TrainSchdule.Controllers
 			var permit = _userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var manages = _companyManagerServices.GetManagers(model.Code);
-			var manage = manages.Where(u => u.User.Id == targetUser.Id).FirstOrDefault();
+			var manage = manages.Where(u => u.UserId == targetUser.Id).FirstOrDefault();
 			if (manage != null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Existed);
 			var dto = new CompanyManagerVdto()
 			{

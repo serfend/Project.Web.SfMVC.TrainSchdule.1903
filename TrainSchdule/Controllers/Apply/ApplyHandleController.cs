@@ -89,10 +89,10 @@ namespace TrainSchdule.Controllers.Apply
 
 			if (id != null && id != currentUser.Id)
 			{
-				if (!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.Company.Code, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.CompanyCode, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			var list = context.AppliesDb
-				.Where(a => a.BaseInfo.From.Id == c.Id)
+				.Where(a => a.BaseInfo.FromId == c.Id)
 				.Where(a => a.RequestInfo.StampLeave >= start)
 				.Where(a => a.RequestInfo.StampLeave <= end);
 			if (MainStatus != null) list = list.Where(a => (int)a.MainStatus == MainStatus);
@@ -287,7 +287,7 @@ namespace TrainSchdule.Controllers.Apply
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();
 			var apply = applyService.GetById(m.Apply);
 			var targetUser = apply.BaseInfo.From;
-			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.Company.Code, $"确认{targetUser.Id}归队时间");
+			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var result = recallOrderServices.Create(apply, m);
 			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));

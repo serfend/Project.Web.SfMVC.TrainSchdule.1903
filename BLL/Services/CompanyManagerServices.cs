@@ -68,14 +68,14 @@ namespace BLL.Services
 
 		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
 		{
-			var list = _context.AppUsersDb.Where(u => u.CompanyInfo.Company.Code == code).OrderByCompanyAndTitle();
+			var list = _context.AppUsersDb.Where(u => u.CompanyInfo.CompanyCode == code).OrderByCompanyAndTitle();
 			totalCount = list.Count();
 			return list.Skip(page * pageSize).Take(pageSize);
 		}
 
 		public IEnumerable<CompanyManagers> GetManagers(string companyCode)
 		{
-			return _context.CompanyManagers.Where(c => c.Company.Code == companyCode);
+			return _context.CompanyManagers.Where(c => c.CompanyCode == companyCode);
 		}
 	}
 }

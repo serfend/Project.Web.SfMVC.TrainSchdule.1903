@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers.BBS
 			var post = postServices.GetPostById(id);
 			var targetUser = post.CreateBy;
 			var user = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(targetUser.Application.Permission, DictionaryAllPermission.Post.Default,Operation.Remove,user.Id,targetUser.CompanyInfo.Company.Code);
+			var permit = userActionServices.Permission(targetUser.Application.Permission, DictionaryAllPermission.Post.Default,Operation.Remove,user.Id,targetUser.CompanyInfo.CompanyCode);
 			if (permit) postServices.RemoveContent(post);
 			return  new JsonResult(ActionStatusMessage.Success);
 		}

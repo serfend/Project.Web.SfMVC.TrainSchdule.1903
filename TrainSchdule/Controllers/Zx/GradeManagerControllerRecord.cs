@@ -37,8 +37,8 @@ namespace TrainSchdule.Controllers.Zx
 			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentExamHolder, "所属考核");
 
 			// check target user modify
-			var prevUser = prev?.User?.CompanyInfo?.Company?.Code;
-			var currentUser = m?.User?.CompanyInfo?.Company?.Code;
+			var prevUser = prev?.User?.CompanyInfo?.CompanyCode;
+			var currentUser = m?.User?.CompanyInfo?.CompanyCode;
 			if (prevUser != currentUser)
 				CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, prevUser, "移出作用于成员");
 			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentUser, "作用于成员");

@@ -134,7 +134,7 @@ namespace TrainSchdule.Controllers.Apply
 			var userModel = new SubmitBaseInfoViewModel()
 			{//重写前端传回的数据
 				Id = model.Id,
-				Company = targetUser.CompanyInfo.Company?.Code,
+				Company = targetUser.CompanyInfo.CompanyCode,
 				Duties = targetUser.CompanyInfo.Duties?.Name,
 				Phone = model.Phone ?? targetUser.SocialInfo.Phone,
 				RealName = targetUser.BaseInfo.RealName,
@@ -191,7 +191,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
 			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
 			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
-			userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.From.Id, null, true, ActionRank.Warning);
+			userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.FromId, null, true, ActionRank.Warning);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
 
@@ -215,7 +215,7 @@ namespace TrainSchdule.Controllers.Apply
 			// 本人及有权限者可操作
 			if (
 				authByUser.Id != targetUser.Id
-				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.Company.Code)
+				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
 			) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请", false, ActionRank.Danger);
 			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) 

@@ -42,12 +42,12 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Apply> GetAll(string userid, int page, int pageSize)
 		{
-			return GetAll((item) => item.BaseInfo.From.Id == userid, page, pageSize);
+			return GetAll((item) => item.BaseInfo.FromId == userid, page, pageSize);
 		}
 
 		public IEnumerable<Apply> GetAll(string userid, AuditStatus status, int page, int pageSize)
 		{
-			return GetAll((item) => item.BaseInfo.From.Id == userid && status == item.Status, page, pageSize);
+			return GetAll((item) => item.BaseInfo.FromId == userid && status == item.Status, page, pageSize);
 		}
 
 		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize)

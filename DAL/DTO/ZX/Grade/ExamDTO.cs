@@ -62,7 +62,7 @@ namespace DAL.DTO.ZX.Grade
 		public static ExamDTO ToDTO(this GradeExam model) => new ExamDTO()
 		{
 			Create = model.Create,
-			CreateBy = model.CreateBy?.Id,
+			CreateBy = model.CreateById,
 			Description = model.Description,
 			ExecuteTime = model.ExecuteTime,
 			HandleBy = model.HandleBy?.Id,

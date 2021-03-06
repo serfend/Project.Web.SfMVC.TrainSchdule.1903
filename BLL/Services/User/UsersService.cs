@@ -250,7 +250,7 @@ namespace BLL.Services
 				Regions = "",
 				Role = "User"
 			};
-			user.CompanyInfo.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == user.CompanyInfo.Company.Code);
+			user.CompanyInfo.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == user.CompanyInfo.CompanyCode);
 			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
 			var title = user.CompanyInfo.Title;
 			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);
@@ -333,7 +333,7 @@ namespace BLL.Services
 		private void SetUserAppliesStatus(string id, bool abolish)
 		{
 			int status = (abolish ? 1 : -1) * (int)MainStatus.Invalid;
-			var user_applies = _context.Applies.Where(a => a.BaseInfo.From.Id == id);
+			var user_applies = _context.Applies.Where(a => a.BaseInfo.FromId == id);
 			foreach (var a in user_applies)
 			{
 				if (((int)a.MainStatus & status) > 0) continue;
@@ -441,7 +441,7 @@ namespace BLL.Services
 		public IEnumerable<Avatar> QueryAvatar(string targetUser, DateTime start)
 		{
 			if (targetUser == null) return null;
-			var list = _context.AppUserDiyAvatars.Where(a => a.CreateTime >= start).Where(a => a.User.Id == targetUser);
+			var list = _context.AppUserDiyAvatars.Where(a => a.CreateTime >= start).Where(a => a.UserId == targetUser);
 			return list;
 		}
 	}

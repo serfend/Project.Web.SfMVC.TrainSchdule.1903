@@ -30,7 +30,7 @@ namespace BLL.Services.GameR3
 		{
 			if (code == null) return code;
 			if (user == null) return null;
-			var gainHistory = context.GainGiftCodeHistory.Where(h => h.User.Id == user.Id && h.Code.Code == code.Code).FirstOrDefault();
+			var gainHistory = context.GainGiftCodeHistory.Where(h => h.UserId == user.Id && h.Code.Code == code.Code).FirstOrDefault();
 			if (gainHistory != null)
 			{
 				// 当领取过时，不再领取

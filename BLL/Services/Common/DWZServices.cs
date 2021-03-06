@@ -97,7 +97,7 @@ namespace BLL.Services.Common
 			}
 			var res = context.CommonShortUrlDb;
 			if (model.Create != null) res = res.Where(s => s.Create > model.Create.Start).Where(s => s.Create < model.Create.End);
-			if (model.CreateBy != null) res = res.Where(s => s.CreateBy.Id == model.CreateBy.Value);
+			if (model.CreateBy != null) res = res.Where(s => s.CreateById == model.CreateBy.Value);
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Key != null) res = res.Where(s => s.Key == model.Key.Value);
 			if (model.Target != null) res = res.Where(s => s.Target.Contains( model.Target.Value));
@@ -122,7 +122,7 @@ namespace BLL.Services.Common
 				return null;
 			var res = context.CommonShortUrlStatistics.Where(s => s.Url.Id == shortUrl.Id);
 			if (model.Create != null) res = res.Where(s => s.Create > model.Create.Start).Where(s => s.Create < model.Create.End);
-			if (model.ViewBy != null) res = res.Where(s => s.ViewBy.Id == model.ViewBy.Value);
+			if (model.ViewBy != null) res = res.Where(s => s.ViewById == model.ViewBy.Value);
 			if (model.Device != null) res = res.Where(s => s.Device == model.Device.Value);
 			if (model.Ip != null) res = res.Where(s => s.Ip == model.Ip.Value);
 			res = res.OrderByDescending(s => s.Create);

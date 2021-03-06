@@ -54,7 +54,7 @@ namespace BLL.Services.VacationStatistics
 			var groupRecords = records.GroupBy(a => new { a.Type }).ToList();
 			var result = groupRecords.Select(r =>
 			{
-				var users = r.GroupBy(a => a.From.Id);
+				var users = r.GroupBy(a => a.FromId);
 				var dict = new Dictionary<string, int>();
 				foreach (var p in users)
 				{

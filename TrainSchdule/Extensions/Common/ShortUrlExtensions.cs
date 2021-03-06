@@ -21,7 +21,7 @@ namespace TrainSchdule.Extensions.Common
 		{
 			return new ShortUrlCreateDataModel()
 			{
-				CreateBy = model.CreateBy?.Id,
+				CreateBy = model.CreateById,
 				Create = model.Create,
 				Expire = model.Expire,
 				Key = model.Key,
@@ -42,7 +42,7 @@ namespace TrainSchdule.Extensions.Common
 				Device = model.Device,
 				Ip = model.Ip,
 				UA = model.UA,
-				ViewBy = model.ViewBy.Id
+				ViewBy = model.ViewById
 			};
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.Game_r3
 {
@@ -37,7 +38,9 @@ namespace DAL.Entities.Game_r3
 
 	public class GainGiftCode : BaseEntityGuid
 	{
+		[ForeignKey("UserId")]
 		public virtual User User { get; set; }
+		public Guid? UserId { get; set; }
 		public long GainStamp { get; set; }
 		public virtual GiftCode Code { get; set; }
 	}

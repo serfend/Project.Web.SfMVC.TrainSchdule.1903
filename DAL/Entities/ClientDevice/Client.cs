@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,15 +32,18 @@ namespace DAL.Entities.ClientDevice
         /// <summary>
         /// 负责人
         /// </summary>
+        [ForeignKey("OwnerId")]
         public virtual UserInfo.User Owner { get; set; }
         /// <summary>
         /// 负责人姓名【冗余】
         /// </summary>
-        public virtual string OwnerId { get; set; }
+        public string OwnerId { get; set; }
         /// <summary>
         /// 所属单位
         /// </summary>
+        [ForeignKey("CompanyCode")]
         public virtual Company Company { get; set; }
+        public string CompanyCode { get; set; }
         /// <summary>
         /// 备注信息
         /// </summary>

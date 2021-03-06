@@ -2,6 +2,7 @@
 using DAL.Entities.ZX.Grade;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DAL.Entities.ZX.Phy
@@ -14,13 +15,16 @@ namespace DAL.Entities.ZX.Phy
 		/// <summary>
 		/// 所属人
 		/// </summary>
+		[ForeignKey("UserId")]
 		public virtual User User { get; set; }
+		public string UserId { get; set; }
 
 		/// <summary>
 		/// 创建人
 		/// </summary>
+		[ForeignKey("CreateById")]
 		public virtual User CreateBy { get; set; }
-
+		public string CreateById { get; set; }
 		/// <summary>
 		/// 创建时间
 		/// </summary>

@@ -110,7 +110,7 @@ namespace TrainSchdule.ViewModels.BBS
 			return new ClientDeviceDataModel()
 			{
 				Id=client.Id,
-				Company = client.Company?.Code,
+				Company = client.CompanyCode,
 				DeviceType=client.DeviceType,
 				Ip=client.Ip,
 				Mac=client.Mac,

@@ -27,7 +27,9 @@ namespace DAL.Entities.Common
 		/// <summary>
 		/// 创建人
 		/// </summary>
+		[ForeignKey("CreateById")]
 		public virtual UserInfo.User CreateBy { get; set; }
+		public string CreateById { get; set; }
 
 		public string Ip { get; set; }
 		public string Device { get; set; }
@@ -41,8 +43,9 @@ namespace DAL.Entities.Common
 		/// <summary>
 		/// 访客
 		/// </summary>
+		[ForeignKey("ViewById")]
 		public virtual UserInfo.User ViewBy { get; set; }
-
+		public string ViewById { get; set; }
 		public DateTime Create { get; set; }
 		public string Ip { get; set; }
 		public string Device { get; set; }

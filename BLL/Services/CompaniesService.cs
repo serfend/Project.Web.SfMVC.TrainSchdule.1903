@@ -124,11 +124,11 @@ namespace BLL.Services
 		public IEnumerable<User> GetCompanyManagers(string code, string userid)
 		{
 			var r = _context.CompanyManagers.AsQueryable();
-			if (code != null) r = r.Where(m => m.Company.Code == code);
-			if (userid != null) r = r.Where(m => m.User.Id == userid);
+			if (code != null) r = r.Where(m => m.CompanyCode == code);
+			if (userid != null) r = r.Where(m => m.UserId == userid);
 			return r.Select(m => m.User);
 		}
 
-		public bool CheckManagers(string code, string userid) => _context.CompanyManagers.Where(m => m.Company.Code == code).Any(m => m.User.Id == userid);
+		public bool CheckManagers(string code, string userid) => _context.CompanyManagers.Where(m => m.CompanyCode == code).Any(m => m.UserId == userid);
 	}
 }

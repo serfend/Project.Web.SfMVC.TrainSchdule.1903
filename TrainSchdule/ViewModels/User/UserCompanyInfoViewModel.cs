@@ -125,9 +125,9 @@ namespace TrainSchdule.ViewModels.User
 			{
 				Company = new UserCompanyDataModel()
 				{
-					Code = model.Company?.Code,
+					Code = model.CompanyCode,
 					Name = model.Company?.Name,
-					Parent = companiesService.FindParent(model.Company?.Code)?.Name,
+					Parent = companiesService.FindParent(model.CompanyCode)?.Name,
 					CompanyTags = model.Company?.Tag?.Split("##")
 				},
 				Duties = model.Duties?.Name

@@ -3,6 +3,7 @@ using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations.Statistics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace BLL.Services.VacationStatistics
@@ -24,8 +25,9 @@ namespace BLL.Services.VacationStatistics
 		/// <summary>
 		/// 休假来源人
 		/// </summary>
+		[ForeignKey("FromId")]
 		public User From { get; set; }
-
+		public string FromId { get; set; }
 		/// <summary>
 		/// 已休假天数
 		/// </summary>

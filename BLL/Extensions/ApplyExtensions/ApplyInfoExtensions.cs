@@ -99,7 +99,7 @@ namespace BLL.Extensions.ApplyExtensions
 			return db
 				.Where(a => a.Status == AuditStatus.Accept)
 				.Where(a=>a.MainStatus==MainStatus.Normal) // 仅统计状态为Normal的休假
-				.Where(s => s.BaseInfo.Company.Code.StartsWith(companyCode));
+				.Where(s => s.BaseInfo.CompanyCode.StartsWith(companyCode));
 		}
 
 		/// <summary>

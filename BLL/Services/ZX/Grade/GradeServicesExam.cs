@@ -28,8 +28,8 @@ namespace BLL.Services.ZX.Grade
 		{
 			if (model == null) return null;
 			var result = _context.GradeExams.AsQueryable();
-			if (model.CreateBy.Valid()) result = result.Where(r => r.CreateBy.Id == model.CreateBy.Value);
-			if (model.HandleBy.Valid()) result = result.Where(r => r.HandleBy.Id == model.HandleBy.Value);
+			if (model.CreateBy.Valid()) result = result.Where(r => r.CreateById == model.CreateBy.Value);
+			if (model.HandleBy.Valid()) result = result.Where(r => r.HandleById == model.HandleBy.Value);
 			if (model.HoldBy.Valid()) result = result.Where(r => r.HoldBy.Code == model.HoldBy.Value);
 			if (model.Name.Valid())
 			{
@@ -62,7 +62,7 @@ namespace BLL.Services.ZX.Grade
 
 		private GradeExam MapGradeExamModel(GradeExam model)
 		{
-			var createById = model.CreateBy?.Id;
+			var createById = model.CreateById;
 			if (createById != null) model.CreateBy = _context.AppUsersDb.Where(u => u.Id == createById).FirstOrDefault();
 			var holdById = model.HoldBy?.Code;
 			if (holdById != null) model.HoldBy = _context.CompaniesDb.Where(u => u.Code == holdById).FirstOrDefault();

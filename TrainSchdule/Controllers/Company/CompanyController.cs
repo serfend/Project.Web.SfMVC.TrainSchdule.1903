@@ -97,7 +97,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> CompanyChild(string id)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			id ??= currentUser?.CompanyInfo?.Company?.Code;
+			id ??= currentUser?.CompanyInfo?.CompanyCode;
 			var list = _companiesService.FindAllChild(id)?.ToDictionary(c => c.Code) ?? new Dictionary<string, Company>();
 			int totalCount = list.Count;
 			var manageCount = 0;
@@ -132,7 +132,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Detail(string id)
 		{
 			var c = _companiesService.GetById(id);
-			if (c == null) id = _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			if (c == null) id = _currentUserService.CurrentUser?.CompanyInfo?.CompanyCode;
 			c = _companiesService.GetById(id);
 
 			return new JsonResult(new EntityViewModel<Company>(c));
@@ -149,7 +149,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(CompanyManagerDataModel), 0)]
 		public IActionResult Managers(string id, string userid)
 		{
-			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.Company?.Code;
+			id = id ?? _currentUserService.CurrentUser?.CompanyInfo?.CompanyCode;
 			var list = _companiesService.GetCompanyManagers(id, userid);
 			if (list == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			return new JsonResult(new CompanyManagerViewModel()
@@ -201,7 +201,7 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(AllMembersDataModel), 0)]
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
-			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.Company?.Code;
+			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.CompanyCode;
 			int totalCount = 0;
 			var list = code == null ? new List<UserSummaryDto>() : _companyManagerServices.GetMembers(code, page, pageSize, out totalCount).Select(u => u.ToSummaryDto());
 			return new JsonResult(new AllMembersViewModel()

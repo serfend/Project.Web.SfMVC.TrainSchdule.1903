@@ -16,7 +16,7 @@ namespace BLL.Extensions
 		public static IEnumerable<User> CompanyWithChildCompanyMembers(this Company company, IUsersService usersService) => company.CompanyMembers(usersService, 999);
 
 		public static IEnumerable<User> CompanyMembers(this Company company, IUsersService usersService, int includeChild)
-			=> usersService.Find(u => u.CompanyInfo.Company.Code.Length <= company.Code.Length + includeChild && u.CompanyInfo.Company.Code.StartsWith(company.Code));
+			=> usersService.Find(u => u.CompanyInfo.CompanyCode.Length <= company.Code.Length + includeChild && u.CompanyInfo.CompanyCode.StartsWith(company.Code));
 
 		public static CompanyDto ToDto(this Company company, ICompaniesService companiesService = null)
 		{

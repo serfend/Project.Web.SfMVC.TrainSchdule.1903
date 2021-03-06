@@ -34,11 +34,11 @@ namespace BLL.Services.ZX
 
 		private GradePhyRecord MapPhyRecordModel(GradePhyRecord model)
 		{
-			var createById = model.CreateBy.Id;
+			var createById = model.CreateById;
 			model.CreateBy = _context.AppUsersDb.Where(u => u.Id == createById).FirstOrDefault();
 			var examId = model.Exam.Id;
 			model.Exam = _context.GradeExams.Where(e => e.Id == examId).FirstOrDefault();
-			var userId = model.User.Id;
+			var userId = model.UserId;
 			model.User = _context.AppUsersDb.Where(u => u.Id == userId).FirstOrDefault();
 			var subjectId = model.Subject.Id;
 			model.Subject = _context.GradePhySubjects.Where(s => s.Id == subjectId).FirstOrDefault();
@@ -49,8 +49,8 @@ namespace BLL.Services.ZX
 		{
 			if (model == null) return null;
 			var result = _context.GradePhyRecords.AsQueryable();
-			if (model.CreateBy.Valid()) result = result.Where(r => r.CreateBy.Id == model.CreateBy.Value);
-			if (model.CreateFor.Valid()) result = result.Where(r => r.User.Id == model.CreateFor.Value);
+			if (model.CreateBy.Valid()) result = result.Where(r => r.CreateById == model.CreateBy.Value);
+			if (model.CreateFor.Valid()) result = result.Where(r => r.UserId == model.CreateFor.Value);
 			if (!model.Create.Valid()) model.Create = new QueryByDate() { Start = DateTime.Now.AddYears(-1), End = DateTime.Now };
 			result = result.Where(r => r.Create >= model.Create.Start).Where(r => r.Create <= model.Create.End);
 			var list = result.SplitPage(model.Pages.ValidSplitPage());
