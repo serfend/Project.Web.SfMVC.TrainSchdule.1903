@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 using TrainSchdule.ViewModels.ZX;
 
 namespace TrainSchdule.Controllers.Zx
@@ -90,9 +91,10 @@ namespace TrainSchdule.Controllers.Zx
             var currentUser = currentUserService.CurrentUser;
             var c = context.CompaniesDb.FirstOrDefault(i => i.Code == model.Company);
             if (c==null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-            userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入");
+            if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
             // convert to data
             var notExistUser = new List<string>();
+            var authList = new HashSet<string>();
             var list = data.Select(i =>
             {
                 var f = i.ToModel(context.CompaniesDb, context.AppUsersDb);
@@ -102,12 +104,15 @@ namespace TrainSchdule.Controllers.Zx
             {
                 i.RatingCycleCount = model.RatingCycleCount;
                 i.RatingType = model.RatingType;
-                if (!i.CompanyCode.IsNullOrEmpty() && i.CompanyCode != model.Company)
-                {
-                    userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, i.CompanyCode, "单点授权录入");
+                var umax = model.Company; // 全局指定的单位
+                var ccode = i.CompanyCode; // 表格中指定的单位
+                umax = umax==null ? ccode : (ccode.StartsWith(umax) ? umax : ccode); // 取高权限
+                var ucode = i.User.CompanyInfo.CompanyCode; // 用户的单位
+                umax = umax==null ? ucode : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
+                if (authList.Contains(umax)) { 
+                    authList.Add(umax);
+                    if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 }
-                else
-                    i.CompanyCode = model.Company;
                 return i;
             }).ToList();
             if (notExistUser.Any())
@@ -193,7 +198,9 @@ namespace TrainSchdule.Controllers.Zx
             if (user != null)
             {
                 var userCompany = usersService.GetById(user)?.CompanyInfo?.CompanyCode;
-                userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, userCompany,$"查询{user}");
+                if (user != currentUser.Id) {
+                    if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, userCompany, $"查询{user}")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+                }
                 list = list.Where(i => i.UserId == user);
             }
             var company = model.Company?.Value;
@@ -201,7 +208,7 @@ namespace TrainSchdule.Controllers.Zx
                 company = currentUser.CompanyInfo.CompanyCode;
             if (company != null)  {
                 userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, company);
-                list = list.Where(i => i.CompanyCode.StartsWith(company)); 
+                list = list.Where(i => i.CompanyCode.StartsWith(company));
             }
             list = list
                 .OrderBy(i=>i.RatingType)
