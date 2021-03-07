@@ -59,10 +59,7 @@ namespace TrainSchdule.Controllers
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
 			// Record(m); // 此处异步不会等待，所以服务器直接返回的同时把db清理了，导致Record方法报错
-			new Task(() =>
-			{
-				dwzInnerServices.Open(m, currentUserService.CurrentUser);
-			}).Start();
+			await dwzInnerServices.Open(m, currentUserService.CurrentUser);
 			return Redirect(m.Target);
 		}
 
