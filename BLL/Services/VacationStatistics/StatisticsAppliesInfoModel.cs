@@ -22,11 +22,6 @@ namespace BLL.Services.VacationStatistics
 		public int Id { get; set; }
 		public DateTime Target { get; set; }
 
-		/// <summary>
-		/// 休假来源人
-		/// </summary>
-		[ForeignKey("FromId")]
-		public User From { get; set; }
 		public string FromId { get; set; }
 		/// <summary>
 		/// 已休假天数

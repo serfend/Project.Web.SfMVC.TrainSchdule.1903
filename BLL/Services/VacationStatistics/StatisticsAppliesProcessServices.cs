@@ -46,7 +46,7 @@ namespace BLL.Services.VacationStatistics
 			var records = applies.Select(a => new StatisticsAppliesInfo()
 			{
 				Type = a.BaseInfo.Duties.Type,
-				From = a.BaseInfo.From,
+				FromId = a.BaseInfo.FromId,
 				Days = a.RequestInfo.VacationLength,
 				// 统计中用不到RecallOrder
 				RecallReduceDay = 0

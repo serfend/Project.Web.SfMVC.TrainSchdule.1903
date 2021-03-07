@@ -46,7 +46,7 @@ namespace BLL.Services.VacationStatistics
 			var records = applies.Select(a => new StatisticsAppliesInfo()
 			{
 				Type = a.BaseInfo.Duties.Type,
-				From = a.BaseInfo.From,
+				FromId = a.BaseInfo.FromId,
 				Days = a.RequestInfo.VacationLength,
                 // 此处未考虑召回导致的假期损失
                 // 后续可以通过将RecallDb加以考虑
