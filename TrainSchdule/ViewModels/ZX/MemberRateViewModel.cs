@@ -5,7 +5,9 @@ using DAL.Entities.ZX.MemberRate;
 using DAL.QueryModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace TrainSchdule.ViewModels.ZX
@@ -24,6 +26,10 @@ namespace TrainSchdule.ViewModels.ZX
         /// </summary>
         public int Level { get; set; }
         /// <summary>
+        /// 等级名称
+        /// </summary>
+        public string LevelName { get; set; }
+        /// <summary>
         /// 备注
         /// </summary>
         public string Remark { get; set; }
@@ -31,6 +37,14 @@ namespace TrainSchdule.ViewModels.ZX
         /// 用户基本信息
         /// </summary>
         public UserSummaryDto User { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string UserId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CompanyCode { get; set; }
         /// <summary>
         /// 周期数:当前评分模式下距离 Date(0) 
         /// </summary>
@@ -75,27 +89,41 @@ namespace TrainSchdule.ViewModels.ZX
         /// <summary>
         /// 
         /// </summary>
+        public static List<Tuple<int, string>> ValueToLevelAssign { get; }
+        static MemberRateExtensions(){
+            var type = typeof(LevelAssign);
+            ValueToLevelAssign = new List<Tuple<int, string>>();
+            foreach (LevelAssign s in Enum.GetValues(type))
+            {
+                MemberInfo[] mi = type.GetMember(s.ToString());
+                if (mi != null && mi.Length > 0 && Attribute.GetCustomAttribute(mi[0], typeof(DisplayAttribute)) is DisplayAttribute attr)
+                    ValueToLevelAssign.Add(new Tuple<int, string>((int)s,attr.Name));
+            }
+            ValueToLevelAssign.Sort((a,b)=>b.Item1-a.Item1);
+        }
+        /// <summary>
+        /// 值转换为等级名称
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static string ToLevelName(this int v) => ValueToLevelAssign.FirstOrDefault(l => l.Item1 <= v)?.Item2;
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         public static MemberRateDataModel ToDataModel(this NormalRate model)
         {
-            int l =
-            ((int)model.Level) switch
-            {
-                >= 800 => 900,
-                >=600 => 700,
-                >= 400 => 500,
-                >= 200 => 300,
-                _ => 100,
-            };
+            
             var t = new MemberRateDataModel()
             {
                 User=model.User.ToSummaryDto(),
-                //CompanyCode = model.CompanyCode,
-                Level = l,
+                CompanyCode = model.CompanyCode,
+                Level = model.Level,
+                LevelName = ToLevelName(model.Level),
                 Rank = model.Rank,
                 Remark = model.Remark,
-                //UserId = model.UserId,
+                UserId = model.UserId,
                 RatingCycleCount = model.RatingCycleCount,
                 RatingType = model.RatingType
             };
