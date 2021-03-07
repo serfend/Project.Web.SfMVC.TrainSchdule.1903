@@ -12,6 +12,10 @@ namespace DAL.DTO.User
 		/// 用户账号
 		/// </summary>
 		public string Id { get; set; }
+		/// <summary>
+		/// 身份证号
+		/// </summary>
+		public string Cid { get; set; }
 
 		/// <summary>
 		/// 真实姓名

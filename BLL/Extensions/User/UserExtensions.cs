@@ -32,14 +32,17 @@ namespace BLL.Extensions
 			var diyInfo = user.DiyInfo ?? new UserDiyInfo() { Avatar = new Avatar() };
 			var companyInfo = user.CompanyInfo ?? new UserCompanyInfo() { Company = new DAL.Entities.Company(),Duties = new DAL.Entities.Duties(),Title=new UserCompanyTitle()};
 			var baseInfo = user.BaseInfo ?? new UserBaseInfo() { Gender=GenderEnum.Unknown };
+			var company = companyInfo.Company;
+			var duties = companyInfo.Duties;
 			return new UserSummaryDto()
 			{
 				About = diyInfo.About ?? "无简介",
 				Avatar = diyInfo.Avatar?.Id.ToString(),
 				CompanyCode = companyInfo.CompanyCode,
-				DutiesCode = companyInfo.Duties?.Code,
-				CompanyName = companyInfo.Company?.Name ?? "无单位",
-				DutiesName = companyInfo.Duties?.Name ?? "无职务",
+				Cid=baseInfo.Cid,
+				DutiesCode = duties?.Code,
+				CompanyName = company?.Name ?? "无单位",
+				DutiesName = duties?.Name ?? "无职务",
 				UserTitle = companyInfo.Title?.Name ?? "无等级",
 				UserTitleDate = companyInfo.TitleDate,
 				Gender = baseInfo.Gender,

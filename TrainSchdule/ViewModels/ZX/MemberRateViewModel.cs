@@ -42,9 +42,13 @@ namespace TrainSchdule.ViewModels.ZX
         /// </summary>
         public string UserId { get; set; }
         /// <summary>
-        /// 
+        /// 评比单位代码
         /// </summary>
         public string CompanyCode { get; set; }
+        /// <summary>
+        /// 评比单位名称
+        /// </summary>
+        public string CompanyName { get; set; }
         /// <summary>
         /// 周期数:当前评分模式下距离 Date(0) 
         /// </summary>
@@ -119,6 +123,7 @@ namespace TrainSchdule.ViewModels.ZX
             {
                 User=model.User.ToSummaryDto(),
                 CompanyCode = model.CompanyCode,
+                CompanyName = model.Company?.Name,
                 Level = model.Level,
                 LevelName = ToLevelName(model.Level),
                 Rank = model.Rank,
