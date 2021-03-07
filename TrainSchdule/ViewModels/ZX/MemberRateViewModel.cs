@@ -1,4 +1,6 @@
-﻿using DAL.DTO.ZX.MemberRate;
+﻿using BLL.Extensions;
+using DAL.DTO.User;
+using DAL.DTO.ZX.MemberRate;
 using DAL.Entities.ZX.MemberRate;
 using DAL.QueryModel;
 using System;
@@ -26,13 +28,9 @@ namespace TrainSchdule.ViewModels.ZX
         /// </summary>
         public string Remark { get; set; }
         /// <summary>
-        /// 评比单位，默认为用户所在单位
+        /// 用户基本信息
         /// </summary>
-        public string CompanyCode { get; set; }
-        /// <summary>
-        /// 参评人
-        /// </summary>
-        public string UserId { get; set; }
+        public UserSummaryDto User { get; set; }
         /// <summary>
         /// 周期数:当前评分模式下距离 Date(0) 
         /// </summary>
@@ -90,16 +88,28 @@ namespace TrainSchdule.ViewModels.ZX
                 >= 200 => 300,
                 _ => 100,
             };
-            return new MemberRateDataModel()
+            var t = new MemberRateDataModel()
             {
-                CompanyCode = model.CompanyCode,
+                User=model.User.ToSummaryDto(),
+                //CompanyCode = model.CompanyCode,
                 Level = l,
                 Rank = model.Rank,
                 Remark = model.Remark,
-                UserId = model.UserId,
-                RatingCycleCount=model.RatingCycleCount,
-                RatingType=model.RatingType
+                //UserId = model.UserId,
+                RatingCycleCount = model.RatingCycleCount,
+                RatingType = model.RatingType
             };
+            //var user = model.User;
+            //if (user != null)
+            //{
+            //    var b = user.BaseInfo;
+            //    t.RealName = b.RealName;
+            //    t.Cid = b.Cid;
+            //    var c = user.CompanyInfo;
+            //    t.CompanyName = c.Company.Name;
+            //    t.Duty = c.Duties.Name;
+            //}
+            return t;
         }
         /// <summary>
         /// 
