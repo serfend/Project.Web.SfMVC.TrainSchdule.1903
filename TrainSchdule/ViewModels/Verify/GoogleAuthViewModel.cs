@@ -82,11 +82,12 @@ namespace TrainSchdule.ViewModels.Verify
 			return user;
 		}
 
-		/// <summary>
-		/// 授权失败
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public static ApiResult PermitDenied(this GoogleAuthDataModel model) => ActionStatusMessage.Account.Auth.Invalid.Default;
+        /// <summary>
+        /// 授权失败
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="appendMessage"></param>
+        /// <returns></returns>
+        public static ApiResult PermitDenied(this GoogleAuthDataModel model, string appendMessage = null) => appendMessage != null ? new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, appendMessage, true) : ActionStatusMessage.Account.Auth.Invalid.Default;
 	}
 }

@@ -31,9 +31,8 @@ namespace BLL.Services
 			this.userServiceDetail = userServiceDetail;
 			this.usersService = usersService;
 		}
-
-		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
-		{
+		public async Task<UserAction> LogAsync(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
+        {
 			var context = _httpContextAccessor.HttpContext;
 			var ua = context.ClientInfo<UserAction>();
 			ua.Date = DateTime.Now;
@@ -42,14 +41,16 @@ namespace BLL.Services
 			ua.Success = success;
 			ua.Description = description;
 			ua.Rank = rank;
-			_context.UserActions.Add(ua);
-			_context.SaveChanges();
+			await _context.UserActions.AddAsync(ua);
+			await _context.SaveChangesAsync();
 			return ua;
 		}
+		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug) => LogAsync(operation, username, description, success, rank).Result;
 
-		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null)
+		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null) => PermissionAsync(permissions, key, operation, permissionUserName, targetUserCompanyCode, description).Result;
+		public async Task<bool> PermissionAsync(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null)
 		{
-			var a = Log(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation} {description}", false, ActionRank.Danger);
+			var a =await LogAsync(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation} {description}", false, ActionRank.Danger);
 			if (permissions.Check(key, operation, targetUserCompanyCode))
 			{
 				Status(a, true, "直接权限");
@@ -79,8 +80,8 @@ namespace BLL.Services
 			}
 			//throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return false;
-		}
 
+		}
 		public async Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model)
 		{
 			return await Task.Run(() =>

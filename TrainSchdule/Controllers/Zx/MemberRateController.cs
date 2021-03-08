@@ -91,7 +91,7 @@ namespace TrainSchdule.Controllers.Zx
             var currentUser = currentUserService.CurrentUser;
             var c = context.CompaniesDb.FirstOrDefault(i => i.Code == model.Company);
             if (c==null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-            if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+            if(!await userActionServices.PermissionAsync(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{c.Name}的数据"));
             // convert to data
             var notExistUser = new List<string>();
             var authList = new HashSet<string>();
@@ -100,29 +100,31 @@ namespace TrainSchdule.Controllers.Zx
                 var f = i.ToModel(context.CompaniesDb, context.AppUsersDb);
                 if (f.User == null) notExistUser.Add(i.UserCid);
                 return f;
-            }).Select(i =>
+            }).ToList();
+            foreach(var i in list)
             {
                 i.RatingCycleCount = model.RatingCycleCount;
                 i.RatingType = model.RatingType;
                 var umax = model.Company; // 全局指定的单位
-                if(i.CompanyCode==null) i.CompanyCode = umax; // 默认选中
+                if (i.CompanyCode == null) i.CompanyCode = umax; // 默认选中
                 var ccode = i.CompanyCode; // 表格中指定的单位
                 umax = ccode == null ? umax : (ccode.StartsWith(umax) ? umax : ccode); // 取高权限
                 var ucode = i.User.CompanyInfo.CompanyCode; // 用户的单位
-                umax = ucode==null ? umax : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
-                if (authList.Contains(umax)) { 
+                umax = ucode == null ? umax : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
+                if (!authList.Contains(umax))
+                {
+                    if (!await userActionServices.PermissionAsync(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{i.User?.BaseInfo?.RealName ?? i.UserId}的数据"));
                     authList.Add(umax);
-                    if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 }
-                return i;
-            }).ToList();
+            }
             if (notExistUser.Any())
                 return new JsonResult(new EntitiesListViewModel<string>(notExistUser));
 
             // check if exist
             var currentListRaw = context.NormalRates.ToExistDbSet()
                   .Where(i => i.RatingType == model.RatingType)
-                  .Where(i => i.RatingCycleCount == model.RatingCycleCount);
+                  .Where(i => i.RatingCycleCount == model.RatingCycleCount)
+                  .ToList();
             var currentList = currentListRaw
                   .Select(i => i.ToDataModel())
                   .ToList();
@@ -130,7 +132,18 @@ namespace TrainSchdule.Controllers.Zx
             {
                 if (model.Confirm)
                 {
-                    foreach (var r in currentListRaw) r.Remove();
+                    foreach (var r in currentListRaw)
+                    {
+                        var modifyCompany = r.CompanyCode;
+                        bool can_remove = true;
+                        if (!authList.Contains(modifyCompany))
+                        {
+                            if (await userActionServices.PermissionAsync(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, modifyCompany, "单点授权修改")) authList.Add(modifyCompany);
+                            else
+                                can_remove = false;// throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权修改{r.User?.BaseInfo?.RealName ?? r.UserId}的数据"));
+                        }
+                        if(can_remove)r.Remove();
+                    }
                 }
                 else
                 {
