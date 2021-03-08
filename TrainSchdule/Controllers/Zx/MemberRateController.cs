@@ -208,7 +208,7 @@ namespace TrainSchdule.Controllers.Zx
             if (user == null && company == null)
                 company = currentUser.CompanyInfo.CompanyCode;
             if (company != null)  {
-                userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, company);
+               if(! userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Query, currentUser.Id, company)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 list = list.Where(i => i.CompanyCode.StartsWith(company));
             }
             list = list
