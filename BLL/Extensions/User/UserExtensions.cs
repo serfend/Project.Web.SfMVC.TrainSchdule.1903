@@ -57,19 +57,23 @@ namespace BLL.Extensions
 		}
 
 		/// <summary>
-		/// 按单位-职务等级-职级等级的顺序依次排序
+		/// 按单位-资历的顺序依次排序
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
 		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.CompanyCode).OrderByLevel();
 
 		/// <summary>
-		/// 按单位-职务等级-职级等级的顺序依次排序
+		/// 按单位-资历的顺序依次排序
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
 		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.ThenBy(u => u.CompanyInfo.CompanyCode).OrderByLevel();
-
-		public static IOrderedQueryable<User> OrderByLevel(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level);
+		/// <summary>
+		/// 按职务等级-职级等级-工作时间依次排序
+		/// </summary>
+		/// <param name="users"></param>
+		/// <returns></returns>
+		public static IOrderedQueryable<User> OrderByLevel(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level).ThenBy(u=>u.BaseInfo.Time_Work);
 	}
 }

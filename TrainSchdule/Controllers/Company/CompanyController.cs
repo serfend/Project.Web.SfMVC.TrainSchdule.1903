@@ -72,7 +72,7 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(new EntitiesListViewModel<string>(result.Item1, result.Item2));
 		}
 
-		private int AddCompanyList(Dictionary<string, Company> list, List<Company> raw_list)
+		private static int AddCompanyList(Dictionary<string, Company> list, List<Company> raw_list)
 		{
 			int result = 0;
 			foreach (var c in raw_list)
@@ -201,15 +201,16 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(AllMembersDataModel), 0)]
 		public IActionResult Members(string code, int page, int pageSize = 100)
 		{
-			code = code ?? _currentUserService.CurrentUser?.CompanyInfo.CompanyCode;
-			int totalCount = 0;
-			var list = code == null ? new List<UserSummaryDto>() : _companyManagerServices.GetMembers(code, page, pageSize, out totalCount).Select(u => u.ToSummaryDto());
+			code ??= _currentUserService.CurrentUser?.CompanyInfo.CompanyCode;
+			var list = code == null ? new Tuple<IQueryable<User>,int>(null,0) : _companyManagerServices
+				.GetMembers(code)
+				.SplitPage(page, pageSize);
 			return new JsonResult(new AllMembersViewModel()
 			{
 				Data = new AllMembersDataModel()
 				{
-					List = list,
-					TotalCount = totalCount
+					List = list.Item1?.Select(u => u.ToSummaryDto()).ToList() ?? new List<UserSummaryDto>(),
+					TotalCount = list.Item2
 				}
 			});
 		}

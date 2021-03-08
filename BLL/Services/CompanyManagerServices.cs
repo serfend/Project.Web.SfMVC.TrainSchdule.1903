@@ -66,16 +66,9 @@ namespace BLL.Services
 			return _context.SaveChanges();
 		}
 
-		public IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount)
-		{
-			var list = _context.AppUsersDb.Where(u => u.CompanyInfo.CompanyCode == code).OrderByCompanyAndTitle();
-			totalCount = list.Count();
-			return list.Skip(page * pageSize).Take(pageSize);
-		}
+		public IQueryable<User> GetMembers(string code) => _context.AppUsersDb.Where(u => u.CompanyInfo.CompanyCode == code).OrderByCompanyAndTitle();
 
-		public IEnumerable<CompanyManagers> GetManagers(string companyCode)
-		{
-			return _context.CompanyManagers.Where(c => c.CompanyCode == companyCode);
-		}
+		public IQueryable<CompanyManagers> GetManagers(string companyCode)
+			=> _context.CompanyManagers.Where(c => c.CompanyCode == companyCode);
 	}
 }

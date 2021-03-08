@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using DAL.DTO.Company;
 using DAL.Entities;
@@ -26,8 +27,12 @@ namespace BLL.Interfaces
 		/// </summary>
 		/// <param name="companyCode"></param>
 		/// <returns></returns>
-		IEnumerable<CompanyManagers> GetManagers(string companyCode);
-
-		IEnumerable<User> GetMembers(string code, int page, int pageSize, out int totalCount);
+		IQueryable<CompanyManagers> GetManagers(string companyCode);
+		/// <summary>
+		/// 获取单位的成员
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
+		IQueryable<User> GetMembers(string code);
 	}
 }

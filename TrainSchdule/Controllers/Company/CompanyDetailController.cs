@@ -27,7 +27,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult DutiesDetail(string name)
 		{
 			var currentUser = _currentUserService.CurrentUser;
-			name = name ?? currentUser?.CompanyInfo?.Duties.Name;
+			name ??= currentUser?.CompanyInfo?.Duties.Name;
 			var duty = _context.Duties.Where(d => d.Name == name).FirstOrDefault();
 			if (duty == null) return new JsonResult(ActionStatusMessage.CompanyMessage.DutyMessage.NotExist);
 			var r = duty.ToDataModel();
