@@ -239,31 +239,35 @@ namespace BLL.Services
 
 		private User CreateAppUser(User user)
 		{
-			user.Application.Create = DateTime.Now;
-			user.Application.AuthKey = new Random().Next(1000, 99999).ToString().GetHashCode().ToString();
-			user.Application.ApplicationSetting = new UserApplicationSetting()
+			var application = user.Application;
+			application.Create = DateTime.Now;
+			application.AuthKey = new Random().Next(1000, 99999).ToString().GetHashCode().ToString();
+			application.ApplicationSetting = new UserApplicationSetting()
 			{
 				LastSubmitApplyTime = DateTime.Now
 			};
-			user.Application.Permission = new Permissions()
+			application.Permission = new Permissions()
 			{
 				Regions = "",
 				Role = "User"
 			};
-			user.CompanyInfo.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == user.CompanyInfo.CompanyCode);
-			user.CompanyInfo.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
+			var company = user.CompanyInfo;
+			company.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyCode);
+			company.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
+			
 			var title = user.CompanyInfo.Title;
-			user.CompanyInfo.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);
+			company.Title = _context.UserCompanyTitles.FirstOrDefault(d => d.Name == title.Name);
 			var social = user.SocialInfo;
 			social.Address = _context.AdminDivisions.Find(user.SocialInfo?.Address?.Code);
-			if (social.Settle != null)
+			var settle = social.Settle;
+			if (settle != null)
 			{
-				if (social.Settle.Lover?.Address != null) social.Settle.Lover.Address = _context.AdminDivisions.Find(social.Settle.Lover.Address.Code);
-				if (social.Settle.Parent?.Address != null) social.Settle.Parent.Address = _context.AdminDivisions.Find(social.Settle.Parent.Address.Code);
-				if (social.Settle.LoversParent?.Address != null) social.Settle.LoversParent.Address = _context.AdminDivisions.Find(social.Settle.LoversParent.Address.Code);
-				if (social.Settle.Self?.Address != null) social.Settle.Self.Address = _context.AdminDivisions.Find(social.Settle.Self.Address.Code);
+				if (settle.Lover?.Address != null) settle.Lover.Address = _context.AdminDivisions.Find(settle.Lover.Address.Code);
+				if (settle.Parent?.Address != null) settle.Parent.Address = _context.AdminDivisions.Find(settle.Parent.Address.Code);
+				if (settle.LoversParent?.Address != null) settle.LoversParent.Address = _context.AdminDivisions.Find(settle.LoversParent.Address.Code);
+				if (settle.Self?.Address != null) settle.Self.Address = _context.AdminDivisions.Find(settle.Self.Address.Code);
 				// if prev yealy history not set , then build new one
-				if (social.Settle.PrevYealyLengthHistory == null) social.Settle.PrevYealyLengthHistory = new List<AppUsersSettleModifyRecord>();
+				if (settle.PrevYealyLengthHistory == null) settle.PrevYealyLengthHistory = new List<AppUsersSettleModifyRecord>();
 			}
 			return user;
 		}

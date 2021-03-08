@@ -27,6 +27,8 @@ namespace TrainSchdule.Extensions
 		public static User ToModel(this UserModifyDataModel model, string invitedBy, DbSet<AdminDivision> dbAdmin, DbSet<ThirdpardAccount> dbThidpardAccount)
 		{
 			if (model == null) return null;
+			var c = model.Company;
+			var companyCode = c?.Company?.Code;
 			var u = new User()
 			{
 				Id = model.Application.UserName,
@@ -36,17 +38,18 @@ namespace TrainSchdule.Extensions
 				{
 					Company = new Company()
 					{
-						Code = model.Company?.Company?.Code
+						Code = companyCode
 					},
+					CompanyCode= companyCode,
 					Duties = new Duties()
 					{
-						Name = model.Company?.Duties?.Name
+						Name = c?.Duties?.Name
 					},
 					Title = new UserCompanyTitle()
 					{
-						Name = model.Company?.Title?.Name
+						Name = c?.Title?.Name
 					},
-					TitleDate = model.Company?.TitleDate
+					TitleDate = c?.TitleDate
 				},
 				Application = model.Application?.ToModel(invitedBy),
 				BaseInfo = model.Base,

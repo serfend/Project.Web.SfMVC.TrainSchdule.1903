@@ -120,5 +120,6 @@ namespace TrainSchdule.ViewModels.Account
 		///
 		/// </summary>
 		public UserDiyInfoDataModel Diy { get; set; }
+
 	}
 }
