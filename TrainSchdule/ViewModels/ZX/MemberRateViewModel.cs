@@ -153,14 +153,18 @@ namespace TrainSchdule.ViewModels.ZX
         /// <returns></returns>
         public static NormalRate ToModel(this MemberRateImportDto model,IQueryable<DAL.Entities.Company> companies,IQueryable<DAL.Entities.UserInfo.User>users)
         {
+            var company = companies.FirstOrDefault(i => i.Code == model.Company);
+            var user = users.FirstOrDefault(i => i.BaseInfo.Cid == model.UserCid);
             var raw = new NormalRate()
             {
-                Company = companies.FirstOrDefault(i => i.Code == model.Company),
+                Company = company,
+                CompanyCode = company?.Code,
                 Create = DateTime.Now,
                 Level = (int)model.Level,
                 Rank = model.Rank,
                 Remark = model.Remark,
-                User = users.FirstOrDefault(i => i.BaseInfo.Cid == model.UserCid),
+                User = user,
+                UserId = user?.Id
             };
             return raw;
         }

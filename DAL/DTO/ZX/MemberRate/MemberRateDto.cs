@@ -27,7 +27,7 @@ namespace DAL.DTO.ZX.MemberRate
         /// <summary>
         /// 评比单位，默认为用户所在单位
         /// </summary>
-        [ImporterHeader(IsIgnore =true,Name = "评比单位", Description = "默认为用户所在单位，如需更改则输入单位代码", IsInterValidation = true)]
+        [ImporterHeader(Name = "评比单位", Description = "默认为用户所在单位，如需更改则输入单位代码", IsInterValidation = true)]
        
         public string Company { get; set; }
         /// <summary>

@@ -105,10 +105,11 @@ namespace TrainSchdule.Controllers.Zx
                 i.RatingCycleCount = model.RatingCycleCount;
                 i.RatingType = model.RatingType;
                 var umax = model.Company; // 全局指定的单位
+                if(i.CompanyCode==null) i.CompanyCode = umax; // 默认选中
                 var ccode = i.CompanyCode; // 表格中指定的单位
-                umax = umax==null ? ccode : (ccode.StartsWith(umax) ? umax : ccode); // 取高权限
+                umax = ccode == null ? umax : (ccode.StartsWith(umax) ? umax : ccode); // 取高权限
                 var ucode = i.User.CompanyInfo.CompanyCode; // 用户的单位
-                umax = umax==null ? ucode : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
+                umax = ucode==null ? umax : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
                 if (authList.Contains(umax)) { 
                     authList.Add(umax);
                     if(!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Grade.MemberRate, Operation.Update, currentUser.Id, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
