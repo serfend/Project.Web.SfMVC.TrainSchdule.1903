@@ -121,10 +121,10 @@ namespace BLL.Services.ApplyServices
 		{
 			var applies = _context.Applies;
 			var to_remove = applies.Where(a =>
-				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.Abolish) > 0 ||
-				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.DisableVacation) > 0 ||
-				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.PrivateAccount) > 0 ||
-				 a.BaseInfo.From.CompanyInfo.Title.DisableVacation
+				 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.Abolish) > 0 
+				  || ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.DisableVacation) > 0
+				  || ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.PrivateAccount) > 0
+				 //a.BaseInfo.From.CompanyInfo.Title.DisableVacation
 			);
 			await RemoveApplies(to_remove).ConfigureAwait(false);
 			return to_remove.Count();

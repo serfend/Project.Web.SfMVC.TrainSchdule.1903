@@ -332,12 +332,13 @@ namespace BLL.Services
 
 		private void SetUserAppliesStatus(string id, bool abolish)
 		{
-			int status = (abolish ? 1 : -1) * (int)MainStatus.Invalid;
 			var user_applies = _context.Applies.Where(a => a.BaseInfo.FromId == id);
 			foreach (var a in user_applies)
 			{
-				if (((int)a.MainStatus & status) > 0) continue;
-				a.MainStatus += status;
+				if(abolish)
+					a.MainStatus |= MainStatus.Invalid;
+                else if (((int)a.MainStatus & (int)MainStatus.Invalid) > 0)
+					a.MainStatus -= MainStatus.Invalid;
 			}
 			_context.Applies.UpdateRange(user_applies);
 		}
