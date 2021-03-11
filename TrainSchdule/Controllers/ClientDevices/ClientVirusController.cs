@@ -70,6 +70,15 @@ namespace TrainSchdule.Controllers.ClientDevices
             if (id != null) return new JsonResult(new EntityViewModel<VirusDto>(list.FirstOrDefault(i=>i.Id==id)?.ToModel()));
             var createStart = model.Create?.Start;
             var createEnd = model.Create?.End;
+            var companies = model.Companies?.Arrays;
+            if (companies != null && companies.Any())
+            {
+                list = list.Where(i => i.Company != null);
+                var exp = PredicateBuilder.New<Virus>(false);
+                foreach(var c in companies)
+                    exp = exp.Or(i => i.Company.StartsWith(c));
+                list = list.Where(exp);
+            }
             if (createStart != null && createEnd != null && createStart > DateTime.MinValue && createEnd > DateTime.MinValue)
                 list = list.Where(i => i.Create >= createStart && i.Create <= createEnd);
             var client = model.Client?.Value;

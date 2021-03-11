@@ -22,6 +22,10 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// </summary>
         public QueryByString CreateBy { get; set; }
         /// <summary>
+        /// 单位
+        /// </summary>
+        public QueryByString Companies { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
         public QueryByDate Create { get; set; }
