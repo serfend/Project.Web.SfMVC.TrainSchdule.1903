@@ -84,6 +84,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			var currentUser = currentUserService.CurrentUser;
 			var c = id == null ? currentUser : usersService.GetById(id);
+			if (c == null) return new JsonResult(c.NotExist());
 			var item = new { pages, id, start, end };
 			var ua = userActionServices.Log(UserOperation.AuditApply, c.Id, $"本人申请:{JsonConvert.SerializeObject(item)}", false, ActionRank.Infomation);
 

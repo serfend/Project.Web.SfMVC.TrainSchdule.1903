@@ -37,6 +37,10 @@ namespace TrainSchdule.ViewModels.ClientDevice
         /// </summary>
         public string Description { get; set; }
         /// <summary>
+        /// 危害级别
+        /// </summary>
+        public short WarningLevel { get; set; }
+        /// <summary>
         /// 【冗余】是否自动分配
         /// </summary>
         public bool IsAutoDispatch { get; set; }
@@ -91,6 +95,7 @@ namespace TrainSchdule.ViewModels.ClientDevice
                 Create = client.Create,
                 Alias=client.Alias,
                 Description=client.Description,
+                WarningLevel=client.WarningLevel,
                 Sha1=client.Sha1,
                 Type=client.Type,
                 IsAutoDispatch=isAutoDispatch
@@ -110,6 +115,7 @@ namespace TrainSchdule.ViewModels.ClientDevice
             raw.Alias = client.Alias;
             raw.Create = client.Create;
             raw.Description = client.Description;
+            raw.WarningLevel = client.WarningLevel;
             return raw;
         }
     }

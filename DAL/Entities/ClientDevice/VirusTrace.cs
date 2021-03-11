@@ -31,6 +31,10 @@ namespace DAL.Entities.ClientDevice
         /// 简介
         /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// 危害级别
+        /// </summary>
+        public short WarningLevel { get; set; }
     }
     public class VirusTypeDispatch : BaseEntityGuid
     {

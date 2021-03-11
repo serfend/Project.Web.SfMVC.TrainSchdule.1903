@@ -158,6 +158,7 @@ namespace DAL.Data
 		}
 		private void Configuration_ClientVirusStatus(ModelBuilder builder)
 		{
+			builder.Entity<Virus>().HasAlternateKey(i => i.Key);
 			var data = builder.Entity<CommonDataDictionary>();
 			var status = new List<CommonDataDictionary>()
 			{

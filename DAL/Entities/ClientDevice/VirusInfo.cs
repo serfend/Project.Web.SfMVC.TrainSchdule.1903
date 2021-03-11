@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -61,7 +63,9 @@ namespace DAL.Entities.ClientDevice
         /// <summary>
         /// 病毒类型【冗余】
         /// </summary>
+        [ForeignKey("TraceTypeId")]
         public virtual VirusTrace TraceType { get; set; }
+        public Guid? TraceTypeId { get; set; }
         /// <summary>
         /// 病毒类型名称【冗余】
         /// </summary>

@@ -34,9 +34,17 @@ namespace DAL.DTO.ClientDevice
         /// </summary>
         public string Type { get; set; }
         /// <summary>
+        /// 病毒类型id
+        /// </summary>
+        public string TypeId { get; set; }
+        /// <summary>
         /// Sha1
         /// </summary>
         public string Sha1 { get; set; }
+        /// <summary>
+        /// 危害级别
+        /// </summary>
+        public short WarningLevel { get; set; }
         /// <summary>
         /// 处置状态
         /// </summary>
@@ -117,6 +125,7 @@ namespace DAL.DTO.ClientDevice
                 Sha1 = model.Sha1,
                 Status = model.Status,
                 Type = model.Type,
+                TypeId = model.TraceTypeId.ToString(),
                 TraceAlias=model.TraceAlias
             };
         }
