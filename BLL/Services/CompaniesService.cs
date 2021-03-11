@@ -50,11 +50,7 @@ namespace BLL.Services
 			return list;
 		}
 
-		public Company GetById(string code)
-		{
-			var company = _context.CompaniesDb.FirstOrDefault(c => c.Code == code);
-			return company;
-		}
+		public Company GetById(string code) => _context.CompaniesDb.FirstOrDefault(c => c.Code == code);
 
 		public IEnumerable<Company> FindAllChild(string code)
 		{

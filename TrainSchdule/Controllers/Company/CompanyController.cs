@@ -132,9 +132,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Detail(string id)
 		{
 			var c = _companiesService.GetById(id);
-			if (c == null) id = _currentUserService.CurrentUser?.CompanyInfo?.CompanyCode;
-			c = _companiesService.GetById(id);
-
+			if (c == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
 			return new JsonResult(new EntityViewModel<Company>(c));
 		}
 
