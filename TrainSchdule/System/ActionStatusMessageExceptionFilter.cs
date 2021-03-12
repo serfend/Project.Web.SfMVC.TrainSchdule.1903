@@ -42,11 +42,6 @@ namespace TrainSchdule.System
 					context.Result = new JsonResult(ex.Status);
 					context.ExceptionHandled = true;//异常已处理
 				}
-				else if(context.Exception is ModelStateException mse)
-                {
-					context.Result = new JsonResult(mse.Model);
-					context.ExceptionHandled = true;
-				}
 				else if (context.Exception is DbUpdateConcurrencyException ex2)
 				{
 					context.Result = new JsonResult(ActionStatusMessage.StaticMessage.System.SystemBusy);

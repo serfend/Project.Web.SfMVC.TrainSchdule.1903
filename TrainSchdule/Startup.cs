@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -117,9 +118,8 @@ namespace TrainSchdule
 			});
 
 			AddAllowCorsServices(services);
-
 			AddHangfireServices(services);
-			AddSwaggerServices(services);
+            AddSwaggerServices(services);
 			services.Configure<IdentityOptions>(options =>
 			{
 				// Password settings
@@ -137,36 +137,31 @@ namespace TrainSchdule
 
 				// User settings
 				options.User.RequireUniqueEmail = true;
+
 			});
 			services.RegisterServices();
-
 			services
 				.AddMvc(option =>
 			{
 				option.Filters.Add<ActionStatusMessageExceptionFilter>();
+				option.Filters.Add<ModelStateCheckFilter>();
 				option.MaxValidationDepth = 1024; // https://stackoverflow.com/questions/63112368/asp-net-core-api-validationvisitor-exceeded-the-maximum-configured-validation
 			})
 				.AddNewtonsoftJson(opt =>
 				{
 					opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
 				});
+			services.Configure<ApiBehaviorOptions>(options => {
+				options.SuppressModelStateInvalidFilter = true;
+			});
 			services.Configure<FormOptions>(options =>
 			{
 				options.MultipartBodyLengthLimit = long.MaxValue;
 			});
-			//.AddJsonOptions(opt =>
-			//	{
-			//		opt.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
-			//		opt.JsonSerializerOptions.Converters.Add(new DictionaryTKeyEnumTValueConverter());
-			//		opt.JsonSerializerOptions.AllowTrailingCommas = true;
-			//	}
-			//);
-			//.AddJsonOptions(opt => opt.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
-			// TODO use yyyy-mm-ddThh:ii:ssZ (UTC)
 			services.AddWebSocketManager();
 		}
 
-		private void AddSwaggerServices(IServiceCollection services)
+		private static void AddSwaggerServices(IServiceCollection services)
 		{
 			//注册Swagger生成器，定义一个和多个Swagger 文档
 			services.AddSwaggerGen(c =>
@@ -224,13 +219,13 @@ namespace TrainSchdule
 			{
 				options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
 				options.OnAppendCookie = cookieContext =>
-					CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
 				options.OnDeleteCookie = cookieContext =>
-					CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
 			});
 		}
 
-		private void CheckSameSite(HttpContext httpContext, CookieOptions options)
+		private static void CheckSameSite(HttpContext httpContext, CookieOptions options)
 		{
 			if (options.SameSite == SameSiteMode.None)
 			{
@@ -288,9 +283,9 @@ namespace TrainSchdule
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				OnAppendCookie = cookieContext =>
-					  CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
+                      CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
 				OnDeleteCookie = cookieContext =>
-					  CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
+                      CheckSameSite(cookieContext.Context, cookieContext.CookieOptions),
 				MinimumSameSitePolicy = SameSiteMode.None,
 				Secure = CookieSecurePolicy.SameAsRequest
 			});

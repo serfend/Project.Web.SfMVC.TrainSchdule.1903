@@ -70,7 +70,6 @@ namespace TrainSchdule.Controllers.Zx
         [HttpPost]
         public async Task<IActionResult> XlsUpload(MemberRateXlsDto model)
         {
-            if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
             var importer = new ExcelImporter();
             ImportResult<MemberRateImportDto> data;
             HttpContext.Session.Remove(cacheMemberRate);

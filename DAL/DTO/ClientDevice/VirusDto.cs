@@ -1,6 +1,8 @@
 ﻿using DAL.Entities.ClientDevice;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ namespace DAL.DTO.ClientDevice
         /// <summary>
         /// id
         /// </summary>
+        [Required]
         public Guid Id { get; set; }
         /// <summary>
         /// 出现时间【冗余】
@@ -40,6 +43,7 @@ namespace DAL.DTO.ClientDevice
         /// <summary>
         /// Sha1
         /// </summary>
+        [IgnoreEmptyWithZero]
         public string Sha1 { get; set; }
         /// <summary>
         /// 危害级别
@@ -70,7 +74,16 @@ namespace DAL.DTO.ClientDevice
         /// </summary>
         public string TraceAlias { get; set; }
     }
-    
+
+    public class IgnoreEmptyWithZeroAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            var result = Convert.ToString(value, CultureInfo.CurrentCulture).Contains(new string('0', 10));
+            this.ErrorMessage = result?"值为10位0以上的认定为无需处理项":null;
+            return !result;
+        }
+    }
     /// <summary>
     /// 
     /// </summary>

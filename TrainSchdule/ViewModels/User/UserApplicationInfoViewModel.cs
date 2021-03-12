@@ -25,6 +25,7 @@ namespace TrainSchdule.ViewModels.User
 		/// 用户id
 		/// </summary>
 		[StringLength(32, ErrorMessage = "用户名不可少于7位", MinimumLength = 7)]
+		[Required]
 		public string UserName { get; set; }
 
 		/// <summary>

@@ -550,7 +550,6 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public async Task<IActionResult> Register([FromBody] UserCreateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
 			if (model.Auth?.AuthByUserID != null)
@@ -559,20 +558,7 @@ namespace TrainSchdule.Controllers
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			}
 			var ua = _userActionServices.Log(UserOperation.Register, model?.Data?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}常规注册", false, ActionRank.Warning);
-			try
-			{
-				await RegisterSingle(model.Data, authByUser);
-			}
-			catch (ActionStatusMessageException ex)
-			{
-				_userActionServices.Status(ua, false, ex.Status.Message);
-				return new JsonResult(_userActionServices.LogNewActionInfo(ua, ex.Status));
-			}
-			catch (ModelStateException mse)
-			{
-				_userActionServices.Status(ua, false, $"失败:{JsonConvert.SerializeObject(mse.Model)}");
-				return new JsonResult(mse.Model);
-			}
+			await RegisterSingle(model.Data, authByUser);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -613,34 +599,13 @@ namespace TrainSchdule.Controllers
 			model.Verify.Verify(_verifyService);
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
-			var exStatus = new Dictionary<string, ApiResult>();
-			var exMSE = new Dictionary<string, ModelStateExceptionDataModel>();
 			foreach (var m in model.Data.List)
 			{
 				var actionRecord = _userActionServices.Log(UserOperation.Register, m?.Application?.UserName ?? "NOT Specify", $"{authByUser.Id}批量注册", false, ActionRank.Warning);
-				try
-				{
-					await RegisterSingle(m, authByUser);
-					_userActionServices.Status(actionRecord, true);
-				}
-				catch (ActionStatusMessageException ex)
-				{
-					_userActionServices.Status(actionRecord, false, ex.Status.Message);
-					exStatus.Add(m.Application?.UserName, ex.Status);
-				}
-				catch (ModelStateException mse)
-				{
-					_userActionServices.Status(actionRecord, false, JsonConvert.SerializeObject(mse.Model.Data));
-					exMSE.Add(m.Application?.UserName, mse.Model.Data);
-					ModelState.Clear();
-				}
-				finally { }
+				await RegisterSingle(m, authByUser);
+				_userActionServices.Status(actionRecord, true);
 			}
-			return new JsonResult(new ResponseStatusOrModelExceptionViweModel(exMSE.Count > 0 || exStatus.Count > 0 ? ActionStatusMessage.Fail : ActionStatusMessage.Success)
-			{
-				ModelStateException = exMSE,
-				StatusException = exStatus
-			});
+			return new JsonResult(ActionStatusMessage.Success);
 		}
 
 		/// <summary>
@@ -678,15 +643,11 @@ namespace TrainSchdule.Controllers
 
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser)
 		{
-			if (model.Application?.UserName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			var regUser = _usersService.GetById(model.Application.UserName);
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
 			var checkIfCidIsUsed = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
-			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			if (!ModelState.IsValid)
-				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password, CheckCurrentUserData);
 			if (!ModelState.IsValid)
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
