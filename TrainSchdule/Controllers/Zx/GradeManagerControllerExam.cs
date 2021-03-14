@@ -25,7 +25,6 @@ namespace TrainSchdule.Controllers.Zx
 		[Route("Grade/Exam")]
 		public IActionResult EditExam([FromBody] ExamModifyViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var m = model.ToModel(context);
 			var prev = context.GradeExams.Where(e => e.Name == m.Name).FirstOrDefault();
 			var operation = m.GetOperation(prev);

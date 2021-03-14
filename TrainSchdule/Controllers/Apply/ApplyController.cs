@@ -158,7 +158,6 @@ namespace TrainSchdule.Controllers.Apply
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
 		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var targetUser = usersService.GetById(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var m = model.ToVDTO(context);

@@ -282,7 +282,6 @@ namespace TrainSchdule.Controllers.Apply
 		[AllowAnonymous]
 		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model)
 		{
-			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 			var authUser = model.Auth.AuthUser(authService, usersService, currentUserService.CurrentUser?.Id);
 			if (authUser.Id != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();

@@ -199,7 +199,6 @@ namespace TrainSchdule.Controllers.Zx
         [HttpPost]
         public IActionResult Info([FromBody] MemberRateQueryModel model)
         {
-            if (!ModelState.IsValid) return new JsonResult(ModelState.ToModel());
             var list = context.NormalRates.ToExistDbSet();
             var currentUser = currentUserService.CurrentUser;
             
