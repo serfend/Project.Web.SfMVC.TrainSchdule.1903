@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BLL.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
@@ -22,7 +23,8 @@ namespace TrainSchdule.System
 		{
 			if (!context.ModelState.IsValid)
 			{
-				context.Result = new JsonResult(context.ModelState.ToModel());
+				var model = context.ModelState.ToModel();
+				context.Result = new JsonResult(model);
 			}
 		}
 	}

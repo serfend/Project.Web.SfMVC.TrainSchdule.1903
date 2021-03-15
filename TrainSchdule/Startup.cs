@@ -110,6 +110,7 @@ namespace TrainSchdule
 		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
 		{
+
 			services.AddDbContext<ApplicationDbContext>(options =>
 			{
 				var connectionString = Configuration.GetConnectionString("DefaultConnection");

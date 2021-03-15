@@ -43,6 +43,8 @@ namespace TrainSchdule.ViewModels
 		/// <param name="status"></param>
 		public ModelStateExceptionViewModel(ModelStateDictionary state,ApiResult status=null) {
 			if (status == null) status = new ApiResult(-1404, "数据格式错误");
+			this.Status = status.Status;
+			this.Message = status.Message;
 			Data = new ModelStateExceptionDataModel { List = state.AllModelStateErrors() };
 		}
 	}

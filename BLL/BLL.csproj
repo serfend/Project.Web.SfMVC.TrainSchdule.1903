@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.1.1" />
+    <PackageReference Include="Confluent.Kafka" Version="1.6.2" />
     <PackageReference Include="Hangfire" Version="1.7.18" />
     <PackageReference Include="Hangfire.Core" Version="1.7.18" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.18" />
