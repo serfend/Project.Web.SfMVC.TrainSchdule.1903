@@ -3,6 +3,7 @@ using DAL.Entities.ApplyInfo;
 using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.DTO.Apply
 {
@@ -28,5 +29,9 @@ namespace DAL.DTO.Apply
 		/// 是否是计划休假
 		/// </summary>
 		public bool IsPlan { get; set; }
+		/// <summary>
+		/// 用户指定 id,length
+		/// </summary>
+		public Dictionary<int, int> LawVacationSet { get; set; }
 	}
 }

@@ -75,25 +75,21 @@ namespace TrainSchdule.Controllers
 		/// <summary>
 		/// 获取法定节假日情况
 		/// </summary>
-		/// <param name="start">开始日期</param>
-		/// <param name="length">长度</param>
-		/// <param name="caculateLawVacation">是否计算法定节假日</param>
-		/// <param name="benefits">福利假长度（不计算法定节假日天数）</param>
 		/// <returns></returns>
-		[HttpGet]
+		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(VacationDescriptionDataModel), 0)]
-		public async Task<IActionResult> VacationDate(DateTime start, int length, bool caculateLawVacation, int benefits)
+		public IActionResult VacationDate([FromBody] VacationDateCheckDataModel model)
 		{
-			var list = await _vacationCheckServices.GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(true);
+			var list = _vacationCheckServices.GetVacationDescriptions(model.Start, model.Length, model.CaculateLawVacation, model.LawVacationSet);
 			return new JsonResult(new VacationDescriptionViewModel()
 			{
 				Data = new VacationDescriptionDataModel()
 				{
 					Descriptions = list,
-					EndDate = _vacationCheckServices.EndDate.AddDays(benefits),
-					StartDate = start,
-					VacationDays = _vacationCheckServices.EndDate.Subtract(start).Days
+					EndDate = _vacationCheckServices.EndDate.AddDays(model.Benefits),
+					StartDate = model.Start,
+					VacationDays = _vacationCheckServices.EndDate.Subtract(model.Start).Days
 				}
 			});
 		}

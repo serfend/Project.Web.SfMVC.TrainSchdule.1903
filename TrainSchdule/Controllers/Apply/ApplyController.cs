@@ -156,7 +156,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public async Task<IActionResult> RequestInfo([FromBody] SubmitRequestInfoViewModel model)
+		public IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			var targetUser = usersService.GetById(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -164,7 +164,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (m.VacationPlace == null) return new JsonResult(ActionStatusMessage.StaticMessage.AdminDivision.NoSuchArea);
 			try
 			{
-				var info = await applyService.SubmitRequestAsync(targetUser, m).ConfigureAwait(true);
+				var info =  applyService.SubmitRequestAsync(targetUser, m);
 				return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 			}
 			catch (ActionStatusMessageException ex)

@@ -71,5 +71,10 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 用户需要休的福利假列表
 		/// </summary>
 		public IEnumerable<VacationAdditional> VacationAdditionals { get; set; }
+		/// <summary>
+		/// 用户指定 id,length
+		/// </summary>
+		[Required(ErrorMessage = "用户指定未填写")]
+		public Dictionary<int, int> LawVacationSet { get; set; }
 	}
 }

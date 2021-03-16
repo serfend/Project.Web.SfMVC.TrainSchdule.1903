@@ -9,6 +9,7 @@ using DAL.Entities;
 using DAL.Entities.UserInfo;
 using BLL.Extensions;
 using System.Threading.Tasks;
+using DAL.DTO.Apply;
 
 namespace BLL.Services
 {
@@ -34,16 +35,14 @@ namespace BLL.Services
 		/// <param name="length"></param>
 		/// <param name="CheckInner">是否检查实际包含假期的长度 例如1.1-1.3元旦，从1.2-1.12只能算2天假期</param>
 		/// <returns></returns>
-		public IEnumerable<VacationDescription> GetVacationDates(DateTime date, int length, bool CheckInner)
+		public IEnumerable<VacationDescriptionDto> GetVacationDates(DateTime date, int length, bool CheckInner)
 		{
 			var endDate = date.AddDays(length);
 			return _context.VacationDescriptions.Where(v => v.Start <= endDate)
-				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => new VacationDescription()
-				{
-					Name = v.Name,
-					Length = CheckInner ? GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length)) : v.Length,
-					Start = v.Start
-				});
+				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => {
+					if(CheckInner)v.Length = GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length));
+					return v.ToModel();
+				}) ;
 		}
 
 		/// <summary>
@@ -65,10 +64,11 @@ namespace BLL.Services
 		/// </summary>
 		/// <param name="start"></param>
 		/// <param name="length"></param>
+		/// <param name="userSetList"></param>
 		/// <returns></returns>
-		public async Task<DateTime> CrossVacation(DateTime start, int length, bool caculateLawVacation)
+		public DateTime CrossVacation(DateTime start, int length, bool caculateLawVacation, Dictionary<int, int> userSetList)
 		{
-			await GetVacationDescriptions(start, length, caculateLawVacation).ConfigureAwait(false);
+			 GetVacationDescriptions(start, length, caculateLawVacation, userSetList);
 			return EndDate;
 		}
 
@@ -78,47 +78,47 @@ namespace BLL.Services
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <param name="caculateLawVacation">是否计算法定节假日，不计算时，按简单的相加计算长度</param>
+		/// <param name="userSetList">用户指定的假期长度</param>
 		/// <param name="exceptVacationCount">需要排除多少个假期（以避免重复计算）</param>
 		/// <returns></returns>
-		public async Task<IEnumerable<VacationDescription>> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation, int exceptVacationCount = 0)
+		public IEnumerable<VacationDescriptionDto> GetVacationDescriptions(DateTime start, int length, bool caculateLawVacation,Dictionary<int,int> userSetList, int exceptVacationCount = 0)
 		{
 			// 初始化
 			if (exceptVacationCount < 0) exceptVacationCount = 0;
-			if (exceptVacationCount == 0) VacationDesc = new List<VacationDescription>();
+			if (exceptVacationCount == 0) VacationDesc = new List<VacationDescriptionDto>();
 			length -= 1;// 【注意】此处因计算天数需要向前减一天
 			if (length > 1000 || length < 0)
 			{
 				EndDate = start;
 				return null;
 			}
-			var list = new List<VacationDescription>();
+			var list = new List<VacationDescriptionDto>();
 			var end = start.AddDays(length);
 			int vacationCount = 0;
 			int vacationDay = 0;
-			await Task.Run(() =>
+			if (caculateLawVacation)
 			{
-				if (caculateLawVacation)
+				var vas = GetVacationDates(start, length, true)
+					.ToList();
+				vacationCount = vas.Count;
+				for (var i = exceptVacationCount; i < vas.Count; i++)
 				{
-					var vas = GetVacationDates(start, length, true).ToList();
-					vacationCount = vas.Count;
-					for (var i = exceptVacationCount; i < vas.Count; i++)
-					{
-						var description = vas[i];
-						list.Add(description);
-						vacationDay += description.Length;
-					}
+					var description = vas[i];
+					var userSet = userSetList.ContainsKey(description.Id)? userSetList[description.Id]:description.Length;
+					list.Add(description.AttachUserSet(userSet));
+					vacationDay += description.UseLength;
 				}
-			}).ConfigureAwait(true);
+			}
 			VacationDesc = VacationDesc.Concat(list);
 			// 如果本轮计算了假期，则结果可能因为计算的假期而达到新假期的标准
 			// 此时应从开始日期重新计算包含假期后的实际长度，并加上新的假期
-			if (vacationCount > exceptVacationCount) return await GetVacationDescriptions(start, vacationDay + length + 1, true, vacationCount).ConfigureAwait(false);
+			if (vacationCount > exceptVacationCount) return GetVacationDescriptions(start, vacationDay + length + 1, true, userSetList, vacationCount);
 			end = end.AddDays(vacationDay);
 			EndDate = end;
 			return VacationDesc;
 		}
 
 		public DateTime EndDate { get; private set; }
-		public IEnumerable<VacationDescription> VacationDesc { get; set; } = new List<VacationDescription>();
+		public IEnumerable<VacationDescriptionDto> VacationDesc { get; set; } = new List<VacationDescriptionDto>();
 	}
 }

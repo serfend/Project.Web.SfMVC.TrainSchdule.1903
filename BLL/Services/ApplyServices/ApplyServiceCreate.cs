@@ -47,7 +47,7 @@ namespace BLL.Services.ApplyServices
 			return m;
 		}
 
-		public async Task<ApplyRequestVdto> CaculateVacation(ApplyRequestVdto model)
+		public ApplyRequestVdto CaculateVacation(ApplyRequestVdto model)
 		{
 			if (model == null) return null;
 			var type = model.VacationType;
@@ -67,12 +67,12 @@ namespace BLL.Services.ApplyServices
 				if (type.CaculateBenefit)
 				{
 					// 得到所有福利假后需要加入路途和原假并再次计算
-					model.StampReturn = await vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, true).ConfigureAwait(true);
+					model.StampReturn = vacationCheckServices.CrossVacation(model.StampLeave.Value, vacationLength, true,model.LawVacationSet);
 					List<VacationAdditional> lawVacations = vacationCheckServices.VacationDesc.Select(v => new VacationAdditional()
 					{
 						Name = v.Name,
 						Start = v.Start,
-						Length = v.Length,
+						Length = v.UseLength,
 						Description = Const_LawVacationDescription
 					}).ToList();
 					if (model.VacationAdditionals != null) lawVacations.AddRange(model.VacationAdditionals);
@@ -87,12 +87,12 @@ namespace BLL.Services.ApplyServices
 			return model;
 		}
 
-		public async Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
+		public ApplyRequest SubmitRequestAsync(User targetUser, ApplyRequestVdto model)
 		{
 			if (model == null) return null;
 			var vacationInfo = _usersService.VacationInfo(targetUser,model?.StampLeave?.Year??DateTime.Now.XjxtNow().Year,model.IsPlan?MainStatus.IsPlan:MainStatus.Normal);
 			if (vacationInfo.Description == null || vacationInfo.Description.Contains("无休假")) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.HaveNoVacationSinceExcept, vacationInfo.Description ?? "休假信息生效中", true));
-			model = await CaculateVacation(model).ConfigureAwait(true);
+			model = CaculateVacation(model);
 			var type = model.VacationType;
 			if (type?.Disabled ?? true) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
 			if (type.Primary)

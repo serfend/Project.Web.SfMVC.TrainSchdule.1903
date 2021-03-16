@@ -12,9 +12,9 @@ namespace BLL.Interfaces
 	{
 		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model);
 
-		Task<ApplyRequest> SubmitRequestAsync(User targetUser, ApplyRequestVdto model);
+		ApplyRequest SubmitRequestAsync(User targetUser, ApplyRequestVdto model);
 
-		Task<ApplyRequestVdto> CaculateVacation(ApplyRequestVdto model);
+		ApplyRequestVdto CaculateVacation(ApplyRequestVdto model);
 
 		Apply Submit(ApplyVdto model);
 

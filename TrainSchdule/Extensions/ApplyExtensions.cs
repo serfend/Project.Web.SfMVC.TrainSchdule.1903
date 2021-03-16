@@ -59,6 +59,7 @@ namespace TrainSchdule.Extensions
 				VacationType = context.VacationTypes.Where(t => t.Name == model.VacationType).FirstOrDefault(),
 				ByTransportation = model.ByTransportation,
 				VacationAdditionals = model.VacationAdditionals,
+				LawVacationSet = model.LawVacationSet,
 				IsPlan=model.IsPlan??false
 			};
 			return b;

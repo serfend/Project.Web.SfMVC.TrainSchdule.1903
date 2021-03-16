@@ -52,7 +52,7 @@ namespace BLL.Services.ApplyServices
 				var arr = model.CreateCompany?.Arrays;
 				var exp = PredicateBuilder.New<Apply>(false);
 				foreach (var item in arr)
-					exp = exp.Or(p => p.BaseInfo.CompanyCode.Contains(item));
+					exp = exp.Or(p => p.BaseInfo.CompanyCode.StartsWith(item));
 				if (arr != null)
 					list = list.Where(a => a.BaseInfo != null)
 						.Where(a => a.BaseInfo.From != null)
