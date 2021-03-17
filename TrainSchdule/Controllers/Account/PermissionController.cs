@@ -52,7 +52,7 @@ namespace TrainSchdule.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult), 0)]
-		public IActionResult Permission([FromBody] ModifyPermissionsViewModel model)
+		public async Task<IActionResult> Permission([FromBody] ModifyPermissionsViewModel model)
 		{
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var targetUser = _usersService.GetById(model.Id);
@@ -60,7 +60,8 @@ namespace TrainSchdule.Controllers
 			var authUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var ua = _userActionServices.Log(UserOperation.Permission, targetUser.Id, $"通过{authUser.Id}");
-			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission,authUser.CompanyInfo?.CompanyCode)) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
+			var auth_list =await _usersService.InMyManage(authUser);
+			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission, auth_list.Item1.Select(c=>c.Code))) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
