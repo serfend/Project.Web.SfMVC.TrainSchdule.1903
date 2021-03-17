@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Abp.Linq.Expressions;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
 
@@ -91,9 +92,17 @@ namespace DAL.Entities
 		/// <param name="permissions"></param>
 		/// <param name="newSerializeRaw"></param>
 		/// <param name="grantBy"></param>
+		/// <param name="grantCompany">授权单位</param>
 		/// <returns></returns>
-		public static bool Update(this Permissions permissions, string newSerializeRaw, Permissions grantBy)
+		public static bool Update(this Permissions permissions, string newSerializeRaw, Permissions grantBy, string grantCompany)
 		{
+			var result = CheckPermissionAuth(permissions, newSerializeRaw, grantBy, grantCompany);
+			if (!result) return false;
+			Update(permissions, newSerializeRaw);
+			return true;
+		}
+		public static bool CheckPermissionAuth(this Permissions permissions, string newSerializeRaw, Permissions grantBy, string grantCompany)
+        {
 			if (grantBy.Role.ToLower() != "admin")
 			{
 				var dicList = permissions.GetRegionList();
@@ -107,23 +116,30 @@ namespace DAL.Entities
 					var keyItem = new PermissionDescription(key, "");
 					var grantPermission = GetRegion(grantList, keyItem);
 					var nowPermission = GetRegion(dicList, keyItem);
-					if (!CheckIfHavePermission(grantPermission?.Update?.Union(nowPermission?.Update), value?.Update)) return true;
-					if (!CheckIfHavePermission(grantPermission?.Create?.Union(nowPermission?.Create), value?.Create)) return true;
-					if (!CheckIfHavePermission(grantPermission?.Query?.Union(nowPermission?.Query), value?.Query)) return true;
-					if (!CheckIfHavePermission(grantPermission?.Remove?.Union(nowPermission?.Remove), value?.Remove)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Update?.Union(nowPermission?.Update), value?.Update, grantCompany)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Create?.Union(nowPermission?.Create), value?.Create, grantCompany)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Query?.Union(nowPermission?.Query), value?.Query, grantCompany)) return true;
+					if (!CheckIfHavePermission(grantPermission?.Remove?.Union(nowPermission?.Remove), value?.Remove, grantCompany)) return true;
 					return false;
 				})) return false;
 			}
-
-			Update(permissions, newSerializeRaw);
 			return true;
 		}
-
-		private static bool CheckIfHavePermission(IEnumerable<string> granter, IEnumerable<string> expectTo)
+		/// <summary>
+		/// 检查是否有权限
+		/// </summary>
+		/// <param name="granter"></param>
+		/// <param name="expectTo"></param>
+		/// <param name="grantCompany">此单位下直接授权</param>
+		/// <returns></returns>
+		private static bool CheckIfHavePermission(IEnumerable<string> granter, IEnumerable<string> expectTo,string grantCompany)
 		{
 			if (granter == null) return false;
 			if (expectTo == null) return false;
-			return expectTo.All(p => granter.Any(p.StartsWith));
+			var exp = PredicateBuilder.New<string>();
+			exp = exp.Or(p => granter.Any(p.StartsWith));
+			if (grantCompany != null) exp = exp.Or(p=>p.StartsWith(grantCompany));
+			return expectTo.All(exp);
 		}
 
 		private static void Update(this Permissions permissions, string newSerializeRaw) =>

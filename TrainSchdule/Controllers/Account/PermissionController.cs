@@ -60,8 +60,7 @@ namespace TrainSchdule.Controllers
 			var authUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var ua = _userActionServices.Log(UserOperation.Permission, targetUser.Id, $"通过{authUser.Id}");
-			// TODO 单位管理或主管可直接编辑本单位权限
-			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission)) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
+			if (!targetUser.Application.Permission.Update(model.NewPermission, authUser.Application.Permission,authUser.CompanyInfo?.CompanyCode)) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 			_usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
