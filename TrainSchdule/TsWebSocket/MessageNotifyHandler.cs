@@ -36,9 +36,7 @@ namespace TsWebSocket.WebSockets
 			{
 				id = Guid.NewGuid()
 			};
-
 			var item = new WebSocketApiResult(null, JsonSerializer.Serialize(content)) { };
-
 			await SendMessageAsync(base.WebSocketConnectionManager.GetId(socket), item);
 		}
 

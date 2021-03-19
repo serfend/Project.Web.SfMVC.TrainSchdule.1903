@@ -73,17 +73,17 @@ namespace TsWebSocket.WebSockets
 			//await _next.Invoke(context);
 		}
 
-		private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+		private static async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)  
 		{
 			try
 			{
 				var buffer = new byte[1024 * 4];
-				WebSocketReceiveResult result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-				while (!result.CloseStatus.HasValue)
+				WebSocketReceiveResult result = null;
+				do
 				{
-					await socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
 					result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-				}
+					await socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+				} while (!result.CloseStatus.HasValue);
 				await socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 			}
 			catch (Exception ex)
