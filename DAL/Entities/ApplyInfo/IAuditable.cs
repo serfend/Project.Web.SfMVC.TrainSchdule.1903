@@ -22,6 +22,7 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public  IEnumerable<ApplyAuditStep> ApplyAllAuditStep { get; set; }
 
+		public string AuditLeader { get; set; }
 		/// <summary>
 		/// 当前审批步骤应有哪些人审批
 		/// </summary>

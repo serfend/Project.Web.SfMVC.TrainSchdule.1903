@@ -9,7 +9,7 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 申请基本
 	/// </summary>
-    public interface IAppliable
+    public interface IAppliable: IAuditable
 	{
 		/// <summary>
 		/// 申请发布的时间
@@ -20,8 +20,6 @@ namespace DAL.Entities.ApplyInfo
 		/// 申请的状态
 		/// </summary>
 		public AuditStatus Status { get; set; }
-		public string AuditLeader { get; set; }
-
 		/// <summary>
 		/// 被召回的id
 		/// </summary>
