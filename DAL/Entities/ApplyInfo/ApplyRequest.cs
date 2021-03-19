@@ -10,11 +10,8 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 用户的申请请求
 	/// </summary>
-	public class ApplyRequest : BaseEntityGuid
+	public class ApplyRequest : BaseEntityGuid, IApplyRequestBase
 	{
-		public DateTime? StampLeave { get; set; }
-		public DateTime? StampReturn { get; set; }
-
 		/// <summary>
 		/// 路途长度
 		/// </summary>
@@ -35,20 +32,6 @@ namespace DAL.Entities.ApplyInfo
 		/// </summary>
 		public virtual IEnumerable<VacationAdditional> AdditialVacations { get; set; }
 
-		/// <summary>
-		/// 休假地点
-		/// </summary>
-		public virtual AdminDivision VacationPlace { get; set; }
-
-		/// <summary>
-		/// 休假地点（详细地址）
-		/// </summary>
-		public string VacationPlaceName { get; set; }
-
-		/// <summary>
-		/// 休假原因（用户设置）
-		/// </summary>
-		public string Reason { get; set; }
 
 		/// <summary>
 		/// 创建时用户的全年休假情况
@@ -57,7 +40,12 @@ namespace DAL.Entities.ApplyInfo
 
 		public DateTime CreateTime { get; set; }
 		public Transportation ByTransportation { get; set; }
-	}
+        public DateTime? StampLeave { get ; set ; }
+        public DateTime? StampReturn { get ; set ; }
+        public virtual AdminDivision VacationPlace { get ; set ; }
+        public string VacationPlaceName { get ; set ; }
+        public string Reason { get ; set ; }
+    }
 
 	public enum Transportation
 	{
