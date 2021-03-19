@@ -10,7 +10,6 @@ namespace DAL.Entities
     {
 		public DateTime? StampLeave { get; set; }
 		public DateTime? StampReturn { get; set; }
-
 		/// <summary>
 		/// 休假地点
 		/// </summary>

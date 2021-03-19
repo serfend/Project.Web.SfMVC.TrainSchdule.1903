@@ -14,15 +14,16 @@ using BLL.Extensions.Common;
 using Microsoft.EntityFrameworkCore;
 using Abp.Linq.Expressions;
 using DAL.Entities.UserInfo;
+using DAL.Entities;
 
 namespace BLL.Services.ApplyServices
 {
 	public partial class ApplyService
 	{
-		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
+		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount) 
 		{
-			totalCount = 0;
 			var list = _context.AppliesDb;
+			totalCount = 0;
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
 			if (model.MainStatus != null) list = list.Where(a => (int)a.MainStatus == model.MainStatus.Start);

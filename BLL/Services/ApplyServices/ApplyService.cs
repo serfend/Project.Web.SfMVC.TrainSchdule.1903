@@ -35,10 +35,7 @@ namespace BLL.Services.ApplyServices
 
 		public Apply GetById(Guid id) => _context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();
 
-		public IEnumerable<Apply> GetAll(int page, int pageSize)
-		{
-			return GetAll((item) => true, page, pageSize);
-		}
+		public IEnumerable<Apply> GetAll(int page, int pageSize) => GetAll((item) => true, page, pageSize);
 
 		public IEnumerable<Apply> GetAll(string userid, int page, int pageSize)
 		{
@@ -99,10 +96,7 @@ namespace BLL.Services.ApplyServices
 			return true;
 		}
 
-		public async Task Delete(Apply item)
-		{
-			await RemoveApplies(new List<Apply>() { item }).ConfigureAwait(true);
-		}
+		public async Task Delete(Apply item)=>	await RemoveApplies(new List<Apply>() { item }).ConfigureAwait(true);
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)
 		{

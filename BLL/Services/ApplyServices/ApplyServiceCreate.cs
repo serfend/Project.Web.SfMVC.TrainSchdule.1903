@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Linq.Expressions;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -160,7 +161,7 @@ namespace BLL.Services.ApplyServices
 			return Create(apply); // 创建成功，记录本次创建详情
 		}
 
-		public void InitAuditStream(Apply model)
+		public void InitAuditStream<T>(T model)where T:IAppliable
 		{
 			var user = model?.BaseInfo?.From;
 			if (user == null) return;
@@ -209,7 +210,7 @@ namespace BLL.Services.ApplyServices
 		/// <summary>
 		/// 检查是否存在重复的时间范围的申请
 		/// </summary>
-		private void CheckIfHaveSameRangeVacation(Apply apply)
+		private void CheckIfHaveSameRangeVacation(Apply apply) 
 		{
 			var r = apply.RequestInfo;
 			var list = new List<AuditStatus>() {
@@ -220,6 +221,14 @@ namespace BLL.Services.ApplyServices
 			var userid = apply.BaseInfo.FromId;
 			var recallDb = _context.RecallOrders;
 			var execDb = _context.ApplyExcuteStatus;
+
+			var exp = PredicateBuilder.New<Apply>(false);
+			// 存在确认时间，则判断确认时间
+			exp = exp.Or(a=>a.RecallId == null && a.ExecuteStatusDetailId != null && !(execDb.FirstOrDefault(exec => exec.Id == a.ExecuteStatusDetailId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn));
+			// 不存在召回时间，则判断应归队时间（必定不晚于确认时间）
+			exp = exp.Or(a=>a.ExecuteStatusDetailId == null && a.RecallId == null && !(a.RequestInfo.StampLeave >= r.StampReturn || a.RequestInfo.StampReturn <= r.StampLeave));
+			// 如果存在召回，则判断召回时间
+			exp = exp.Or(a => a.RecallId != null && !(recallDb.FirstOrDefault(rec => rec.Id == a.RecallId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn));
 			/* 20200917@胡琪blanche881
 			 * 两个日期范围存在冲突的条件：
 			!(A2<=B1||B2<=A1)
@@ -227,21 +236,13 @@ namespace BLL.Services.ApplyServices
 			*/
 			var userVacationsInTime = _context.AppliesDb
 				.Where(a => a.BaseInfo.FromId == userid)
-				.Where(a =>
-				   (
-						// 不存在召回时间，则判断应归队时间（必定不晚于确认时间）
-						(a.ExecuteStatusDetailId == null && a.RecallId == null && !(a.RequestInfo.StampLeave >= r.StampReturn || a.RequestInfo.StampReturn <= r.StampLeave))
-					   // 存在确认时间，则判断确认时间
-					   || (a.RecallId == null && a.ExecuteStatusDetailId != null && !(execDb.FirstOrDefault(exec => exec.Id == a.ExecuteStatusDetailId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn))
-					   // 如果存在召回，则判断召回时间
-					   || (a.RecallId != null && !(recallDb.FirstOrDefault(rec => rec.Id == a.RecallId).ReturnStamp <= r.StampLeave || a.RequestInfo.StampLeave >= r.StampReturn))
-				   )
-			).Where(a => list.Contains(a.Status));
+				.Where(exp)
+				.Where(a => list.Contains(a.Status));
 			if (userVacationsInTime.Any())
 			{
 				var v = userVacationsInTime.FirstOrDefault();
-				var des = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : null;
-				var acturalReturn = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : "";
+				//var des = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : null;
+				//var acturalReturn = (v.RecallId != null ? "有召回" : "") + v.ExecuteStatusDetailId != null ? "已确认时间" : "";
 				throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.CrashOtherVacation, $"(与{v.RequestInfo.StampLeave} 到 {v.RequestInfo.StampReturn} 的假期冲突)", true));
 			}
 		}

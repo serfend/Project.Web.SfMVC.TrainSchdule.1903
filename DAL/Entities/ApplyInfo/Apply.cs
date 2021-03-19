@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class Apply : BaseEntityGuid,IAppliable, IExecutable
+	public class Apply : BaseEntityGuid,IAppliable
 	{
 		public virtual ApplyRequest RequestInfo { get; set; }
         public DateTime? Create { get ; set ; }
