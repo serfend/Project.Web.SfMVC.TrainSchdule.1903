@@ -83,7 +83,7 @@
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.1.1" />
-    <PackageReference Include="Magicodes.IE.Excel" Version="2.5.1.8" />
+    <PackageReference Include="Magicodes.IE.Excel" Version="2.5.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
