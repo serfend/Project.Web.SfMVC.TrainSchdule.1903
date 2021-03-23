@@ -26,16 +26,14 @@ namespace DAL.DTO.Apply
 			else model.UseLength = userSet;
 			return model;
 		}
-		public static VacationDescriptionDto ToModel(this VacationDescription model)
+		public static VacationDescriptionDto ToModel(this VacationDescription model,int? length = null) => new VacationDescriptionDto()
 		{
-			return new VacationDescriptionDto() {
-				Id = model.Id,
-				Length=model.Length,
-				Name=model.Name,
-				Start= model.Start,
-				UseLength = model.Length
-			};
-		}
+			Id = model.Id,
+			Length = length ?? model.Length,
+			Name = model.Name,
+			Start = model.Start,
+			UseLength = length ?? model.Length
+		};
 		public static VacationDescription ToModel(this VacationDescriptionDto model)
         {
 			return new VacationDescription()
