@@ -133,12 +133,14 @@ namespace BLL.Services.Audit
 			if (model == null) return null;
 
 			var list = new List<ApiResult>();
-			for (var i=0;i<model.List.Count();i++)
+			var handles = model.List.ToList();
+			for (var i=0;i< handles.Count;i++)
 			{
-				var apply = model.List.ElementAt(i);
+				var apply = handles[i];
 				var result = AuditSingle(ref apply, model.AuditUser);
 				list.Add(result);
 			}
+			model.List = handles;
 			return list;
 		}
 
