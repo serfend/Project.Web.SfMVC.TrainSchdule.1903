@@ -90,8 +90,8 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 				var prevP = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, prevRegion);
 				if (!prevP)
 				{
-					var targetCompanyItem = companiesService.GetById(companyRegion);
-					return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有原作用域{targetCompanyItem?.Name}({companyRegion})的权限"));
+					var targetCompanyItem = companiesService.GetById(prevRegion);
+					return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有原作用域{targetCompanyItem?.Name}({prevRegion})的权限"));
 				}
 			}
 			return new ApiResult();
