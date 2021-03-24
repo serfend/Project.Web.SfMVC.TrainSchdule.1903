@@ -17,10 +17,6 @@ namespace DAL.Entities.ApplyInfo
 		public DateTime? Create { get; set; }
 		public ApplyBaseInfo BaseInfo { get; set; }
 		/// <summary>
-		/// 申请的状态
-		/// </summary>
-		public AuditStatus Status { get; set; }
-		/// <summary>
 		/// 被召回的id
 		/// </summary>
 		public Guid? RecallId { get; set; }

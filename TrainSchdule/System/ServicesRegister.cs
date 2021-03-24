@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using BLL.Interfaces.Audit;
 using BLL.Interfaces.BBS;
 using BLL.Interfaces.ClientDevice;
 using BLL.Interfaces.Common;
@@ -10,6 +11,7 @@ using BLL.Interfaces.ZX;
 using BLL.Interfaces.ZX.IGrade;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.Audit;
 using BLL.Services.BBS;
 using BLL.Services.ClientDevice;
 using BLL.Services.Common;
@@ -116,7 +118,8 @@ namespace TrainSchdule.System
 			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
 			services.AddScoped<IStatisticsAppliesProcessServices, StatisticsAppliesProcessServices>();
 			services.AddScoped<IStatisticsDailyProcessServices, StatisticsDailyProcessServices>();
-			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamServices>();
+			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamRepositoryServices>();
+			services.AddScoped<IAuditStreamServices, AuditStreamServices>();
 		}
 
 		/// <summary>

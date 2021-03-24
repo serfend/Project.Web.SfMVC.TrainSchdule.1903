@@ -17,6 +17,13 @@ namespace BLL.Interfaces
 	/// </remarks>
 	public interface IUsersService : IUserServiceDetail
 	{
+
+		/// <summary>
+		/// 返回当前查询用户，或当前用户
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		User CurrentQueryUser(string id);
 		/// <summary>
 		/// 通过姓名获取账号（排除空格）
 		/// </summary>

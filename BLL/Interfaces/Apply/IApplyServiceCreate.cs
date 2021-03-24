@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using DAL.DTO.Apply;
@@ -17,21 +18,6 @@ namespace BLL.Interfaces
 		ApplyRequestVdto CaculateVacation(ApplyRequestVdto model);
 
 		Apply Submit(ApplyVdto model);
-
-		/// <summary>
-		/// 初始化申请
-		/// </summary>
-		/// <param name="model"></param>
-		void InitAuditStream(Apply model);
-
-		/// <summary>
-		/// 修改休假状态
-		/// </summary>
-		/// <param name="model"></param>
-		/// <param name="status"></param>
-		/// <param name="authUser"></param>
-		void ModifyAuditStatus(Apply model, AuditStatus status, string authUser = null);
-
-		IEnumerable<ApiResult> Audit(ApplyAuditVdto models);
+		IQueryable<Apply> CheckIfHaveSameRangeVacation(Apply apply);
 	}
 }

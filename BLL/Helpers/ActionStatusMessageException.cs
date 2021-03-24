@@ -2,7 +2,7 @@
 
 namespace BLL.Helpers
 {
-	public class ActionStatusMessageException : Exception
+	public class ActionStatusMessageException : Exception 
 	{
 		public ApiResult Status { get; set; }
 

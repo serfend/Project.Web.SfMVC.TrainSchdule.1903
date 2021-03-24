@@ -1,7 +1,10 @@
 ﻿using BLL.Extensions;
+using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations;
 using System;
@@ -86,17 +89,17 @@ namespace TrainSchdule.Extensions
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="auditUser"></param>
-		/// <param name="applyService"></param>
+		/// <param name="db"></param>
 		/// <returns></returns>
-		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model, User auditUser, IApplyService applyService)
+		public static ApplyAuditVdto<AuditStreamModel> ToAuditVDTO<T>(this AuditApplyViewModel model, User auditUser, IQueryable<T> db) where T:IHasGuidId,IAuditable,new()
 		{
-			var b = new ApplyAuditVdto()
+			var b = new ApplyAuditVdto<AuditStreamModel>()
 			{
 				AuditUser = auditUser,
-				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
+				List = model.Data.List.Select(d => new ApplyAuditNodeVdto<AuditStreamModel>()
 				{
 					Action = d.Action,
-					Apply = applyService.GetById(d.Id),
+					AuditItem = db.FirstOrDefault(i => i.Id == d.Id).ToModel(),
 					Remark = d.Remark
 				})
 			};

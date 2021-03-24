@@ -37,16 +37,12 @@ namespace TrainSchdule.System
 		{
 			if (!context.ExceptionHandled)//如果异常没有处理
 			{
-				if (context.Exception is ActionStatusMessageException ex)
+				(context.Result,context.ExceptionHandled) = context.Exception switch
 				{
-					context.Result = new JsonResult(ex.Status);
-					context.ExceptionHandled = true;//异常已处理
-				}
-				else if (context.Exception is DbUpdateConcurrencyException ex2)
-				{
-					context.Result = new JsonResult(ActionStatusMessage.StaticMessage.System.SystemBusy);
-					context.ExceptionHandled = true;
-				}
+					DbUpdateConcurrencyException => (new JsonResult(ActionStatusMessage.StaticMessage.System.SystemBusy),true),
+					ActionStatusMessageException ex => (new JsonResult(ex.Status),true),
+					_ =>(null,false)
+				};
 			}
 		}
 	}

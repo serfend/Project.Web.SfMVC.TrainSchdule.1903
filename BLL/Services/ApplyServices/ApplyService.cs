@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Audit;
 using DAL.Data;
 using DAL.Entities.ApplyInfo;
 using ExcelReport;
@@ -22,13 +23,13 @@ namespace BLL.Services.ApplyServices
 
 		#endregion Fileds
 
-		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IApplyAuditStreamServices applyAuditStreamServices, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices)
+		public ApplyService(ApplicationDbContext context, IUsersService usersService, ICurrentUserService currentUserService, IAuditStreamServices auditStreamServices, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices)
 		{
 			_context = context;
-			_usersService = usersService;
-			_currentUserService = currentUserService;
+			this.usersService = usersService;
+			this.currentUserService = currentUserService;
 			new Configurator()[".xlsx"] = new WorkbookLoader();
-			_applyAuditStreamServices = applyAuditStreamServices;
+			this.auditStreamServices = auditStreamServices;
 			this.companyManagerServices = companyManagerServices;
 			this.vacationCheckServices = vacationCheckServices;
 		}

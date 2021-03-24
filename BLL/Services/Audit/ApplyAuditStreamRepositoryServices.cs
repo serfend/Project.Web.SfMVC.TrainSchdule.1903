@@ -13,14 +13,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BLL.Services.ApplyServices
+namespace BLL.Services.Audit
 {
-	public class ApplyAuditStreamServices : IApplyAuditStreamServices
+	public class ApplyAuditStreamRepositoryServices : IApplyAuditStreamServices
 	{
 		private readonly ApplicationDbContext context;
 		private readonly ICompanyManagerServices companyManagerServices;
 
-		public ApplyAuditStreamServices(ApplicationDbContext context, ICompanyManagerServices companyManagerServices)
+		public ApplyAuditStreamRepositoryServices(ApplicationDbContext context, ICompanyManagerServices companyManagerServices)
 		{
 			this.context = context;
 			this.companyManagerServices = companyManagerServices;
