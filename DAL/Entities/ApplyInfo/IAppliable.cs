@@ -9,7 +9,7 @@ namespace DAL.Entities.ApplyInfo
 	/// <summary>
 	/// 申请基本
 	/// </summary>
-    public interface IAppliable: IAuditable, IExecutable
+    public interface IAppliable: IAuditable, IHasGuidId, IExecutable
 	{
 		/// <summary>
 		/// 申请发布的时间

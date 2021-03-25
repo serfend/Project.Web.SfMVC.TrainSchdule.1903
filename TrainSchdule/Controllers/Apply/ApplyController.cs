@@ -162,7 +162,7 @@ namespace TrainSchdule.Controllers.Apply
 		[HttpPost]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public IActionResult RequestInfo([FromBody] SubmitRequestInfoViewModel model)
+		public IActionResult VacationRequestInfo([FromBody] SubmitRequestInfoViewModel model)
 		{
 			var targetUser = usersService.GetById(model.Id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -171,6 +171,31 @@ namespace TrainSchdule.Controllers.Apply
 			try
 			{
 				var info =  applyService.SubmitRequestAsync(targetUser, m);
+				return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
+			}
+			catch (ActionStatusMessageException ex)
+			{
+				return new JsonResult(ex.Status);
+			}
+		}
+
+		/// <summary>
+		/// 提交本次申请的请求信息
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[AllowAnonymous]
+		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
+		public IActionResult IndayRequestInfo([FromBody] SubmitIndayRequestInfoViewModel model)
+		{
+			var targetUser = usersService.GetById(model.Id);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			var m = model.ToVDTO(context);
+			if (m.VacationPlace == null) return new JsonResult(ActionStatusMessage.StaticMessage.AdminDivision.NoSuchArea);
+			try
+			{
+				var info = applyInDayService.SubmitRequestAsync(targetUser, m);
 				return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 			}
 			catch (ActionStatusMessageException ex)
@@ -191,12 +216,8 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			model.Verify.Verify(verifyService);
 			var dto = model.ToVDTO();
-			var apply = applyService.Submit(dto);
-			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Default);
-			if (apply.RequestInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
-			if (apply.BaseInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
-			if (apply.BaseInfo?.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.FromId, null, true, ActionRank.Warning);
+			IAppliable apply =dto.EntityType=="vacation" ? applyService.Submit(dto):applyInDayService.Submit(dto);
+			userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.FromId, $"类型:{dto.EntityType}", true, ActionRank.Warning);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
 

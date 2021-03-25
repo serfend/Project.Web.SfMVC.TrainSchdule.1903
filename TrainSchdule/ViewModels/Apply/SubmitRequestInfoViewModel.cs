@@ -7,10 +7,10 @@ using System.ComponentModel.DataAnnotations;
 namespace TrainSchdule.ViewModels.Apply
 {
 	/// <summary>
-	///
+	/// 基础请求
 	/// </summary>
-	public class SubmitRequestInfoViewModel
-	{
+	public class SubmitRequestInfoBaseViewModel{
+
 		/// <summary>
 		/// 用户id
 		/// </summary>
@@ -30,6 +30,40 @@ namespace TrainSchdule.ViewModels.Apply
 		public DateTime? StampLeave { get; set; }
 
 		/// <summary>
+		/// 休假去向
+		/// </summary>
+		[Required(ErrorMessage = "休假去向未填写")]
+		public string VacationPlace { get; set; }
+
+		/// <summary>
+		/// 休假详细地址
+		/// </summary>
+		public string VacationPlaceName { get; set; }
+
+		/// <summary>
+		/// 休假原因
+		/// </summary>
+		public string Reason { get; set; }
+
+	}
+	/// <summary>
+	/// 请假请求提交
+	/// </summary>
+	public class SubmitIndayRequestInfoViewModel: SubmitRequestInfoBaseViewModel
+    {
+
+		/// <summary>
+		/// 离队时间
+		/// </summary>
+		[Required(ErrorMessage = "归队时间未填写")]
+		public DateTime? StampReturn { get; set; }
+	}
+	/// <summary>
+	/// 休假请求提交
+	/// </summary>
+	public class SubmitRequestInfoViewModel: SubmitRequestInfoBaseViewModel
+	{
+		/// <summary>
 		/// 休假时长
 		/// </summary>
 		[Required(ErrorMessage = "休假时长未填写")]
@@ -47,21 +81,6 @@ namespace TrainSchdule.ViewModels.Apply
 		[Required(ErrorMessage = "休假类别未填写")]
 		public string VacationType { get; set; }
 
-		/// <summary>
-		/// 休假去向
-		/// </summary>
-		[Required(ErrorMessage = "休假去向未填写")]
-		public string VacationPlace { get; set; }
-
-		/// <summary>
-		/// 休假详细地址
-		/// </summary>
-		public string VacationPlaceName { get; set; }
-
-		/// <summary>
-		/// 休假原因
-		/// </summary>
-		public string Reason { get; set; }
 		/// <summary>
 		/// 是否是休假计划
 		/// </summary>

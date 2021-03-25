@@ -30,6 +30,7 @@ namespace DAL.Data
 		public DbSet<ApplyAuditStep> ApplyAuditSteps { get; set; }
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
+		public DbSet<ApplyIndayRequest> ApplyIndayRequests { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationType> VacationTypes { get; set; }

@@ -41,7 +41,6 @@ namespace TrainSchdule.Extensions
 			};
 			return b;
 		}
-
 		/// <summary>
 		///  转换并计算用户的申请
 		/// </summary>
@@ -53,9 +52,9 @@ namespace TrainSchdule.Extensions
 			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
 			var b = new ApplyRequestVdto()
 			{
-				OnTripLength = model.OnTripLength,
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
+				OnTripLength = model.OnTripLength,
 				VacationLength = model.VacationLength,
 				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),
 				VacationPlaceName = model.VacationPlaceName,
@@ -67,7 +66,26 @@ namespace TrainSchdule.Extensions
 			};
 			return b;
 		}
-
+		/// <summary>
+		///  转换并计算用户的申请
+		/// </summary>
+		/// <param name="model">原始申请</param>
+		/// <param name="context">数据库</param>
+		/// <returns></returns>
+		public static ApplyIndayRequestVdto ToVDTO(this SubmitIndayRequestInfoViewModel model, ApplicationDbContext context)
+		{
+			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
+			var b = new ApplyIndayRequestVdto()
+			{
+				Reason = model.Reason,
+				StampLeave = model.StampLeave,
+				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),
+				VacationPlaceName = model.VacationPlaceName,
+				ByTransportation = model.ByTransportation,
+				StampReturn = model.StampReturn,
+			};
+			return b;
+		}
 		/// <summary>
 		///
 		/// </summary>

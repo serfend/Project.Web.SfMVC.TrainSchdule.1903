@@ -53,5 +53,6 @@ namespace DAL.Entities.ApplyInfo
 		火车 = 0,
 		飞机 = 1,
 		汽车 = 2,
+		地铁 = 3,
 	}
 }

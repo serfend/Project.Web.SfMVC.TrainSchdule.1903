@@ -17,6 +17,7 @@ namespace BLL.Interfaces.ApplyInfo
     }
     public interface IApplyInDayService : IApplyService<ApplyInday,ApplyIndayRequest>
     {
+        ApplyIndayRequest SubmitRequestAsync(User targetUser, ApplyIndayRequestVdto model);
 
     }
 }

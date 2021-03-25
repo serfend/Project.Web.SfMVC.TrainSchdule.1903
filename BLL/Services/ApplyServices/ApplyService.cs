@@ -24,7 +24,7 @@ namespace BLL.Services.ApplyServices
 	{
 		#region Fileds
 
-		private readonly ApplicationDbContext _context;
+		private readonly ApplicationDbContext context;
         private readonly IUsersService usersService;
         private readonly ICompanyManagerServices companyManagerServices;
 		private readonly IVacationCheckServices vacationCheckServices;
@@ -34,7 +34,7 @@ namespace BLL.Services.ApplyServices
 
         public ApplyService(ApplicationDbContext context, IUsersService usersService, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices, IAuditStreamServices auditStreamServices)
 		{
-			_context = context;
+			this.context = context;
             this.usersService = usersService;
             new Configurator()[".xlsx"] = new WorkbookLoader();
 			this.companyManagerServices = companyManagerServices;
@@ -42,25 +42,7 @@ namespace BLL.Services.ApplyServices
             this.auditStreamServices = auditStreamServices;
         }
 
-		public Apply GetById(Guid id) => _context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();
-
-		public IEnumerable<Apply> GetAll(int page, int pageSize) => GetAll((item) => true, page, pageSize);
-
-		public IEnumerable<Apply> GetAll(string userid, int page, int pageSize)
-		{
-			return GetAll((item) => item.BaseInfo.FromId == userid, page, pageSize);
-		}
-
-		public IEnumerable<Apply> GetAll(string userid, AuditStatus status, int page, int pageSize)
-		{
-			return GetAll((item) => item.BaseInfo.FromId == userid && status == item.Status, page, pageSize);
-		}
-
-		public IEnumerable<Apply> GetAll(Expression<Func<Apply, bool>> predicate, int page, int pageSize)
-		{
-			var items = _context.AppliesDb.Where(predicate).OrderByDescending(a => a.Status).ThenByDescending(a => a.Create).Skip(page * pageSize).Take(pageSize);
-			return items;
-		}
+		public Apply GetById(Guid id) => context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();
 
 		public Apply Create(Apply item)
 		{
@@ -75,9 +57,9 @@ namespace BLL.Services.ApplyServices
 				else if (time?.AddMinutes(1) > DateTime.Now)
 					appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
 			}
-			_context.Applies.Add(item);
-			_context.AppUserApplicationSettings.Update(appSetting);
-			_context.SaveChanges();
+			context.Applies.Add(item);
+			context.AppUserApplicationSettings.Update(appSetting);
+			context.SaveChanges();
 			return item;
 		}
 
@@ -133,29 +115,31 @@ namespace BLL.Services.ApplyServices
 				AdditialVacations = model.VacationAdditionals,
 				VacationDescription = vacationInfo.Description
 			};
-			_context.ApplyRequests.Add(r);
-			_context.SaveChanges();
+			context.ApplyRequests.Add(r);
+			context.SaveChanges();
 			return r;
 		}
 
 		public Apply Submit(ApplyVdto model)
 		{
-			if (model == null) return null;
+			if (model == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Default);
 			var apply = new Apply()
 			{
-				BaseInfo = _context.ApplyBaseInfos.Find(model.BaseInfoId),
+				BaseInfo = context.ApplyBaseInfos.Find(model.BaseInfoId),
 				Create = DateTime.Now,
-				RequestInfo = _context.ApplyRequests.Find(model.RequestInfoId),
+				RequestInfo = context.ApplyRequests.Find(model.RequestInfoId),
 				Status = AuditStatus.NotSave,
 				MainStatus = model.IsPlan ? MainStatus.IsPlan : MainStatus.Normal
 			};
-			if (apply.BaseInfo == null || apply.RequestInfo == null) return apply;
+			if (apply.RequestInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
+			if (apply.BaseInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
 			var company = apply.BaseInfo?.Company;
-			if (company == null) return apply;
+			if (company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			AuditStreamModel auditItem = apply.ToModel();
 			auditStreamServices.InitAuditStream(ref auditItem, model.EntityType, apply.BaseInfo?.From);
 			apply = auditItem.ToModel(apply);
-			return Create(apply); // 创建成功，记录本次创建详情
+			apply =  Create(apply); // 创建成功，记录本次创建详情
+			return apply;
 		}
 
 		/// <summary>
@@ -170,8 +154,8 @@ namespace BLL.Services.ApplyServices
 					AuditStatus.Auditing
 			};
 			var userid = apply.BaseInfo.FromId;
-			var recallDb = _context.RecallOrders;
-			var execDb = _context.ApplyExcuteStatus;
+			var recallDb = context.RecallOrders;
+			var execDb = context.ApplyExcuteStatus;
 
 			var exp = PredicateBuilder.New<Apply>(false);
 			// 存在确认时间，则判断确认时间
@@ -185,7 +169,7 @@ namespace BLL.Services.ApplyServices
 			!(A2<=B1||B2<=A1)
 			*
 			*/
-			var userVacationsInTime = _context.AppliesDb
+			var userVacationsInTime = context.AppliesDb
 				.Where(a => a.BaseInfo.FromId == userid)
 				.Where(exp)
 				.Where(a => list.Contains(a.Status));
@@ -231,27 +215,17 @@ namespace BLL.Services.ApplyServices
 			}
 			return model;
 		}
-		public bool Edit(string id, Action<Apply> editCallBack)
-		{
-			if (editCallBack == null) return false;
-			if (!Guid.TryParse(id, out var guid)) return false;
-			var target = _context.AppliesDb.Where(a => a.Id == guid).FirstOrDefault();
-			if (target == null) return false;
-			editCallBack.Invoke(target);
-			_context.Applies.Update(target);
-			_context.SaveChanges();
-			return true;
-		}
+		public bool Edit(string id, Action<Apply> editCallBack) => EditAsync(id, editCallBack).Result;
 
 		public async Task<bool> EditAsync(string id, Action<Apply> editCallBack)
 		{
 			if (editCallBack == null) return false;
 			if (!Guid.TryParse(id, out var guid)) return false;
-			var target = _context.AppliesDb.Where(a => a.Id == guid).FirstOrDefault();
+			var target = context.AppliesDb.Where(a => a.Id == guid).FirstOrDefault();
 			if (target == null) return false;
 			await Task.Run(() => editCallBack.Invoke(target)).ConfigureAwait(true);
-			_context.Applies.Update(target);
-			await _context.SaveChangesAsync().ConfigureAwait(true);
+			context.Applies.Update(target);
+			await context.SaveChangesAsync().ConfigureAwait(true);
 			return true;
 		}
 
@@ -259,7 +233,7 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Apply> Find(Func<Apply, bool> predict)
 		{
-			var list = _context.AppliesDb.Where(predict);
+			var list = context.AppliesDb.Where(predict);
 			return list;
 		}
 	}
