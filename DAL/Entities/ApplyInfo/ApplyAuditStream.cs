@@ -143,7 +143,6 @@ namespace DAL.Entities.ApplyInfo
 		/// 可以设置为self或parent或null，当设置非null，则Companies字段失效
 		/// </summary>
 		string CompanyRefer { get; set; }
-
 		/// <summary>
 		/// 可以设置单位类型，用于区分各类单位，以##分割
 		/// </summary>
