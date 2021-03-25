@@ -21,6 +21,7 @@ using BLL.Extensions.Common;
 using System.Threading.Tasks;
 using GoogleAuth;
 using DAL.Entities.UserInfo;
+using DAL.Entities.ApplyInfo.DailyApply;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -74,8 +75,9 @@ namespace TrainSchdule.Controllers.Apply
 		/// 查询当前用户自己的申请
 		/// </summary>
 		/// <returns></returns>
+		[Route("{entityType}")]
 		[HttpGet]
-		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20,int? MainStatus=null, DateTime? start = null, DateTime? end = null)
+		public IActionResult ListOfSelf(string id, int pageIndex = 0, int pageSize = 20,int? MainStatus=null, DateTime? start = null, DateTime? end = null,string entityType=null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			if (start == null) start = new DateTime(DateTime.Today.XjxtNow().Year, 1, 1);
@@ -86,23 +88,38 @@ namespace TrainSchdule.Controllers.Apply
 			var c = id == null ? currentUser : usersService.GetById(id);
 			if (c == null) return new JsonResult(c.NotExist());
 			var item = new { pages, id, start, end };
-			var ua = userActionServices.Log(UserOperation.AuditApply, c.Id, $"本人申请:{JsonConvert.SerializeObject(item)}", false, ActionRank.Infomation);
+			var ua = userActionServices.Log(UserOperation.AuditApply, c.Id, $"{entityType}-本人申请:{JsonConvert.SerializeObject(item)}", false, ActionRank.Infomation);
 
 			if (id != null && id != currentUser.Id)
 			{
 				if (!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.CompanyCode, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
-			var list = context.AppliesDb
+			if(entityType == "vacation")
+            {
+				var list = context.AppliesDb
 				.Where(a => a.BaseInfo.FromId == c.Id)
 				.Where(a => a.RequestInfo.StampLeave >= start)
 				.Where(a => a.RequestInfo.StampLeave <= end);
-			if (MainStatus != null) list = list.Where(a => (int)a.MainStatus == MainStatus);
-			list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
-			var result = list.SplitPage(pages);
-			userActionServices.Status(ua, true);
-			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
+				if (MainStatus != null) list = list.Where(a => (int)a.MainStatus == MainStatus);
+				list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
+				var result = list.SplitPage(pages);
+				userActionServices.Status(ua, true);
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
+            }
+            else
+            {
+				var list = context.AppliesIndayDb
+								.Where(a => a.BaseInfo.FromId == c.Id)
+								.Where(a => a.RequestInfo.StampLeave >= start)
+								.Where(a => a.RequestInfo.StampLeave <= end);
+				if (MainStatus != null) list = list.Where(a => (int)a.MainStatus == MainStatus);
+				list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
+				var result = list.SplitPage(pages);
+				userActionServices.Status(ua, true);
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyIndayRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
+			}
+			
 		}
-
         /// <summary>
         /// 查询当前用户可审批的申请
         /// </summary>

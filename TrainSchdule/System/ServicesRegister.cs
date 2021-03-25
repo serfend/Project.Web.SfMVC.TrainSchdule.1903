@@ -113,6 +113,7 @@ namespace TrainSchdule.System
 		/// <param name="services"></param>
 		private static void RegisterServices_Apply(this IServiceCollection services)
 		{
+			services.AddScoped<IApplyServiceClear, ApplyServiceClear>();
 			services.AddScoped<IApplyServiceCreate, ApplyServiceCreate>();
 			services.AddScoped<IApplyVacationService, ApplyService>();
 			services.AddScoped<IApplyInDayService, ApplyIndayService>();

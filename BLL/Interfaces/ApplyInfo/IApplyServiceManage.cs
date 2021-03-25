@@ -22,6 +22,7 @@ namespace BLL.Interfaces
 		/// <returns></returns>
 		IEnumerable<T> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount);
 
+
 		/// <summary>
 		/// 删除指定时间内未保存的申请
 		/// </summary>
@@ -30,18 +31,10 @@ namespace BLL.Interfaces
 		Task<int> RemoveAllUnSaveApply(TimeSpan interval);
 
 		/// <summary>
-		/// 删除指定时间内无用户认领的申请
-		/// </summary>
-		/// <param name="interval"></param>
-		/// <returns></returns>
-		Task<int> RemoveAllNoneFromUserApply(TimeSpan interval);
-
-		/// <summary>
 		/// 移除已删除的用户所对应的申请
 		/// </summary>
 		/// <returns></returns>
 		Task<int> RemoveAllRemovedUsersApply();
-
 		/// <summary>
 		/// 删除指定申请
 		/// </summary>
