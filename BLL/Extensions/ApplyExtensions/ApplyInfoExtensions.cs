@@ -18,16 +18,16 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class ApplyInfoExtensions
 	{
-		public static ApplyDetailDto ToDetaiDto(this Apply model, UserVacationInfoVDto info, ApplicationDbContext context)
+		public static ApplyDetailDto<Q> ToDetaiDto<T,Q>(this T model, UserVacationInfoVDto info,Q request, ApplicationDbContext context) where T : IAppliable, IHasGuidId where Q : IApplyRequestBase
 		{
 			if (model == null || context == null) return null;
-			var b = new ApplyDetailDto()
+			var b = new ApplyDetailDto<Q>()
 			{
 				Base = model.BaseInfo.From.ToSummaryDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
-				RequestInfo = model.RequestInfo,
+				RequestInfo = request,
 				Response = model.Response.Select(r => r.ToResponseDto()),
 				NowStep = model?.NowAuditStep?.ToDtoModel(),
 				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()),
@@ -43,16 +43,14 @@ namespace BLL.Extensions.ApplyExtensions
 				UserVacationDescription = info
 			};
 			if (model.Status == AuditStatus.Withdrew)
-			{
-				b.RequestInfo = null;
-			}
+				b.RequestInfo = default;
 			return b;
 		}
 
-		public static ApplySummaryDto ToSummaryDto(this Apply model)
+		public static ApplySummaryDto<Q> ToSummaryDto<T,Q>(this T model,Q request) where T:IAppliable,IHasGuidId where Q:IApplyRequestBase
 		{
 			if (model == null) return null;
-			var b = new ApplySummaryDto()
+			var b = new ApplySummaryDto<Q>()
 			{
 				Create = model?.Create,
 				Status = model.Status,
@@ -60,7 +58,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Base = model.BaseInfo.ToDto(),
 				UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
-				Request = model.RequestInfo,
+				Request = request,
 				ExecuteStatus = model.ExecuteStatus,
 				ExecuteStatusId = model.ExecuteStatusDetailId,
 				RecallId = model.RecallId,
@@ -70,7 +68,7 @@ namespace BLL.Extensions.ApplyExtensions
 			};
 			// 不显示已撤回的信息
 			if (b.Status == AuditStatus.Withdrew)
-				b.Request = null;
+				b.Request = default;
 			return b;
 		}
 		public static ApplyShadowDto ToShadowDto(this Apply model)

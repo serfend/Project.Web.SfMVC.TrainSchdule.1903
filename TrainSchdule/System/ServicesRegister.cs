@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using BLL.Interfaces.Audit;
 using BLL.Interfaces.BBS;
 using BLL.Interfaces.ClientDevice;
@@ -11,6 +12,7 @@ using BLL.Interfaces.ZX;
 using BLL.Interfaces.ZX.IGrade;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.ApplyServices.DailyApply;
 using BLL.Services.Audit;
 using BLL.Services.BBS;
 using BLL.Services.ClientDevice;
@@ -111,7 +113,9 @@ namespace TrainSchdule.System
 		/// <param name="services"></param>
 		private static void RegisterServices_Apply(this IServiceCollection services)
 		{
-			services.AddScoped<IApplyService, ApplyService>();
+			services.AddScoped<IApplyServiceCreate, ApplyServiceCreate>();
+			services.AddScoped<IApplyVacationService, ApplyService>();
+			services.AddScoped<IApplyInDayService, ApplyIndayService>();
 			services.AddScoped<IRecallOrderServices, RecallOrderServices>();
 			services.AddScoped<IVacationCheckServices, VacationCheckServices>();
 

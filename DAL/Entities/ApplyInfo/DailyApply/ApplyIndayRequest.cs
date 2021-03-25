@@ -13,7 +13,7 @@ namespace DAL.Entities.ApplyInfo.DailyApply
     {
         public DateTime? StampLeave { get; set; }
         public DateTime? StampReturn { get; set; }
-        public AdminDivision VacationPlace { get ; set ; }
+        public virtual AdminDivision VacationPlace { get ; set ; }
         public string VacationPlaceName { get ; set ; }
         public string Reason { get ; set ; }
     }

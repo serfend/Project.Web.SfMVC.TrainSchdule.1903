@@ -33,7 +33,10 @@ namespace DAL.Entities.ApplyInfo
 		/// 规则对应的方案
 		/// </summary>
 		public virtual ApplyAuditStream Solution { get; set; }
-
+		/// <summary>
+		/// 审批流作用类型 可填写应用名称
+		/// </summary>
+		public string EntityType { get; set; }
 		public DateTime Create { get; set; }
 		public string Duties { get; set; }
 		public string DutiesTags { get; set; }

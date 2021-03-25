@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Vacations;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,8 +13,11 @@ namespace DAL.Data
 	public partial class ApplicationDbContext
 	{
 		public DbSet<RecallOrder> RecallOrders { get; set; }
-		public DbSet<ApplyExecuteStatus> ApplyExcuteStatus { get; set; }public DbSet<Apply> Applies { get; set; }
+		public DbSet<ApplyExecuteStatus> ApplyExcuteStatus { get; set; }
+		public DbSet<Apply> Applies { get; set; }
 		public IQueryable<Apply> AppliesDb => Applies.Where(a => !a.IsRemoved).Where(a => ((int)a.MainStatus & (int)MainStatus.Invalid) == 0);
+		public DbSet<ApplyInday> AppliesInday { get; set; }
+		public IQueryable<ApplyInday> AppliesIndayDb => AppliesInday.Where(a => !a.IsRemoved).Where(a => ((int)a.MainStatus & (int)MainStatus.Invalid) == 0);
 		public DbSet<ApplyAuditStream> ApplyAuditStreams { get; set; }
 		public IQueryable<ApplyAuditStream> ApplyAuditStreamsDb => ApplyAuditStreams.Where(a => !a.IsRemoved);
 		public DbSet<ApplyAuditStreamSolutionRule> ApplyAuditStreamSolutionRules { get; set; }

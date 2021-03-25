@@ -17,8 +17,9 @@ namespace BLL.Interfaces.Audit
 		/// 初始化申请
 		/// </summary>
 		/// <param name="model"></param>
+		/// <param name="entityType">审批流作用类型 可填写应用名称</param>
 		/// <param name="user"></param>
-		void InitAuditStream<T>(ref T model,User user)where T:IAuditable;
+		void InitAuditStream<T>(ref T model,string entityType,User user)where T:IAuditable;
 
 		/// <summary>
 		/// 修改审批状态

@@ -79,7 +79,8 @@ namespace TrainSchdule.Extensions
 			{
 				BaseInfoId = model.BaseId ?? Guid.Empty,
 				RequestInfoId = model.RequestId ?? Guid.Empty,
-				IsPlan = model.IsPlan
+				IsPlan = model.IsPlan,
+				EntityType=model.EntityType
 			};
 			return b;
 		}

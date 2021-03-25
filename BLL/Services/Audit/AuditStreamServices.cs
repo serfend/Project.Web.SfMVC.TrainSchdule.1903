@@ -83,12 +83,12 @@ namespace BLL.Services.Audit
 			model.Status = status;
 		}
 
-		public void InitAuditStream<T>(ref T model,User user) where T : IAuditable
+		public void InitAuditStream<T>(ref T model,string entityType,User user) where T : IAuditable
 		{
 			if (user == null) return;
 			var usrCmp = user.CompanyInfo.CompanyCode;
 			// 初始化审批流
-			var rule = applyAuditStreamServices.GetAuditSolutionRule(user, false);
+			var rule = applyAuditStreamServices.GetAuditSolutionRule(user, entityType, false);
 			model.ApplyAuditStreamSolutionRule = rule ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			var modelApplyAllAuditStep = new List<ApplyAuditStep>();
 			int stepIndex = 0;

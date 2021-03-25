@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,10 @@ namespace TrainSchdule.Crontab
 {
 	public class ApplyClearJob
 	{
-		private IApplyService applyService;
+		private IApplyVacationService applyService;
 		private readonly IUserActionServices userActionServices;
 
-		public ApplyClearJob(IApplyService applyService, IUserActionServices userActionServices)
+		public ApplyClearJob(IApplyVacationService applyService, IUserActionServices userActionServices)
 		{
 			this.applyService = applyService;
 			this.userActionServices = userActionServices;

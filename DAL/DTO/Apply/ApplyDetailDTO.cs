@@ -9,7 +9,7 @@ using DAL.DTO.Recall;
 
 namespace DAL.DTO.Apply
 {
-	public sealed class ApplyDetailDto : BaseEntityGuid
+	public sealed class ApplyDetailDto<T> : BaseEntityGuid where T:IApplyRequestBase
 	{
 		/// <summary>
 		/// 批准首长
@@ -39,7 +39,7 @@ namespace DAL.DTO.Apply
 		/// <summary>
 		/// 用户的休假请求
 		/// </summary>
-		public ApplyRequest RequestInfo { get; set; }
+		public T RequestInfo { get; set; }
 
 		public DateTime? Create { get; set; }
 		public IEnumerable<ApplyResponseDto> Response { get; set; }

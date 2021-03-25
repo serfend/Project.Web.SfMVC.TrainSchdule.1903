@@ -45,6 +45,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				DutyTags = (model.DutiesTags?.Length ?? 0) == 0 ? Array.Empty<string>() : model.DutiesTags?.Split("##"),
 				DutyIsMajor = model.DutyIsMajor,
 				Enable = model.Enable,
+				EntityType=model.EntityType,
 				Name = model.Name,
 				Priority = model.Priority,
 				SolutionName = model.Solution.Name,

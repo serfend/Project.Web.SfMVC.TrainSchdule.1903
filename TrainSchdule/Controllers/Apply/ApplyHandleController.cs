@@ -67,8 +67,8 @@ namespace TrainSchdule.Controllers.Apply
 		public IActionResult List([FromBody] QueryApplyViewModel model)
 		{
 			CheckValidQuery(model);
-			var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto());
-            return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(list, totalCount));
+			var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
+            return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(list, totalCount));
 		}
 		/// <summary>
 		/// 查询当前用户自己的申请
@@ -100,7 +100,7 @@ namespace TrainSchdule.Controllers.Apply
 			list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
 			userActionServices.Status(ua, true);
-			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2));
+			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
 		}
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace TrainSchdule.Controllers.Apply
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
-			var f_result = new EntitiesListDataModel<ApplySummaryDto>(result.Item1.ToList()?.Select(a => a.ToSummaryDto()), result.Item2);
+			var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2);
 			return new JsonResult(f_result);
 		}
 
@@ -184,10 +184,7 @@ namespace TrainSchdule.Controllers.Apply
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			apply.ApplyAllAuditStep = apply.ApplyAllAuditStep.OrderBy(s => s.Index);
 			var vacationInfoDto = usersService.VacationInfo(apply.BaseInfo.From, apply.RequestInfo.StampLeave?.Year ?? DateTime.Now.XjxtNow().Year,apply.MainStatus);
-			return new JsonResult(new InfoApplyDetailViewModel()
-			{
-				Data = apply.ToDetaiDto(vacationInfoDto, context)
-			});
+			return new JsonResult(new EntityViewModel<ApplyDetailDto<ApplyRequest>>(apply.ToDetaiDto(vacationInfoDto,apply.RequestInfo, context)));
 		}
 
 		/// <summary>
@@ -224,7 +221,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var list = context.Applies.Where(a => a.IsRemoved).OrderByDescending(a => a.IsRemovedDate);
 			var result = list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
-			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto>(result.Item1.ToList().Select(c => c.ToSummaryDto()),result.Item2));
+			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList().Select(c => c.ToSummaryDto(c.RequestInfo)),result.Item2));
 		}
 
 		/// <summary>

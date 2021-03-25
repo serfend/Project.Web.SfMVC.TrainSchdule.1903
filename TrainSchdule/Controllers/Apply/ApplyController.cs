@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using BLL.Interfaces.Common;
 using BLL.Services.ApplyServices;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Common.DataDictionary;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations;
@@ -36,8 +38,9 @@ namespace TrainSchdule.Controllers.Apply
 
 		private readonly IUsersService usersService;
 		private readonly ICurrentUserService currentUserService;
-		private readonly IApplyService applyService;
-		private readonly IVacationCheckServices vacationCheckServices;
+		private readonly IApplyVacationService applyService;
+        private readonly IApplyInDayService applyInDayService;
+        private readonly IApplyServiceCreate applyServiceCreate;
 		private readonly ApplicationDbContext context;
 		private readonly ICompaniesService companiesService;
 		private readonly IVerifyService verifyService;
@@ -52,6 +55,8 @@ namespace TrainSchdule.Controllers.Apply
         /// <param name="usersService"></param>
         /// <param name="currentUserService"></param>
         /// <param name="applyService"></param>
+        /// <param name="applyInDayService"></param>
+        /// <param name="applyServiceCreate"></param>
         /// <param name="vacationCheckServices"></param>
         /// <param name="context"></param>
         /// <param name="companiesService"></param>
@@ -60,12 +65,13 @@ namespace TrainSchdule.Controllers.Apply
         /// <param name="recallOrderServices"></param>
         /// <param name="userActionServices"></param>
         /// <param name="dataDictionariesServices"></param>
-        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyService applyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices)
+        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService,IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices)
 		{
 			this.usersService = usersService;
 			this.currentUserService = currentUserService;
-			this.applyService = applyService;
-			this.vacationCheckServices = vacationCheckServices;
+            this.applyService = applyService;
+            this.applyInDayService = applyInDayService;
+            this.applyServiceCreate = applyServiceCreate;
 			this.context = context;
 			this.companiesService = companiesService;
 			this.verifyService = verifyService;
@@ -144,7 +150,7 @@ namespace TrainSchdule.Controllers.Apply
 			};
 			var m = userModel.ToVDTO(usersService);
 			m.CreateBy = currentUserService.CurrentUser;
-			var info = await applyService.SubmitBaseInfoAsync(m);
+			var info = await applyServiceCreate.SubmitBaseInfoAsync(m);
 			return new JsonResult(new APIResponseIdViewModel(info.Id, ActionStatusMessage.Success));
 		}
 
@@ -186,44 +192,71 @@ namespace TrainSchdule.Controllers.Apply
 			model.Verify.Verify(verifyService);
 			var dto = model.ToVDTO();
 			var apply = applyService.Submit(dto);
-			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Default);
-			if (apply.RequestInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
-			if (apply.BaseInfo == null) return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
-			if (apply.BaseInfo?.Company == null) return new JsonResult(ActionStatusMessage.CompanyMessage.NotExist);
+			if (apply == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Default);
+			if (apply.RequestInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoRequestInfo);
+			if (apply.BaseInfo == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.NoBaseInfo);
+			if (apply.BaseInfo?.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			userActionServices.Log(UserOperation.CreateApply, apply.BaseInfo.FromId, null, true, ActionRank.Warning);
 			return new JsonResult(new APIResponseIdViewModel(apply.Id, ActionStatusMessage.Success));
 		}
 
-		/// <summary>
-		/// 删除指定申请
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		[HttpDelete]
+        /// <summary>
+        /// 删除指定申请
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpDelete]
+		[Route("{entityType}")]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(APIResponseIdViewModel), 0)]
-		public async Task<IActionResult> Submit([FromBody] ApplyRemoveViewModel model)
+		public async Task<IActionResult> Submit([FromBody] ApplyRemoveViewModel model,string entityType)
 		{
 			if (!model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = usersService.GetById(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			Guid.TryParse(model.Id, out var id);
-			var apply = applyService.GetById(id);
-			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
+            if (entityType == "vacation")
+            {
+				var apply = applyService.GetById(id);
+				if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
+				await RemoveApply(apply, authByUser);
+			}
+            else
+            {
+				var apply = applyInDayService.GetById(id);
+				if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
+				await RemoveApplyInday(apply, authByUser);
+			}
+			return new JsonResult(ActionStatusMessage.Success);
+		}
+		private async Task RemoveApply(DAL.Entities.ApplyInfo.Apply apply,User authByUser) {
 			var targetUser = apply.BaseInfo.From;
 			// 本人及有权限者可操作
 			if (
 				authByUser.Id != targetUser.Id
 				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
-			) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请", false, ActionRank.Danger);
-			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave)) 
-				return new JsonResult(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave))
+				throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
 			await applyService.Delete(apply);
 			userActionServices.Status(ua, true);
-			return new JsonResult(ActionStatusMessage.Success);
 		}
-
+		private async Task RemoveApplyInday(ApplyInday apply, User authByUser)
+		{
+			var targetUser = apply.BaseInfo.From;
+			// 本人及有权限者可操作
+			if (
+				authByUser.Id != targetUser.Id
+				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.InDayApply, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
+			) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.StampLeave}外出申请", false, ActionRank.Danger);
+			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave))
+				throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
+			await applyInDayService.Delete(apply);
+			userActionServices.Status(ua, true);
+		}
 		#endregion Logic
 	}
 }

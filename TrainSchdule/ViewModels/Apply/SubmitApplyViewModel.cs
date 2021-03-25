@@ -28,6 +28,11 @@ namespace TrainSchdule.ViewModels.Apply
 		/// 是否是休假计划
 		/// </summary>
 		public bool IsPlan { get; set; }
+
+		/// <summary>
+		/// 审批流作用类型 可填写应用名称
+		/// </summary>
+		public string EntityType { get; set; }
 	}
 
 }

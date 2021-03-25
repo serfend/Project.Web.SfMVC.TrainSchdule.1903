@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DAL.DTO.Apply
 {
-	public sealed class ApplyRequestVdto
+	public sealed class ApplyRequestVdto:IApplyRequestBase
 	{
 		public DateTime? StampLeave { get; set; }
 		public DateTime? StampReturn { get; set; }

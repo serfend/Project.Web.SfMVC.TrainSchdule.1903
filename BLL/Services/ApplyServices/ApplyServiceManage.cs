@@ -193,10 +193,10 @@ namespace BLL.Services.ApplyServices
 				await _context.SaveChangesAsync().ConfigureAwait(true);
 		}
 
-		public byte[] ExportExcel(string templete, ApplyDetailDto model)
+		public byte[] ExportExcel(string templete, ApplyDetailDto<ApplyRequest> model)
 		{
 			if (model == null) return null;
-			var list = SheetRenderer.ExtractModelToRender<ApplyDetailDto>(model, (key, value) =>
+			var list = SheetRenderer.ExtractModelToRender<ApplyDetailDto<ApplyRequest>>(model, (key, value) =>
 			{
 				switch (key)
 				{
@@ -215,59 +215,59 @@ namespace BLL.Services.ApplyServices
 			return Export.ExportToBuffer(templete, sheetRenderers);
 		}
 
-		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model)
+		public byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto<ApplyRequest>> model)
 		{
 			var list = model.ToList();
 			int index = 1;
 			if (list.Count == 0) return null;
-			var mapList = new List<ParameterRenderer<ApplyDetailDto>>()
+			var mapList = new List<ParameterRenderer<ApplyDetailDto<ApplyRequest>>>()
 			{
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_LeftLength", t => t.UserVacationDescription?.LeftLength),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_MaxTripTimes", t => t.UserVacationDescription?.MaxTripTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_NowTimes", t => t.UserVacationDescription?.NowTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_OnTripTimes", t => t.UserVacationDescription?.OnTripTimes),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_YearlyLength", t => t.UserVacationDescription?.YearlyLength),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_Description", t => t.UserVacationDescription?.Description),
-				new ParameterRenderer<ApplyDetailDto>("UserVacationInfo_VacationDescription", t => t.UserVacationDescription?.VacationDescription()),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_LeftLength", t => t.UserVacationDescription?.LeftLength),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_MaxTripTimes", t => t.UserVacationDescription?.MaxTripTimes),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_NowTimes", t => t.UserVacationDescription?.NowTimes),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_OnTripTimes", t => t.UserVacationDescription?.OnTripTimes),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_YearlyLength", t => t.UserVacationDescription?.YearlyLength),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_Description", t => t.UserVacationDescription?.Description),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("UserVacationInfo_VacationDescription", t => t.UserVacationDescription?.VacationDescription()),
 
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationTotalLength",
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_VacationTotalLength",
 					t => t.RequestInfo.VacationTotalLength()),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationDescription",
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_VacationDescription",
 					t => t.RequestInfo.RequestInfoVacationDescription()),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_OnTripLength", t => t.RequestInfo?.OnTripLength),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampLeave", t => t.RequestInfo?.StampLeave),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_StampReturn", t => t.RequestInfo?.StampReturn),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationLength", t => t.RequestInfo?.VacationLength),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationType", t => t.RequestInfo?.VacationType),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_ByTransportation",
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_OnTripLength", t => t.RequestInfo?.OnTripLength),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_StampLeave", t => t.RequestInfo?.StampLeave),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_StampReturn", t => t.RequestInfo?.StampReturn),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_VacationLength", t => t.RequestInfo?.VacationLength),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_VacationType", t => t.RequestInfo?.VacationType),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_ByTransportation",
 					t => t.RequestInfo?.ByTransportation),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_CreateTime", t => t.RequestInfo?.CreateTime),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_Reason", t => t.RequestInfo?.Reason),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_Id", t => t.RequestInfo?.Id),
-				new ParameterRenderer<ApplyDetailDto>("RequestInfo_VacationPlace", t => t.RequestInfo?.VacationPlace.Name),
-				new ParameterRenderer<ApplyDetailDto>("Base_Company", t => t.Base?.CompanyName),
-				new ParameterRenderer<ApplyDetailDto>("Base_Duties", t => t.Base?.DutiesName),
-				new ParameterRenderer<ApplyDetailDto>("Base_Title", t => t.Base?.UserTitle),
-				new ParameterRenderer<ApplyDetailDto>("Base_RealName", t => t.Base?.RealName),
-				new ParameterRenderer<ApplyDetailDto>("Base_Id", t => t.Base?.Id),
-				new ParameterRenderer<ApplyDetailDto>("Company_Name", t => t.Company?.Name),
-				new ParameterRenderer<ApplyDetailDto>("Company_Tag", t => t.Company?.Tag),
-				new ParameterRenderer<ApplyDetailDto>("Company_Code", t => t.Company?.Code),
-				new ParameterRenderer<ApplyDetailDto>("Status", t => t.Status),
-				new ParameterRenderer<ApplyDetailDto>("Create", t => t.Create),
-				new ParameterRenderer<ApplyDetailDto>("Duties_Name", t => t.Duties?.Name),
-				new ParameterRenderer<ApplyDetailDto>("Social_Phone", t => t.Social?.Phone),
-				new ParameterRenderer<ApplyDetailDto>("Social_Settle_Self_AddressDetail", t => t.Social?.Settle?.Self?.AddressDetail),
-				new ParameterRenderer<ApplyDetailDto>("Social_Settle_Self_Address_Name", t => t.Social?.Settle?.Self?.Address?.Name),
-				new ParameterRenderer<ApplyDetailDto>("Social_Id", t => t.Social?.Id),
-				new ParameterRenderer<ApplyDetailDto>("Id", t => t.Id),
-				new ParameterRenderer<ApplyDetailDto>("Response_SelfRankAudit", t => t.Response?.SelfRankAuditStatus().AuditResult()),
-				new ParameterRenderer<ApplyDetailDto>("Response_LastRankAudit", t => t.Response?.LastRankAuditStatus().AuditResult()),
-				new ParameterRenderer<ApplyDetailDto>("AuditLeader", t => t.AuditLeader),
-				new ParameterRenderer<ApplyDetailDto>("Index", t => index++)
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_CreateTime", t => t.RequestInfo?.CreateTime),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_Reason", t => t.RequestInfo?.Reason),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_Id", t => t.RequestInfo?.Id),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("RequestInfo_VacationPlace", t => t.RequestInfo?.VacationPlace.Name),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Base_Company", t => t.Base?.CompanyName),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Base_Duties", t => t.Base?.DutiesName),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Base_Title", t => t.Base?.UserTitle),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Base_RealName", t => t.Base?.RealName),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Base_Id", t => t.Base?.Id),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Company_Name", t => t.Company?.Name),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Company_Tag", t => t.Company?.Tag),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Company_Code", t => t.Company?.Code),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Status", t => t.Status),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Create", t => t.Create),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Duties_Name", t => t.Duties?.Name),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Social_Phone", t => t.Social?.Phone),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Social_Settle_Self_AddressDetail", t => t.Social?.Settle?.Self?.AddressDetail),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Social_Settle_Self_Address_Name", t => t.Social?.Settle?.Self?.Address?.Name),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Social_Id", t => t.Social?.Id),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Id", t => t.Id),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Response_SelfRankAudit", t => t.Response?.SelfRankAuditStatus().AuditResult()),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Response_LastRankAudit", t => t.Response?.LastRankAuditStatus().AuditResult()),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("AuditLeader", t => t.AuditLeader),
+				new ParameterRenderer<ApplyDetailDto<ApplyRequest>>("Index", t => index++)
 			};
 			return Export.ExportToBuffer(templete, new SheetRenderer("Sheet1",
-				new RepeaterRenderer<ApplyDetailDto>("Roster", list, mapList.ToArray()),
+				new RepeaterRenderer<ApplyDetailDto<ApplyRequest>>("Roster", list, mapList.ToArray()),
 				new ParameterRenderer("Audit_SelfCompanyName", "科/室"),
 				new ParameterRenderer("Audit_HeadCompanyName", "部")
 			));

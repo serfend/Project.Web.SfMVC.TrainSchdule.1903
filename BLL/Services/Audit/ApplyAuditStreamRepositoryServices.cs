@@ -47,13 +47,14 @@ namespace BLL.Services.Audit
 			return rule;
 		}
 
-		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user, bool CheckInvalidAccount)
+		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user,string entityType, bool CheckInvalidAccount)
 		{
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.CompanyCode;
 			// 寻找符合条件的方案，并按优先级排序后取第一个
 			var auditRule = context.ApplyAuditStreamSolutionRuleDb
 				.Where(r => r.Enable)
+				.Where(r=>r.EntityType==entityType)
 				.Where(r => cmp.StartsWith(r.RegionOnCompany))
 				.OrderByDescending(a => a.Priority).ToList();
 			var fitRule = new List<ApplyAuditStreamSolutionRule>();
@@ -109,7 +110,7 @@ namespace BLL.Services.Audit
 			return result;
 		}
 
-		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false)
+		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false,string entityType=null)
 		{
 			var prev = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -119,6 +120,7 @@ namespace BLL.Services.Audit
 				Description = description,
 				Priority = priority,
 				Enable = enable,
+				EntityType = entityType,
 				Create = DateTime.Now,
 				RegionOnCompany = companyRegion,
 

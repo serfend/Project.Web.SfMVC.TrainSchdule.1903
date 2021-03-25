@@ -7,6 +7,7 @@ using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using BLL.Interfaces.File;
 using DAL.Data;
 using DAL.DTO.Apply;
@@ -38,7 +39,7 @@ namespace TrainSchdule.Controllers
 		private readonly IVerifyService _verifyService;
 		private readonly IVacationCheckServices _vacationCheckServices;
 		private readonly ApplicationDbContext _context;
-		private readonly IApplyService _applyService;
+		private readonly IApplyVacationService _applyService;
 		private readonly IHttpContextAccessor _httpContext;
 		private readonly ICurrentUserService _currentUserService;
 		private readonly IUsersService _usersService;
@@ -58,7 +59,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="companiesService"></param>
 		/// <param name="httpContext"></param>
 		/// <param name="fileServices"></param>
-		public StaticController(IWebHostEnvironment env, IVerifyService verifyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IApplyService applyService, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
+		public StaticController(IWebHostEnvironment env, IVerifyService verifyService, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IApplyVacationService applyService, ICurrentUserService currentUserService, IUsersService usersService, ICompaniesService companiesService, IHttpContextAccessor httpContext, IFileServices fileServices)
 		{
 			this.env = env;
 			_verifyService = verifyService;

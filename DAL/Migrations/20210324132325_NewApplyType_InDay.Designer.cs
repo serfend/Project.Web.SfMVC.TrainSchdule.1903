@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210324132325_NewApplyType_InDay")]
+    partial class NewApplyType_InDay
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,9 +115,6 @@ namespace DAL.Migrations
                     b.Property<Guid?>("ApplyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApplyIndayId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("FirstMemberCompanyCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -146,8 +145,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplyId");
-
-                    b.HasIndex("ApplyIndayId");
 
                     b.ToTable("ApplyAuditSteps");
                 });
@@ -532,9 +529,6 @@ namespace DAL.Migrations
                     b.Property<Guid?>("ApplyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApplyIndayId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("AuditingById")
                         .HasColumnType("nvarchar(450)");
 
@@ -560,105 +554,9 @@ namespace DAL.Migrations
 
                     b.HasIndex("ApplyId");
 
-                    b.HasIndex("ApplyIndayId");
-
                     b.HasIndex("AuditingById");
 
                     b.ToTable("ApplyResponses");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ApplyAuditStreamSolutionRuleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AuditLeader")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("BaseInfoId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Create")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ExecuteStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("ExecuteStatusDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("IsRemovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MainStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("NowAuditStepId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RecallId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RequestInfoId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplyAuditStreamSolutionRuleId");
-
-                    b.HasIndex("BaseInfoId");
-
-                    b.HasIndex("ExecuteStatusDetailId");
-
-                    b.HasIndex("NowAuditStepId");
-
-                    b.HasIndex("RequestInfoId");
-
-                    b.ToTable("AppliesInday");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("IsRemovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("StampLeave")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("StampReturn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VacationPlaceCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VacationPlaceName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VacationPlaceCode");
-
-                    b.ToTable("ApplyIndayRequest");
                 });
 
             modelBuilder.Entity("DAL.Entities.BBS.PostContent", b =>
@@ -3557,10 +3455,6 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.ApplyInfo.Apply", null)
                         .WithMany("ApplyAllAuditStep")
                         .HasForeignKey("ApplyId");
-
-                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", null)
-                        .WithMany("ApplyAllAuditStep")
-                        .HasForeignKey("ApplyIndayId");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", b =>
@@ -3659,57 +3553,11 @@ namespace DAL.Migrations
                         .WithMany("Response")
                         .HasForeignKey("ApplyId");
 
-                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", null)
-                        .WithMany("Response")
-                        .HasForeignKey("ApplyIndayId");
-
                     b.HasOne("DAL.Entities.UserInfo.User", "AuditingBy")
                         .WithMany()
                         .HasForeignKey("AuditingById");
 
                     b.Navigation("AuditingBy");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
-                {
-                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", "ApplyAuditStreamSolutionRule")
-                        .WithMany()
-                        .HasForeignKey("ApplyAuditStreamSolutionRuleId");
-
-                    b.HasOne("DAL.Entities.ApplyInfo.ApplyBaseInfo", "BaseInfo")
-                        .WithMany()
-                        .HasForeignKey("BaseInfoId");
-
-                    b.HasOne("DAL.Entities.ApplyInfo.ApplyExecuteStatus", "ExecuteStatusDetail")
-                        .WithMany()
-                        .HasForeignKey("ExecuteStatusDetailId");
-
-                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStep", "NowAuditStep")
-                        .WithMany()
-                        .HasForeignKey("NowAuditStepId");
-
-                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", "RequestInfo")
-                        .WithMany()
-                        .HasForeignKey("RequestInfoId");
-
-                    b.Navigation("ApplyAuditStreamSolutionRule");
-
-                    b.Navigation("BaseInfo");
-
-                    b.Navigation("ExecuteStatusDetail");
-
-                    b.Navigation("NowAuditStep");
-
-                    b.Navigation("RequestInfo");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", b =>
-                {
-                    b.HasOne("DAL.Entities.AdminDivision", "VacationPlace")
-                        .WithMany()
-                        .HasForeignKey("VacationPlaceCode");
-
-                    b.Navigation("VacationPlace");
                 });
 
             modelBuilder.Entity("DAL.Entities.BBS.PostContent", b =>
@@ -4274,13 +4122,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyRequest", b =>
                 {
                     b.Navigation("AdditialVacations");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
-                {
-                    b.Navigation("ApplyAllAuditStep");
-
-                    b.Navigation("Response");
                 });
 
             modelBuilder.Entity("DAL.Entities.FileEngine.UploadCache", b =>

@@ -12,12 +12,5 @@ namespace BLL.Interfaces
 	public interface IApplyServiceCreate
 	{
 		Task<ApplyBaseInfo> SubmitBaseInfoAsync(ApplyBaseInfoVdto model);
-
-		ApplyRequest SubmitRequestAsync(User targetUser, ApplyRequestVdto model);
-
-		ApplyRequestVdto CaculateVacation(ApplyRequestVdto model);
-
-		Apply Submit(ApplyVdto model);
-		IQueryable<Apply> CheckIfHaveSameRangeVacation(Apply apply);
 	}
 }

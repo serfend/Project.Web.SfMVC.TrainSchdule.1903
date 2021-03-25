@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
@@ -39,7 +40,7 @@ namespace TrainSchdule.Controllers
 		private readonly ICurrentUserService currentUserService;
 		private readonly IUserServiceDetail userServiceDetail;
 		private readonly ICompaniesService companiesService;
-		private readonly IApplyService applyService;
+		private readonly IApplyVacationService applyService;
 		private readonly IGoogleAuthService authService;
 		private readonly ApplicationDbContext context;
 		private readonly IUserActionServices userActionServices;
@@ -61,7 +62,7 @@ namespace TrainSchdule.Controllers
 		/// <param name="companyManagerServices"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="context"></param>
-		public UsersController(IWebHostEnvironment env, IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
+		public UsersController(IWebHostEnvironment env, IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyVacationService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
 		{
 			this.env = env;
 			this.usersService = usersService;
