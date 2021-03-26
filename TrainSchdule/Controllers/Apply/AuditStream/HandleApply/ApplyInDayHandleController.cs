@@ -215,11 +215,11 @@ namespace TrainSchdule.Controllers.Apply.AuditStream.HandleApply
 				var ua = userActionServices.Log(DAL.Entities.UserInfo.UserOperation.AuditApply, auditUser.Id, $"授权审批申请:{applyStrList}", true, ActionRank.Warning);
 				model.Data.List = model.Data.List.Distinct(new CompareAudit());
 				var targets = model.Data.List.Select(d => d.Id);
-				var raw_items = context.AppliesDb.Where(i => targets.Contains(i.Id));
+				var raw_items = context.AppliesIndayDb.Where(i => targets.Contains(i.Id));
 				var items = model.ToAuditVDTO(auditUser, raw_items);
 				var results = auditStreamServices.Audit(ref items);
 				var result_list = items.List.Select(i => i.AuditItem.ToModel(raw_items.FirstOrDefault(a => a.Id == i.AuditItem.Id))).ToList();
-				context.Applies.UpdateRange(result_list);
+				context.AppliesInday.UpdateRange(result_list);
 				context.SaveChanges();
 				int count = 0;
 				return new JsonResult(new ApplyAuditResponseStatusViewModel()
