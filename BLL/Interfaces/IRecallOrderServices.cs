@@ -17,6 +17,6 @@ namespace BLL.Interfaces
 		/// <param name="apply"></param>
 		/// <param name="status"></param>
 		/// <returns></returns>
-		ApplyExecuteStatus Create(Apply apply, ExecuteStatusVDto status);
+		Tuple<ExecuteStatus, ApplyExecuteStatus> Create(IApplyRequestBase request, ExecuteStatus nowStatus, ExecuteStatusVDto status, bool canBeforeEndTime);
 	}
 }

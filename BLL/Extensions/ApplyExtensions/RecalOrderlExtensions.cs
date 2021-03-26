@@ -7,12 +7,12 @@ namespace BLL.Extensions.ApplyExtensions
 {
 	public static class RecalOrderlExtensions
 	{
-		public static HandleByVdto ToVDto<T>(this T model, Apply apply) where T : HandleModifyReturnStamp
+		public static HandleByVdto ToVDto<T>(this T model, Guid applyId) where T : HandleModifyReturnStamp
 		{
 			if (model == null) return null;
 			return new HandleByVdto()
 			{
-				Apply = apply == null ? Guid.Empty : apply.Id,
+				Apply = applyId,
 				ReturnStamp = model.ReturnStamp,
 				Create = model.Create,
 				Reason = model.Reason,

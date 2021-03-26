@@ -107,42 +107,74 @@ namespace TrainSchdule.Controllers.Apply
 			var recall = context.RecallOrders.Where(r => r.Id == id).FirstOrDefault();
 			if (recall == null) return new JsonResult(ActionStatusMessage.ApplyMessage.RecallMessage.NotExist);
 			var apply = context.AppliesDb.Where(a => a.RecallId == id).FirstOrDefault();
-			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(recall.ToVDto(apply)));
+			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(recall.ToVDto(apply.Id)));
 		}
 
-		/// <summary>
-		/// 确认休假执行情况
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// 确认休假执行情况
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpPost]
+		[Route("{entityType}")]
 		[AllowAnonymous]
-		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model)
+		public IActionResult ExecuteStatus([FromBody] RecallCreateViewModel model,string entityType)
 		{
 			var authUser = model.Auth.AuthUser(authService, usersService, currentUserService.CurrentUser?.Id);
 			if (authUser.Id != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
 			var m = model.Data.ToVDto<ExecuteStatusVDto>();
-			var apply = applyService.GetById(m.Apply);
-			var targetUser = apply.BaseInfo.From;
-			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
-			if (!permit) return new JsonResult(model.Auth.PermitDenied());
-			var result = recallOrderServices.Create(apply, m);
-			return new JsonResult(new APIResponseIdViewModel(result.Id, ActionStatusMessage.Success));
+            if (entityType == "vacation")
+            {
+				var apply = applyService.GetById(m.Apply);
+				var targetUser = apply.BaseInfo.From;
+				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
+				if (!permit) return new JsonResult(model.Auth.PermitDenied());
+				var result = recallOrderServices.Create(apply.RequestInfo, apply.ExecuteStatus, m,false);
+				apply.ExecuteStatus = result.Item1;
+				apply.ExecuteStatusDetailId = result.Item2.Id;
+				context.Applies.Update(apply);
+				context.SaveChanges();
+				return new JsonResult(new APIResponseIdViewModel(result.Item2.Id, ActionStatusMessage.Success));
+            }
+            else
+            {
+				var apply = applyInDayService.GetById(m.Apply);
+				var targetUser = apply.BaseInfo.From;
+				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
+				if (!permit) return new JsonResult(model.Auth.PermitDenied());
+				var result = recallOrderServices.Create(apply.RequestInfo, apply.ExecuteStatus, m, true) ;
+				apply.ExecuteStatus = result.Item1;
+				apply.ExecuteStatusDetailId = result.Item2.Id;
+				context.AppliesInday.Update(apply);
+				context.SaveChanges();
+				return new JsonResult(new APIResponseIdViewModel(result.Item2.Id, ActionStatusMessage.Success));
+			}
 		}
 
-		/// <summary>
-		/// 通过休假执行情况id获取详情
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[HttpGet]
+        /// <summary>
+        /// 通过休假执行情况id获取详情
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpGet]
+		[Route("{entityType}")]
 		[AllowAnonymous]
-		public IActionResult ExecuteStatus(Guid id)
+		public IActionResult ExecuteStatus(Guid id,string entityType)
 		{
 			var model = context.ApplyExcuteStatus.Where(r => r.Id == id).FirstOrDefault();
 			if (model == null) return new JsonResult(ActionStatusMessage.ApplyMessage.RecallMessage.ExecuteNotExist);
-			var apply = context.AppliesDb.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
-			return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply)));
+            if (entityType == "vacation")
+            {
+				var apply = context.AppliesDb.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
+				return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply.Id)));
+            }
+            else
+            {
+				var apply = context.AppliesInday.Where(a => a.ExecuteStatusDetailId == id).FirstOrDefault();
+				return new JsonResult(new EntityDirectViewModel<HandleByVdto>(model.ToVDto(apply.Id)));
+			}
 		}
 	}
 }
