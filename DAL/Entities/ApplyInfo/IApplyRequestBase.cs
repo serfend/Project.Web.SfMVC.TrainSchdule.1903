@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities.ApplyInfo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,7 @@ namespace DAL.Entities
 		/// 休假原因（用户设置）
 		/// </summary>
 		public string Reason { get; set; }
+		public Transportation ByTransportation { get; set; }
+
 	}
 }

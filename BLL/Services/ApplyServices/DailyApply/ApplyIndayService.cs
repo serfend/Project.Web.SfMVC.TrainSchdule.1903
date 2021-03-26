@@ -157,6 +157,7 @@ namespace BLL.Services.ApplyServices.DailyApply
                 VacationPlace = model.VacationPlace,
                 VacationPlaceName = model.VacationPlaceName,
                 CreateTime = DateTime.Now,
+                ByTransportation = model.ByTransportation
             };
             context.ApplyIndayRequests.Add(r);
             context.SaveChanges();

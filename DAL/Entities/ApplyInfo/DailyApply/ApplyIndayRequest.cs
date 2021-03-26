@@ -21,5 +21,7 @@ namespace DAL.Entities.ApplyInfo.DailyApply
         /// 创建时间
         /// </summary>
         public DateTime? CreateTime { get; set; }
+        public Transportation ByTransportation { get; set; }
+
     }
 }
