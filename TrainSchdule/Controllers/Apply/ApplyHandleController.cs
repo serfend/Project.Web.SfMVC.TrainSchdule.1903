@@ -141,7 +141,7 @@ namespace TrainSchdule.Controllers.Apply
             {
 				var apply = applyInDayService.GetById(m.Apply);
 				var targetUser = apply.BaseInfo.From;
-				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
+				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.InDayApply, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
 				if (!permit) return new JsonResult(model.Auth.PermitDenied());
 				var result = recallOrderServices.Create(apply.RequestInfo, apply.ExecuteStatus, m, true) ;
 				apply.ExecuteStatus = result.Item1;

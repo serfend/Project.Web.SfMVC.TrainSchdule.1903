@@ -119,18 +119,20 @@ namespace TrainSchdule.Controllers.Apply
 			}
 
 		}
-		/// <summary>
-		/// 查询当前用户可审批的申请
-		/// </summary>
-		/// <param name="pageIndex"></param>
-		/// <param name="pageSize"></param>
-		/// <param name="status">审批的状态，以##分割</param>
-		/// <param name="MainStatus">申请的主要状态，可选项</param>
-		/// <param name="actionStatus">我对此审批的状态</param>
-		/// <param name="executeStatus"></param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, int? MainStatus = null, string actionStatus = null, string executeStatus = null)
+        /// <summary>
+        /// 查询当前用户可审批的申请
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="status">审批的状态，以##分割</param>
+        /// <param name="MainStatus">申请的主要状态，可选项</param>
+        /// <param name="actionStatus">我对此审批的状态</param>
+        /// <param name="executeStatus"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpGet]
+		[Route("{entityType}")]
+		public IActionResult ListOfMyAudit(int pageIndex = 0, int pageSize = 20, string status = null, int? MainStatus = null, string actionStatus = null, string executeStatus = null,string entityType = null)
 		{
 			var pages = new QueryByPage() { PageIndex = pageIndex, PageSize = pageSize };
 			var c = currentUserService.CurrentUser;
@@ -138,7 +140,7 @@ namespace TrainSchdule.Controllers.Apply
 			var ua = userActionServices.Log(UserOperation.AuditApply, c.Id, $"本人审批:{JsonConvert.SerializeObject(item)}", true, ActionRank.Infomation);
 
 			var statusArr = status?.Split("##")?.Select(i => Convert.ToInt32(i));
-			var r = context.AppliesDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
+			IQueryable<IAppliable> r = entityType=="vacation"? context.AppliesDb:context.AppliesIndayDb;//.Where(a => a.NowAuditStep.MembersFitToAudit.Contains(c.Id));
 			if (statusArr != null && statusArr.Any()) r = r.Where(a => statusArr.Contains((int)a.Status)); // 查出所有状态符合的
 			if (MainStatus != null) r = r.Where(a => (int)a.MainStatus == MainStatus);
 			r = r.Where(a => a.ApplyAllAuditStep.Any(s => s.MembersFitToAudit.Contains(c.Id)));// 查出所有涉及本人的
@@ -182,8 +184,20 @@ namespace TrainSchdule.Controllers.Apply
 			//r = r.Where(a => !a.NowAuditStep.MembersAcceptToAudit.Contains(c.Id));
 			var list = r.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(pages);
-			var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2);
-			return new JsonResult(f_result);
+            var ids = result.Item1.Select(i => i.Id);
+            if (entityType == "vacation")
+            {
+				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((DAL.Entities.ApplyInfo.Apply)a).RequestInfo));
+				var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyRequest>>(result_items, result.Item2);
+				return new JsonResult(f_result);
+            }
+            else
+            {
+				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((ApplyInday)a).RequestInfo));
+				var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyIndayRequest>>(result_items, result.Item2);
+				return new JsonResult(f_result);
+			}
+
 		}
 
 		/// <summary>
