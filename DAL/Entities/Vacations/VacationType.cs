@@ -5,8 +5,9 @@ using System.Text;
 
 namespace DAL.Entities.Vacations
 {
-	public class VacationType : BaseEntityInt, IRegion
+	public interface IVacationType: IRegion
 	{
+
 		/// <summary>
 		/// 假期名称
 		/// </summary>
@@ -27,6 +28,52 @@ namespace DAL.Entities.Vacations
 		/// </summary>
 		public bool Disabled { get; set; }
 
+		/// <summary>
+		/// 背景图文件名
+		/// </summary>
+		public string Background { get; set; }
+	}
+	public class VacationTypeBase: BaseEntityInt,IVacationType
+    {
+
+		/// <summary>
+		/// 假期名称
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// 别名
+		/// </summary>
+		public string Alias { get; set; }
+
+		/// <summary>
+		/// 描述信息
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// 是否禁用（前端隐藏）
+		/// </summary>
+		public bool Disabled { get; set; }
+
+		/// <summary>
+		/// 背景图文件名
+		/// </summary>
+		public string Background { get; set; }
+        public string RegionOnCompany { get; set; }
+    }
+	public class VacationIndayType: VacationTypeBase {
+		/// <summary>
+		/// 允许跨天天数
+		/// </summary>
+		public int PermitCrossDay { get; set; }
+		/// <summary>
+		/// TODO 疫情定制 - 请假是否需要跟踪出行方式
+		/// </summary>
+		public bool NeedTrace { get; set; }
+	}
+	public class VacationType : VacationTypeBase 
+	{
 		/// <summary>
 		/// 最长长度
 		/// </summary>
@@ -67,11 +114,6 @@ namespace DAL.Entities.Vacations
 		/// </summary>
 		public bool NotPermitCrossYear { get; set; }
 
-		public string RegionOnCompany { get; set; }
 
-		/// <summary>
-		/// 背景图文件名
-		/// </summary>
-		public string Background { get; set; }
 	}
 }

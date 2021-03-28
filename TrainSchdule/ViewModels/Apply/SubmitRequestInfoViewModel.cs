@@ -1,4 +1,5 @@
 ﻿using DAL.Entities.ApplyInfo;
+using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace TrainSchdule.ViewModels.Apply
 		/// <summary>
 		/// 休假去向
 		/// </summary>
-		[Required(ErrorMessage = "休假去向未填写")]
+		[Required(ErrorMessage = "去向未填写")]
 		public string VacationPlace { get; set; }
 
 		/// <summary>
@@ -57,6 +58,11 @@ namespace TrainSchdule.ViewModels.Apply
 		/// </summary>
 		[Required(ErrorMessage = "归队时间未填写")]
 		public DateTime? StampReturn { get; set; }
+		/// <summary>
+		/// 请假类别
+		/// </summary>
+		[Required(ErrorMessage = "请假类别未填写")]
+		public string RequestType { get; set; }
 	}
 	/// <summary>
 	/// 休假请求提交

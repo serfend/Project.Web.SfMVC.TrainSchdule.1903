@@ -52,7 +52,7 @@ namespace TrainSchdule.Extensions
 			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
 			var b = new ApplyRequestVdto()
 			{
-				Reason = model.Reason,
+				Reason = model.Reason,				
 				StampLeave = model.StampLeave,
 				OnTripLength = model.OnTripLength,
 				VacationLength = model.VacationLength,
@@ -77,6 +77,7 @@ namespace TrainSchdule.Extensions
 			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
 			var b = new ApplyIndayRequestVdto()
 			{
+				RequestType=context.VacationIndayTypes.FirstOrDefault(i=>i.Name == model.RequestType),
 				Reason = model.Reason,
 				StampLeave = model.StampLeave,
 				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),

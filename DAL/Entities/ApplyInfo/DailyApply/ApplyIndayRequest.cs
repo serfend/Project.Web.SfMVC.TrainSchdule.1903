@@ -16,7 +16,10 @@ namespace DAL.Entities.ApplyInfo.DailyApply
         public virtual AdminDivision VacationPlace { get ; set ; }
         public string VacationPlaceName { get ; set ; }
         public string Reason { get ; set ; }
-
+        /// <summary>
+        /// 请假类别
+        /// </summary>
+        public string RequestType { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>

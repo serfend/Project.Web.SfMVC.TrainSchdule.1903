@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Vacations;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,13 @@ namespace DAL.DTO.Apply
 		public Transportation ByTransportation { get; set; }
 	}
 
-	public sealed class ApplyIndayRequestVdto: ApplyRequestBaseVdto { }
+	public sealed class ApplyIndayRequestVdto: ApplyRequestBaseVdto {
+
+		/// <summary>
+		/// 请假类别
+		/// </summary>
+		public VacationIndayType RequestType { get; set; }
+	}
 	public sealed class ApplyRequestVdto: ApplyRequestBaseVdto
 	{
 		public VacationType VacationType { get; set; }

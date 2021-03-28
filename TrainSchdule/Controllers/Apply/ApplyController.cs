@@ -100,7 +100,7 @@ namespace TrainSchdule.Controllers.Apply
 			var vacationTypes = context.VacationTypes.Where(t => !t.IsRemoved)
 				.ToList()
 				.Select(t => new KeyValuePair<string, VacationType>(t.Name, t));
-			var applyStatus = dataDictionariesServices.GetByGroupName( "ApplyStatus").ToList();
+			var applyStatus = dataDictionariesServices.GetByGroupName("ApplyStatus").ToList();
 			var dictList = applyStatus.Select(s => new KeyValuePair<string, AuditStatusMessage>(s.Value.ToString(), new AuditStatusMessage(s.Value, s.Key, s.Alias, s.Color)
 			{
 				Acessable = s.Description.Split("##", StringSplitOptions.RemoveEmptyEntries)
@@ -125,6 +125,19 @@ namespace TrainSchdule.Controllers.Apply
 			}); ;
 		}
 
+		/// <summary>
+		/// 获取请假类型
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[AllowAnonymous]
+		public IActionResult ApplyRequestTypes()
+        {
+			var vacationTypes = context.VacationIndayTypes.Where(t => !t.IsRemoved)
+				.ToList()
+				.Select(t => new KeyValuePair<string, VacationIndayType>(t.Name, t));
+			return new JsonResult(new EntityViewModel<Dictionary<string, VacationIndayType>>(new Dictionary<string, VacationIndayType>(vacationTypes)));
+		}
 		/// <summary>
 		/// 提交申请的基础信息
 		/// </summary>

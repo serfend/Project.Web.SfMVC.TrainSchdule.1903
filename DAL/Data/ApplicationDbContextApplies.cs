@@ -31,6 +31,7 @@ namespace DAL.Data
 		public DbSet<ApplyResponse> ApplyResponses { get; set; }
 		public DbSet<ApplyRequest> ApplyRequests { get; set; }
 		public DbSet<ApplyIndayRequest> ApplyIndayRequests { get; set; }
+		public DbSet<VacationIndayType> VacationIndayTypes { get; set; }
 		public DbSet<ApplyBaseInfo> ApplyBaseInfos { get; set; }
 		public DbSet<VacationDescription> VacationDescriptions { get; set; }
 		public DbSet<VacationType> VacationTypes { get; set; }
@@ -40,8 +41,13 @@ namespace DAL.Data
 
 		private void Configuration_Applies(ModelBuilder builder)
 		{
-			#region VacationTypeData
+			Configuration_AppliesVacation(builder);
+			Configuration_AppliesInday(builder);
+		}
+		private void Configuration_AppliesVacation(ModelBuilder builder)
+        {
 
+			#region VacationTypeData
 			var vacaType = builder.Entity<VacationType>();
 			vacaType.HasData(new List<VacationType>() {
 				new VacationType()
@@ -111,7 +117,43 @@ namespace DAL.Data
 				Background="vacation_yiqingzhuanxiang.jpg"
 			}
 			});
+			#endregion VacationTypeData
+		}
+		private void Configuration_AppliesInday(ModelBuilder builder)
+		{
+			#region VacationTypeData
 
+			var vacaType = builder.Entity<VacationIndayType>();
+			vacaType.HasData(new List<VacationIndayType>() {
+				new VacationIndayType()
+			{
+				Id = 1,
+				Alias = "外出",
+				Name = "外出",
+				Description="办事、购物、休闲、一日内看病等利用非工作日的因私外出活动",
+				PermitCrossDay=0,
+				RegionOnCompany = "",
+				Background="inday_outdoor.jpg"
+			},new VacationIndayType()
+			{
+				Id = 2,
+				Alias = "出差",
+				Name = "出差",
+				Description="公差、接车/机、开会、保障等非集体活动外出",
+				PermitCrossDay=7,
+				RegionOnCompany = "",
+				Background="inday_business.jpg"
+			},new VacationIndayType()
+			{
+				Id = 3,
+				Alias = "回家",
+				Name = "回家",
+				Description="工作日下班后、节假日全天等跨日外出",
+				PermitCrossDay=3,
+				RegionOnCompany = "",
+				Background="inday_family.jpg"
+			},
+			});
 			#endregion VacationTypeData
 		}
 	}

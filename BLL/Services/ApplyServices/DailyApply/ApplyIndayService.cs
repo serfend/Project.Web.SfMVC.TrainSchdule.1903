@@ -234,9 +234,17 @@ namespace BLL.Services.ApplyServices.DailyApply
         {
 
             if (model == null) return null;
+			var type = model.RequestType ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
+            if (type.Disabled) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
+            if (type.PermitCrossDay < (int)(model.StampReturn?.Subtract(model.StampLeave ?? DateTime.MinValue).TotalDays)) {
+                var desc = type.PermitCrossDay <= 0 ? "不允许跨日请假" : $"最多允许请假{type.PermitCrossDay}天";
+                throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.CrossDayNotPermit, desc, true));
+            }
+            // TODO Trace type.NeedTrace
             var r = new ApplyIndayRequest()
             {
                 Reason = model.Reason,
+                RequestType = model.RequestType.Name,
                 StampLeave = model.StampLeave,
                 StampReturn = model.StampReturn,
                 VacationPlace = model.VacationPlace,
