@@ -264,19 +264,32 @@ namespace BLL.Services.ApplyServices.DailyApply
     public partial class ApplyIndayService
     {
 
-        public Task<int> RemoveAllNoneFromUserApply(TimeSpan interval)
+        public async Task<int> RemoveAllRemovedUsersApply()
         {
-            throw new NotImplementedException();
+            var applies = context.AppliesIndayDb;
+            var to_remove = applies.Where(a =>
+                 ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.Abolish) > 0
+                  //|| ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.DisableVacation) > 0
+                  || ((int)a.BaseInfo.From.AccountStatus & (int)AccountStatus.PrivateAccount) > 0
+            //a.BaseInfo.From.CompanyInfo.Title.DisableVacation
+            );
+            await RemoveApplies(to_remove).ConfigureAwait(false);
+
+            var list = applies.Where(a => a.BaseInfo.From == null);
+            await RemoveApplies(list).ConfigureAwait(true);
+            return to_remove.Count();
         }
 
-        public Task<int> RemoveAllRemovedUsersApply()
+        public async Task<int> RemoveAllUnSaveApply(TimeSpan interval)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> RemoveAllUnSaveApply(TimeSpan interval)
-        {
-            throw new NotImplementedException();
+            var applies = context.AppliesIndayDb;
+            var outofDate = DateTime.Now.Subtract(interval);
+            //寻找所有找过1天未保存的申请
+            var list = applies
+                         .Where(a => a.Status == AuditStatus.NotSave)
+                         .Where(a => a.Create.HasValue && a.Create.Value < outofDate).ToList();
+            await RemoveApplies(list).ConfigureAwait(true);
+            return list.Count;
         }
 
     }
