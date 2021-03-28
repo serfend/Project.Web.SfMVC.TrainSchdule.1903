@@ -25,7 +25,7 @@ namespace TrainSchdule.Controllers.Apply
 	public partial class ApplyController
 	{
 
-		private void CheckValidQuery(QueryApplyViewModel model)
+		private void CheckValidQuery(QueryApplyViewModel model,string entityType)
 		{
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
@@ -39,36 +39,61 @@ namespace TrainSchdule.Controllers.Apply
 			var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
 			foreach (var c in permitCompanies)
 			{
-				var permit = userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, c, "审批列表");
+				var permission = entityType switch
+				{
+					"vacation" => DictionaryAllPermission.Apply.Default,
+					_ => DictionaryAllPermission.Apply.InDayApply
+				};
+				var permit = userActionServices.Permission(auditUser?.Application?.Permission, permission, Operation.Query, auditUser.Id, c, "审批列表");
 				var cItem = companiesService.GetById(c);
 				if (!permit) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
 			}
 		}
-		/// <summary>
-		/// 条件快速查询
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// 条件快速查询
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpPost]
+		[Route("{entityType}")]
 		[AllowAnonymous]
-		public IActionResult ListShadow([FromBody] QueryApplyViewModel model)
+		public IActionResult ListShadow([FromBody] QueryApplyViewModel model, string entityType)
 		{
-			CheckValidQuery(model);
-			var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToShadowDto());
-			return new JsonResult(new EntitiesListViewModel<ApplyShadowDto>(list, totalCount));
+			CheckValidQuery(model, entityType);
+            if (entityType == "vacation")
+            {
+				var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToShadowDto());
+				return new JsonResult(new EntitiesListViewModel<ApplyShadowDto>(list, totalCount));
+            }
+            else
+            {
+				var list = applyInDayService.QueryApplies(model, false, out var totalCount).Select(a => a.ToShadowDto());
+				return new JsonResult(new EntitiesListViewModel<ApplyShadowDto>(list, totalCount));
+			};
 		}
-		/// <summary>
-		/// 条件查询申请
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// 条件查询申请
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpPost]
+		[Route("{entityType}")]
 		[AllowAnonymous]
-		public IActionResult List([FromBody] QueryApplyViewModel model)
+		public IActionResult List([FromBody] QueryApplyViewModel model,string entityType)
 		{
-			CheckValidQuery(model);
-			var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
-			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(list, totalCount));
+			CheckValidQuery(model, entityType);
+            if (entityType == "vacation")
+            {
+				var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(list, totalCount));
+			}
+            else
+            {
+				var list = applyInDayService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyIndayRequest>>(list, totalCount));
+			}
 		}
 		/// <summary>
 		/// 查询当前用户自己的申请

@@ -71,7 +71,7 @@ namespace BLL.Extensions.ApplyExtensions
 				b.Request = default;
 			return b;
 		}
-		public static ApplyShadowDto ToShadowDto(this Apply model)
+		public static ApplyShadowDto ToShadowDto<T>(this T model) where T: BaseEntityGuid,IAppliable
 			=> new()
 			{
 				Id=model.Id,

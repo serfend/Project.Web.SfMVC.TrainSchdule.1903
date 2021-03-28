@@ -234,7 +234,8 @@ namespace BLL.Services.ApplyServices
 
 		public IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
 		{
-			var list = context.AppliesDb;
+			var db = context.AppliesDb;
+			var list = db.AsQueryable();
 			totalCount = 0;
 			if (model == null) return null;
 			if (model.Status != null) list = list.Where(a => (model.Status.Arrays != null && model.Status.Arrays.Contains((int)a.Status)) || (model.Status.Start <= (int)a.Status && model.Status.End >= (int)a.Status));
@@ -307,11 +308,11 @@ namespace BLL.Services.ApplyServices
 			// 若精确按id或按人查询，则直接导出
 			if (model.CreateBy != null)
 			{
-				list = context.AppliesDb.Where(a => a.BaseInfo.CreateById == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
+				list =db.Where(a => a.BaseInfo.CreateById == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
 			}
 			else if (model.CreateFor != null)
 			{
-				list = context.AppliesDb.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
+				list = db.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 			}
 			list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
 			var result = list.SplitPage(model.Pages);
