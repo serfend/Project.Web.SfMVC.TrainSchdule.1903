@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.ZX;
@@ -159,10 +160,14 @@ namespace TrainSchdule.Controllers.Zx
 			});
 		}
 
-		private UserBaseInfo GetUser(PhySingleGradeDataModel model)
+		private UserGradeBaseInfo GetUser(PhySingleGradeDataModel model)
 		{
-			var baseUser = model.User.UserName == null ? model.User.User : usersService.GetById(model.User.UserName)?.BaseInfo;
-			return baseUser;
+			if (model.User.UserName == null) return model.User.User;
+			var baseUser = usersService.GetById(model.User.UserName)?.BaseInfo;
+			return new UserGradeBaseInfo() {
+				Gender=baseUser.Gender,
+				Time_BirthDay=baseUser.Time_BirthDay
+			};
 		}
 
 		/// <summary>
@@ -184,7 +189,7 @@ namespace TrainSchdule.Controllers.Zx
 			return new JsonResult(new EntitiesListViewModel<IEnumerable<GradePhySubject>>(result));
 		}
 
-		private IEnumerable<GradePhySubject> GetSubjects(PhyGradeQueryDataModel subject, UserBaseInfo baseUser, QueryByPage pages)
+		private IEnumerable<GradePhySubject> GetSubjects(PhyGradeQueryDataModel subject, UserGradeBaseInfo baseUser, QueryByPage pages)
 			=> phyGradeServices.GetSubjectsByName(new QueryUserGradeViewModel()
 			{
 				Names = new QueryByString()
@@ -204,7 +209,7 @@ namespace TrainSchdule.Controllers.Zx
 		/// <param name="model"></param>
 		/// <param name="baseUser"></param>
 		/// <returns></returns>
-		private PhySingleGradeDataModel GetResult(PhySingleGradeDataModel model, UserBaseInfo baseUser)
+		private PhySingleGradeDataModel GetResult(PhySingleGradeDataModel model, UserGradeBaseInfo baseUser)
 		{
 			foreach (var subject in model.Subjects)
 			{
