@@ -98,14 +98,15 @@ namespace TrainSchdule.Controllers.BBS
             return new JsonResult(new EntitiesListViewModel<BBSMessageShadowDataModel>(list));
         }
         /// <summary>
-        /// 获取指定用户发来的信息详情
+        /// 获取指定用户发送的信息详情
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetDetail(Guid id) {
-            var details = appMessageServices.GetDetail(id).ToViewModel();
-            return new JsonResult(new EntityViewModel<AppMessageViewModel>(details));
+        public IActionResult GetDetail(string from,string to) {
+            var details = appMessageServices.GetDetail(from,to).Select(i=>i.ToViewModel());
+            return new JsonResult(new EntitiesListViewModel<AppMessageViewModel>(details));
         }
         /// <summary>
         /// 筛选消息

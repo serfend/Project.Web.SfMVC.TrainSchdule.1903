@@ -38,7 +38,7 @@ namespace BLL.Interfaces.Common
         /// </summary>
         /// <param name="id">消息id</param>
         /// <returns></returns>
-        AppMessage GetDetail(Guid id);
+        IEnumerable<AppMessage> GetDetail(string from, string to);
         /// <summary>
         /// 获取未读项
         /// </summary>

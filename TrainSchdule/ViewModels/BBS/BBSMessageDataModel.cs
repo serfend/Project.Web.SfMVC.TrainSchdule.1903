@@ -120,16 +120,21 @@ namespace TrainSchdule.ViewModels.BBS
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static AppMessageViewModel ToViewModel(this AppMessage model) => new AppMessageViewModel()
+        public static AppMessageViewModel ToViewModel(this AppMessage model)
         {
-            Id = model.Id,
-            Content = model.Content,
-            Create = model.Create,
-            FromId = model.FromId,
-            Length = model.Length,
-            Status = model.Status,
-            ToId = model.ToId
-        };
+            var is_recalled = model.Status.HasFlag(AppMessageStatus.Recall);
+            var result = new AppMessageViewModel()
+            {
+                Id = model.Id,
+                Content = is_recalled?null: model.Content,
+                Create = model.Create,
+                FromId = model.FromId,
+                Length = is_recalled?0:model.Length,
+                Status = model.Status,
+                ToId = model.ToId
+            };
+            return result;
+        }
         /// <summary>
         /// 
         /// </summary>

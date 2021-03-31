@@ -15,8 +15,9 @@ namespace BLL.Helpers
             public static readonly ApiResult MessageRejectByBlock = new ApiResult(101200, "消息已发出，但被对方拒收");
             public static readonly ApiResult MessageRejectByNotFriend = new ApiResult(101300, "对方拒收Ta没有关注的用户发来的消息");
             public static readonly ApiResult AlreadyInStatus = new ApiResult(101400, "状态已变更过，不需要重复操作~");
-
+            public static readonly ApiResult RecallToLate = new ApiResult(101500, "消息已超过2分钟，无法撤回");
             
+
         }
     }
 }

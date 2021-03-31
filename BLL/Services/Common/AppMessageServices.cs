@@ -40,6 +40,7 @@ namespace BLL.Services.Common
                     if (user != msg.FromId) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
                     if (!msg.Status.HasFlag(AppMessageStatus.Recall))
                     {
+                        if(DateTime.Now.Subtract(msg.Create).TotalSeconds>120) throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.RecallToLate);
                         msg.Status |= AppMessageStatus.Recall;
                         context.BBSMessages.Update(msg);
                     }
@@ -71,19 +72,21 @@ namespace BLL.Services.Common
         public IQueryable<AppMessage> GetUnread(string user) => context.BBSMessages
                 .Where(m => !m.Status.HasFlag(AppMessageStatus.Read))
                 .Where(m => m.ToId == user);
-        public AppMessage GetDetail(Guid id)
+        public IEnumerable<AppMessage> GetDetail(string from,string to)
         {
-            var msg = context.BBSMessages.FirstOrDefault(i => i.Id == id);
-            if (msg.Status.HasFlag(AppMessageStatus.Recall)) throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.LoadFail);
             var currentUser = currentUserService.CurrentUser;
-            if(currentUser.Id!=msg.FromId && currentUser.Id!=msg.ToId) throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.LoadFail);
-            if (!msg.Status.HasFlag(AppMessageStatus.Read))
+            if (currentUser.Id != from && currentUser.Id != to) throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.LoadFail);
+            var msgs = context.BBSMessages.Where(i => i.FromId == from).Where(i=>i.ToId==to).ToList();
+            foreach(var msg in msgs)
             {
-                msg.Status |= AppMessageStatus.Read;
-                context.BBSMessages.Update(msg);
-                context.SaveChanges();
+                if (msg.Status.HasFlag(AppMessageStatus.Recall) && !msg.Status.HasFlag(AppMessageStatus.Read))
+                {
+                    msg.Status |= AppMessageStatus.Read;
+                    context.BBSMessages.Update(msg);
+                }
             }
-            return msg;
+            context.SaveChanges();
+            return msgs;
         }
         public Tuple<IQueryable<AppMessage>, int> Query(MessageQueryItem item)
         {
