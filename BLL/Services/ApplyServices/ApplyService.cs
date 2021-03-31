@@ -138,7 +138,7 @@ namespace BLL.Services.ApplyServices
 			var company = apply.BaseInfo?.Company;
 			if (company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
 			AuditStreamModel auditItem = apply.ToModel();
-			auditStreamServices.InitAuditStream(ref auditItem, model.EntityType, apply.BaseInfo?.From);
+			auditStreamServices.InitAuditStream(ref auditItem, $"{apply.RequestInfo.VacationType}|{model.EntityType}", apply.BaseInfo?.From);
 			apply = auditItem.ToModel(apply);
 			apply =  Create(apply); // 创建成功，记录本次创建详情
 			return apply;

@@ -51,14 +51,26 @@ namespace BLL.Services.Audit
 		{
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.CompanyCode;
+
 			// 寻找符合条件的方案，并按优先级排序后取第一个
+			var fitRule = new List<ApplyAuditStreamSolutionRule>();
 			var auditRule = context.ApplyAuditStreamSolutionRuleDb
 				.Where(r => r.Enable)
-				.Where(r=>r.EntityType==entityType)
-				.Where(r => cmp.StartsWith(r.RegionOnCompany))
-				.OrderByDescending(a => a.Priority).ToList();
-			var fitRule = new List<ApplyAuditStreamSolutionRule>();
-			foreach (var rule in auditRule)
+				.Where(r => cmp.StartsWith(r.RegionOnCompany));
+			List<string> list = entityType.Split('|').ToList();
+			list.Add(null); // 添加一个通用匹配
+			// 寻找第一个存在的规则设置
+			foreach (var i in list)
+			{
+				var tmp_rule = auditRule
+					.Where(r => r.EntityType == i);
+                if (tmp_rule.Any())
+                {
+					fitRule = tmp_rule.OrderByDescending(a => a.Priority).ToList();
+					break;
+                }
+			}
+			foreach (var rule in fitRule)
 			{
 				if (GetToAuditMembers(cmp, rule.RegionOnCompany, rule, CheckInvalidAccount).Contains(user.Id))
 					return rule;

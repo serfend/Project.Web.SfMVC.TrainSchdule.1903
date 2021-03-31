@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.ApplyExtensions;
+﻿using Abp.Linq.Expressions;
+using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using DAL.DTO.Apply.ApplyAuditStreamDTO;
@@ -161,8 +162,17 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		[Route("ApplyAuditStream/StreamSolutionRuleQuery")]
 		public IActionResult StreamSolutionRuleQuery(string companyRegion, string entityType, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamSolutionRuleDb
-					.Where(n=>n.EntityType== entityType)
+			var list = context.ApplyAuditStreamSolutionRuleDb;
+			foreach (var i in entityType.Split('|'))
+            {
+				var temp = list.Where(r => r.EntityType == i);
+                if (temp.Any())
+                {
+					list = temp;
+					break;
+                }
+            }
+			var result =list
 					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)
