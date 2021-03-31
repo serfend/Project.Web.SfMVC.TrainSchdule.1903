@@ -43,24 +43,26 @@ namespace BLL.Services.Common
                         current_realtion -= (int)Relation.Block;
                     if (!current_realtion.HasFlag(Relation.Follow))
                     {
-                        BackgroundJob.Enqueue<AppMessageServices>(s=>s.Send(target, from, "已关注", true));
+                        BackgroundJob.Enqueue<AppMessageServices>(s => s.Send(target, from, "已关注", true));
                         fromInfo.FollowCount++;
                         toInfo.FansCount++;
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
                         current_realtion += (int)Relation.Follow;
+                        context.SaveChanges();
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
                     break;
                 case (Relation.Follow, false):
                     if (current_realtion.HasFlag(Relation.Follow))
                     {
-                        BackgroundJob.Enqueue<AppMessageServices>(s=>s.Send(target, from, "已取消关注", true));
+                        BackgroundJob.Enqueue<AppMessageServices>(s => s.Send(target, from, "已取消关注", true));
                         fromInfo.FollowCount--;
                         toInfo.FansCount--;
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
                         current_realtion -= (int)Relation.Follow;
+                        context.SaveChanges();
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
                     break;
@@ -72,10 +74,11 @@ namespace BLL.Services.Common
                         toInfo.FansCount--;
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
+                        context.SaveChanges();
                     }
                     if (!current_realtion.HasFlag(Relation.Block))
                     {
-                        BackgroundJob.Enqueue<AppMessageServices>(s=>s.Send(target, from, "已将对方加入到黑名单，将不再受到TA的消息", true));
+                        BackgroundJob.Enqueue<AppMessageServices>(s => s.Send(target, from, "已将对方加入到黑名单，将不再受到TA的消息", true));
                         current_realtion += (int)Relation.Block;
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
@@ -83,7 +86,7 @@ namespace BLL.Services.Common
                 case (Relation.Block, false):
                     if (current_realtion.HasFlag(Relation.Block))
                     {
-                        BackgroundJob.Enqueue<AppMessageServices>(s=>s.Send(target, from, "已将对方从黑名单去除", true));
+                        BackgroundJob.Enqueue<AppMessageServices>(s => s.Send(target, from, "已将对方从黑名单去除", true));
                         current_realtion -= (int)Relation.Block;
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
@@ -93,7 +96,7 @@ namespace BLL.Services.Common
             }
             item.Relation = current_realtion;
             context.AppUserRelates.Update(item);
-            context.SaveChanges();
+            context.SaveChanges(); // 保存两次，避免出现currency
             return item;
         }
 
