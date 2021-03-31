@@ -49,7 +49,6 @@ namespace BLL.Services.Common
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
                         current_realtion += (int)Relation.Follow;
-                        context.SaveChanges();
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
                     break;
@@ -62,7 +61,6 @@ namespace BLL.Services.Common
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
                         current_realtion -= (int)Relation.Follow;
-                        context.SaveChanges();
                     }
                     else throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.AlreadyInStatus);
                     break;
@@ -74,7 +72,6 @@ namespace BLL.Services.Common
                         toInfo.FansCount--;
                         context.UserAppMessageInfos.Update(fromInfo);
                         context.UserAppMessageInfos.Update(toInfo);
-                        context.SaveChanges();
                     }
                     if (!current_realtion.HasFlag(Relation.Block))
                     {

@@ -1,6 +1,7 @@
 ﻿using DAL.Entities.UserInfo;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace DAL.Entities.Common.Message
         /// 关系状态
         /// </summary>
         public Relation Relation { get; set; }
+        [Timestamp]
+        public byte[] Timestamp { get; set; }
 
     }
     [Flags]

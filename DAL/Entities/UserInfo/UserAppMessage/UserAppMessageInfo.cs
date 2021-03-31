@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace DAL.Entities.UserInfo.UserAppMessage
         /// 【冗余】未读消息
         /// </summary>
         public int UnreadMessage { get; set; }
+        [Timestamp]
+        public byte[] Timestamp { get; set; }
     }
     [Flags]
     public enum AppMessageSetting
