@@ -76,15 +76,13 @@ namespace BLL.Services.Common
         {
             var currentUser = currentUserService.CurrentUser;
             if (currentUser.Id != from && currentUser.Id != to) throw new ActionStatusMessageException(ActionStatusMessage.AppMessage.LoadFail);
-            var msgs = context.BBSMessages.Where(i => i.FromId == from).Where(i=>i.ToId==to).ToList();
+            var msgs = context.BBSMessages.Where(m => !m.Status.HasFlag(AppMessageStatus.Read)).Where(i => i.FromId == from).Where(i=>i.ToId==to).ToList();
             foreach(var msg in msgs)
             {
-                if (msg.Status.HasFlag(AppMessageStatus.Recall) && !msg.Status.HasFlag(AppMessageStatus.Read))
-                {
+                if (!msg.Status.HasFlag(AppMessageStatus.Recall) && !msg.Status.HasFlag(AppMessageStatus.Read))
                     msg.Status |= AppMessageStatus.Read;
-                    context.BBSMessages.Update(msg);
-                }
             }
+            context.BBSMessages.UpdateRange(msgs);
             context.SaveChanges();
             return msgs;
         }
