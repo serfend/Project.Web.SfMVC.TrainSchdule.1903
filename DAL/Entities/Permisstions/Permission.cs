@@ -69,6 +69,7 @@ namespace DAL.Entities
 		public static class Post
         {
 			public static PermissionDescription Default = new PermissionDescription("Post.Default","常规动态");
+			public static PermissionDescription AppMessage = new PermissionDescription("Post.AppMessage","用户消息");
 		}
 	}
 

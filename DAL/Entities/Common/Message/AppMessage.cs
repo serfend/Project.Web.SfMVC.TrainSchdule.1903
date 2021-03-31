@@ -21,13 +21,11 @@ namespace DAL.Entities.Common.Message
         /// 消息来源用户
         /// </summary>
         public virtual User From { get; set;}
-        [ForeignKey("FromId")]
         public string FromId { get; set; }
         /// <summary>
         /// 消息目标用户
         /// </summary>
         public virtual User To { get; set; }
-        [ForeignKey("ToId")]
         public string ToId { get; set; }
         /// <summary>
         /// 消息状态
@@ -37,12 +35,21 @@ namespace DAL.Entities.Common.Message
         /// 消息内容
         /// </summary>
         public virtual AppMessageContent Content { get; set; }
+
+        /// <summary>
+        /// 【冗余】消息长度
+        /// </summary>
+        public int Length { get; set; }
     }
+    [Flags]
     public enum AppMessageStatus
     {
         None=0,
-        Unread=1,
-        Read=2,
+        Read = 1,
+        Handled=2,
         Recall=4,
+        DeletedByFrom = 8,
+        DeletedByTo = 16,
+        IsSystem=32,// 系统消息应无发出方
     }
 }

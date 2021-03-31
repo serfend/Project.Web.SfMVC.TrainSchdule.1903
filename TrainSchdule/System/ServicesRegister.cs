@@ -99,6 +99,10 @@ namespace TrainSchdule.System
 			services.AddScoped<IDWZServices, DWZServices>();
 			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
 
+			services.AddScoped<IAppMessageServices, AppMessageServices>();
+			services.AddScoped<IAppUserMessageInfoServices, AppUserMessageInfoServices>();
+			services.AddScoped<IAppUserRelateServices, AppUserRelateServices>();
+
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();

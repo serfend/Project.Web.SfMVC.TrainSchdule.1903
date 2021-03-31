@@ -40,8 +40,9 @@ namespace TrainSchdule.System
 				(context.Result,context.ExceptionHandled) = context.Exception switch
 				{
 					DbUpdateConcurrencyException => (new JsonResult(ActionStatusMessage.StaticMessage.System.SystemBusy),true),
+					ModelStateException ex => (new JsonResult(ex.Model), true),
 					ActionStatusMessageException ex => (new JsonResult(ex.Status),true),
-					_ =>(null,false)
+					_ =>(null,false),
 				};
 			}
 		}
