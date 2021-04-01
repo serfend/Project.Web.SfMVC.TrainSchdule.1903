@@ -73,6 +73,20 @@ namespace TrainSchdule.Controllers.BBS
             var info = appUserMessageInfoServices.GetInfo(user.Id).ToViewModel();
             return new JsonResult(new EntityViewModel<UserAppMessageInfoViewModel>(info));
         }
+
+        /// <summary>
+        /// 修改个人IM设置
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult AppMessageSetting([FromBody] UserAppMessageInfoViewModel model) {
+            var user = currentUserService.CurrentUser;
+            var info = appUserMessageInfoServices.GetInfo(user.Id) ;
+            info.Setting = model.Setting;
+            context.UserAppMessageInfos.Update(info);
+            context.SaveChanges();
+            return new JsonResult(ActionStatusMessage.Success);
+        }
         /// <summary>
         /// 发送消息
         /// </summary>
