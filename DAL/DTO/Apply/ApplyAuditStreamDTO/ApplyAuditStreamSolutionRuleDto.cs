@@ -31,7 +31,10 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 		/// 规则是否启用
 		/// </summary>
 		public bool Enable { get; set; }
-
+		/// <summary>
+		/// 审批流作用类型 可填写应用名称
+		/// </summary>
+		public string EntityType { get; set; }
 		public string SolutionName { get; set; }
 
 		public DateTime Create { get; set; }

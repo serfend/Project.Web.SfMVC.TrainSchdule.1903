@@ -71,6 +71,7 @@ namespace DAL.Entities.ClientDevice
         /// </summary>
         public string TraceAlias { get; set; }
     }
+    [Flags]
     public enum VirusStatus
     {
         [Description("无状态")]

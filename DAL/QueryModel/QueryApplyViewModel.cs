@@ -90,5 +90,6 @@ namespace DAL.QueryModel
 		/// 休假结束时间
 		/// </summary>
 		public QueryByDate StampReturn { get; set; }
+
 	}
 }

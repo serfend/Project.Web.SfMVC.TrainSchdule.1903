@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities.ApplyInfo
 {
-	public class Apply : BaseEntityGuid,IAppliable, IExecutable
+	public class Apply: ApplyBase<ApplyRequest>
+	{ 
+	}
+	public class ApplyBase<T> : BaseEntityGuid,IAppliable where T: IApplyRequestBase
 	{
-		public virtual ApplyRequest RequestInfo { get; set; }
         public DateTime? Create { get ; set ; }
         public virtual ApplyBaseInfo BaseInfo { get ; set ; }
         public AuditStatus Status { get ; set ; }
@@ -21,6 +23,7 @@ namespace DAL.Entities.ApplyInfo
         public virtual ApplyExecuteStatus ExecuteStatusDetail { get; set; }
         public ExecuteStatus ExecuteStatus { get; set; }
         public Guid? ExecuteStatusDetailId { get; set; }
+		public virtual T RequestInfo { get; set; }
     }
 
 	public class ActionByUserItem

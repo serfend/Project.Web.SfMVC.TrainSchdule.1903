@@ -68,5 +68,6 @@ namespace DAL.Entities.UserInfo
 		FromUserReport = 64,
 		FromSystemReport = 65,
 		FileInspect = 128,
+		InvalidModel=192
 	}
 }

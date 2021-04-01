@@ -1,4 +1,6 @@
 ﻿using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
+using BLL.Interfaces.Audit;
 using BLL.Interfaces.BBS;
 using BLL.Interfaces.ClientDevice;
 using BLL.Interfaces.Common;
@@ -10,6 +12,8 @@ using BLL.Interfaces.ZX;
 using BLL.Interfaces.ZX.IGrade;
 using BLL.Services;
 using BLL.Services.ApplyServices;
+using BLL.Services.ApplyServices.DailyApply;
+using BLL.Services.Audit;
 using BLL.Services.BBS;
 using BLL.Services.ClientDevice;
 using BLL.Services.Common;
@@ -95,6 +99,10 @@ namespace TrainSchdule.System
 			services.AddScoped<IDWZServices, DWZServices>();
 			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
 
+			services.AddScoped<IAppMessageServices, AppMessageServices>();
+			services.AddScoped<IAppUserMessageInfoServices, AppUserMessageInfoServices>();
+			services.AddScoped<IAppUserRelateServices, AppUserRelateServices>();
+
 			//单例
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddSingleton<IVerifyService, VerifyService>();
@@ -109,14 +117,18 @@ namespace TrainSchdule.System
 		/// <param name="services"></param>
 		private static void RegisterServices_Apply(this IServiceCollection services)
 		{
-			services.AddScoped<IApplyService, ApplyService>();
+			services.AddScoped<IApplyServiceClear, ApplyServiceClear>();
+			services.AddScoped<IApplyServiceCreate, ApplyServiceCreate>();
+			services.AddScoped<IApplyVacationService, ApplyService>();
+			services.AddScoped<IApplyInDayService, ApplyIndayService>();
 			services.AddScoped<IRecallOrderServices, RecallOrderServices>();
 			services.AddScoped<IVacationCheckServices, VacationCheckServices>();
 
 			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
 			services.AddScoped<IStatisticsAppliesProcessServices, StatisticsAppliesProcessServices>();
 			services.AddScoped<IStatisticsDailyProcessServices, StatisticsDailyProcessServices>();
-			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamServices>();
+			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamRepositoryServices>();
+			services.AddScoped<IAuditStreamServices, AuditStreamServices>();
 		}
 
 		/// <summary>

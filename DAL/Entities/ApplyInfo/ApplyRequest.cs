@@ -53,5 +53,8 @@ namespace DAL.Entities.ApplyInfo
 		火车 = 0,
 		飞机 = 1,
 		汽车 = 2,
+		出租车 = 3,
+		私家车 = 6,
+		地铁=8
 	}
 }

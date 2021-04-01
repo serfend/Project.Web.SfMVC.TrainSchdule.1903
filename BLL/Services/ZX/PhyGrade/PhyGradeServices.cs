@@ -58,7 +58,7 @@ namespace BLL.Services.ZX
 			return GetExpressionGrade(value - prev.Key, prev.Value, standard.ExpressionWhenFullGrade);
 		}
 
-		public GradePhyStandard GetStandard(GradePhySubject subject, UserBaseInfo userBaseInfo)
+		public GradePhyStandard GetStandard(GradePhySubject subject, UserGradeBaseInfo userBaseInfo)
 		{
 			if (subject == null || userBaseInfo == null) return null;
 			var userAge = userBaseInfo.Time_BirthDay.Age();
@@ -70,7 +70,7 @@ namespace BLL.Services.ZX
 			return null;
 		}
 
-		public IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase, QueryByPage pages)
+		public IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserGradeBaseInfo userBase, QueryByPage pages)
 		{
 			if (model == null) model = new QueryUserGradeViewModel();
 			var has = model.Names?.Arrays?.Any() ?? false;

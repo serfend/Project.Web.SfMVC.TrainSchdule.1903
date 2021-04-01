@@ -6,6 +6,7 @@ using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.ApplyInfo;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
@@ -35,14 +36,14 @@ namespace TrainSchdule.Controllers
 
 		#region Fields
 
-		private readonly IUsersService _usersService;
-		private readonly ICurrentUserService _currentUserService;
+		private readonly IUsersService usersService;
+		private readonly ICurrentUserService currentUserService;
 		private readonly IUserServiceDetail userServiceDetail;
-		private readonly ICompaniesService _companiesService;
-		private readonly IApplyService _applyService;
-		private readonly IGoogleAuthService _authService;
-		private readonly ApplicationDbContext _context;
-		private readonly IUserActionServices _userActionServices;
+		private readonly ICompaniesService companiesService;
+		private readonly IApplyVacationService applyService;
+		private readonly IGoogleAuthService authService;
+		private readonly ApplicationDbContext context;
+		private readonly IUserActionServices userActionServices;
 
 		#endregion Fields
 
@@ -61,41 +62,24 @@ namespace TrainSchdule.Controllers
 		/// <param name="companyManagerServices"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="context"></param>
-		public UsersController(IWebHostEnvironment env, IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
+		public UsersController(IWebHostEnvironment env, IUsersService usersService, ICurrentUserService currentUserService, IUserServiceDetail userServiceDetail, ICompaniesService companiesService, IApplyVacationService applyService, IGoogleAuthService authService, ICompanyManagerServices companyManagerServices, IUserActionServices userActionServices, ApplicationDbContext context)
 		{
 			this.env = env;
-			_usersService = usersService;
-			_currentUserService = currentUserService;
+			this.usersService = usersService;
+			this.currentUserService = currentUserService;
 			this.userServiceDetail = userServiceDetail;
-			_companiesService = companiesService;
-			_applyService = applyService;
-			_authService = authService;
-			_companyManagerServices = companyManagerServices;
-			_userActionServices = userActionServices;
-			_context = context;
+			this.companiesService = companiesService;
+			this.applyService = applyService;
+			this.authService = authService;
+			this.companyManagerServices = companyManagerServices;
+			this.userActionServices = userActionServices;
+			this.context = context;
 		}
 
 		#endregion .ctors
 
 		#region Logic
 
-		private User GetCurrentQueryUser(string id, out JsonResult result)
-		{
-			id = id.IsNullOrEmpty() ? _currentUserService.CurrentUser?.Id : id;
-			if (id == null)
-			{
-				result = new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
-				return null;
-			}
-			var targetUser = _usersService.GetById(id);
-			if (targetUser == null)
-			{
-				result = new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-				return null;
-			}
-			result = null;
-			return targetUser;
-		}
 
 		/// <summary>
 		/// 系统信息
@@ -108,8 +92,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Application(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			return new JsonResult(new UserApplicationInfoViewModel()
 			{
 				Data = targetUser.Application.ToModel(targetUser)
@@ -127,8 +110,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult DiyInfo(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			return new JsonResult(new UserDiyInfoViewModel()
 			{
 				Data = targetUser.DiyInfo?.ToViewModel(targetUser)
@@ -147,13 +129,12 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult DiyInfo(string id, [FromBody] UserDiyInfoModifyModel model)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
-			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
-			if (id != targetUser.Id && !_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			targetUser.DiyInfo = model.Data.ToModel(_context.ThirdpardAccounts);
-			_usersService.Edit(targetUser);
+			var targetUser = usersService.CurrentQueryUser(id);
+			if (!model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authByUser = usersService.GetById(model.Auth.AuthByUserID);
+			if (id != targetUser.Id && !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			targetUser.DiyInfo = model.Data.ToModel(context.ThirdpardAccounts);
+			usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -168,8 +149,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Duties(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			return new JsonResult(new UserDutiesViewModel()
 			{
 				Data = targetUser.CompanyInfo.ToDutiesModel()
@@ -187,11 +167,10 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Company(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			return new JsonResult(new UserCompanyInfoViewModel()
 			{
-				Data = targetUser.CompanyInfo.ToCompanyModel(_companiesService)
+				Data = targetUser.CompanyInfo.ToCompanyModel(companiesService)
 			});
 		}
 
@@ -206,8 +185,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Summary(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (result != null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			var data = targetUser.ToSummaryDto();
 			return new JsonResult(new UserSummaryViewModel()
 			{
@@ -225,9 +203,8 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult LastLogin(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (result != null) return result;
-			var data = _context.UserActionsDb.Where(u => u.UserName == id).Where(u => u.Operation == UserOperation.Login).Where(u => u.Success == true).OrderByDescending(u => u.Date).ToList();
+			var targetUser = usersService.CurrentQueryUser(id);
+			var data = context.UserActionsDb.Where(u => u.UserName == id).Where(u => u.Operation == UserOperation.Login).Where(u => u.Success == true).OrderByDescending(u => u.Date).ToList();
 			return new JsonResult(new UserActionReportViewModel()
 			{
 				Data = new UserActionDataModel()
@@ -249,8 +226,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Base(string id)
 		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
+			var targetUser = usersService.CurrentQueryUser(id);
 			//if (id != null && id != _currentUserService.CurrentUser?.Id) targetUser.BaseInfo.Cid = "***";
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
@@ -258,37 +234,6 @@ namespace TrainSchdule.Controllers
 				{
 					Base = targetUser.BaseInfo,
 					Id = targetUser.Id
-				}
-			});
-		}
-
-		/// <summary>
-		/// 此用户提交申请后，将生成的审批流
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[AllowAnonymous]
-		[HttpGet]
-		[ProducesResponseType(typeof(UserAuditStreamDataModel), 0)]
-		[Route("[action]")]
-		public IActionResult AuditStream(string id)
-		{
-			var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
-			var a = new DAL.Entities.ApplyInfo.Apply()
-			{
-				BaseInfo = new DAL.Entities.ApplyInfo.ApplyBaseInfo()
-				{
-					From = targetUser
-				}
-			};
-			_applyService.InitAuditStream(a);
-			return new JsonResult(new UserAuditStreamViewModel()
-			{
-				Data = new UserAuditStreamDataModel()
-				{
-					Steps = a.ApplyAllAuditStep.Select(s => s.ToDtoModel()),
-					SolutionName = a.ApplyAuditStreamSolutionRule.Solution.Name
 				}
 			});
 		}
@@ -307,9 +252,8 @@ namespace TrainSchdule.Controllers
 		public IActionResult Vacation(string id,int vacationYear,bool isPlan)
 		{
 			if (vacationYear == 0) vacationYear = DateTime.Now.XjxtNow().Year;
-			 var targetUser = GetCurrentQueryUser(id, out var result);
-			if (targetUser == null) return result;
-			var vacationInfo = _usersService.VacationInfo(targetUser, vacationYear,isPlan?MainStatus.IsPlan:MainStatus.Normal);
+			var targetUser = usersService.CurrentQueryUser(id);
+			var vacationInfo = usersService.VacationInfo(targetUser, vacationYear,isPlan?MainStatus.IsPlan:MainStatus.Normal);
 			return new JsonResult(new UserVacationInfoViewModel()
 			{
 				Data = vacationInfo
@@ -326,10 +270,8 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public async Task<IActionResult> Avatar([FromBody] ResponseImgDataModel model)
 		{
-			var targetUser = GetCurrentQueryUser(null, out var result);
-			if (result != null) return result;
-			await _usersService.UpdateAvatar(targetUser, model.Url).ConfigureAwait(true);
-
+			var targetUser =currentUserService.CurrentUser;
+			await usersService.UpdateAvatar(targetUser, model.Url).ConfigureAwait(true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -346,20 +288,19 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Avatar(string userId, string avatarId)
 		{
 			Avatar avatar = null;
-			var targetUser = GetCurrentQueryUser(userId, out var result);
+			var targetUser = usersService.CurrentQueryUser(userId);
 			if (avatarId == null)
 			{
-				if (result != null) return result;
 				avatar = targetUser?.DiyInfo?.Avatar;
 				if (avatar == null)
 				{
 					avatar = targetUser.BaseInfo.RealName.CreateTempAvatar(targetUser.BaseInfo.Gender, env.WebRootPath);
-					await _usersService.UpdateAvatar(targetUser, avatar?.Img?.ToBase64()).ConfigureAwait(true);
+					await usersService.UpdateAvatar(targetUser, avatar?.Img?.ToBase64()).ConfigureAwait(true);
 				}
 			}
 			else
 			{
-				avatar = _context.AppUserDiyAvatars.Where(a => a.Id.ToString() == avatarId).FirstOrDefault();
+				avatar = context.AppUserDiyAvatars.Where(a => a.Id.ToString() == avatarId).FirstOrDefault();
 			}
 			return new JsonResult(new AvatarViewModel()
 			{
@@ -378,7 +319,7 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult Avatars(string userid, DateTime start)
 		{
-			var list = _usersService.QueryAvatar(userid, start);
+			var list = usersService.QueryAvatar(userid, start);
 			return new JsonResult(new AvatarListViewModel()
 			{
 				Data = new AvatarListDataModel()

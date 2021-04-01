@@ -1,4 +1,5 @@
-﻿using BLL.Helpers;
+﻿using BLL.Extensions;
+using BLL.Helpers;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using System.Collections.Generic;
@@ -113,7 +114,7 @@ namespace TrainSchdule.ViewModels.ZX
 		/// <summary>
 		/// 可以是手动传入一个User
 		/// </summary>
-		public UserBaseInfo User { get; set; }
+		public UserGradeBaseInfo User { get; set; }
 
 		/// <summary>
 		/// 也可以是传入用户ID

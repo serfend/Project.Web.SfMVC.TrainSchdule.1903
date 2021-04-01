@@ -66,7 +66,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     if (client.HandleStatus.IsSuccess())
                     {
                         client.Virus.HandleDate = DateTime.Now;
-                        if (((int)client.Virus.Status & (int)VirusStatus.Unhandle) > 0) client.Virus.Status -= VirusStatus.Unhandle;
+                        if (client.Virus.Status.HasFlag(VirusStatus.Unhandle)) client.Virus.Status -= VirusStatus.Unhandle;
                         client.Virus.Status |= VirusStatus.Success;
                     }
                     else
@@ -83,9 +83,10 @@ namespace TrainSchdule.Controllers.ClientDevices
                                     client.Virus.Status |= VirusStatus.ClientNotify;
                                     break;
                                 }
+                            case VirusHandleStatus.ClientDeviceVirusNewFail:
                             case VirusHandleStatus.ClientDeviceVirusNewUnhandle:
                                 {
-                                    if (((int)client.Virus.Status & (int)VirusStatus.Success) > 0) client.Virus.Status -= VirusStatus.Success;
+                                    if (client.Virus.Status.HasFlag(VirusStatus.Success)) client.Virus.Status -= VirusStatus.Success;
                                     client.Virus.Status |= VirusStatus.Unhandle;
                                     break;
                                 }

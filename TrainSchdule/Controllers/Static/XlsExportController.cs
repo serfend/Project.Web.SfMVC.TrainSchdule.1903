@@ -41,7 +41,7 @@ namespace TrainSchdule.Controllers
 			}
 			var list = _context.AppliesDb.Where(a => form.Query.Arrays.Contains(a.Id)).ToList();
 			var user_infos = GetUserInfosDict(list);
-			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(user_infos[a.BaseInfo.FromId], _context)));
+			var fileContent = _applyService.ExportExcel(filePath, list.Select(a => a.ToDetaiDto(user_infos[a.BaseInfo.FromId],a.RequestInfo, _context)));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.StaticMessage.XlsNoData);
 			return await ExportXls(fileContent, $"{list.Count()}条({form.Templete})");
 		}
@@ -84,7 +84,7 @@ namespace TrainSchdule.Controllers
 			var singleApply = _context.AppliesDb.Where(a => a.Id == form.Query.Value).FirstOrDefault();
 			if (singleApply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			var user_infos = GetUserInfosDict(new List<DAL.Entities.ApplyInfo.Apply>() { singleApply });
-			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(user_infos[singleApply.BaseInfo?.FromId], _context));
+			var fileContent = _applyService.ExportExcel(filePath, singleApply.ToDetaiDto(user_infos[singleApply.BaseInfo?.FromId],singleApply.RequestInfo, _context));
 			if (fileContent == null) return new JsonResult(ActionStatusMessage.StaticMessage.XlsNoData);
 			return await ExportXls(fileContent, $"{singleApply.BaseInfo.RealName}的申请({form.Templete})");
 		}

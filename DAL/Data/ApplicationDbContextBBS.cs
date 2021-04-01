@@ -1,5 +1,6 @@
 ﻿using DAL.Entities.BBS;
 using DAL.Entities.Common.Message;
+using DAL.Entities.UserInfo.UserAppMessage;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace DAL.Data
 		public IQueryable<DAL.Entities.BBS.PostContent> PostContentsDb => PostContents.ToExistDbSet();
 		public DbSet<DAL.Entities.BBS.PostInteractStatus> PostInteracts { get; set; }
 		public DbSet<AppMessage> BBSMessages { get; set; }
-		public IQueryable<AppMessage> BBSMessagesDb => BBSMessages.ToExistDbSet();
+		public DbSet<AppUserRelate> AppUserRelates { get; set; }
+		public DbSet<UserAppMessageInfo> UserAppMessageInfos { get; set; }
 	}
 }

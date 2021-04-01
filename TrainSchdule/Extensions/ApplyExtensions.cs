@@ -1,7 +1,10 @@
 ﻿using BLL.Extensions;
+using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.Apply;
+using DAL.Entities;
+using DAL.Entities.ApplyInfo;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations;
 using System;
@@ -38,7 +41,6 @@ namespace TrainSchdule.Extensions
 			};
 			return b;
 		}
-
 		/// <summary>
 		///  转换并计算用户的申请
 		/// </summary>
@@ -50,9 +52,9 @@ namespace TrainSchdule.Extensions
 			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
 			var b = new ApplyRequestVdto()
 			{
-				OnTripLength = model.OnTripLength,
-				Reason = model.Reason,
+				Reason = model.Reason,				
 				StampLeave = model.StampLeave,
+				OnTripLength = model.OnTripLength,
 				VacationLength = model.VacationLength,
 				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),
 				VacationPlaceName = model.VacationPlaceName,
@@ -64,7 +66,27 @@ namespace TrainSchdule.Extensions
 			};
 			return b;
 		}
-
+		/// <summary>
+		///  转换并计算用户的申请
+		/// </summary>
+		/// <param name="model">原始申请</param>
+		/// <param name="context">数据库</param>
+		/// <returns></returns>
+		public static ApplyIndayRequestVdto ToVDTO(this SubmitIndayRequestInfoViewModel model, ApplicationDbContext context)
+		{
+			var successVacationPlace = int.TryParse(model.VacationPlace, out var vacationPlace);
+			var b = new ApplyIndayRequestVdto()
+			{
+				RequestType=context.VacationIndayTypes.FirstOrDefault(i=>i.Name == model.RequestType),
+				Reason = model.Reason,
+				StampLeave = model.StampLeave,
+				VacationPlace = context.AdminDivisions.Where(a => a.Code == vacationPlace).FirstOrDefault(),
+				VacationPlaceName = model.VacationPlaceName,
+				ByTransportation = model.ByTransportation,
+				StampReturn = model.StampReturn,
+			};
+			return b;
+		}
 		/// <summary>
 		///
 		/// </summary>
@@ -76,7 +98,8 @@ namespace TrainSchdule.Extensions
 			{
 				BaseInfoId = model.BaseId ?? Guid.Empty,
 				RequestInfoId = model.RequestId ?? Guid.Empty,
-				IsPlan = model.IsPlan
+				IsPlan = model.IsPlan,
+				EntityType=model.EntityType
 			};
 			return b;
 		}
@@ -86,17 +109,17 @@ namespace TrainSchdule.Extensions
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="auditUser"></param>
-		/// <param name="applyService"></param>
+		/// <param name="db"></param>
 		/// <returns></returns>
-		public static ApplyAuditVdto ToAuditVDTO(this AuditApplyViewModel model, User auditUser, IApplyService applyService)
+		public static ApplyAuditVdto<AuditStreamModel> ToAuditVDTO<T>(this AuditApplyViewModel model, User auditUser, IQueryable<T> db) where T:IHasGuidId,IAuditable,new()
 		{
-			var b = new ApplyAuditVdto()
+			var b = new ApplyAuditVdto<AuditStreamModel>()
 			{
 				AuditUser = auditUser,
-				List = model.Data.List.Select(d => new ApplyAuditNodeVdto()
+				List = model.Data.List.Select(d => new ApplyAuditNodeVdto<AuditStreamModel>()
 				{
 					Action = d.Action,
-					Apply = applyService.GetById(d.Id),
+					AuditItem = db.FirstOrDefault(i => i.Id == d.Id).ToModel(),
 					Remark = d.Remark
 				})
 			};

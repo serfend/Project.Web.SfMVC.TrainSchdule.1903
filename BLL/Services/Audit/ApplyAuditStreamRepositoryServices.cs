@@ -13,14 +13,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BLL.Services.ApplyServices
+namespace BLL.Services.Audit
 {
-	public class ApplyAuditStreamServices : IApplyAuditStreamServices
+	public class ApplyAuditStreamRepositoryServices : IApplyAuditStreamServices
 	{
 		private readonly ApplicationDbContext context;
 		private readonly ICompanyManagerServices companyManagerServices;
 
-		public ApplyAuditStreamServices(ApplicationDbContext context, ICompanyManagerServices companyManagerServices)
+		public ApplyAuditStreamRepositoryServices(ApplicationDbContext context, ICompanyManagerServices companyManagerServices)
 		{
 			this.context = context;
 			this.companyManagerServices = companyManagerServices;
@@ -47,17 +47,30 @@ namespace BLL.Services.ApplyServices
 			return rule;
 		}
 
-		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user, bool CheckInvalidAccount)
+		public ApplyAuditStreamSolutionRule GetAuditSolutionRule(User user,string entityType, bool CheckInvalidAccount)
 		{
 			if (user == null) return null;
 			var cmp = user.CompanyInfo.CompanyCode;
+
 			// 寻找符合条件的方案，并按优先级排序后取第一个
+			var fitRule = new List<ApplyAuditStreamSolutionRule>();
 			var auditRule = context.ApplyAuditStreamSolutionRuleDb
 				.Where(r => r.Enable)
-				.Where(r => cmp.StartsWith(r.RegionOnCompany))
-				.OrderByDescending(a => a.Priority).ToList();
-			var fitRule = new List<ApplyAuditStreamSolutionRule>();
-			foreach (var rule in auditRule)
+				.Where(r => cmp.StartsWith(r.RegionOnCompany));
+			List<string> list = entityType.Split('|').ToList();
+			list.Add(null); // 添加一个通用匹配
+			// 寻找第一个存在的规则设置
+			foreach (var i in list)
+			{
+				var tmp_rule = auditRule
+					.Where(r => r.EntityType == i);
+                if (tmp_rule.Any())
+                {
+					fitRule = tmp_rule.OrderByDescending(a => a.Priority).ToList();
+					break;
+                }
+			}
+			foreach (var rule in fitRule)
 			{
 				if (GetToAuditMembers(cmp, rule.RegionOnCompany, rule, CheckInvalidAccount).Contains(user.Id))
 					return rule;
@@ -109,7 +122,7 @@ namespace BLL.Services.ApplyServices
 			return result;
 		}
 
-		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false)
+		public ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false,string entityType=null)
 		{
 			var prev = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == name).FirstOrDefault();
 			if (prev != null) return prev;
@@ -119,6 +132,7 @@ namespace BLL.Services.ApplyServices
 				Description = description,
 				Priority = priority,
 				Enable = enable,
+				EntityType = entityType,
 				Create = DateTime.Now,
 				RegionOnCompany = companyRegion,
 

@@ -10,6 +10,7 @@ using DAL.Entities.UserInfo;
 using BLL.Extensions;
 using System.Threading.Tasks;
 using DAL.DTO.Apply;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -38,10 +39,10 @@ namespace BLL.Services
 		public IEnumerable<VacationDescriptionDto> GetVacationDates(DateTime date, int length, bool CheckInner)
 		{
 			var endDate = date.AddDays(length);
-			return _context.VacationDescriptions.Where(v => v.Start <= endDate)
+			return _context.VacationDescriptions.AsNoTracking().Where(v => v.Start <= endDate)
 				.Where(v => v.Start.AddDays(v.Length) >= date).ToList().Select(v => {
-					if(CheckInner)v.Length = GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length));
-					return v.ToModel();
+					int finnal_length = CheckInner ? GetCrossDay(date, date.AddDays(length), v.Start, v.Start.AddDays(v.Length)) :v.Length;
+					return v.ToModel(finnal_length);
 				}) ;
 		}
 
@@ -68,7 +69,7 @@ namespace BLL.Services
 		/// <returns></returns>
 		public DateTime CrossVacation(DateTime start, int length, bool caculateLawVacation, Dictionary<int, int> userSetList)
 		{
-			 GetVacationDescriptions(start, length, caculateLawVacation, userSetList);
+			GetVacationDescriptions(start, length, caculateLawVacation, userSetList);
 			return EndDate;
 		}
 

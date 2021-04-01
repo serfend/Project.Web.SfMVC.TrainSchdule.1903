@@ -13,8 +13,18 @@ namespace DAL.Entities.ApplyInfo.DailyApply
     {
         public DateTime? StampLeave { get; set; }
         public DateTime? StampReturn { get; set; }
-        public AdminDivision VacationPlace { get ; set ; }
+        public virtual AdminDivision VacationPlace { get ; set ; }
         public string VacationPlaceName { get ; set ; }
         public string Reason { get ; set ; }
+        /// <summary>
+        /// 请假类别
+        /// </summary>
+        public string RequestType { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime? CreateTime { get; set; }
+        public Transportation ByTransportation { get; set; }
+
     }
 }

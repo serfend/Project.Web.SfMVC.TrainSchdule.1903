@@ -113,6 +113,9 @@ namespace DAL.Migrations
                     b.Property<Guid?>("ApplyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApplyIndayId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("FirstMemberCompanyCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -143,6 +146,8 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplyId");
+
+                    b.HasIndex("ApplyIndayId");
 
                     b.ToTable("ApplyAuditSteps");
                 });
@@ -276,6 +281,9 @@ namespace DAL.Migrations
 
                     b.Property<bool>("Enable")
                         .HasColumnType("bit");
+
+                    b.Property<string>("EntityType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("bit");
@@ -524,6 +532,9 @@ namespace DAL.Migrations
                     b.Property<Guid?>("ApplyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApplyIndayId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("AuditingById")
                         .HasColumnType("nvarchar(450)");
 
@@ -549,9 +560,114 @@ namespace DAL.Migrations
 
                     b.HasIndex("ApplyId");
 
+                    b.HasIndex("ApplyIndayId");
+
                     b.HasIndex("AuditingById");
 
                     b.ToTable("ApplyResponses");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ApplyAuditStreamSolutionRuleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuditLeader")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("BaseInfoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Create")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExecuteStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ExecuteStatusDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MainStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("NowAuditStepId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RecallId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RequestInfoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplyAuditStreamSolutionRuleId");
+
+                    b.HasIndex("BaseInfoId");
+
+                    b.HasIndex("ExecuteStatusDetailId");
+
+                    b.HasIndex("NowAuditStepId");
+
+                    b.HasIndex("RequestInfoId");
+
+                    b.ToTable("AppliesInday");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ByTransportation")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StampLeave")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StampReturn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VacationPlaceCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VacationPlaceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VacationPlaceCode");
+
+                    b.ToTable("ApplyIndayRequests");
                 });
 
             modelBuilder.Entity("DAL.Entities.BBS.PostContent", b =>
@@ -1538,6 +1654,9 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Length")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -1573,6 +1692,44 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppMessageContent");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Common.Message.AppUserRelate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Create")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FromId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Relation")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("ToId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromId");
+
+                    b.HasIndex("ToId");
+
+                    b.ToTable("AppUserRelates");
                 });
 
             modelBuilder.Entity("DAL.Entities.Common.ShortUrl", b =>
@@ -2465,6 +2622,45 @@ namespace DAL.Migrations
                     b.ToTable("UserActions");
                 });
 
+            modelBuilder.Entity("DAL.Entities.UserInfo.UserAppMessage.UserAppMessageInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FansCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FollowCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Setting")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("UnreadMessage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAppMessageInfos");
+                });
+
             modelBuilder.Entity("DAL.Entities.UserInfo.UserApplicationInfo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2891,6 +3087,92 @@ namespace DAL.Migrations
                     b.HasIndex("ApplyRequestId");
 
                     b.ToTable("VacationAdditionals");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Vacations.VacationIndayType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Alias")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("NeedTrace")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PermitCrossDay")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionOnCompany")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VacationIndayTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Alias = "外出",
+                            Background = "inday_outdoor.jpg",
+                            Description = "办事、购物、休闲、一日内看病等利用非工作日的因私外出活动",
+                            Disabled = false,
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "外出",
+                            NeedTrace = false,
+                            PermitCrossDay = 0,
+                            RegionOnCompany = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Alias = "出差",
+                            Background = "inday_business.jpg",
+                            Description = "公差、接车/机、开会、保障等非集体活动外出",
+                            Disabled = false,
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "出差",
+                            NeedTrace = false,
+                            PermitCrossDay = 7,
+                            RegionOnCompany = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Alias = "回家",
+                            Background = "inday_family.jpg",
+                            Description = "工作日下班后、节假日全天等跨日外出",
+                            Disabled = false,
+                            IsRemoved = false,
+                            IsRemovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "回家",
+                            NeedTrace = false,
+                            PermitCrossDay = 3,
+                            RegionOnCompany = ""
+                        });
                 });
 
             modelBuilder.Entity("DAL.Entities.Vacations.VacationType", b =>
@@ -3450,6 +3732,10 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Entities.ApplyInfo.Apply", null)
                         .WithMany("ApplyAllAuditStep")
                         .HasForeignKey("ApplyId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", null)
+                        .WithMany("ApplyAllAuditStep")
+                        .HasForeignKey("ApplyIndayId");
                 });
 
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", b =>
@@ -3548,11 +3834,57 @@ namespace DAL.Migrations
                         .WithMany("Response")
                         .HasForeignKey("ApplyId");
 
+                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", null)
+                        .WithMany("Response")
+                        .HasForeignKey("ApplyIndayId");
+
                     b.HasOne("DAL.Entities.UserInfo.User", "AuditingBy")
                         .WithMany()
                         .HasForeignKey("AuditingById");
 
                     b.Navigation("AuditingBy");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
+                {
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", "ApplyAuditStreamSolutionRule")
+                        .WithMany()
+                        .HasForeignKey("ApplyAuditStreamSolutionRuleId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyBaseInfo", "BaseInfo")
+                        .WithMany()
+                        .HasForeignKey("BaseInfoId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyExecuteStatus", "ExecuteStatusDetail")
+                        .WithMany()
+                        .HasForeignKey("ExecuteStatusDetailId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStep", "NowAuditStep")
+                        .WithMany()
+                        .HasForeignKey("NowAuditStepId");
+
+                    b.HasOne("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", "RequestInfo")
+                        .WithMany()
+                        .HasForeignKey("RequestInfoId");
+
+                    b.Navigation("ApplyAuditStreamSolutionRule");
+
+                    b.Navigation("BaseInfo");
+
+                    b.Navigation("ExecuteStatusDetail");
+
+                    b.Navigation("NowAuditStep");
+
+                    b.Navigation("RequestInfo");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyIndayRequest", b =>
+                {
+                    b.HasOne("DAL.Entities.AdminDivision", "VacationPlace")
+                        .WithMany()
+                        .HasForeignKey("VacationPlaceCode");
+
+                    b.Navigation("VacationPlace");
                 });
 
             modelBuilder.Entity("DAL.Entities.BBS.PostContent", b =>
@@ -3660,6 +3992,21 @@ namespace DAL.Migrations
                         .HasForeignKey("ToId");
 
                     b.Navigation("Content");
+
+                    b.Navigation("From");
+
+                    b.Navigation("To");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Common.Message.AppUserRelate", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.User", "From")
+                        .WithMany()
+                        .HasForeignKey("FromId");
+
+                    b.HasOne("DAL.Entities.UserInfo.User", "To")
+                        .WithMany()
+                        .HasForeignKey("ToId");
 
                     b.Navigation("From");
 
@@ -3910,6 +4257,15 @@ namespace DAL.Migrations
                     b.Navigation("SocialInfo");
                 });
 
+            modelBuilder.Entity("DAL.Entities.UserInfo.UserAppMessage.UserAppMessageInfo", b =>
+                {
+                    b.HasOne("DAL.Entities.UserInfo.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DAL.Entities.UserInfo.UserApplicationInfo", b =>
                 {
                     b.HasOne("DAL.Entities.UserInfo.UserApplicationSetting", "ApplicationSetting")
@@ -4117,6 +4473,13 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.ApplyInfo.ApplyRequest", b =>
                 {
                     b.Navigation("AdditialVacations");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ApplyInfo.DailyApply.ApplyInday", b =>
+                {
+                    b.Navigation("ApplyAllAuditStep");
+
+                    b.Navigation("Response");
                 });
 
             modelBuilder.Entity("DAL.Entities.FileEngine.UploadCache", b =>

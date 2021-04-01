@@ -17,7 +17,7 @@ namespace TrainSchdule.Controllers
 {
 	public partial class UsersController
 	{
-		private readonly ICompanyManagerServices _companyManagerServices;
+		private readonly ICompanyManagerServices companyManagerServices;
 
 		/// <summary>
 		/// 此用户所管辖的单位
@@ -30,11 +30,11 @@ namespace TrainSchdule.Controllers
 		[Route("[action]")]
 		public IActionResult OnMyManage(string id)
 		{
-			id = id ?? _currentUserService.CurrentUser?.Id;
-			var targetUser = _usersService.GetById(id);
+			id = id ?? currentUserService.CurrentUser?.Id;
+			var targetUser = usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var result = _usersService.InMyManage(targetUser).Result;
-			var list = result.Item1.Select(c => c.ToDto(_companiesService));
+			var result = usersService.InMyManage(targetUser).Result;
+			var list = result.Item1.Select(c => c.ToDto(companiesService));
 			return new JsonResult(new UserManageRangeViewModel()
 			{
 				Data = new UserManageRangeDataModel()
@@ -56,17 +56,17 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model)
 		{
-			if (model.Auth == null || !model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
-			var authUser = _usersService.GetById(model.Auth.AuthByUserID);
+			if (model.Auth == null || !model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var id = model.Id ?? currentUserService.CurrentUser?.Id;
+			var authUser = usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var targetUser = _usersService.GetById(id);
-			var permit = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
+			var targetUser = usersService.GetById(id);
+			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var manages = _companyManagerServices.GetManagers(model.Code);
+			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.CompanyCode == targetUser.Id).FirstOrDefault();
 			; if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.NotExist);
-			var unused = _companyManagerServices.Delete(manage);
+			var unused = companyManagerServices.Delete(manage);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -82,14 +82,14 @@ namespace TrainSchdule.Controllers
 		[ProducesResponseType(typeof(ApiResult), 0)]
 		public IActionResult OnMyManage([FromBody] UserManageRangeModifyViewModel model, string mdzz)
 		{
-			if (!model.Auth.Verify(_authService, _currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
-			var id = model.Id ?? _currentUserService.CurrentUser?.Id;
-			var targetUser = _usersService.GetById(id);
+			if (!model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var authByUser = usersService.GetById(model.Auth.AuthByUserID);
+			var id = model.Id ?? currentUserService.CurrentUser?.Id;
+			var targetUser = usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = _userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
+			var permit = userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var manages = _companyManagerServices.GetManagers(model.Code);
+			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.UserId == targetUser.Id).FirstOrDefault();
 			if (manage != null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Existed);
 			var dto = new CompanyManagerVdto()
@@ -98,7 +98,7 @@ namespace TrainSchdule.Controllers
 				CompanyCode = model.Code,
 				UserId = model.Id
 			};
-			manage = _companyManagerServices.CreateManagers(dto);
+			manage = companyManagerServices.CreateManagers(dto);
 			if (manage == null) return new JsonResult(ActionStatusMessage.CompanyMessage.ManagerMessage.Default);
 			return new JsonResult(ActionStatusMessage.Success);
 		}

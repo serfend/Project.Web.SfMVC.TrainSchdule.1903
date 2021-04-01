@@ -1,4 +1,5 @@
-﻿using DAL.Entities.UserInfo;
+﻿using BLL.Extensions;
+using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Phy;
 using DAL.QueryModel;
 using System;
@@ -16,7 +17,7 @@ namespace BLL.Interfaces.ZX
 		/// </summary>
 		/// <param name="userBaseInfo"></param>
 		/// <returns></returns>
-		GradePhyStandard GetStandard(GradePhySubject subject, UserBaseInfo userBaseInfo);
+		GradePhyStandard GetStandard(GradePhySubject subject, UserGradeBaseInfo userBaseInfo);
 
 		int GetGrade(GradePhyStandard standard, string rawValue);
 
@@ -27,7 +28,7 @@ namespace BLL.Interfaces.ZX
 		/// <param name="userBase"></param>
 		/// <param name="pages"></param>
 		/// <returns></returns>
-		IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserBaseInfo userBase, QueryByPage pages);
+		IEnumerable<GradePhySubject> GetSubjectsByName(QueryUserGradeViewModel model, UserGradeBaseInfo userBase, QueryByPage pages);
 
 		void ModifySubject(GradePhySubject model);
 

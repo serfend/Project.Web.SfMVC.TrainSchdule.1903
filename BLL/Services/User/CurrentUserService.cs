@@ -1,4 +1,6 @@
-﻿using BLL.Interfaces;
+﻿using Abp.Extensions;
+using BLL.Helpers;
+using BLL.Interfaces;
 using DAL.Data;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +46,7 @@ namespace BLL.Services
 			_context = context;
 		}
 
-		#endregion .ctors
-	}
+
+        #endregion .ctors
+    }
 }

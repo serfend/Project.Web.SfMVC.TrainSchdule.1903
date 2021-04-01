@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using DAL.Entities.ApplyInfo;
+using System.Collections.Generic;
 
 namespace DAL.DTO.Apply
 {
-	public class ApplyAuditVdto
+	public class ApplyAuditVdto<T> where T : IAuditable
 	{
-		public IEnumerable<ApplyAuditNodeVdto> List { get; set; }
+		public IEnumerable<ApplyAuditNodeVdto<T>> List { get; set; }
 		public Entities.UserInfo.User AuditUser { get; set; }
 	}
 
-	public class ApplyAuditNodeVdto
+	public class ApplyAuditNodeVdto<T> where T: IAuditable
 	{
 		public AuditResult Action { get; set; }
 		public string Remark { get; set; }
-		public Entities.ApplyInfo.Apply Apply { get; set; }
+		public T AuditItem { get; set; }
 	}
 
 	public enum AuditResult

@@ -46,12 +46,12 @@ namespace BLL.Services
 			return order;
 		}
 
-		public ApplyExecuteStatus Create(Apply apply, ExecuteStatusVDto status)
+		public Tuple<ExecuteStatus,ApplyExecuteStatus> Create(IApplyRequestBase request, ExecuteStatus nowStatus, ExecuteStatusVDto status,bool canBeforeEndTime)
 		{
-			if (apply == null || status == null) throw new ActionStatusMessageException(apply.NotExist());
-			var s = (int)apply.ExecuteStatus & (int)ExecuteStatus.BeenSet;
+			if (request == null || status == null) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.NotExist);
+			var s = (int)nowStatus & (int)ExecuteStatus.BeenSet;
 			if (s > 0) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.Crash);
-			apply.ExecuteStatus |= ExecuteStatus.BeenSet;
+			nowStatus |= ExecuteStatus.BeenSet;
 			var m = new ApplyExecuteStatus()
 			{
 				Create = DateTime.Now,
@@ -59,15 +59,12 @@ namespace BLL.Services
 				ReturnStamp = status.ReturnStamp,
 				Reason = status.Reason
 			};
-			var rawReturn = apply.RequestInfo.StampReturn?.Date;
-			if (m.ReturnStamp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.SelfReturnNotPermit);
+			var rawReturn = request.StampReturn?.Date;
+			if (!canBeforeEndTime && m.ReturnStamp.Date < rawReturn) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.RecallMessage.SelfReturnNotPermit);
 			else if (m.ReturnStamp.Date > rawReturn)
-				apply.ExecuteStatus |= ExecuteStatus.Delay;
+				nowStatus |= ExecuteStatus.Delay;
 			_context.ApplyExcuteStatus.Add(m);
-			apply.ExecuteStatusDetailId = m.Id;
-			_context.Applies.Update(apply);
-			_context.SaveChanges();
-			return m;
+			return new Tuple<ExecuteStatus, ApplyExecuteStatus>(nowStatus,m);
 		}
 	}
 }

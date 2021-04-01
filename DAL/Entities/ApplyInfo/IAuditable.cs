@@ -33,6 +33,8 @@ namespace DAL.Entities.ApplyInfo
 		/// 并根据NowAuditStep决定是否需要添加更多的审批人
 		/// </summary>
 		public  IEnumerable<ApplyResponse> Response { get; set; }
+		public AuditStatus Status { get; set; }
+
 	}
 
 	public enum AuditStatus

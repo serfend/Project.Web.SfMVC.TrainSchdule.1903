@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.ApplyExtensions;
+﻿using Abp.Linq.Expressions;
+using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using DAL.DTO.Apply.ApplyAuditStreamDTO;
@@ -50,7 +51,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			result = CheckPermission(auditUser, null, solution.RegionOnCompany, solution.RegionOnCompany);
 			if (result.Status != 0) return new JsonResult(result);
 
-			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.CompanyRegion, model.Description, model.Priority, model.Enable);
+			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.CompanyRegion, model.Description, model.Priority, model.Enable,model.EntityType);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -89,6 +90,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			n.Priority = model.Priority;
 			n.Solution = solution;
 			n.Enable = model.Enable;
+			n.EntityType = model.EntityType;
 			n.Name = model.Name;
 			n.RegionOnCompany = model.CompanyRegion;
 			context.ApplyAuditStreamSolutionRules.Update(n);
@@ -158,9 +160,19 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		/// <returns></returns>
 		[HttpGet]
 		[Route("ApplyAuditStream/StreamSolutionRuleQuery")]
-		public IActionResult StreamSolutionRuleQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
+		public IActionResult StreamSolutionRuleQuery(string companyRegion, string entityType, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamSolutionRuleDb
+			var list = context.ApplyAuditStreamSolutionRuleDb;
+			foreach (var i in entityType.Split('|'))
+            {
+				var temp = list.Where(r => r.EntityType == i);
+                if (temp.Any())
+                {
+					list = temp;
+					break;
+                }
+            }
+			var result =list
 					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)

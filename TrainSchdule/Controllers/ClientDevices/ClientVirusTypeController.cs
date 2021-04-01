@@ -130,6 +130,7 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpGet]
         public IActionResult RelateById(Guid id) {
             var item = context.VirusTracesDb.FirstOrDefault(i => i.Id == id);
             if (item == null) return new JsonResult(item.NotExist());

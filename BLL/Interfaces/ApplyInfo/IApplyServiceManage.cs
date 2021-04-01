@@ -4,12 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.DTO.Apply;
 using DAL.DTO.Company;
+using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.QueryModel;
 
 namespace BLL.Interfaces
 {
-	public interface IApplyServiceManage
+	public interface IApplyServiceManage<T,Q> where T:IAppliable where Q: IApplyRequestBase
 	{
 		/// <summary>
 		/// 按筛选查询
@@ -19,7 +20,8 @@ namespace BLL.Interfaces
 		/// 若允许，将不再限制传入的日期是否合法</param>
 		/// <param name="totalCount"></param>
 		/// <returns></returns>
-		IEnumerable<Apply> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount);
+		IEnumerable<T> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount);
+
 
 		/// <summary>
 		/// 删除指定时间内未保存的申请
@@ -29,26 +31,18 @@ namespace BLL.Interfaces
 		Task<int> RemoveAllUnSaveApply(TimeSpan interval);
 
 		/// <summary>
-		/// 删除指定时间内无用户认领的申请
-		/// </summary>
-		/// <param name="interval"></param>
-		/// <returns></returns>
-		Task<int> RemoveAllNoneFromUserApply(TimeSpan interval);
-
-		/// <summary>
 		/// 移除已删除的用户所对应的申请
 		/// </summary>
 		/// <returns></returns>
 		Task<int> RemoveAllRemovedUsersApply();
-
 		/// <summary>
 		/// 删除指定申请
 		/// </summary>
 		/// <param name="Applies"></param>
-		Task RemoveApplies(IEnumerable<Apply> Applies);
+		Task RemoveApplies(IEnumerable<T> Applies);
 
-		byte[] ExportExcel(string templete, ApplyDetailDto model);
+		byte[] ExportExcel(string templete, ApplyDetailDto<Q> model);
 
-		byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto> model);
+		byte[] ExportExcel(string templete, IEnumerable<ApplyDetailDto<Q>> model);
 	}
 }

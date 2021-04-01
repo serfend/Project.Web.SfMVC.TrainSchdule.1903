@@ -1,4 +1,5 @@
-﻿using BLL.Extensions;
+﻿using Abp.Extensions;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Services.ApplyServices;
@@ -36,25 +37,35 @@ namespace BLL.Services
 		private readonly IWebHostEnvironment _hostingEnvironment;
 		private readonly ApplicationDbContext _context;
 		private readonly IVacationCheckServices _vacationCheckServices;
+        private readonly ICurrentUserService currentUserService;
 
-		#endregion Fields
+        #endregion Fields
 
-		#region .ctors
+        #region .ctors
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="UsersService"/>.
-		/// </summary>
-		public UsersService(IVacationCheckServices vacationCheckServices, ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsersService"/>.
+        /// </summary>
+        public UsersService(IVacationCheckServices vacationCheckServices,ICurrentUserService currentUserService, ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
 		{
 			_context = context;
 			_hostingEnvironment = hostingEnvironment;
 			_vacationCheckServices = vacationCheckServices;
-		}
+            this.currentUserService = currentUserService;
+        }
 
 		#endregion .ctors
 
 		#region Logic
 
+		public User CurrentQueryUser(string id)
+		{
+			id = id.IsNullOrEmpty() ? currentUserService.CurrentUser?.Id : id;
+			if (id == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			var targetUser = GetById(id);
+			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
+			return targetUser;
+		}
 		/// <summary>
 		/// Loads all users with paggination, returns collection of user DTOs.
 		/// </summary>
