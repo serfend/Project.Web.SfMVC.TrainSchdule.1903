@@ -25,6 +25,7 @@ namespace BLL.Services.ApplyServices.DailyApply
     {
         public IEnumerable<ApplyInday> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
         {
+            
             var db = context.AppliesIndayDb;
             var list = db.AsQueryable();
             totalCount = 0;
@@ -236,7 +237,8 @@ namespace BLL.Services.ApplyServices.DailyApply
             if (model == null) return null;
 			var type = model.RequestType ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
             if (type.Disabled) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
-            if (type.PermitCrossDay < (int)(model.StampReturn?.Subtract(model.StampLeave ?? DateTime.MinValue).TotalDays)) {
+            
+            if (type.PermitCrossDay < model.StampReturn?.Date.Subtract(model.StampLeave?.Date ?? DateTime.MinValue).Days) {
                 var desc = type.PermitCrossDay <= 0 ? "不允许跨日请假" : $"最多允许请假{type.PermitCrossDay}天";
                 throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.CrossDayNotPermit, desc, true));
             }
