@@ -11,6 +11,7 @@ using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -132,7 +133,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = usersService.CurrentQueryUser(id);
 			if (!model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = usersService.GetById(model.Auth.AuthByUserID);
-			if (id != targetUser.Id && !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (id != targetUser.Id && !userActionServices.Permission(authByUser, ApplicationPermissions.User.CustomeInfo.Item, PermissionType.Write, authByUser.Id, targetUser.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel(context.ThirdpardAccounts);
 			usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);

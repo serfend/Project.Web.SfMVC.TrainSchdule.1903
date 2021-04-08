@@ -63,6 +63,10 @@ namespace DAL.Entities.ApplyInfo
 		public string Description { get; set; }
 
 		/// <summary>
+		/// 审批流类型
+		/// </summary>
+		public string EntityType { get; set; }
+		/// <summary>
 		/// 审批流全流节点,以##分割表示多个
 		/// </summary>
 		public string Nodes { get; set; }
@@ -86,6 +90,11 @@ namespace DAL.Entities.ApplyInfo
 		/// 说明
 		/// </summary>
 		public string Description { get; set; }
+		/// <summary>
+		/// 审批流类型
+		/// </summary>
+		public string EntityType { get; set; }
+
 
 		public DateTime Create { get; set; }
 		public string Duties { get; set; }

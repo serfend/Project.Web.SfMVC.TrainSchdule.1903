@@ -40,5 +40,12 @@ namespace TrainSchdule.ViewModels.Apply.ApplyAuditStream
 		/// 解决方案包含的所有节点名称
 		/// </summary>
 		public IEnumerable<string> Nodes { get; set; }
+
+		/// <summary>
+		/// 作用节点
+		/// </summary>
+		[Required(ErrorMessage = "作用类型未填写")]
+		[MinLength(1, ErrorMessage = "作用类型未填写")]
+		public string EntityType { get; set; }
 	}
 }

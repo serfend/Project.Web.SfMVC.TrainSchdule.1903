@@ -1,10 +1,13 @@
 ﻿using Abp.Extensions;
+using BLL.Extensions;
 using BLL.Extensions.CreateClientInfo;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Permission;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Common;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Http;
@@ -20,17 +23,19 @@ namespace BLL.Services
 	public class UserActionServices : IUserActionServices
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		private readonly ApplicationDbContext _context;
+		private readonly ApplicationDbContext context;
 		private readonly IUserServiceDetail userServiceDetail;
 		private readonly IUsersService usersService;
+        private readonly IPermissionServices permissionServices;
 
-		public UserActionServices(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IUserServiceDetail userServiceDetail, IUsersService usersService)
+        public UserActionServices(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IUserServiceDetail userServiceDetail, IUsersService usersService, IPermissionServices permissionServices)
 		{
 			_httpContextAccessor = httpContextAccessor;
-			_context = context;
+			this.context = context;
 			this.userServiceDetail = userServiceDetail;
 			this.usersService = usersService;
-		}
+            this.permissionServices = permissionServices;
+        }
 		public async Task<UserAction> LogAsync(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
         {
 			var context = _httpContextAccessor.HttpContext;
@@ -41,53 +46,44 @@ namespace BLL.Services
 			ua.Success = success;
 			ua.Description = description;
 			ua.Rank = rank;
-			await _context.UserActions.AddAsync(ua);
-			await _context.SaveChangesAsync();
+			await this.context.UserActions.AddAsync(ua);
+			await this.context.SaveChangesAsync();
 			return ua;
 		}
 		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug) => LogAsync(operation, username, description, success, rank).Result;
 
-		public bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null) => PermissionAsync(permissions, key, operation, permissionUserName, targetUserCompanyCode, description).Result;
-		public async Task<bool> PermissionAsync(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null)
+		public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null) => PermissionAsync(authUser, permission, operation, targetUserCompanyCode, description).Result;
+		public async Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null)
 		{
-			var a =await LogAsync(UserOperation.Permission, permissionUserName, $"授权到{targetUserCompanyCode}执行{key?.Name} {key?.Description}@{operation} {description}", false, ActionRank.Danger);
-			if (permissions.Check(key, operation, targetUserCompanyCode))
-			{
-				Status(a, true, "直接权限");
+			if (authUser == null) return false;
+			var authUserId = authUser.Id;
+			var a =await LogAsync(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key} {permission?.Description}@{operation} {description}", false, ActionRank.Danger);
+			var permit = permissionServices.CheckPermissions(authUser, permission.Key, operation, targetUserCompanyCode);
+            if (permit!=null)
+            {
+				Status(a, true, $"直接权限:{permit}");
 				return true;
 			}
-			var u = usersService.GetById(permissionUserName);
-			if (u != null)
-			{
-				var uc = u.CompanyInfo;
-				var ud = uc.Duties.IsMajorManager;
-				var ucmp = uc.CompanyCode;
-				if (targetUserCompanyCode == null || (targetUserCompanyCode.Length >= ucmp.Length && targetUserCompanyCode.StartsWith(ucmp)) && ud)
-				{
-					Status(a, true, $"单位主官");
-					return true;
-				}
-				else
-				{
-					var results = userServiceDetail.InMyManage(u).Result;
-					if (targetUserCompanyCode == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
-					else if (results.Item2 > 0 && results.Item1.Any(c => targetUserCompanyCode.Length >= c.Code.Length && targetUserCompanyCode.StartsWith(c.Code)))
-					{
-						Status(a, true, $"单位管理");
-						return true;
-					}
-				}
+			var checkCompanyMajor = authUser.CheckCompanyMajor(targetUserCompanyCode);
+            if (checkCompanyMajor)
+            {
+				Status(a, true, $"单位主管");
+				return true;
 			}
-			//throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
+			var checkCompanyManager = authUser.CheckCompanyManager(targetUserCompanyCode, userServiceDetail);
+            if (checkCompanyManager)
+            {
+				Status(a, true, $"单位管理");
+				return true;
+			}
 			return false;
-
 		}
 		public async Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model)
 		{
 			return await Task.Run(() =>
 			{
 				if (model == null) return null;
-				var r = _context.UserActionsDb.AsQueryable();
+				var r = context.UserActionsDb.AsQueryable();
 				if (model.UserName?.Value != null) r = r.Where(h => h.UserName == model.UserName.Value);
 				if (model.Date?.Start != null && model.Date?.End != null)
 				{
@@ -112,8 +108,8 @@ namespace BLL.Services
 			action.Success = success;
 			if (description != null) description = $"$${description}";
 			action.Description = $"{action.Description}{description}";
-			_context.UserActions.Update(action);
-			_context.SaveChanges();
+			context.UserActions.Update(action);
+			context.SaveChanges();
 			return action;
 		}
 

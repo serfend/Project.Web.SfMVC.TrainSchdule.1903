@@ -4,6 +4,7 @@ using BLL.Extensions.Common;
 using BLL.Helpers;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -68,7 +69,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			else
 			{
-				var permission = actionUser.Id == m.FromId || userActionServices.Permission(actionUser.Application.Permission, DictionaryAllPermission.Apply.AttachInfo, model.IsRemove ? Operation.Remove : Operation.Update, actionUser.Id, m.From.CompanyInfo.CompanyCode);
+				var permission = actionUser.Id == m.FromId || userActionServices.Permission(actionUser, ApplicationPermissions.Apply.Vacation.AttachInfo.Item,  PermissionType.Write , actionUser.Id, m.From.CompanyInfo.CompanyCode);
 				if (permission)
 				{
 					m.LastModify = DateTime.Now;

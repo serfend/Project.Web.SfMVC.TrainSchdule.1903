@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using DAL.Entities.ZX.Phy;
 using DAL.QueryModel.ZX;
 using Microsoft.AspNetCore.Mvc;
@@ -28,20 +29,19 @@ namespace TrainSchdule.Controllers.Zx
 		{
 			var prev = context.GradePhyRecords.Where(r => r.Id == model.Id).FirstOrDefault();
 			var m = model.ToModel(context);
-			var operation = m.GetOperation(prev);
 			// check exam holder modify
 			var prevExamHolder = prev?.Exam?.HoldBy?.Code;
 			var currentExamHolder = m?.Exam?.HoldBy?.Code;
 			if (prevExamHolder != null && prevExamHolder != currentExamHolder)
-				CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, prevExamHolder, "所属考核-移出原单位");
-			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentExamHolder, "所属考核");
+				CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Record.Item, PermissionType.Write, prevExamHolder, "所属考核-移出原单位");
+			CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Record.Item, PermissionType.Write, currentExamHolder, "所属考核");
 
 			// check target user modify
 			var prevUser = prev?.User?.CompanyInfo?.CompanyCode;
 			var currentUser = m?.User?.CompanyInfo?.CompanyCode;
 			if (prevUser != currentUser)
-				CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, prevUser, "移出作用于成员");
-			CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Record, operation, currentUser, "作用于成员");
+				CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Record.Item, PermissionType.Write, prevUser, "移出作用于成员");
+			CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Record.Item, PermissionType.Write, currentUser, "作用于成员");
 
 			phyGradeServices.ModifyRecord(m);
 			return new JsonResult(ActionStatusMessage.Success);

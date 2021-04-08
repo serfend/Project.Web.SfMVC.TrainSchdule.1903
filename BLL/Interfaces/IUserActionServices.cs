@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using System;
@@ -43,15 +44,14 @@ namespace BLL.Interfaces
 		/// <summary>
 		/// 授权记录
 		/// </summary>
-		/// <param name="permissions">授权方权限</param>
-		/// <param name="key">授权到何类型</param>
+		/// <param name="authUser">授权方id</param>
+		/// <param name="permission">授权到何类型</param>
 		/// <param name="operation">何操作</param>
-		/// <param name="permissionUserName">授权方用户名</param>
 		/// <param name="targetUserCompanyCode">被授权方单位</param>
 		/// <param name="description">描述</param>
 		/// <returns></returns>
-		bool Permission(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null);
-		Task<bool> PermissionAsync(Permissions permissions, PermissionDescription key, Operation operation, string permissionUserName, string targetUserCompanyCode, string description = null);
+		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null);
+		Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null);
 		Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
 	}
 }

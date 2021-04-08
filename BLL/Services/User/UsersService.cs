@@ -110,12 +110,7 @@ namespace BLL.Services
 			{
 				Id = "root",
 				Application = new UserApplicationInfo()
-				{
-					Permission = new Permissions()
-					{
-						Role = "admin"
-					}
-				},
+				{},
 				BaseInfo = new UserBaseInfo()
 				{
 					RealName = "系统管理员"
@@ -151,12 +146,7 @@ namespace BLL.Services
 			{
 				Id = "audit_skipper",
 				Application = new UserApplicationInfo()
-				{
-					Permission = new Permissions()
-					{
-						Role = "User"
-					}
-				},
+				{},
 				BaseInfo = new UserBaseInfo()
 				{
 					RealName = "跳过审批"
@@ -256,11 +246,6 @@ namespace BLL.Services
 			application.ApplicationSetting = new UserApplicationSetting()
 			{
 				LastSubmitApplyTime = DateTime.Now
-			};
-			application.Permission = new Permissions()
-			{
-				Regions = "",
-				Role = "User"
 			};
 			var company = user.CompanyInfo;
 			company.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyCode);
@@ -402,7 +387,6 @@ namespace BLL.Services
 			}
 			if (user.Application != null)
 			{
-				if (user.Application.Permission != null) _context.Permissions.Remove(user.Application.Permission);
 				if (user.Application.ApplicationSetting != null) _context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
 			}
 			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);

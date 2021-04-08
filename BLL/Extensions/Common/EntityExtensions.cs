@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Grade;
 using DAL.Entities.ZX.Phy;
@@ -20,8 +21,13 @@ namespace BLL.Extensions.Common
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public static ApiResult NotExist(this BaseEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
-
+		public static ApiResult NotExist(this IDbEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
+		public static ApiResult NotExist(this PermissionsRoleRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateRole.NotExist;
+		public static ApiResult Exist(this PermissionsRoleRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateRole.Exist;
+		public static ApiResult NotExist(this PermissionsRole model) => ActionStatusMessage.PermissionMessage.Role.NotExist;
+		public static ApiResult NotExist(this IPermissionDescription model) => ActionStatusMessage.PermissionMessage.Permission.NotExist;
+		public static ApiResult NotExist(this PermissionsUserRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateUser.NotExist;
+		public static ApiResult Exist(this PermissionsUserRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateUser.Exist;
 		public static ApiResult NotExist(this Apply model) => ActionStatusMessage.ApplyMessage.NotExist;
 
 		public static ApiResult NotExist(this RecallOrder model) => ActionStatusMessage.ApplyMessage.RecallMessage.NotExist;

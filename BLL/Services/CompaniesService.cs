@@ -1,7 +1,9 @@
 ﻿using BLL.Interfaces;
+using BLL.Interfaces.Permission;
 using Castle.Core.Internal;
 using DAL.Data;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,21 +17,18 @@ namespace BLL.Services
 	public class CompaniesService : ICompaniesService
 	{
 		private readonly ApplicationDbContext _context;
+        private readonly IPermissionServices permissionServices;
 
-		public CompaniesService(ApplicationDbContext context)
+        public CompaniesService(ApplicationDbContext context,IPermissionServices permissionServices)
 		{
 			_context = context;
-		}
-
-		private const string pc = "Company.View";
-
+            this.permissionServices = permissionServices;
+        }
 		public List<Company> PermissionViewCompanies(User currentUser)
 		{
 			if (currentUser == null) return new List<Company>();
-			var permit = currentUser.Application.Permission.GetRegionList();
-			if (!permit.ContainsKey(pc)) return new List<Company>();
-			var c = permit[pc];
-			return c.Query.Select(i => GetById(i)).ToList();
+			var list = permissionServices.GetPermissions(currentUser).Where(p=>p.Name==ApplicationPermissions.Company.Tree.Item.Key).Where(i=>i.Type.HasFlag(PermissionType.Read));
+			return list.Select(i => GetById(i.Region)).ToList();
 		}
 
 		public Duties GetDuties(int code)

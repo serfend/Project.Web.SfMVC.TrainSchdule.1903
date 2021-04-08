@@ -1,24 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.Account
 {
 	/// <summary>
-	/// 修改权限
+	/// 用户指定角色
 	/// </summary>
-	public class ModifyPermissionsViewModel : GoogleAuthViewModel
+	public class UserRalteRoleViewModel: GoogleAuthViewModel
 	{
 		/// <summary>
-		/// 指定id
+		/// 被授权方
 		/// </summary>
-		public string Id { get; set; }
-
+		public string User { get; set; }
 		/// <summary>
-		/// 新的权限
+		/// 角色名称
 		/// </summary>
-		public string NewPermission { get; set; }
+		public string Role { get; set; }
+		/// <summary>
+		/// 是否删除
+		/// </summary>
+		public bool IsRemove { get; set; }
 	}
-
 	/// <summary>
 	/// 修改密码
 	/// </summary>

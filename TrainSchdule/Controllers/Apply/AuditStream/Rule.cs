@@ -98,17 +98,18 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		/// <summary>
-		/// 查询一个审批流解决方案规则
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		[HttpGet]
+        /// <summary>
+        /// 查询一个审批流解决方案规则
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpGet]
 		[Route("ApplyAuditStream/StreamSolutionRule")]
-		public IActionResult GetStreamSolutionRule(string name)
+		public IActionResult GetStreamSolutionRule(string name,string entityType)
 		{
 			ApplyAuditStreamSolutionRule checkExist = null;
-			applyAuditStreamServices.EditSolutionRule(name, (n) => { checkExist = n; return false; });
+			applyAuditStreamServices.EditSolutionRule(name,entityType, (n) => { checkExist = n; return false; });
 			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			return new JsonResult(new StreamSolutionRuleViewModel()
 			{

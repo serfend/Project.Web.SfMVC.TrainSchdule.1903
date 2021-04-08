@@ -29,7 +29,6 @@ namespace DAL.Data
 		public IQueryable<Company> CompaniesDbIngoreStatistics => CompaniesDb.Where(c => ((int)c.CompanyStatus & (int)CompanyStatus.IgnoreCaculateStatistics) == 0);
 		public DbSet<CompanyManagers> CompanyManagers { get; set; }
 		public DbSet<AdminDivision> AdminDivisions { get; set; }
-		public DbSet<Permissions> Permissions { get; set; }
 		public DbSet<Duties> Duties { get; set; }
 
 		public DbSet<XlsTemplete> XlsTempletes { get; set; }

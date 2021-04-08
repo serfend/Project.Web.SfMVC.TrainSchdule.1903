@@ -3,6 +3,7 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.Company;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo.Settle;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,7 @@ namespace TrainSchdule.Controllers
 			var authUser = usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetUser = usersService.GetById(id);
-			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Remove, authUser.Id, model.Code);
+			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, authUser.Id, model.Code);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.CompanyCode == targetUser.Id).FirstOrDefault();
@@ -87,7 +88,7 @@ namespace TrainSchdule.Controllers
 			var id = model.Id ?? currentUserService.CurrentUser?.Id;
 			var targetUser = usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, model.Code);
+			var permit = userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, authByUser.Id, model.Code);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.UserId == targetUser.Id).FirstOrDefault();

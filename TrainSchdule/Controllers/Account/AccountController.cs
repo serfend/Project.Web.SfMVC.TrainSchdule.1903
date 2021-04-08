@@ -29,6 +29,7 @@ using static BLL.Extensions.UserExtensions;
 using BLL.Interfaces.Common;
 using Abp.Extensions;
 using BLL.Interfaces.Permission;
+using DAL.Entities.Permisstions;
 
 namespace TrainSchdule.Controllers
 {
@@ -44,7 +45,7 @@ namespace TrainSchdule.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly ICurrentUserService currentUserService;
-		private readonly ApplicationDbContext _context;
+		private readonly ApplicationDbContext context;
 		private readonly IEmailSender _emailSender;
 		private readonly ILogger _logger;
 		private readonly IUsersService _usersService;
@@ -71,7 +72,6 @@ namespace TrainSchdule.Controllers
 		/// <param name="currentUserService"></param>
 		/// <param name="userActionServices"></param>
 		/// <param name="cipperServices"></param>
-		/// <param name="permissionServices"></param>
 
 		public AccountController(
 			UserManager<ApplicationUser> userManager,
@@ -79,7 +79,7 @@ namespace TrainSchdule.Controllers
 			IEmailSender emailSender,
 			ILogger<AccountController> logger,
 			IUsersService usersService, IVerifyService verifyService, IGoogleAuthService authService, ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices,
-			ICipperServices cipperServices, IPermissionServices permissionServices)
+			ICipperServices cipperServices)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
@@ -88,11 +88,10 @@ namespace TrainSchdule.Controllers
 			_usersService = usersService;
 			_verifyService = verifyService;
 			_authService = authService;
-			_context = context;
+			this.context = context;
 			this.currentUserService = currentUserService;
 			_userActionServices = userActionServices;
 			this.cipperServices = cipperServices;
-			this.permissionServices = permissionServices;
 		}
 
 		#endregion .ctors
@@ -110,7 +109,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult UserAction(int page, int pageSize = 20)
 		{
 			var currentUser = currentUserService.CurrentUser;
-			var list = _context.UserActionsDb.Where(u => u.UserName == currentUser.Id);
+			var list = context.UserActionsDb.Where(u => u.UserName == currentUser.Id);
 			var count = list.Count();
 			list = list.Skip(page * pageSize).Take(pageSize);
 			return new JsonResult(new UserActionViewModel()
@@ -154,7 +153,7 @@ namespace TrainSchdule.Controllers
 		{
 			if (cid == null) return new JsonResult(ActionStatusMessage.UserMessage.NoId);
 			if (!cid.CheckIDCard(out var reason)) return new JsonResult(new ApiResult(ActionStatusMessage.UserMessage.NotCrrectCid,reason,true));
-			var user = _context.AppUsersDb.FirstOrDefault(u => u.BaseInfo.Cid == cid);
+			var user = context.AppUsersDb.FirstOrDefault(u => u.BaseInfo.Cid == cid);
 			if (user == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			return new JsonResult(new UserBaseInfoWithIdViewModel()
 			{
@@ -220,7 +219,7 @@ namespace TrainSchdule.Controllers
 			string userid = null;
 			var isCid = model.Id.CheckIDCard(out var _);
 			// 身份证转id
-			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
+			if (isCid) userid = context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Id).FirstOrDefault()?.Id;
 			else userid = model.Id;
 			// 目标用户权限判断
 			var currentUser = currentUserService.CurrentUser;
@@ -239,11 +238,11 @@ namespace TrainSchdule.Controllers
 				authUserPermission = authUser.Id == userid;
 			}
 			if (authUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.NotLogin));
-			if (!authUserPermission) authUserPermission = _userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}密码");
+			if (!authUserPermission) authUserPermission = _userActionServices.Permission(authUser, ApplicationPermissions.User.Application.Password.Item, PermissionType.Write, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}密码");
 			if (!authUserPermission) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 
 			// 密码修改判断
-			var appUser = _context.Users.Where(u => u.UserName == targetUser.Id).FirstOrDefault();
+			var appUser = context.Users.Where(u => u.UserName == targetUser.Id).FirstOrDefault();
 
 			model.ConfirmNewPassword = model.ConfirmNewPassword.FromCipperToString(model.Id, cipperServices);
 			model.NewPassword = model.NewPassword.FromCipperToString(model.Id, cipperServices);
@@ -259,10 +258,10 @@ namespace TrainSchdule.Controllers
 				if (model.ConfirmNewPassword == model.OldPassword) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Login.PasswordIsSame));
 			}
 			appUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(appUser, model.ConfirmNewPassword);
-			_context.Users.Update(appUser);
+			context.Users.Update(appUser);
 			targetUser.BaseInfo.PasswordModify = true;
-			_context.AppUserBaseInfos.Update(targetUser.BaseInfo);
-			await _context.SaveChangesAsync().ConfigureAwait(false);
+			context.AppUserBaseInfos.Update(targetUser.BaseInfo);
+			await context.SaveChangesAsync().ConfigureAwait(false);
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -298,7 +297,7 @@ namespace TrainSchdule.Controllers
 			if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			var authByUser = _usersService.GetById(model.Auth.AuthByUserID);
 			if (authByUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}授权码")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!_userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.AuthKey.Item, PermissionType.Write, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}授权码")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.AuthKey = model.NewKey;
 			var success = _usersService.Edit(targetUser);
 			if (!success) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
@@ -346,7 +345,7 @@ namespace TrainSchdule.Controllers
 		{
 			string userid = null;
 			bool isCid = model.UserName.CheckIDCard(out var _);
-			if (isCid) userid = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
+			if (isCid) userid = context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.UserName).FirstOrDefault()?.Id;
 			else userid = model.UserName;
 			if (userid == null)
             {
@@ -358,7 +357,7 @@ namespace TrainSchdule.Controllers
 			model.Verify.Verify(_verifyService);
 			var targetUser = _usersService.GetById(userid);
 			if (targetUser == null) {
-				var check_user_exist = _context.AppUsers.FirstOrDefault(u=>u.Id==userid);
+				var check_user_exist = context.AppUsers.FirstOrDefault(u=>u.Id==userid);
 				if(check_user_exist!=null)
 					return new JsonResult(_userActionServices.LogNewActionInfo(actionRecord, (ActionStatusMessage.Account.Login.AccountRemoved)));
 				else
@@ -476,9 +475,9 @@ namespace TrainSchdule.Controllers
 		private async Task RemoveSingle(UserRemoveDataModel u, User authByUser,bool isRemove = true)
 		{
 			var actionRecord = _userActionServices.Log(isRemove?UserOperation.Remove:UserOperation.Restore, u.Id, $"因：${u.Reason}", false, ActionRank.Danger);
-			var targetUser = isRemove? _usersService.GetById(u.Id):_context.AppUsers.FirstOrDefault(i=>i.Id==u.Id);
+			var targetUser = isRemove? _usersService.GetById(u.Id):context.AppUsers.FirstOrDefault(i=>i.Id==u.Id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
-			if (!_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Create, authByUser.Id, targetUser.CompanyInfo?.CompanyCode, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
+			if (!_userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item,PermissionType.Write, targetUser.CompanyInfo?.CompanyCode, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
 			var result = isRemove ? await _usersService.RemoveAsync(u.Id, u.Reason) :  _usersService.RestoreUser(u.Id);
 			if (!result) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
 			_userActionServices.Status(actionRecord, true);
@@ -499,13 +498,13 @@ namespace TrainSchdule.Controllers
 			var targetUser = _usersService.GetById(model.Id);
 			if (authByUser == null || targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var ua = _userActionServices.Log(UserOperation.Permission, authByUser.Id, $"修改{targetUser.Id}系统信息");
-			if (_userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.User.Application, Operation.Update, authByUser.Id, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}系统信息")) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
+			if (_userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item,PermissionType.Write, targetUser.CompanyInfo.CompanyCode, $"修改{targetUser.Id}系统信息")) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.Account.Auth.Invalid.Default));
 			var app = targetUser.Application;
 			app.Email = model.Data.Email;
 			app.AuthKey = model.Data.AuthKey;
 			app.ApplicationSetting.LastSubmitApplyTime = model.Data.ApplicationSetting.LastSubmitApplyTime;
-			_context.AppUserApplicationInfos.Update(app);
-			await _context.SaveChangesAsync();
+			context.AppUserApplicationInfos.Update(app);
+			await context.SaveChangesAsync();
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -580,8 +579,8 @@ namespace TrainSchdule.Controllers
 			var ua = _userActionServices.Log(UserOperation.ModifyUser, model.UserName, $"通过{currentUser?.Id} 授权审核注册", false, ActionRank.Danger);
 			if (canAuthRank < 1) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.Application.InvitedBy = model.Valid ? currentUser.Id : BLL.Extensions.UserExtensions.InviteByInvalidValue;
-			_context.AppUserApplicationInfos.Update(targetUser.Application);
-			_context.SaveChanges();
+			context.AppUserApplicationInfos.Update(targetUser.Application);
+			context.SaveChanges();
 			_userActionServices.Status(ua, true);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
@@ -623,7 +622,7 @@ namespace TrainSchdule.Controllers
 
 			// 获取需要修改的目标用户
 			if (model.Company == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-			var newUser = model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts);
+			var newUser = model.ToModel(authByUser.Id, context.AdminDivisions, context.ThirdpardAccounts);
 			var to_modify_NewUser = await _usersService.ModifyAsync(newUser, false);
 
 			// 检查修改后的用户的权限
@@ -636,9 +635,9 @@ namespace TrainSchdule.Controllers
 			CheckCurrentUserData(to_modify_NewUser);
 			if (invalidAccount == AccountType.Deny) to_modify_NewUser.Application.InvitedBy = null;//  重新提交
 			_logger.LogInformation($"用户信息被修改:{to_modify_NewUser.Id}");
-			_context.Entry(localUser).State = EntityState.Detached;
-			_context.AppUsers.Update(to_modify_NewUser);
-			await _context.SaveChangesAsync();
+			context.Entry(localUser).State = EntityState.Detached;
+			context.AppUsers.Update(to_modify_NewUser);
+			await context.SaveChangesAsync();
 		}
 
 		private async Task RegisterSingle(UserCreateDataModel model, User authByUser)
@@ -646,9 +645,9 @@ namespace TrainSchdule.Controllers
 			var regUser = _usersService.GetById(model.Application.UserName);
 			if (regUser != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.UserExist);
 			var username = model.Application.UserName;
-			var checkIfCidIsUsed = _context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
+			var checkIfCidIsUsed = context.AppUsersDb.Where(u => u.BaseInfo.Cid == model.Base.Cid).FirstOrDefault();
 			if (checkIfCidIsUsed != null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.CidExist);
-			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, _context.AdminDivisions, _context.ThirdpardAccounts), model.Password, CheckCurrentUserData);
+			var user = await _usersService.CreateAsync(model.ToModel(authByUser.Id, context.AdminDivisions, context.ThirdpardAccounts), model.Password, CheckCurrentUserData);
 			if (!ModelState.IsValid)
 				throw new ModelStateException(new ModelStateExceptionViewModel(ModelState));
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Register.Default);
@@ -666,8 +665,8 @@ namespace TrainSchdule.Controllers
 				if (authUserPermissionRank < 1)
 				{
 					toRegisterUser.Application.InvitedBy = null;
-					_context.AppUserApplicationInfos.Update(toRegisterUser.Application);
-					_context.SaveChanges();
+					context.AppUserApplicationInfos.Update(toRegisterUser.Application);
+					context.SaveChanges();
 				}
 			}
 			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

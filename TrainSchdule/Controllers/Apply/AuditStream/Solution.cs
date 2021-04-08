@@ -44,7 +44,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			var errorList = new StringBuilder();
 			foreach (var node in model.Nodes)
 			{
-				applyAuditStreamServices.EditNode(node, (n) =>
+				applyAuditStreamServices.EditNode(node,model.EntityType, (n) =>
 				{
 					if (n == null) ModelState.AddModelError(node, "节点不存在");
 					else list.Add(n);
@@ -90,7 +90,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			var errorList = new StringBuilder();
 			foreach (var no in model.Nodes)
 			{
-				applyAuditStreamServices.EditNode(no, (n) =>
+				applyAuditStreamServices.EditNode(no,model.EntityType, (n) =>
 				{
 					if (n == null) ModelState.AddModelError("节点列表", $"节点{no}不存在");
 					else list.Add(n);

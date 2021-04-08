@@ -7,6 +7,7 @@ using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -185,7 +186,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream.HandleApply
 			var currentUser = currentUserService.CurrentUser ?? throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			if (apply.BaseInfo.FromId != currentUser?.Id)
 			{
-				var permit = userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, currentUser.Id, apply.BaseInfo.CompanyCode, "执行休假申请的操作");
+				var permit = userActionServices.Permission(currentUser, ApplicationPermissions.Apply.ApplyInday.Detail.Item, PermissionType.Write, apply.BaseInfo.CompanyCode, "执行请假申请的操作");
 				if (!permit && needPermission) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			callBack.Invoke(apply, currentUser.Id);

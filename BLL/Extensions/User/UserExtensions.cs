@@ -25,7 +25,25 @@ namespace BLL.Extensions
 			if (inviteBy == InviteByInvalidValue) return AccountType.Deny;
 			return AccountType.BeenAuth;
 		}
-
+		public static string GetCompanyMajor(this UserCompanyInfo uc)
+		{
+			var ud = uc.Duties.IsMajorManager;
+			if (!ud) return null;
+			return uc.CompanyCode;
+		}
+		public static bool CheckCompanyManager(this User user,string targetCompany, IUserServiceDetail userServiceDetail)
+        {
+			var results = userServiceDetail.InMyManage(user).Result;
+			if (targetCompany == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
+			else if (results.Item2 > 0 && results.Item1.Any(c => targetCompany.Length >= c.Code.Length && targetCompany.StartsWith(c.Code)))
+				return true;
+			return false;
+		}
+		public static bool CheckCompanyMajor(this User user,string targetCompany)
+        {
+			var companyMajor = user.CompanyInfo.GetCompanyMajor();
+			return targetCompany == null || (companyMajor != null && targetCompany.Length >= companyMajor.Length && targetCompany.StartsWith(companyMajor));
+		}
 		public static UserSummaryDto ToSummaryDto(this User user)
 		{
 			if (user == null) return null;

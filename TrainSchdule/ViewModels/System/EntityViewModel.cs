@@ -95,23 +95,5 @@ namespace TrainSchdule.ViewModels.System
 			Model = data;
 		}
 	}
-
-	/// <summary>
-	/// 常用逻辑
-	/// </summary>
-	public static class EntityDataModelExtensions
-	{
-		/// <summary>
-		/// 获取本次查询的操作类型
-		/// </summary>
-		/// <param name="entity"></param>
-		/// <param name="prev"></param>
-		/// <returns></returns>
-		public static Operation GetOperation(this BaseEntity entity, BaseEntity prev)
-		{
-			if (entity?.IsRemoved ?? false) return Operation.Remove;
-			if (prev == null) return Operation.Create;
-			return Operation.Update;
-		}
-	}
+	
 }

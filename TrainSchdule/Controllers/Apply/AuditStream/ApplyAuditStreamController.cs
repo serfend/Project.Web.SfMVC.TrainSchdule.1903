@@ -7,6 +7,7 @@ using DAL.DTO.Apply;
 using DAL.DTO.Apply.ApplyAuditStreamDTO;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +67,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			var targetCompanies = filter.Companies;
 			foreach (var targetCompany in targetCompanies)
 			{
-				var permit = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, targetCompany);
+				var permit = userActionServices.Permission(u, ApplicationPermissions.Apply.Vacation.AuditStream.Item, PermissionType.Write, targetCompany);
 				var targetCompanyItem = companiesService.GetById(targetCompany);
 				if (!targetCompany.StartsWith(companyRegion)) return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"包含的单位{targetCompanyItem?.Name}({targetCompany})的越权"));
 				if (!permit) return (new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{targetCompanyItem?.Name}({targetCompany})的权限"));
@@ -79,7 +80,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			if ((companyRegion == "" || prevRegion == "") && u.Id.ToLower() != "root")
 				return new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, "通用作用域需要管理员权限");
 			if (companyRegion == null || prevRegion == null) return ActionStatusMessage.ApplyMessage.AuditStreamMessage.InvalidRegion;
-			var newP = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, companyRegion);
+			var newP = userActionServices.Permission(u, ApplicationPermissions.Apply.Vacation.AuditStream.Item, PermissionType.Write,companyRegion);
 			if (!newP)
 			{
 				var targetCompanyItem = companiesService.GetById(companyRegion);
@@ -87,7 +88,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			}
 			if (!prevRegion.StartsWith(companyRegion))
 			{
-				var prevP = userActionServices.Permission(u?.Application?.Permission, DictionaryAllPermission.Apply.AuditStream, Operation.Create, u.Id, prevRegion);
+				var prevP = userActionServices.Permission(u, ApplicationPermissions.Apply.Vacation.AuditStream.Item, PermissionType.Write, prevRegion);
 				if (!prevP)
 				{
 					var targetCompanyItem = companiesService.GetById(prevRegion);

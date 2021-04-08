@@ -2,12 +2,19 @@
 
 namespace DAL.Entities
 {
-	public interface IHasIntId
+	/// <summary>
+	/// 标记为数据库实体
+	/// </summary>
+	public interface IDbEntity
+    {
+
+    }
+	public interface IHasIntId: IDbEntity
 	{
 		int Id { get; set; }
 	}
 
-	public interface IHasGuidId
+	public interface IHasGuidId: IDbEntity
 	{
 		Guid Id { get; set; }
 	}
@@ -29,7 +36,7 @@ namespace DAL.Entities
 		public virtual int Id { get; set; }
 	}
 
-	public abstract class BaseEntity
+	public abstract class BaseEntity : IDbEntity
 	{
 		/// <summary>
 		/// 使用软删除

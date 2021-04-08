@@ -4,6 +4,7 @@ using BLL.Interfaces.Common;
 using BLL.Services.Common;
 using DAL.Entities;
 using DAL.Entities.Common;
+using DAL.Entities.Permisstions;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -81,7 +82,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Remove, c.Id, m.CreateBy.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item,PermissionType.Write,  m.CreateBy.CompanyInfo.CompanyCode);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			await dWZServices.Remove(m).ConfigureAwait(false);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -119,7 +120,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Create([FromBody] ShortUrlCreateDataModel model)
 		{
 			var c = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Create, c.Id, null);
+			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Write, c.Id, null);
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			try
 			{
@@ -148,7 +149,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(key).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!userActionServices.Permission(c.Application.Permission, DictionaryAllPermission.Resources.ShortUrl, Operation.Query, c.Id, m.CreateBy.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Read,m.CreateBy.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var result = await dWZServices.QueryStatistics(m, model).ConfigureAwait(true);
 			var statistics = result.Item1;
 			var totalCount = result.Item2;

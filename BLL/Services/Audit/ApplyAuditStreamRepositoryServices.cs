@@ -26,23 +26,23 @@ namespace BLL.Services.Audit
 			this.companyManagerServices = companyManagerServices;
 		}
 
-		public ApplyAuditStreamNodeAction EditNode(string nodeName, Func<ApplyAuditStreamNodeAction, bool> callback)
+		public ApplyAuditStreamNodeAction EditNode(string nodeName, string entityType = null, Func<ApplyAuditStreamNodeAction, bool> callback=null)
 		{
-			var node = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == nodeName).FirstOrDefault();
+			var node = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == nodeName).Where(a=>a.EntityType == entityType).FirstOrDefault();
 			if (callback != null && callback.Invoke(node)) context.SaveChanges();
 			return node;
 		}
 
-		public ApplyAuditStream EditSolution(string solutionName, Func<ApplyAuditStream, bool> callback)
+		public ApplyAuditStream EditSolution(string solutionName, string entityType = null, Func<ApplyAuditStream, bool> callback=null)
 		{
-			var solution = context.ApplyAuditStreamsDb.Where(s => s.Name == solutionName).FirstOrDefault();
+			var solution = context.ApplyAuditStreamsDb.Where(s => s.Name == solutionName).Where(a => a.EntityType == entityType).FirstOrDefault();
 			if (callback != null && callback.Invoke(solution)) context.SaveChanges();
 			return solution;
 		}
 
-		public ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, Func<ApplyAuditStreamSolutionRule, bool> callback)
+		public ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, string entityType = null, Func<ApplyAuditStreamSolutionRule, bool> callback=null)
 		{
-			var rule = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == solutionRuleName).FirstOrDefault();
+			var rule = context.ApplyAuditStreamSolutionRuleDb.Where(r => r.Name == solutionRuleName).Where(a => a.EntityType == entityType).FirstOrDefault();
 			if (callback != null && callback.Invoke(rule)) context.SaveChanges();
 			return rule;
 		}
@@ -78,9 +78,9 @@ namespace BLL.Services.Audit
 			return null;
 		}
 
-		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null)
+		public ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null,string entityType=null)
 		{
-			var prev = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == name).FirstOrDefault();
+			var prev = context.ApplyAuditStreamNodeActionDb.Where(a => a.Name == name).Where(a=>a.EntityType== entityType).FirstOrDefault();
 			if (prev != null) return prev;
 			var result = new ApplyAuditStreamNodeAction()
 			{
@@ -88,6 +88,8 @@ namespace BLL.Services.Audit
 				Name = name,
 				Create = DateTime.Now,
 				RegionOnCompany = companyRegion,
+				EntityType= entityType,
+
 
 				Companies = filter?.Companies,
 				CompanyRefer = filter?.CompanyRefer,
@@ -104,9 +106,9 @@ namespace BLL.Services.Audit
 			return result;
 		}
 
-		public ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description = null)
+		public ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description = null,string entityType =null)
 		{
-			var prev = context.ApplyAuditStreamsDb.Where(a => a.Name == name).FirstOrDefault();
+			var prev = context.ApplyAuditStreamsDb.Where(a => a.Name == name).Where(a=>a.EntityType== entityType).FirstOrDefault();
 			if (prev != null) return prev;
 			var result = new ApplyAuditStream()
 			{
@@ -114,6 +116,7 @@ namespace BLL.Services.Audit
 				RegionOnCompany = companyRegion,
 				Description = description,
 				Create = DateTime.Now,
+				EntityType= entityType,
 
 				Nodes = string.Join("##", Nodes.Select(n => n.Name))
 			};

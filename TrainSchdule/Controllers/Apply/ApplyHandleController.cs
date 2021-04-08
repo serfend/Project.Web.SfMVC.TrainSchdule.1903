@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using GoogleAuth;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
+using DAL.Entities.Permisstions;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -44,7 +45,7 @@ namespace TrainSchdule.Controllers.Apply
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
-			var permit = userActionServices.Permission(auditUser?.Application?.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, auditUser.Id, "root");
+			var permit = userActionServices.Permission(auditUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Read, "root");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			apply.IsRemoved = false;
 			context.Applies.Update(apply);
@@ -88,7 +89,6 @@ namespace TrainSchdule.Controllers.Apply
 			var authUser = model.Auth.AuthUser(authService, currentUserService.CurrentUser?.Id);
 			var ua = userActionServices.Log(DAL.Entities.UserInfo.UserOperation.ModifyApply, authUser, $"召回{model.Data.Apply}");
 			if (authUser != model.Data.HandleBy) return new JsonResult(model.Auth.PermitDenied());
-
 			var recall = model.Data.ToVDto<RecallOrderVDto>();
 			var result = recallOrderServices.Create(recall);
 			userActionServices.Status(ua, true);
@@ -128,7 +128,7 @@ namespace TrainSchdule.Controllers.Apply
             {
 				var apply = applyService.GetById(m.Apply);
 				var targetUser = apply.BaseInfo.From;
-				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
+				var permit = userActionServices.Permission(authUser, ApplicationPermissions.Apply.Vacation.ExecuteStatus.Item, PermissionType.Write, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
 				if (!permit) return new JsonResult(model.Auth.PermitDenied());
 				var result = recallOrderServices.Create(apply.RequestInfo, apply.ExecuteStatus, m,false);
 				apply.ExecuteStatus = result.Item1;
@@ -141,7 +141,7 @@ namespace TrainSchdule.Controllers.Apply
             {
 				var apply = applyInDayService.GetById(m.Apply);
 				var targetUser = apply.BaseInfo.From;
-				var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.Apply.InDayApply, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
+				var permit = userActionServices.Permission(authUser, ApplicationPermissions.Apply.ApplyInday.ExecuteStatus.Item, PermissionType.Write,targetUser.CompanyInfo.CompanyCode, $"确认{targetUser.Id}归队时间");
 				if (!permit) return new JsonResult(model.Auth.PermitDenied());
 				var result = recallOrderServices.Create(apply.RequestInfo, apply.ExecuteStatus, m, true) ;
 				apply.ExecuteStatus = result.Item1;

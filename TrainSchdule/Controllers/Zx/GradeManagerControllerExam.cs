@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.DTO.ZX.Grade;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using DAL.Entities.ZX.Grade;
 using DAL.QueryModel.ZX;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,8 @@ namespace TrainSchdule.Controllers.Zx
 		{
 			var m = model.ToModel(context);
 			var prev = context.GradeExams.Where(e => e.Name == m.Name).FirstOrDefault();
-			var operation = m.GetOperation(prev);
-			if (prev?.HoldBy != null && prev.HoldBy?.Code != m?.HoldBy?.Code) CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Exam, operation, prev.HoldBy.Code, "移出原单位");
-			var authUser = CheckPermission(model?.Auth, DictionaryAllPermission.Grade.Exam, operation, m.HoldBy.Code);
+			if (prev?.HoldBy != null && prev.HoldBy?.Code != m?.HoldBy?.Code) CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Exam.Item, PermissionType.Write, prev.HoldBy.Code, "移出原单位");
+			var authUser = CheckPermission(model?.Auth, ApplicationPermissions.Grade.Subject.Exam.Item, PermissionType.Write, m.HoldBy.Code);
 			m.CreateBy = authUser;
 			gradeServices.ModifyExam(m);
 			return new JsonResult(ActionStatusMessage.Success);

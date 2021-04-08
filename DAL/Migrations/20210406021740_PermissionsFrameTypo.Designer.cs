@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210406021740_PermissionsFrameTypo")]
+    partial class PermissionsFrameTypo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2168,7 +2170,33 @@ namespace DAL.Migrations
                     b.ToTable("GameR3UserInfos");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Permisstions.PermissionRoleRelatePermission", b =>
+            modelBuilder.Entity("DAL.Entities.Permisstions.PermissionItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermissionItem");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Permisstions.PermissionRoleRalatePermitssion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2186,6 +2214,9 @@ namespace DAL.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
@@ -2196,6 +2227,8 @@ namespace DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
 
                     b.HasIndex("RoleName");
 
@@ -2250,6 +2283,9 @@ namespace DAL.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
@@ -2260,6 +2296,8 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
 
                     b.HasIndex("UserId");
 
@@ -4234,11 +4272,17 @@ namespace DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Permisstions.PermissionRoleRelatePermission", b =>
+            modelBuilder.Entity("DAL.Entities.Permisstions.PermissionRoleRalatePermitssion", b =>
                 {
+                    b.HasOne("DAL.Entities.Permisstions.PermissionItem", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId");
+
                     b.HasOne("DAL.Entities.Permisstions.PermissionsRole", "Role")
                         .WithMany()
                         .HasForeignKey("RoleName");
+
+                    b.Navigation("Permission");
 
                     b.Navigation("Role");
                 });
@@ -4269,9 +4313,15 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.Permisstions.PermissionsUser", b =>
                 {
+                    b.HasOne("DAL.Entities.Permisstions.PermissionItem", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId");
+
                     b.HasOne("DAL.Entities.UserInfo.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Permission");
 
                     b.Navigation("User");
                 });

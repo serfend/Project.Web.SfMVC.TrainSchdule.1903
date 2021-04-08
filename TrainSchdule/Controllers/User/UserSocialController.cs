@@ -1,6 +1,7 @@
 ﻿using BLL.Extensions.Common;
 using BLL.Helpers;
 using DAL.Entities;
+using DAL.Entities.Permisstions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -81,7 +82,7 @@ namespace TrainSchdule.Controllers
 
 			var targetUser = context.AppUsersDb.FirstOrDefault(u => u.SocialInfo.Settle.PrevYealyLengthHistory.FirstOrDefault(r => r.Code == new_record_id) != null);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, targetUser.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write, authUser.Id, targetUser.CompanyInfo.CompanyCode);
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var record = userServiceDetail.ModifySettleModifyRecord(newR.Code, (r) =>
 			{
@@ -129,7 +130,7 @@ namespace TrainSchdule.Controllers
 			var user = usersService.GetById(userid);
 			if (user == null) return new JsonResult(user.NotExist());
 			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!userActionServices.Permission(authUser.Application.Permission, DictionaryAllPermission.User.SocialInfo, Operation.Update, authUser.Id, user.CompanyInfo.CompanyCode, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write,  user.CompanyInfo.CompanyCode, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			user.SocialInfo.Settle = data.Settle.ToModel(context.AdminDivisions, user.SocialInfo.Settle);
 			context.AppUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 			context.SaveChanges();

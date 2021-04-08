@@ -13,6 +13,7 @@ using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Common.DataDictionary;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations;
 using Microsoft.AspNetCore.Authorization;
@@ -269,7 +270,7 @@ namespace TrainSchdule.Controllers.Apply
 			// 本人及有权限者可操作
 			if (
 				authByUser.Id != targetUser.Id
-				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
+				&& !userActionServices.Permission(authByUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Write, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
 			) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请", false, ActionRank.Danger);
 			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave))
@@ -283,7 +284,7 @@ namespace TrainSchdule.Controllers.Apply
 			// 本人及有权限者可操作
 			if (
 				authByUser.Id != targetUser.Id
-				&& !userActionServices.Permission(authByUser.Application.Permission, DictionaryAllPermission.Apply.InDayApply, Operation.Remove, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
+				&& !userActionServices.Permission(authByUser, ApplicationPermissions.Apply.ApplyInday.Detail.Item, PermissionType.Write, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
 			) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.StampLeave}外出申请", false, ActionRank.Danger);
 			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave))

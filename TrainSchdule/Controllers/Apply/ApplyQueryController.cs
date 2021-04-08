@@ -6,6 +6,7 @@ using DAL.DTO.Apply;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
+using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
@@ -41,10 +42,10 @@ namespace TrainSchdule.Controllers.Apply
 			{
 				var permission = entityType switch
 				{
-					"vacation" => DictionaryAllPermission.Apply.Default,
-					_ => DictionaryAllPermission.Apply.InDayApply
+					"vacation" => ApplicationPermissions.Apply.Vacation.Detail.Item,
+					_ => ApplicationPermissions.Apply.ApplyInday.Detail.Item
 				};
-				var permit = userActionServices.Permission(auditUser?.Application?.Permission, permission, Operation.Query, auditUser.Id, c, "审批列表");
+				var permit = userActionServices.Permission(auditUser, permission, PermissionType.Read, c, "审批列表");
 				var cItem = companiesService.GetById(c);
 				if (!permit) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
 			}
@@ -116,7 +117,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			if (id != null && id != currentUser.Id)
 			{
-				if (!userActionServices.Permission(currentUser.Application.Permission, DictionaryAllPermission.Apply.Default, Operation.Query, currentUser.Id, c.CompanyInfo.CompanyCode, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (!userActionServices.Permission(currentUser, entityType=="vacation" ? ApplicationPermissions.Apply.Vacation.Detail.Item: ApplicationPermissions.Apply.ApplyInday.Detail.Item, PermissionType.Read,c.CompanyInfo.CompanyCode, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			if (entityType == "vacation")
 			{

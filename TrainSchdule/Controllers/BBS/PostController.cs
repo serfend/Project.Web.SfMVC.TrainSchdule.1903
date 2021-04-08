@@ -4,6 +4,7 @@ using BLL.Interfaces.BBS;
 using BLL.Interfaces.File;
 using DAL.Entities;
 using DAL.Entities.BBS;
+using DAL.Entities.Permisstions;
 using DAL.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +65,7 @@ namespace TrainSchdule.Controllers.BBS
 		public IActionResult Post([FromBody]PostCreateDataModel model)
 		{
 			var user = currentUserService.CurrentUser;
-			postServices.CreatePost(new DAL.Entities.BBS.PostContent() {
+			postServices.CreatePost(new PostContent() {
 				Title = model.Title,
 				Contents = model.Content,
 				Images = model.Images,
@@ -102,7 +103,7 @@ namespace TrainSchdule.Controllers.BBS
 			var post = postServices.GetPostById(id);
 			var targetUser = post.CreateBy;
 			var user = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(targetUser.Application.Permission, DictionaryAllPermission.Post.Default,Operation.Remove,user.Id,targetUser.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(targetUser, ApplicationPermissions.Activity.Post.Item,PermissionType.Write,targetUser.CompanyInfo.CompanyCode);
 			if (permit) postServices.RemoveContent(post);
 			return  new JsonResult(ActionStatusMessage.Success);
 		}
