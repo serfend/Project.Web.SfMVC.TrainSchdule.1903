@@ -77,7 +77,7 @@ namespace TrainSchdule.Controllers
 			int result = 0;
 			foreach (var c in raw_list)
 			{
-				c.Name = $"*{c.Name}";
+				c.Name = c.Name?.StartsWith("*") ?? true ?c.Name: $"*{c.Name}";
 				if (!list.TryAdd(c.Code, c))
 				{
 					result--;
