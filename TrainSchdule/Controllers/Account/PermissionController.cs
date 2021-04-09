@@ -50,20 +50,17 @@ namespace TrainSchdule.Controllers
     }
 	public partial class PermissionController
 	{
-
-
 		/// <summary>
 		/// 系统所有权限列表
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		[ProducesResponseType(typeof(EntityViewModel<List<Tuple<string, Permission>>>), 0)]
+		[ProducesResponseType(typeof(EntityViewModel<IEnumerable<Permission>>), 0)]
 		public IActionResult PermissionDictionary()
 		{
-			var t = permissionServices.AllPermissions;
-			return new JsonResult(new EntityViewModel<List<Tuple<string, Permission>>>(t));
+			var t = permissionServices.DictPermissions.Select(i=>i.Value);
+			return new JsonResult(new EntityViewModel<IEnumerable<Permission>>(t));
 		}
-
 		/// <summary>
 		/// 获取当前用户的权限
 		/// </summary>
