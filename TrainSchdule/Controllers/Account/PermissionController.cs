@@ -62,7 +62,7 @@ namespace TrainSchdule.Controllers
 			return new JsonResult(new EntityViewModel<IEnumerable<Permission>>(t));
 		}
 		/// <summary>
-		/// 获取当前用户的权限
+		/// 获取当前用户被授予的角色和权限
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -75,11 +75,27 @@ namespace TrainSchdule.Controllers
 			var targetUser = usersService.GetById(currentId);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${targetUser.Id}权限");
-			var permission = permissionServices.GetPermissions(targetUser).Select(i => i.ToModel());
-			var role = permissionServices.GetRoles(targetUser).Select(i => i.ToModel());
+			var permission = context.PermissionsUsers.Where(p=>p.UserId==id).Select(i => i.ToModel());
+			var role = context.PermissionsUserRelates.Where(p=>p.UserId==id).Select(i => i.ToModel());
 			return new JsonResult(new QueryPermissionsOutViewModel() { Data = new QueryPermissionsOutDataModel() { Permissions = permission, Roles = role } });
 		}
-
+		/// <summary>
+		/// 获取当前用户创建的角色和权限
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[ProducesResponseType(typeof(EntitiesListViewModel<PermissionsRoleViewModel>), 0)]
+		public IActionResult PermissionBy(string id)
+		{
+			var currentId = id ?? currentUserService.CurrentUser.Id;
+			if (currentId == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+			var targetUser = usersService.GetById(currentId);
+			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
+			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${targetUser.Id}权限");
+			var role = context.PermissionsRoles.Where(p=>p.CreateById==id).Select(i=>i.Name).Distinct().ToList().Select(i => permissionServices.RoleDetail(i)).Select(i=>i.Item1.ToModel(i.Item2,i.Item3,i.Item4));
+			return new JsonResult(new EntitiesListViewModel<PermissionsRoleViewModel>(role));
+		}
 		/// <summary>
 		/// 为用户赋予角色
 		/// 方式1：单位主管授权，作为原始角色
@@ -106,15 +122,27 @@ namespace TrainSchdule.Controllers
 
 			return new JsonResult(ActionStatusMessage.Success);
 		}
+
 		/// <summary>
-		/// 创建/移除角色
+		/// 查看角色详情
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public IActionResult RoleDetail([FromBody] PermissionsRoleViewModel model)
+		{
+			var r = permissionServices.RoleDetail(model.Role);
+			return new JsonResult(new EntityViewModel<PermissionsRoleViewModel>(r.Item1.ToModel(r.Item2, r.Item3, r.Item4)));
+		}
+		/// <summary>
+		/// 创建/移除角色/查看角色详情
+		/// TODO 权限控制
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
 		public IActionResult Role([FromBody] PermissionsRoleViewModel model) {
 			var r = permissionServices.RoleModify(model.Role,currentUserService.CurrentUser.Id, model.IsRemove);
-			// TODO 权限控制
-			return new JsonResult(new EntityViewModel<PermissionsRoleViewModel>(r.ToModel()));
+			if (r == null) throw new ActionStatusMessageException(r.NotExist());
+			return RoleDetail(model);
 		}
 		/// <summary>
 		/// 角色关联权限/角色
@@ -127,7 +155,7 @@ namespace TrainSchdule.Controllers
 		// 关联权限
 		private IActionResult RelatePermissions(RoleAttachPermissionViewModel model) {
 			var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser.Id);
-			var p = permissionServices.GetPermissionByName(model.Permission.Name) ?? throw new ActionStatusMessageException(new PermissionsRole().NotExist());
+			var p = permissionServices.GetPermissionByName(model.Permission.Name) ?? throw new ActionStatusMessageException(new DAL.Entities.Permisstions.Permission().NotExist());
 			if (!userActionServices.Permission(authUser,p, model.Permission.Type, model.Permission.Region, $"关联权限到{model.Role}")) throw new ActionStatusMessageException(new ApiResult(model.Auth.PermitDenied(), $"授权到{p.Description}", true)); ;
 			
 			var relate_permission = permissionServices.RoleRelatePermissions(model.Role, model.Permission);
@@ -136,6 +164,9 @@ namespace TrainSchdule.Controllers
 		// 关联角色
 		private IActionResult RelateRole(RoleAttachPermissionViewModel model) {
 			var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser.Id);
+			var require_permission = permissionServices.RolePermissionCompany(model.Role);
+			foreach (var c in require_permission)
+				if (!userActionServices.Permission(authUser, ApplicationPermissions.Permissions.Role.Item, PermissionType.Write, c, "取消用户权限")) throw new ActionStatusMessageException(new ApiResult(model.Auth.PermitDenied(), $"授权到{c}", true));
 			var relate_role = permissionServices.RoleRelateRole(model.Role, model.RelateRole, model.IsRemove);
 			return new JsonResult(new EntityViewModel<PermissionsRoleRelateViewModel>(relate_role.ToModel()));
 		}

@@ -17,6 +17,19 @@ namespace TrainSchdule.ViewModels.Account
 		/// </summary>
 		public string Role { get; set; }
 		/// <summary>
+		/// 继承了哪些角色
+		/// </summary>
+		public IEnumerable<string> FromRoles { get; set; }
+		/// <summary>
+		/// 被哪些角色继承
+		/// </summary>
+		public IEnumerable<string> ToRoles { get; set; }
+		/// <summary>
+		/// 包含哪些权限
+		/// </summary>
+		public IEnumerable<PermissionBaseItem> Permissions { get; set; }
+
+		/// <summary>
 		/// 是否删除
 		/// </summary>
 		public bool IsRemove { get; set; }
@@ -87,15 +100,21 @@ namespace TrainSchdule.ViewModels.Account
 	/// </summary>
 	public static class PermissionsExtensions
     {
-		/// <summary>
-		/// 单个权限转换
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public static PermissionsRoleViewModel ToModel(this PermissionsRole model) => new PermissionsRoleViewModel() {
+        /// <summary>
+        /// 单个权限转换
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="fromRoles"></param>
+        /// <param name="ToRoles"></param>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public static PermissionsRoleViewModel ToModel(this PermissionsRole model,IEnumerable<string> fromRoles,IEnumerable<string>ToRoles,IEnumerable<PermissionBaseItem> permissions) => new PermissionsRoleViewModel() {
 			CreateBy = model.CreateById,
 			Role = model.Name,
-			Create = model.Create
+			Create = model.Create,
+			FromRoles = fromRoles,
+			ToRoles = ToRoles,
+			Permissions = permissions
 		};
 		/// <summary>
 		/// 用户单个权限转换

@@ -78,8 +78,6 @@ namespace BLL.Services.Permission
 			}
 			return null;
 		}
-		public IQueryable<PermissionsUser> GetPermissions(User user)=> context.PermissionsUsers.Where(p => p.UserId == user.Id);
-		public IQueryable<PermissionsUserRelate> GetRoles(User user)=> context.PermissionsUserRelates.Where(p => p.UserId == user.Id);
 
 	}
 }

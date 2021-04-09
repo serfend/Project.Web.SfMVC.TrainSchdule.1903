@@ -61,8 +61,9 @@ namespace BLL.Interfaces.Permission
 		/// 角色/权限的授驳时执行
 		/// </summary>
 		/// <param name="role"></param>
+		/// <param name="maxTraceTime">最大向前追踪更新关联权限的次数</param>
 		/// <returns></returns>
-		void SyncRolePermissions(string role);
+		void SyncRolePermissions(string role,int maxTraceTime);
 		/// <summary>
 		/// 用户角色指定，被用户创建
 		/// </summary>
@@ -76,8 +77,9 @@ namespace BLL.Interfaces.Permission
 		/// 用户指定角色、角色发生变动时执行
 		/// </summary>
 		/// <param name="user"></param>
+		/// <param name="maxTraceTime">最大向前追踪更新关联权限的次数</param>
 		/// <returns></returns>
-		void SyncUserPermissions(string user);
+		void SyncUserPermissions(string user,int maxTraceTime);
 		/// <summary>
 		/// 权限判断，逐级到根节点
 		/// </summary>
@@ -87,24 +89,18 @@ namespace BLL.Interfaces.Permission
 		/// <param name="companyCode">单位作用域</param>
 		/// <returns></returns>
 		IPermissionDescription CheckPermissions(User user, string permission,PermissionType permissionType, string companyCode);
-		/// <summary>
-		/// 获取用户所有的权限
-		/// </summary>
-		/// <param name="user"></param>
-		/// <returns></returns>
-		IQueryable<PermissionsUser> GetPermissions(User user);
-		/// <summary>
-		/// 获取用户所有的角色
-		/// </summary>
-		/// <param name="user"></param>
-		/// <returns></returns>
-		IQueryable<PermissionsUserRelate> GetRoles(User user);
 
 		/// <summary>
 		/// 获取权限最高层级单位
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		IEnumerable<string> RolePermissionCompany(string role); 
+		IEnumerable<string> RolePermissionCompany(string role);
+		/// <summary>
+		/// 获取角色详情
+		/// </summary>
+		/// <param name="role"></param>
+		/// <returns>角色,此角色被授权列表,此角色授权到列表,此角色包含权限</returns>
+		(PermissionsRole, IEnumerable<string>, IEnumerable<string>, IEnumerable<PermissionBaseItem> ) RoleDetail(string role);
 	}
 }

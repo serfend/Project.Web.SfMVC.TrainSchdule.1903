@@ -7,4 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Abp" Version="6.1.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
 </Project>

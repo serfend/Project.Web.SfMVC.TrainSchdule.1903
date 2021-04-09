@@ -16,13 +16,27 @@ namespace BLL.Services.Permission
     public partial class PermissionServices
     {
         public DAL.Entities.Permisstions.Permission GetPermissionByName(string name) => DictPermissions.ContainsKey(name) ? DictPermissions[name] : null;
-
+        public (PermissionsRole, IEnumerable<string>, IEnumerable<string>, IEnumerable<PermissionBaseItem>) RoleDetail(string role)
+        {
+            var r = context.PermissionsRoles.FirstOrDefault(i=>i.Name==role)?? throw new ActionStatusMessageException(new PermissionsRole().NotExist());
+            // 本权限得到的授权
+            var roleFromRelate = context.PermissionsRoleRelates.Where(i => i.ToName == role).Select(i => i.FromName).Distinct().ToList();
+            // 本权限发起的授权
+            var roleToRelate = context.PermissionsRoleRelates.Where(i => i.FromName == role).Select(i => i.ToName).Distinct().ToList();
+            var rolePermission = context.PermissionRoleRalatePermissions.Where(i => i.RoleName == role).Select(i => new PermissionBaseItem()
+            {
+                Name = i.Name,
+                Region = i.Region,
+                Type = i.Type
+            }).ToList();
+            return (r,roleFromRelate,roleToRelate,rolePermission);
+        }
         public PermissionsRole RoleModify(string role,string createBy,bool isRemove)
         {
             var db = context.PermissionsRoles;
             var r = db.FirstOrDefault(i => i.Name == role);
-            if (r != null && !isRemove) throw new ActionStatusMessageException(ActionStatusMessage.PermissionMessage.Role.Exist);
-            if(r==null && isRemove) throw new ActionStatusMessageException(ActionStatusMessage.PermissionMessage.Role.NotExist);
+            if (r != null && !isRemove) return r;
+            if(r==null && isRemove) return null;
             if (isRemove)
             {
                 // 移除角色关联的角色
@@ -45,7 +59,7 @@ namespace BLL.Services.Permission
                     var relateRoles = dbUserRoles.Where(r => r.RoleName == name);
                     var shallUpdateUsers = relateRoles.Select(i => i.UserId).Distinct();
                     foreach(var u in shallUpdateUsers)
-                        BackgroundJob.Enqueue<PermissionServices>(s => s.SyncUserPermissions(u));
+                        BackgroundJob.Enqueue<PermissionServices>(s => s.SyncUserPermissions(u,10));
                     dbUserRoles.RemoveRange(relateRoles);
                     
                 }
@@ -89,7 +103,7 @@ namespace BLL.Services.Permission
                     db.Update(current);
             }
             context.SaveChanges();
-            BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncRolePermissions(role));
+            BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncRolePermissions(role,10));
             return current;
         }
         /// <summary>
@@ -120,7 +134,7 @@ namespace BLL.Services.Permission
                 context.PermissionsRoleRelates.Add(r);
             }
             context.SaveChanges();
-            BackgroundJob.Enqueue<PermissionServices>(s => s.SyncRolePermissions(to.Name));
+            BackgroundJob.Enqueue<PermissionServices>(s => s.SyncRolePermissions(to.Name,10));
             return r;
         }
         public PermissionsRoleRelate RoleRelateRole(string from, string to, bool isRemove)
@@ -160,21 +174,27 @@ namespace BLL.Services.Permission
             }
                 
             // 新增新的角色
-            var r = RoleModify($"{role}.sub{userAuthTo}",userAuthBy.Id, false);
-            if (dbRoles.FirstOrDefault(ra => ra.Name == r.Name) != null) throw new ActionStatusMessageException(ActionStatusMessage.PermissionMessage.RoleRelateRole.Exist);
-            dbRoles.Add(r);
-            var newRelate = new PermissionsRoleRelate()
+            var r = RoleModify($"{role}@{userAuthTo}",userAuthBy.Id, false);
+            //if (dbRoles.FirstOrDefault(ra => ra.Name == r.Name) != null) throw new ActionStatusMessageException(ActionStatusMessage.PermissionMessage.RoleRelateRole.Exist);
+            //dbRoles.Add(r);
+
+           
+            var newRelate = context.PermissionsRoleRelates.FirstOrDefault(i => i.ToName == r.Name && i.FromName == roleItem.Name);
+            if (newRelate == null)
             {
-                From = roleItem,
-                To = r,
-            };
-            context.PermissionsRoleRelates.Add(newRelate);
+                newRelate = new PermissionsRoleRelate()
+                {
+                    From = roleItem,
+                    To = r,
+                };
+                context.PermissionsRoleRelates.Add(newRelate);
+            }
             context.SaveChanges();
-            BackgroundJob.Enqueue<PermissionServices>(s => s.SyncRolePermissions(r.Name));
-            BackgroundJob.Enqueue< PermissionServices>(s=> s.UserRalteRole(userAuthTo, r.Name, false));
+            BackgroundJob.Enqueue<PermissionServices>(s => s.SyncRolePermissions(r.Name,10));
+            BackgroundJob.Enqueue<PermissionServices>(s => s.UserRalteRole(userAuthTo, r.Name, false));
             return newRelate;
         }
-        public void SyncRolePermissions(string role)
+        public void SyncRolePermissions(string role,int maxTraceTime)
         {
             // 清除所有关联角色带来的权限
             var currentList = context.PermissionRoleRalatePermissions.Where(i => i.RoleName == role).Where(i=>!i.IsSelf);
@@ -185,7 +205,7 @@ namespace BLL.Services.Permission
             var list = new List<IPermissionDescription>();
             foreach (var p in roleByOthers)
                 list.Add(p);
-            list = list.Distinct(new CompareMergePermission()).ToList();
+            list = list.ToList().DistinctByPermission();
             foreach (var p in list)
             {
                 var permission = new PermissionRoleRelatePermission()
@@ -196,6 +216,10 @@ namespace BLL.Services.Permission
                 context.PermissionRoleRalatePermissions.Add(permission);
             }
             context.SaveChanges();
+            // 重建其他依赖本角色的角色
+            var roleToOthersRoleName = context.PermissionsRoleRelates.Where(i => i.FromName == role).Select(r => r.ToName).Distinct().ToList();
+            foreach (var r in roleToOthersRoleName)
+                BackgroundJob.Enqueue<PermissionServices>(s => s.SyncRolePermissions(r, maxTraceTime - 1));
             BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncUserPermissionsOfRole(role));
         }
 
@@ -219,7 +243,7 @@ namespace BLL.Services.Permission
                 context.PermissionsUserRelates.Add(current);
             }
             context.SaveChanges();
-            BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncUserPermissions(user));
+            BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncUserPermissions(user,10));
             return current;
         }
         /// <summary>
@@ -228,11 +252,12 @@ namespace BLL.Services.Permission
         /// <param name="name"></param>
         public void SyncUserPermissionsOfRole(string name)
         {
-            var affectUsers = context.PermissionsUserRelates.Where(u => u.RoleName == name).Select(u => u.User).Select(u=>u.Id).ToList();
+            var affectUsers = context.PermissionsUserRelates.Where(u => u.RoleName == name).Select(u => u.User).Select(u=>u.Id).Distinct().ToList();
             // 同步所有用户的所有权限以修复前期可能的错误
-            foreach (var u in affectUsers) SyncUserPermissions(u);
+            foreach (var u in affectUsers)
+                BackgroundJob.Enqueue<PermissionServices>(s => s.SyncUserPermissions(u, 10));
         }
-        public void SyncUserPermissions(string user)
+        public void SyncUserPermissions(string user, int maxTraceTime)
         {
             // 移除原有权限记录
             void RemoveOrginPermissions()
@@ -253,7 +278,7 @@ namespace BLL.Services.Permission
             // 角色应有权限
             void AttachUserPermissions(List<IPermissionDescription> list)
             {
-                list = list.Distinct(new CompareMergePermission()).ToList();
+                list = list.ToList().DistinctByPermission();
                 foreach (var p in list)
                 {
                     var permission = new PermissionsUser()
@@ -292,20 +317,31 @@ namespace BLL.Services.Permission
             }
             return result;
         }
+    }
+    public class IPermissionNode
+    {
+        public IPermissionDescription Item;
+        public string Key;
+    }
 
+    public static class PermissionExtensions
+    {
 
-        public class CompareMergePermission : IEqualityComparer<IPermissionDescription>
+        public static List<IPermissionDescription> DistinctByPermission(this List<IPermissionDescription> list)
         {
-            /// <summary>
-            /// 去除权限较小的项
-            /// </summary>
-            /// <param name="x"></param>
-            /// <param name="y"></param>
-            /// <returns></returns>
-            public bool Equals(IPermissionDescription x, IPermissionDescription y) 
-                => y.Name.StartsWith(x.Name) && y.Region.StartsWith(x.Region) && x.Type == y.Type;
-
-            public int GetHashCode([DisallowNull] IPermissionDescription obj) => obj.GetHashCode();
+            var r = new List<IPermissionNode>();
+            list.ToList().ForEach(v =>
+            {
+                var key = v.Name.Split('.')
+                    .Reverse()
+                    .Concat(new List<string>() { "#" })
+                    .Concat(
+                        v.Region.ToCharArray()
+                            .Select(i => i.ToString()))
+                    .ToList();
+                r.Add(new IPermissionNode() { Key = string.Join('.', key), Item = v });
+            });
+            return r.DistinctByCompany(t => t.Key, (a, b) => a.Contains(b)).Select(i => i.Item).ToList();
         }
     }
 }

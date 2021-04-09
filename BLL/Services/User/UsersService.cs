@@ -54,7 +54,7 @@ namespace BLL.Services
             this.currentUserService = currentUserService;
         }
 
-		#endregion .ctors
+		#endregion .ctors5
 
 		#region Logic
 
