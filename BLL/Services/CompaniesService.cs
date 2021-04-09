@@ -27,8 +27,9 @@ namespace BLL.Services
 		public List<Company> PermissionViewCompanies(User currentUser)
 		{
 			if (currentUser == null) return new List<Company>();
-			var list = permissionServices.GetPermissions(currentUser).Where(p=>p.Name==ApplicationPermissions.Company.Tree.Item.Key).Where(i=>i.Type.HasFlag(PermissionType.Read));
-			return list.Select(i => GetById(i.Region)).ToList();
+			var companyDb = _context.CompaniesDb;
+			var list = permissionServices.GetPermissions(currentUser).Where(p=>p.Name==ApplicationPermissions.Company.Tree.Item.Key).Where(i=>i.Type.HasFlag(PermissionType.Read)).Select(i=>i.Region).ToList();
+			return list.Select(i => companyDb.FirstOrDefault(c => c.Code == i)).ToList();
 		}
 
 		public Duties GetDuties(int code)
