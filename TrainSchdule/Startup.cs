@@ -100,6 +100,7 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today.AddDays(1)), Cron.Daily(17, 30));
 			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
+			RecurringJob.AddOrUpdate<VirusRelateClientJob>((u) => u.Run(), Cron.Hourly);
 			BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
 		}
 

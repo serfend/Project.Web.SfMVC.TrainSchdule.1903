@@ -100,9 +100,9 @@ namespace DAL.DTO.ClientDevice
         {
             if (raw == null) raw = new Virus();
             raw.Client = clients.FirstOrDefault(i => i.MachineId == model.Client);
+            raw.ClientIp = model.ClientIp; // 以防出现未录入的终端无信息的情况
             if (raw.Client != null)
             {
-                raw.ClientIp = raw.Client.Ip;
                 raw.Owner = raw.Client.OwnerId;
                 raw.Company = raw.Client?.CompanyCode;
                 raw.ClientMachineId = raw.Client.MachineId; // cache client info
