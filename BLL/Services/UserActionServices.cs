@@ -57,11 +57,11 @@ namespace BLL.Services
 		{
 			if (authUser == null) return false;
 			var authUserId = authUser.Id;
-			var a =await LogAsync(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key} {permission?.Description}@{operation} {description}", false, ActionRank.Danger);
+			var a =await LogAsync(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
 			var permit = permissionServices.CheckPermissions(authUser, permission.Key, operation, targetUserCompanyCode);
             if (permit!=null)
             {
-				Status(a, true, $"直接权限:{permit}");
+				Status(a, true, $"@直接权限:{permit.Name},{permit.Region},{permit.Type}");
 				return true;
 			}
 			var checkCompanyMajor = authUser.CheckCompanyMajor(targetUserCompanyCode);
