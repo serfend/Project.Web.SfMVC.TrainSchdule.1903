@@ -22,9 +22,12 @@ namespace BLL.Extensions.Common
 		/// <param name="model"></param>
 		/// <returns></returns>
 		public static ApiResult NotExist(this IDbEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
-		
+
 		public static ApiResult NotExist(this Permission model) => ActionStatusMessage.PermissionMessage.Permission.NotExist;
 		public static ApiResult Exist(this Permission model) => ActionStatusMessage.PermissionMessage.Permission.Exist;
+		public static ApiResult NotExist(this PermissionRoleRelatePermission model) => ActionStatusMessage.PermissionMessage.RoleRelatePermission.NotExist;
+		public static ApiResult Exist(this PermissionRoleRelatePermission model) => ActionStatusMessage.PermissionMessage.RoleRelatePermission.Exist;
+		
 		public static ApiResult NotExist(this PermissionsRoleRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateRole.NotExist;
 		public static ApiResult Exist(this PermissionsRoleRelate model) => ActionStatusMessage.PermissionMessage.RoleRelateRole.Exist;
 		public static ApiResult NotExist(this PermissionsRole model) => ActionStatusMessage.PermissionMessage.Role.NotExist;

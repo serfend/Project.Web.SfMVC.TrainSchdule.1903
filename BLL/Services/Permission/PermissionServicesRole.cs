@@ -27,7 +27,8 @@ namespace BLL.Services.Permission
             {
                 Name = i.Name,
                 Region = i.Region,
-                Type = i.Type
+                Type = i.Type,
+                IsSelf = i.IsSelf
             }).ToList();
             return (r,roleFromRelate,roleToRelate,rolePermission);
         }
@@ -93,14 +94,19 @@ namespace BLL.Services.Permission
                 current = new PermissionRoleRelatePermission() { RoleName = role,IsSelf=true };
                 MapIPermissionDescription(current, permission);
                 if (current.Type!=PermissionType.None) db.Add(current);
+                else throw new ActionStatusMessageException(current.NotExist());
             }
             else
             {
-                current.Type = permission.Type; // 冗余记录
-                if (current.Type == PermissionType.None)
+                if (permission.Type == PermissionType.None)
                     db.Remove(current);
                 else
+                {
+                    if(current.Type == permission.Type) // 判断权限动作是否有变化
+                        throw new ActionStatusMessageException(current.Exist());
+                    current.Type = permission.Type; // 冗余记录
                     db.Update(current);
+                }
             }
             context.SaveChanges();
             BackgroundJob.Enqueue<PermissionServices>(s=>s.SyncRolePermissions(role,10));
