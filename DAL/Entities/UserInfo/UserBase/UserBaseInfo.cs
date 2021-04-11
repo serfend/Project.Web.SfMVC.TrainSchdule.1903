@@ -45,7 +45,7 @@ namespace DAL.Entities.UserInfo
 						.ToCharArray()
 						.Select(c => {
 							var result = new List<string>() { "" };
-							if (c < 256) return result;
+							if (c < 256||!ChineseChar.IsValidChar(c)) return result;
 							var py = new ChineseChar(c);
 							var list =py.Pinyins.ToList();
 							list.ForEach(v => {

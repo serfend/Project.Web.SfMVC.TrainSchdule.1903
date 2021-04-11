@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.International.Converters.PinYinConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,10 +79,10 @@ namespace BLL.Services
 		public IQueryable<User> GetUserByRealname(string realName,bool fuzz)
         {
 			if (realName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
-			realName = realName.Replace(" ", "");
+			realName = realName.Replace(" ", "").ToLower();
 			var realNameWithSpace = realName.Length==2? $"{realName[0]}  {realName[1]}":null;
-			var isAdmin = realName.ToLower() == "admin";
-			var isPinyin = realName.All(c=>c<256);
+			var isAdmin = realName == "admin";
+			var isPinyin = realName.All(c=>c<='z'&&c>='a');
 			IQueryable<User> users;
 
 			if (isAdmin)
