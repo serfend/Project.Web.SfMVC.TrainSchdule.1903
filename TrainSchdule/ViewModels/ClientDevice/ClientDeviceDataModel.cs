@@ -136,7 +136,7 @@ namespace TrainSchdule.ViewModels.BBS
 			if (client.Owner != null)
 				raw.Owner = usersService.GetById(client.Owner);
 			else if (client.OwnerRealName != null)
-				raw.Owner = usersService.GetUserByRealname(client.OwnerRealName).FirstOrDefault();
+				raw.Owner = usersService.GetUserByRealname(client.OwnerRealName,false).FirstOrDefault();
 			raw.OwnerId = raw.Owner?.Id ;
 			raw.DeviceType = client.DeviceType ?? raw.DeviceType;
 			raw.Ip = client.Ip ?? raw.Ip;

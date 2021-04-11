@@ -28,8 +28,9 @@ namespace BLL.Interfaces
 		/// 通过姓名获取账号（排除空格）
 		/// </summary>
 		/// <param name="realName"></param>
+		/// <param name="fuzz"></param>
 		/// <returns></returns>
-		IQueryable<User> GetUserByRealname(string realName);
+		IQueryable<User> GetUserByRealname(string realName,bool fuzz);
 		/// <summary>
 		/// 加载所有用户的信息
 		/// </summary>

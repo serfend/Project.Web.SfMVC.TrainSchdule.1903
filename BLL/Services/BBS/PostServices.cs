@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions.Common;
+using BLL.Interfaces;
 using BLL.Interfaces.BBS;
 using DAL.Data;
 using DAL.Entities.BBS;
@@ -14,11 +15,13 @@ namespace BLL.Services.BBS
 	public class PostServices : IPostServices
 	{
 		private readonly ApplicationDbContext _context;
+        private readonly IUsersService usersService;
 
-		public PostServices(ApplicationDbContext context)
+        public PostServices(ApplicationDbContext context,IUsersService usersService)
 		{
 			_context = context;
-		}
+            this.usersService = usersService;
+        }
 
 		public PostContent CreatePost(PostContent targetPost)
 		{

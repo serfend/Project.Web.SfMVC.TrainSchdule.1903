@@ -1,4 +1,5 @@
 ﻿using Abp.Extensions;
+using Abp.Linq.Expressions;
 using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -74,14 +75,46 @@ namespace BLL.Services
 			var users = _context.AppUsersDb.Skip(page * pageSize).Take(pageSize);
 			return users.ToList();
 		}
-		public IQueryable<User> GetUserByRealname(string realName)
+		public IQueryable<User> GetUserByRealname(string realName,bool fuzz)
         {
 			if (realName == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NoId);
 			realName = realName.Replace(" ", "");
 			var realNameWithSpace = realName.Length==2? $"{realName[0]}  {realName[1]}":null;
 			var isAdmin = realName.ToLower() == "admin";
-			var users = isAdmin ? new List<User>() { GetById("root") }.AsQueryable() : (realName.Length==2? _context.AppUsers.Where(u => u.BaseInfo.RealName == realName || u.BaseInfo.RealName == realNameWithSpace) : _context.AppUsers.Where(u => u.BaseInfo.RealName == realName));
-			if (!users.Any()) users = _context.AppUsers.Where(u => u.BaseInfo.RealName.Contains(realName));
+			var isPinyin = realName.All(c=>c<256);
+			IQueryable<User> users;
+
+			if (isAdmin)
+				return new List<User>() { GetById("root") }.AsQueryable();
+            else if(isPinyin)
+            {
+				var baseinfo_id = _context.AppUserBaseInfos
+					.Where(i => i.PinYin.Contains(realName.ToLower()))
+					.Select(i=>i.Id)
+					.Distinct();
+				users = baseinfo_id
+					.Select(id => _context.AppUsers.FirstOrDefault(i => i.BaseInfoId == id))
+					.Where(i=>i!=null);
+			}
+            else
+            {
+				var exp = PredicateBuilder.New<UserBaseInfo>(true);
+				if (fuzz)
+				{
+					foreach (var c in realName.ToArray().Distinct())
+						exp = exp.And(u => u.RealName.Contains(c.ToString()));
+				}
+				else
+					exp = exp.And(u=>u.RealName.Contains(realName));
+				var baseinfo_id = _context.AppUserBaseInfos
+					   .Where(exp);
+				var list = baseinfo_id.Select(i => i.Id).Distinct().ToList();
+				var userList = list.AsQueryable()
+					.Select(id => _context.AppUsers.FirstOrDefault(i => i.BaseInfoId == id))
+					.Where(i => i != null)
+					.ToList();
+				users = userList.AsQueryable();
+			}
 			if (!isAdmin) users = users.OrderByCompanyAndTitle();
 			return users;
 		}

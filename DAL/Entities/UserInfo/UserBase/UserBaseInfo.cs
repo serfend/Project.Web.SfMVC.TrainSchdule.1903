@@ -1,11 +1,33 @@
-﻿using System;
+﻿using Microsoft.International.Converters.PinYinConverter;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.Linq;
 
 namespace DAL.Entities.UserInfo
 {
+
+	public static class RealnameExtensions
+    {
+		public static List<string> Descartes(this List<List<string>> list,int nowIndex = 0)
+        {
+			var result = new List<string>() { "" };
+			if (list.Count <= nowIndex) return result;
+			var nowList = list[nowIndex];
+			var subList = list.Descartes(nowIndex + 1);
+			nowList.ForEach(now =>
+			{
+				subList.ForEach(sub =>
+				{
+					result.Add($"{now}{sub}");
+				});
+			});
+			return result.Distinct().ToList();
+        }
+	}
 	public class UserBaseInfo : BaseEntityGuid
 	{
 		[Required(ErrorMessage = "未输入身份证")]
@@ -15,10 +37,33 @@ namespace DAL.Entities.UserInfo
 		/// </summary>
 		[IDCard]
 		public string Cid { get; set; }
-
+		private string realName;
 		[Required(ErrorMessage = "未输入真实姓名")]
-		public string RealName { get; set; }
-
+		public string RealName { get=> realName; set {
+				realName = value;
+				var chars = value
+						.ToCharArray()
+						.Select(c => {
+							var result = new List<string>() { "" };
+							if (c < 256) return result;
+							var py = new ChineseChar(c);
+							var list =py.Pinyins.ToList();
+							list.ForEach(v => {
+								if (v == null) return;
+								v = v.Substring(0, v.Length - 1);
+								result.Add(v);
+								result.Add(v.Substring(0, 1));
+							});
+							result = result.Select(i => i.ToLower()).Distinct().ToList();
+							return result;
+						})
+						.ToList();
+				PinYin = string.Join('#', chars.Descartes());
+			} }
+		/// <summary>
+		/// 【冗余】真实姓名的拼音组合
+		/// </summary>
+		public string PinYin { get; set; }
 		[Required(ErrorMessage = "未输入性别")]
 		public GenderEnum Gender { get; set; }
 

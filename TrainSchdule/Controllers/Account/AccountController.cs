@@ -122,22 +122,23 @@ namespace TrainSchdule.Controllers
 			});
 		}
 
-		/// <summary>
-		/// 通过用户真实姓名查询身份号
-		/// </summary>
-		/// <param name="realName"></param>
-		/// <param name="pageIndex"></param>
-		/// <param name="pageSize"></param>
-		/// <returns></returns>
-		[HttpGet]
+        /// <summary>
+        /// 通过用户真实姓名查询身份号
+        /// </summary>
+        /// <param name="realName"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="fuzz"></param>
+        /// <returns></returns>
+        [HttpGet]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(UserBaseInfoWithIdViewModel), 0)]
-		public IActionResult GetUserIdByRealName(string realName, int pageIndex = 0, int pageSize = 20)
+		public IActionResult GetUserIdByRealName(string realName, int pageIndex = 0, int pageSize = 20,bool fuzz=false)
 		{
-			var users = _usersService.GetUserByRealname(realName);
+			var users = _usersService.GetUserByRealname(realName, fuzz);
 			var result = users.SplitPage(pageIndex, pageSize);
 			var r = result.Item1.ToList();
-			var list = r.Select(u => u.ToSummaryDto());
+			var list = r.Select(u => u.ToSummaryDto()).ToList();
 			return new JsonResult(new EntitiesListViewModel<UserSummaryDto>(list, result.Item2));
 		}
 
@@ -632,10 +633,11 @@ namespace TrainSchdule.Controllers
 
 			// 检查修改后的用户的权限
 			var invalidAccount = localUser.Application.InvalidAccount();
-			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, to_modify_NewUser);
-			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改后权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
-			canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, localUser);
-			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"修改前权限不足，仍缺少{(int)invalidAccount - canAuthRank}级权限", true));
+
+			var canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, localUser);
+			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"此用户所处单位级别过高，当前授权人账号无权修改。（要求{(int)invalidAccount}级权限，现有{canAuthRank}级权限）", true));
+			canAuthRank = _usersService.CheckAuthorizedToUser(authByUser, to_modify_NewUser);
+			if (invalidAccount != AccountType.Deny && canAuthRank < (int)invalidAccount) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"此用户新单位级别过高，当前授权人账号无权修改。（要求{(int)invalidAccount}级权限，现有{canAuthRank}级权限）", true));
 			to_modify_NewUser.Application.Create = localUser.Application.Create; // 注册日期不允许修改
 			CheckCurrentUserData(to_modify_NewUser);
 			if (invalidAccount == AccountType.Deny) to_modify_NewUser.Application.InvitedBy = null;//  重新提交

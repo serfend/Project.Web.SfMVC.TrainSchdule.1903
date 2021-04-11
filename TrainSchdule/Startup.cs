@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using BLL.Crontab;
 using BLL.Services;
@@ -98,9 +99,21 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily(16, 5));
 			RecurringJob.AddOrUpdate<ApplyIndayClearJob>((a) => a.Run("OnJob"), Cron.Daily(16, 0));
 			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today.AddDays(1)), Cron.Daily(17, 30));
+			
+			//Assembly ass = Assembly.GetAssembly(typeof(ICrontabJob));
+			//var jobs = ass.GetTypes()
+			//	.Where(i=>!i.IsInterface)
+			//	.Select(i=>i.GetInterfaces().FirstOrDefault(t=>t==typeof(ICrontabJob)));
+			//jobs.ToList().ForEach(v =>
+			//{
+			//	RecurringJob.AddOrUpdate(v.InvokeMember("Run",BindingFlags.Public));
+			//});
+
 			RecurringJob.AddOrUpdate<UserInfoClearJob>((a) => a.Run(), Cron.Hourly);
+			RecurringJob.AddOrUpdate<UserInfoRealnameSync>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<VirusRelateClientJob>((u) => u.Run(), Cron.Hourly);
+			
 			BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
 		}
 
