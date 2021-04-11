@@ -204,11 +204,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream.HandleApply
 		{
 			var auditUser = currentUserService.CurrentUser;
 			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
-			{
-				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
-					auditUser = usersService.GetById(model.Auth.AuthByUserID);
-				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
-			}
+				auditUser = model.Auth.AuthUser(googleAuthService,usersService, auditUser.Id);
 			try
 			{
 				var applyStrList = new StringBuilder();
