@@ -475,9 +475,14 @@ namespace TrainSchdule.Controllers
 		private async Task RemoveSingle(UserRemoveDataModel u, User authByUser,bool isRemove = true)
 		{
 			var actionRecord = _userActionServices.Log(isRemove?UserOperation.Remove:UserOperation.Restore, u.Id, $"因：${u.Reason}", false, ActionRank.Danger);
-			var targetUser = isRemove? _usersService.GetById(u.Id):context.AppUsers.FirstOrDefault(i=>i.Id==u.Id);
+			User targetUser;
+            if (isRemove)
+				targetUser = _usersService.GetById(u.Id);
+            else
+				targetUser= context.AppUsers.FirstOrDefault(i => i.Id == u.Id);
 			if (targetUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
-			if (!_userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item,PermissionType.Write, targetUser.CompanyInfo?.CompanyCode, $"移除{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
+			var action = isRemove ? "移除" : "恢复";
+			if (!_userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item,PermissionType.Write, targetUser.CompanyInfo?.CompanyCode, $"{action}{targetUser.Id}账号")) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.Account.Auth.Invalid.Default));
 			var result = isRemove ? await _usersService.RemoveAsync(u.Id, u.Reason) :  _usersService.RestoreUser(u.Id);
 			if (!result) throw new ActionStatusMessageException(_userActionServices.LogNewActionInfo(actionRecord, ActionStatusMessage.UserMessage.NotExist));
 			_userActionServices.Status(actionRecord, true);
