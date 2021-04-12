@@ -28,6 +28,7 @@ namespace DAL.Entities.ApplyInfo
 
 
 	}
+	[Flags]
 	public enum MainStatus
 	{
 		Normal = 0,

@@ -371,8 +371,12 @@ namespace BLL.Services
 			{
 				if(abolish)
 					a.MainStatus |= MainStatus.Invalid;
-                else if (((int)a.MainStatus & (int)MainStatus.Invalid) > 0)
-					a.MainStatus -= MainStatus.Invalid;
+                else
+                {
+					if (a.MainStatus.HasFlag(MainStatus.Invalid))
+						a.MainStatus -= MainStatus.Invalid;
+					if (a.IsRemoved) a.IsRemoved = false;
+				}
 			}
 			_context.Applies.UpdateRange(user_applies);
 		}
