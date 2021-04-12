@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(url).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item,PermissionType.Write,  m.CreateBy.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item,PermissionType.Write,  m.CreateBy.CompanyInfo.CompanyCode,"移除短网址");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			await dWZServices.Remove(m).ConfigureAwait(false);
 			return new JsonResult(ActionStatusMessage.Success);
@@ -120,7 +120,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Create([FromBody] ShortUrlCreateDataModel model)
 		{
 			var c = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Write, c.Id, null);
+			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Write, string.Empty,"创建短网址");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			try
 			{
@@ -149,7 +149,7 @@ namespace TrainSchdule.Controllers
 			var c = currentUserService.CurrentUser;
 			var m = await dWZServices.Load(key).ConfigureAwait(true);
 			if (m == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Read,m.CreateBy.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Read,m.CreateBy.CompanyInfo.CompanyCode,"查询短网址统计")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var result = await dWZServices.QueryStatistics(m, model).ConfigureAwait(true);
 			var statistics = result.Item1;
 			var totalCount = result.Item2;

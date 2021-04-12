@@ -136,7 +136,7 @@ namespace TrainSchdule.Controllers.BBS
             if (model.Auth?.AuthByUserID != null)
                 currentUser = model.Auth.AuthUser(googleAuthService,usersService, currentUser.Id);
 
-            userActionServices.Permission(from, ApplicationPermissions.Activity.AppMessage.Item,PermissionType.Read, from.CompanyInfo.CompanyCode,$"消息查询:{JsonConvert.SerializeObject(model)}");
+            if(!userActionServices.Permission(from, ApplicationPermissions.Activity.AppMessage.Item, PermissionType.Read, from.CompanyInfo.CompanyCode, $"消息查询:{JsonConvert.SerializeObject(model)}"))throw new ActionStatusMessageException(model.Auth.PermitDenied());
             var result = appMessageServices.Query(model.Item);
             return new JsonResult(new EntitiesListViewModel<AppMessageViewModel>(result.Item1.Select(i=>i.ToViewModel()), result.Item2));
         }

@@ -133,7 +133,7 @@ namespace TrainSchdule.Controllers
 			var targetUser = usersService.CurrentQueryUser(id);
 			if (!model.Auth.Verify(authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var authByUser = usersService.GetById(model.Auth.AuthByUserID);
-			if (id != targetUser.Id && !userActionServices.Permission(authByUser, ApplicationPermissions.User.CustomeInfo.Item, PermissionType.Write, authByUser.Id, targetUser.CompanyInfo.CompanyCode)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (id != targetUser.Id && !userActionServices.Permission(authByUser, ApplicationPermissions.User.CustomeInfo.Item, PermissionType.Write,  targetUser.CompanyInfo.CompanyCode,"修改用户自定义信息")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			targetUser.DiyInfo = model.Data.ToModel(context.ThirdpardAccounts);
 			usersService.Edit(targetUser);
 			return new JsonResult(ActionStatusMessage.Success);

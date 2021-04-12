@@ -62,7 +62,7 @@ namespace TrainSchdule.Controllers
 			var authUser = usersService.GetById(model.Auth.AuthByUserID);
 			if (authUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var targetUser = usersService.GetById(id);
-			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, authUser.Id, model.Code);
+			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, model.Code,"移除管辖单位");
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
 			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.CompanyCode == targetUser.Id).FirstOrDefault();
@@ -88,7 +88,7 @@ namespace TrainSchdule.Controllers
 			var id = model.Id ?? currentUserService.CurrentUser?.Id;
 			var targetUser = usersService.GetById(id);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, authByUser.Id, model.Code);
+			var permit = userActionServices.Permission(authByUser, ApplicationPermissions.User.Application.Item, PermissionType.Write, model.Code,"新增管辖单位");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			var manages = companyManagerServices.GetManagers(model.Code);
 			var manage = manages.Where(u => u.UserId == targetUser.Id).FirstOrDefault();

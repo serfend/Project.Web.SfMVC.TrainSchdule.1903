@@ -50,7 +50,7 @@ namespace BLL.Interfaces
 		/// <param name="targetUserCompanyCode">被授权方单位</param>
 		/// <param name="description">描述</param>
 		/// <returns></returns>
-		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null);
+		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description);
 		Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null);
 		Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
 	}

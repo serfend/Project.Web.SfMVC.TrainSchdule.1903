@@ -220,7 +220,7 @@ namespace TrainSchdule.Controllers.Zx
             if (user == null && company == null)
                 company = currentUser.CompanyInfo.CompanyCode;
             if (company != null)  {
-               if(! userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read,  company)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+               if(! userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read,  company,"查询")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 list = list.Where(i => i.CompanyCode.StartsWith(company));
             }
             list = list

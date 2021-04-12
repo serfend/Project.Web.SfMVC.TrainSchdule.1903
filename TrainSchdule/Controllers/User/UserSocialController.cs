@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers
 
 			var targetUser = context.AppUsersDb.FirstOrDefault(u => u.SocialInfo.Settle.PrevYealyLengthHistory.FirstOrDefault(r => r.Code == new_record_id) != null);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write, authUser.Id, targetUser.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write,targetUser.CompanyInfo.CompanyCode,"修改指定记录");
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var record = userServiceDetail.ModifySettleModifyRecord(newR.Code, (r) =>
 			{

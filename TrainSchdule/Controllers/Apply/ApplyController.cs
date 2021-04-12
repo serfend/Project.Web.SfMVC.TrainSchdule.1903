@@ -268,11 +268,12 @@ namespace TrainSchdule.Controllers.Apply
 		private async Task RemoveApply(DAL.Entities.ApplyInfo.Apply apply,User authByUser) {
 			var targetUser = apply.BaseInfo.From;
 			// 本人及有权限者可操作
+			var desc = $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请";
 			if (
 				authByUser.Id != targetUser.Id
-				&& !userActionServices.Permission(authByUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Write, authByUser.Id, targetUser.CompanyInfo.CompanyCode)
+				&& !userActionServices.Permission(authByUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Write, targetUser.CompanyInfo.CompanyCode, desc)
 			) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
-			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, $"通过{authByUser.Id}移除{apply.Create}创建的{apply.RequestInfo.VacationLength}天休假申请", false, ActionRank.Danger);
+			var ua = userActionServices.Log(UserOperation.RemoveApply, targetUser.Id, desc, false, ActionRank.Danger);
 			if (!(apply.Status == AuditStatus.NotPublish || apply.Status == AuditStatus.NotSave))
 				throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.StatusInvalid.CanNotDelete);
 			await applyService.Delete(apply);

@@ -103,8 +103,9 @@ namespace TrainSchdule.Controllers.BBS
 			var post = postServices.GetPostById(id);
 			var targetUser = post.CreateBy;
 			var user = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(targetUser, ApplicationPermissions.Activity.Post.Item,PermissionType.Write,targetUser.CompanyInfo.CompanyCode);
+			var permit = userActionServices.Permission(targetUser, ApplicationPermissions.Activity.Post.Item,PermissionType.Write,targetUser.CompanyInfo.CompanyCode,"删除动态");
 			if (permit) postServices.RemoveContent(post);
+			else throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Invalid.Default);
 			return  new JsonResult(ActionStatusMessage.Success);
 		}
 	}

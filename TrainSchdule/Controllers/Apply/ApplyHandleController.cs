@@ -45,7 +45,7 @@ namespace TrainSchdule.Controllers.Apply
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
-			var permit = userActionServices.Permission(auditUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Read, "root");
+			var permit = userActionServices.Permission(auditUser, ApplicationPermissions.Apply.Vacation.Detail.Item, PermissionType.Read, "root","恢复已删除的申请");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			apply.IsRemoved = false;
 			context.Applies.Update(apply);
