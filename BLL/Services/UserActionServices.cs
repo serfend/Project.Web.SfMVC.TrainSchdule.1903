@@ -52,8 +52,8 @@ namespace BLL.Services
 		}
 		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug) => LogAsync(operation, username, description, success, rank).Result;
 
-		public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null) => PermissionAsync(authUser, permission, operation, targetUserCompanyCode, description).Result;
-		public async Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null)
+		public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => PermissionAsync(authUser, permission, operation, targetUserCompanyCode, description).Result;
+		public async Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description)
 		{
 			if (authUser == null) return false;
 			var authUserId = authUser.Id;

@@ -69,7 +69,7 @@ namespace TrainSchdule.Controllers.Apply
 			}
 			else
 			{
-				var permission = actionUser.Id == m.FromId || userActionServices.Permission(actionUser, ApplicationPermissions.Apply.Vacation.AttachInfo.Item,  PermissionType.Write , actionUser.Id, m.From.CompanyInfo.CompanyCode);
+				var permission = actionUser.Id == m.FromId || userActionServices.Permission(actionUser, ApplicationPermissions.Apply.Vacation.AttachInfo.Item,  PermissionType.Write , m.From.CompanyInfo.CompanyCode,"添加评论");
 				if (permission)
 				{
 					m.LastModify = DateTime.Now;
