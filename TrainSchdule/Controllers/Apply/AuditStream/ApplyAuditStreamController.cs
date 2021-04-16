@@ -102,7 +102,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		{
 			var result = ActionStatusMessage.Success;
 			// 获取第一个低权限的节点，如果不存在则获取任何一个节点
-			foreach (var node in nodes)
+			foreach (var node in nodes.ToList())
 			{
 				result = CheckPermission(u, node.ToDtoModel(), node.RegionOnCompany, node.RegionOnCompany);
 				if (result.Status != 0) return result;

@@ -4,6 +4,7 @@ using DAL.Entities.ApplyInfo;
 using DAL.Entities.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DAL.DTO.Apply
@@ -56,9 +57,11 @@ namespace DAL.DTO.Apply
 		public IEnumerable<string> AuditMembers { get; set; }
 
 		/// <summary>
-		/// 规则的单位作用域
+		/// 作用节点
 		/// </summary>
-		public string CompanyRegion { get; set; }
+		[Required(ErrorMessage = "作用类型未填写")]
+		[MinLength(1, ErrorMessage = "作用类型未填写")]
+		public string EntityType { get; set; }
 	}
 
 	public class MembersFilterVDto : IRegion

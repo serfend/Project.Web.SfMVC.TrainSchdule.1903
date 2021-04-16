@@ -121,6 +121,7 @@ namespace DAL.Entities.ApplyInfo
 		public string AuditMembers { get; set; }
 		public int AuditMembersCount { get; set; }
 		public string RegionOnCompany { get; set; }
+        public string EntityType { get; set; }
 	}
 
 	/// <summary>
@@ -171,6 +172,12 @@ namespace DAL.Entities.ApplyInfo
 		/// 精确设置需要审批的人，当设置此属性，其他设置均失效，以##分割
 		/// </summary>
 		string AuditMembers { get; set; }
+
+
+		/// <summary>
+		/// 作用节点
+		/// </summary>
+		public string EntityType { get; set; }
 	}
 
 	public enum DutiesIsMajor

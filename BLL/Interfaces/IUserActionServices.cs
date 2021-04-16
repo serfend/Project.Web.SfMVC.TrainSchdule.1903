@@ -33,7 +33,6 @@ namespace BLL.Interfaces
 		/// <param name="success"></param>
 		/// <returns></returns>
 		UserAction Log(UserOperation operation, string username, string Description, bool success = false, ActionRank rank = ActionRank.Debug);
-		Task<UserAction>LogAsync(UserOperation operation, string username, string Description, bool success = false, ActionRank rank = ActionRank.Debug);
 
 		/// <summary>
 		/// 当创建的记录状态为不成功时，需要将记录状态置为成功
@@ -51,7 +50,6 @@ namespace BLL.Interfaces
 		/// <param name="description">描述</param>
 		/// <returns></returns>
 		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description);
-		Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description = null);
 		Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
 	}
 }

@@ -8,17 +8,17 @@ namespace BLL.Interfaces
 {
 	public interface IApplyAuditStreamServices : IApplyAuditStreamRepositoryServices
 	{
-		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description = null, int priority = 0, bool enable = false,string entityType=null);
+		ApplyAuditStreamSolutionRule NewSolutionRule(ApplyAuditStream solution, IMembersFilter filter, string name, string companyRegion, string description , int priority, bool enable,string entityType);
 
-		ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description = null, string entityType = null);
+		ApplyAuditStream NewSolution(IEnumerable<ApplyAuditStreamNodeAction> Nodes, string name, string companyRegion, string description , string entityType );
 
-		ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description = null, string entityType = null);
+		ApplyAuditStreamNodeAction NewNode(IMembersFilter filter, string name, string companyRegion, string description, string entityType);
 
-		ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, string entityType = null, Func<ApplyAuditStreamSolutionRule, bool> callback = null);
+		ApplyAuditStreamSolutionRule EditSolutionRule(string solutionRuleName, string entityType , Func<ApplyAuditStreamSolutionRule, bool> callback = null);
 
-		ApplyAuditStream EditSolution(string solutionName, string entityType = null, Func<ApplyAuditStream, bool> callback = null);
+		ApplyAuditStream EditSolution(string solutionName, string entityType, Func<ApplyAuditStream, bool> callback = null);
 
-		ApplyAuditStreamNodeAction EditNode(string nodeName, string entityType = null, Func<ApplyAuditStreamNodeAction, bool> callback = null);
+		ApplyAuditStreamNodeAction EditNode(string nodeName, string entityType, Func<ApplyAuditStreamNodeAction, bool> callback = null);
 
 		/// <summary>
 		/// 通过用户信息，决定此用户需要使用哪种审批流规则

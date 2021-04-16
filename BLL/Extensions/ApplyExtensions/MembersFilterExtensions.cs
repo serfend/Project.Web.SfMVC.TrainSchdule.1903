@@ -23,7 +23,7 @@ namespace BLL.Extensions.ApplyExtensions
 				Duties = string.Join("##", model.Duties),
 				DutiesTags = string.Join("##", model.DutyTags),
 				DutyIsMajor = model.DutyIsMajor,
-				RegionOnCompany = model.CompanyRegion,
+				EntityType = model.EntityType
 			};
 		}
 
@@ -40,7 +40,8 @@ namespace BLL.Extensions.ApplyExtensions
 				CompanyCodeLength = model.CompanyCodeLength?.Length == 0 ? Array.Empty<int>() : model.CompanyCodeLength.Split("##").Select(d => Convert.ToInt32(d)),
 				Duties = model.Duties?.Length == 0 ? Array.Empty<int>() : model.Duties?.Split("##").Select(d => Convert.ToInt32(d)),
 				DutyTags = model.DutiesTags?.Length == 0 ? Array.Empty<string>() : model.DutiesTags?.Split("##"),
-				DutyIsMajor = model.DutyIsMajor
+				DutyIsMajor = model.DutyIsMajor,
+				EntityType = model.EntityType
 			};
 		}
 	}

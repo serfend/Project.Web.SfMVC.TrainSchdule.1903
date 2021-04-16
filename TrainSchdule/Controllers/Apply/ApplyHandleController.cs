@@ -23,6 +23,7 @@ using GoogleAuth;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.Permisstions;
+using Abp.Extensions;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -39,7 +40,7 @@ namespace TrainSchdule.Controllers.Apply
 			var apply = context.Applies.Where(a => a.Id == model.Id).FirstOrDefault();
 			if (apply == null) return new JsonResult(ActionStatusMessage.ApplyMessage.NotExist);
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(authService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);

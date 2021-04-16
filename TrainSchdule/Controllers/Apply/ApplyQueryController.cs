@@ -1,4 +1,5 @@
-﻿using BLL.Extensions;
+﻿using Abp.Extensions;
+using BLL.Extensions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
@@ -29,7 +30,7 @@ namespace TrainSchdule.Controllers.Apply
 		private void CheckValidQuery(QueryApplyViewModel model,string entityType)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(authService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);

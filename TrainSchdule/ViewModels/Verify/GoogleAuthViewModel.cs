@@ -1,4 +1,5 @@
-﻿using BLL.Extensions;
+﻿using Abp.Extensions;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Services;
@@ -57,7 +58,7 @@ namespace TrainSchdule.ViewModels.Verify
 		public static string AuthUser(this GoogleAuthDataModel model, IGoogleAuthService authService, string currentUserId)
 		{
 			var result = currentUserId;
-			if (model?.AuthByUserID != null)
+			if (model?.AuthByUserID.IsNullOrEmpty() == false)
 			{
 				if (!model.Verify(authService, result)) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				result = model.AuthByUserID;

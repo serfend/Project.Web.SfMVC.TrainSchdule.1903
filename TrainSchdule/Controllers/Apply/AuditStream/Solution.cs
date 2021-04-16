@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
+﻿using Abp.Extensions;
+using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using DAL.DTO.Apply.ApplyAuditStreamDTO;
 using DAL.Entities.ApplyInfo;
@@ -30,14 +31,14 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		public IActionResult AddStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
-			var checkExist = applyAuditStreamServices.EditSolution(model.Name);
+			var checkExist = applyAuditStreamServices.EditSolution(model.Name,model.EntityType);
 			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.AlreadyExist);
 
 			var list = new List<ApplyAuditStreamNodeAction>();
@@ -60,7 +61,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			if (result.Status != 0) return new JsonResult(result);
 			if (!ModelState.IsValid) return new JsonResult(new ModelStateExceptionViewModel(ModelState));
 
-			var r = applyAuditStreamServices.NewSolution(list, model.Name, model.CompanyRegion, model.Description);
+			var r = applyAuditStreamServices.NewSolution(list, model.Name, model.CompanyRegion, model.Description,model.EntityType);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -74,7 +75,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		public IActionResult EditStreamSolution([FromBody] StreamSolutionCreateDataModel model)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
@@ -106,42 +107,45 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			node.Nodes = string.Join("##", list.Select(i => i.Name).ToArray());
 			node.Name = model.Name;
 			node.RegionOnCompany = model.CompanyRegion;
+			node.EntityType = model.EntityType;
 			context.ApplyAuditStreams.Update(node);
 			context.SaveChanges();
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
-		/// <summary>
-		/// 查询一个审批流解决方案
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		[HttpGet]
+        /// <summary>
+        /// 查询一个审批流解决方案
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        [HttpGet]
 		[Route("ApplyAuditStream/StreamSolution")]
-		public IActionResult GetStreamSolution(string name)
+		public IActionResult GetStreamSolution(string name,string entityType)
 		{
 			ApplyAuditStream checkExist = null;
-			checkExist = applyAuditStreamServices.EditSolution(name);
+			checkExist = applyAuditStreamServices.EditSolution(name, entityType);
 			if (checkExist == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			return new JsonResult(new StreamSolutionViewModel()
 			{
 				Data = new StreamSolutionDataModel()
 				{
-					Solution = checkExist.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService)
+					Solution = checkExist.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService, entityType)
 				}
 			});
 		}
 
-		/// <summary>
-		/// 删除一个审批流解决方案
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="authByUserId"></param>
-		/// <param name="code"></param>
-		/// <returns></returns>
-		[HttpDelete]
+        /// <summary>
+        /// 删除一个审批流解决方案
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="entityType"></param>
+        /// <param name="authByUserId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        [HttpDelete]
 		[Route("ApplyAuditStream/StreamSolution")]
-		public IActionResult DeleteStreamSolution(string name, string authByUserId, string code)
+		public IActionResult DeleteStreamSolution(string name,string entityType, string authByUserId, string code)
 		{
 			var auth = new GoogleAuthDataModel()
 			{
@@ -149,14 +153,14 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 				Code = code
 			};
 			var auditUser = currentUserService.CurrentUser;
-			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
+			if (auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
-			ApplyAuditStream node = applyAuditStreamServices.EditSolution(name);
+			ApplyAuditStream node = applyAuditStreamServices.EditSolution(name, entityType);
 			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			// 检查删除目标的权限
 			var result = CheckPermission(auditUser, null, node.RegionOnCompany, node.RegionOnCompany);
@@ -170,7 +174,6 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			node.Remove();
 			context.ApplyAuditStreams.Update(node);
 			context.SaveChanges();
-
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
@@ -180,14 +183,16 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		/// <returns></returns>
 		[HttpGet]
 		[Route("ApplyAuditStream/StreamSolutionQuery")]
-		public IActionResult StreamSolutionQuery(string companyRegion, int pageIndex = 0, int pageSize = 100)
+		public IActionResult StreamSolutionQuery(string companyRegion,string entityType, int pageIndex = 0, int pageSize = 100)
 		{
-			var result = context.ApplyAuditStreamsDb
+			var list = context.ApplyAuditStreamsDb;
+			var result = list
+					.Where(n=>n.EntityType== entityType)
 					.Where(n => companyRegion.Contains(n.RegionOnCompany))
 					.OrderByDescending(a => a.Create)
 					.Skip(pageSize * pageIndex)
 					.Take(pageSize)
-					.Select(s => s.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService))
+					.Select(s => s.ToDtoModel().ToVDtoModel(applyAuditStreamServices, usersService, companiesService, entityType))
 					.AsEnumerable();
 			return new JsonResult(new EntitiesListViewModel<ApplyAuditStreamVDto>(result));
 		}

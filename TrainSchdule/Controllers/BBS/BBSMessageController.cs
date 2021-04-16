@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.Common;
+﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.Common;
@@ -133,7 +134,7 @@ namespace TrainSchdule.Controllers.BBS
             var currentUser = currentUserService.CurrentUser;
             var from = model.Item.From?.Value==null? currentUser : usersService.GetById(model.Item.From.Value);
             if (from == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-            if (model.Auth?.AuthByUserID != null)
+            if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false)
                 currentUser = model.Auth.AuthUser(googleAuthService,usersService, currentUser.Id);
 
             if(!userActionServices.Permission(from, ApplicationPermissions.Activity.AppMessage.Item, PermissionType.Read, from.CompanyInfo.CompanyCode, $"消息查询:{JsonConvert.SerializeObject(model)}"))throw new ActionStatusMessageException(model.Auth.PermitDenied());

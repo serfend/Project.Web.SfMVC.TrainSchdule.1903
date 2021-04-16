@@ -24,7 +24,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 			};
 		}
 
-		public static ApplyAuditStreamVDto ToVDtoModel(this ApplyAuditStreamDto model, IApplyAuditStreamServices applyAuditStreamServices, IUsersService usersService, ICompaniesService companiesService)
+		public static ApplyAuditStreamVDto ToVDtoModel(this ApplyAuditStreamDto model, IApplyAuditStreamServices applyAuditStreamServices, IUsersService usersService, ICompaniesService companiesService,string entityType)
 		{
 			if (model == null) return null;
 			return new ApplyAuditStreamVDto()
@@ -33,7 +33,7 @@ namespace BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension
 				Create = model.Create,
 				Description = model.Description,
 				Name = model.Name,
-				Nodes = model.Nodes?.Select(n => applyAuditStreamServices.EditNode(n).ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService)),
+				Nodes = model.Nodes?.Select(n => applyAuditStreamServices.EditNode(n, entityType).ToNodeDtoModel().ToNodeVDtoModel(usersService, companiesService)),
 				RegionOnCompany = model.CompanyRegion
 			};
 		}

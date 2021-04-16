@@ -36,8 +36,8 @@ namespace BLL.Services
 			this.usersService = usersService;
             this.permissionServices = permissionServices;
         }
-		public async Task<UserAction> LogAsync(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
-        {
+		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug)
+		{
 			var context = _httpContextAccessor.HttpContext;
 			var ua = context.ClientInfo<UserAction>();
 			ua.Date = DateTime.Now;
@@ -46,33 +46,31 @@ namespace BLL.Services
 			ua.Success = success;
 			ua.Description = description;
 			ua.Rank = rank;
-			await this.context.UserActions.AddAsync(ua);
-			await this.context.SaveChangesAsync();
+			this.context.UserActions.Add(ua);
+			this.context.SaveChanges();
 			return ua;
 		}
-		public UserAction Log(UserOperation operation, string username, string description, bool success = false, ActionRank rank = ActionRank.Debug) => LogAsync(operation, username, description, success, rank).Result;
 
-		public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => PermissionAsync(authUser, permission, operation, targetUserCompanyCode, description).Result;
-		public async Task<bool> PermissionAsync(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description)
-		{
+		public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description)
+        {
 			if (authUser == null) return false;
 			var authUserId = authUser.Id;
-			var a =await LogAsync(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
+			var a = Log(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
 			var permit = permissionServices.CheckPermissions(authUser, permission.Key, operation, targetUserCompanyCode);
-            if (permit!=null)
-            {
+			if (permit != null)
+			{
 				Status(a, true, $"@直接权限:{permit.Name},{permit.Region},{permit.Type}");
 				return true;
 			}
 			var checkCompanyMajor = authUser.CheckCompanyMajor(targetUserCompanyCode);
-            if (checkCompanyMajor)
-            {
+			if (checkCompanyMajor)
+			{
 				Status(a, true, $"单位主管");
 				return true;
 			}
 			var checkCompanyManager = authUser.CheckCompanyManager(targetUserCompanyCode, userServiceDetail);
-            if (checkCompanyManager)
-            {
+			if (checkCompanyManager)
+			{
 				Status(a, true, $"单位管理");
 				return true;
 			}

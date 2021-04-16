@@ -23,6 +23,7 @@ namespace DAL.DTO.Apply.ApplyAuditStreamDTO
 		public string Description { get; set; }
 
 		public DateTime Create { get; set; }
+		public string CompanyRegion { get; set; }
 	}
 
 	public class ApplyAuditStreamNodeActionVDto : MembersFilterVDto

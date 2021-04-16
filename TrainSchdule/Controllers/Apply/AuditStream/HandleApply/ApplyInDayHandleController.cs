@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
+﻿using Abp.Extensions;
+using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.ApplyInfo;
@@ -203,7 +204,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream.HandleApply
 		public IActionResult Audit([FromBody] AuditApplyViewModel model)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 				auditUser = model.Auth.AuthUser(googleAuthService,usersService, auditUser.Id);
 			try
 			{

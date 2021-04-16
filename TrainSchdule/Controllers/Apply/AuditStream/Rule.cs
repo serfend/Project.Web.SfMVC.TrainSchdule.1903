@@ -1,4 +1,5 @@
-﻿using Abp.Linq.Expressions;
+﻿using Abp.Extensions;
+using Abp.Linq.Expressions;
 using BLL.Extensions.ApplyExtensions;
 using BLL.Extensions.ApplyExtensions.ApplyAuditStreamExtension;
 using BLL.Helpers;
@@ -31,32 +32,32 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		public IActionResult AddStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
 
-			ApplyAuditStreamSolutionRule checkExist = applyAuditStreamServices.EditSolutionRule(model.Name);
+			ApplyAuditStreamSolutionRule checkExist = applyAuditStreamServices.EditSolutionRule(model.Name,model.Filter.EntityType);
 			if (checkExist != null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.AlreadyExist);
 
 			// 判断新增实体的权限
 			var result = CheckPermission(auditUser, model.Filter, model.CompanyRegion, model.CompanyRegion);
 			if (result.Status != 0) return new JsonResult(result);
 
-			ApplyAuditStream solution = applyAuditStreamServices.EditSolution(model.SolutionName);
+			ApplyAuditStream solution = applyAuditStreamServices.EditSolution(model.SolutionName,model.Filter.EntityType);
 			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			// 判断所需要调用的方案的权限
 			result = CheckPermission(auditUser, null, solution.RegionOnCompany, solution.RegionOnCompany);
 			if (result.Status != 0) return new JsonResult(result);
 
-			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.CompanyRegion, model.Description, model.Priority, model.Enable,model.EntityType);
+			var r = applyAuditStreamServices.NewSolutionRule(solution, model.Filter.ToModel<BaseMembersFilter>(), model.Name, model.CompanyRegion, model.Description, model.Priority, model.Enable,model.Filter.EntityType);
 			return new JsonResult(ActionStatusMessage.Success);
 		}
 
 		/// <summary>
-		/// 创建一个审批流解决方案规则
+		/// 编辑一个审批流解决方案规则
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -65,7 +66,7 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		public IActionResult EditStreamSolutionRule([FromBody] StreamSolutionRuleCreateDataModel model)
 		{
 			var auditUser = currentUserService.CurrentUser;
-			if (model.Auth?.AuthByUserID != null && auditUser?.Id != model.Auth?.AuthByUserID)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != model.Auth?.AuthByUserID)
 			{
 				if (model.Auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(model.Auth.AuthByUserID);
@@ -78,19 +79,19 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			var result = CheckPermission(auditUser, n.ToDtoModel(), model.CompanyRegion, n.RegionOnCompany);
 			if (result.Status != 0) return new JsonResult(result);
 
-			ApplyAuditStream solution = applyAuditStreamServices.EditSolution(model.SolutionName);
+			ApplyAuditStream solution = applyAuditStreamServices.EditSolution(model.SolutionName,model.Filter.EntityType);
 			if (solution == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolution.NotExist);
 			// 判断所需方案的权限
 			result = CheckPermission(auditUser, null, solution.RegionOnCompany, solution.RegionOnCompany);
 			if (result.Status != 0) return new JsonResult(result);
 
 			model.Filter.ToModel<ApplyAuditStreamSolutionRule>().ToApplyAuditStreamSolutionRule(n);
+			// 变更非Filter内包含的字段
 			n.Description = model.Description;
 			n.Create = n.Create;
 			n.Priority = model.Priority;
 			n.Solution = solution;
 			n.Enable = model.Enable;
-			n.EntityType = model.EntityType;
 			n.Name = model.Name;
 			n.RegionOnCompany = model.CompanyRegion;
 			context.ApplyAuditStreamSolutionRules.Update(n);
@@ -120,16 +121,17 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 			});
 		}
 
-		/// <summary>
-		/// 删除一个审批流解决方案规则
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="authByUserId"></param>
-		/// <param name="code"></param>
-		/// <returns></returns>
-		[HttpDelete]
+        /// <summary>
+        /// 删除一个审批流解决方案规则
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="entityType"></param>
+        /// <param name="authByUserId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        [HttpDelete]
 		[Route("ApplyAuditStream/StreamSolutionRule")]
-		public IActionResult DeleteStreamSolutionRule(string name, string authByUserId, string code)
+		public IActionResult DeleteStreamSolutionRule(string name,string entityType, string authByUserId, string code)
 		{
 			var auth = new GoogleAuthDataModel()
 			{
@@ -137,13 +139,13 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 				Code = code
 			};
 			var auditUser = currentUserService.CurrentUser;
-			if (auth?.AuthByUserID != null && auditUser?.Id != auth?.AuthByUserID)
+			if (auth?.AuthByUserID.IsNullOrEmpty() == false && auditUser?.Id != auth?.AuthByUserID)
 			{
 				if (auth.Verify(googleAuthService, currentUserService.CurrentUser?.Id))
 					auditUser = usersService.GetById(auth.AuthByUserID);
 				else return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 			}
-			ApplyAuditStreamSolutionRule node = applyAuditStreamServices.EditSolutionRule(name);
+			ApplyAuditStreamSolutionRule node = applyAuditStreamServices.EditSolutionRule(name, entityType);
 			if (node == null) return new JsonResult(ActionStatusMessage.ApplyMessage.AuditStreamMessage.StreamSolutionRule.NotExist);
 			var result = CheckPermission(auditUser, node.ToDtoModel(), node.RegionOnCompany, node.RegionOnCompany);
 
@@ -164,16 +166,8 @@ namespace TrainSchdule.Controllers.Apply.AuditStream
 		public IActionResult StreamSolutionRuleQuery(string companyRegion, string entityType, int pageIndex = 0, int pageSize = 100)
 		{
 			var list = context.ApplyAuditStreamSolutionRuleDb;
-			foreach (var i in entityType.Split('|'))
-            {
-				var temp = list.Where(r => r.EntityType == i);
-                if (temp.Any())
-                {
-					list = temp;
-					break;
-                }
-            }
 			var result =list
+					.Where(n=>n.EntityType == entityType)
 					.Where(n => companyRegion.Contains(n.RegionOnCompany)) // 取本级及上级内容
 					.OrderByDescending(r => r.Priority)
 					.OrderByDescending(r => r.Create)

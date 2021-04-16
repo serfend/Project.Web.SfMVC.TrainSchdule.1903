@@ -91,7 +91,7 @@ namespace TrainSchdule.Controllers.Zx
             var currentUser = currentUserService.CurrentUser;
             var c = context.CompaniesDb.FirstOrDefault(i => i.Code == model.Company);
             if (c==null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-            if(!await userActionServices.PermissionAsync(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{c.Name}的数据"));
+            if(!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{c.Name}的数据"));
             // convert to data
             var notExistUser = new List<string>();
             var authList = new HashSet<string>();
@@ -113,7 +113,7 @@ namespace TrainSchdule.Controllers.Zx
                 umax = ucode == null ? umax : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
                 if (!authList.Contains(umax))
                 {
-                    if (!await userActionServices.PermissionAsync(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{i.User?.BaseInfo?.RealName ?? i.UserId}的数据"));
+                    if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{i.User?.BaseInfo?.RealName ?? i.UserId}的数据"));
                     authList.Add(umax);
                 }
             }
@@ -138,7 +138,7 @@ namespace TrainSchdule.Controllers.Zx
                         bool can_remove = true;
                         if (!authList.Contains(modifyCompany))
                         {
-                            if (await userActionServices.PermissionAsync(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  modifyCompany, "单点授权修改")) authList.Add(modifyCompany);
+                            if (userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  modifyCompany, "单点授权修改")) authList.Add(modifyCompany);
                             else
                                 can_remove = false;// throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权修改{r.User?.BaseInfo?.RealName ?? r.UserId}的数据"));
                         }

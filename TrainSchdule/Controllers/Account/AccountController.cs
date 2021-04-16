@@ -229,7 +229,7 @@ namespace TrainSchdule.Controllers
 			if (targetUser == null) return new JsonResult(_userActionServices.LogNewActionInfo(ua, ActionStatusMessage.UserMessage.NotExist));
 			var authUser = currentUser;
 			bool authUserPermission = false;
-			if (model.Auth?.AuthByUserID != null)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false)
 			{
 				authUser = _usersService.GetById(model.Auth.AuthByUserID);
 				_userActionServices.Status(ua, false, $"授权自{model.Auth.AuthByUserID}");
@@ -527,7 +527,7 @@ namespace TrainSchdule.Controllers
 		{
 			model.Verify?.Verify(_verifyService);
 			var authByUser = currentUserService.CurrentUser ?? new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
-			if (model.Auth?.AuthByUserID != null)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false)
 			{
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
@@ -557,7 +557,7 @@ namespace TrainSchdule.Controllers
 		{
 			model.Verify?.Verify(_verifyService);
 			var authByUser = new User() { Id = null }; // 注册不需要使用授权，但邀请人为invalid
-			if (model.Auth?.AuthByUserID != null)
+			if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false)
 			{
 				if (!model.Auth.Verify(_authService, currentUserService.CurrentUser?.Id)) return new JsonResult(ActionStatusMessage.Account.Auth.AuthCode.Invalid);
 				authByUser = _usersService.GetById(model.Auth.AuthByUserID);
