@@ -161,12 +161,13 @@ namespace BLL.Services.ApplyServices.DailyApply
             var appSetting = item.BaseInfo.From.Application.ApplicationSetting;
             if (appSetting != null)
             {
-                var time = appSetting.LastSubmitApplyTime;
+                var time = appSetting.LastSubmitApplyTime ?? DateTime.MinValue;
                 // 若1分钟内连续提交两次，则下次提交限定到10分钟后
-                if (time == null) appSetting.LastSubmitApplyTime = DateTime.Now;
-                else if (time > DateTime.Now.AddMinutes(10)) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash);
-                else if (time?.AddMinutes(1) > DateTime.Now)
+                if (time > DateTime.Now.AddMinutes(10)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{time.Subtract(DateTime.Now.AddMinutes(10)).Seconds}秒后再发布", true));
+                else if (time.AddMinutes(1) > DateTime.Now)
                     appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
+                else
+                    appSetting.LastSubmitApplyTime = DateTime.Now;
             }
             context.AppliesInday.Add(item);
             context.AppUserApplicationSettings.Update(appSetting);
