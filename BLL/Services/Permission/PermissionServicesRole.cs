@@ -5,6 +5,7 @@ using System.Linq;
 using Abp.Extensions;
 using BLL.Extensions;
 using BLL.Extensions.Common;
+using BLL.Extensions.PermissionServicesExtension;
 using BLL.Helpers;
 using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
@@ -15,7 +16,7 @@ namespace BLL.Services.Permission
 {
     public partial class PermissionServices
     {
-        public DAL.Entities.Permisstions.Permission GetPermissionByName(string name) => DictPermissions.ContainsKey(name) ? DictPermissions[name] : null;
+        public DAL.Entities.Permisstions.Permission GetPermissionByName(string name) => PermissionDictionaryExtensions.DictPermissions.ContainsKey(name) ? PermissionDictionaryExtensions.DictPermissions[name] : null;
         public (PermissionsRole, IEnumerable<string>, IEnumerable<string>, IEnumerable<PermissionBaseItem>) RoleDetail(string role)
         {
             var r = context.PermissionsRoles.FirstOrDefault(i=>i.Name==role)?? throw new ActionStatusMessageException(new PermissionsRole().NotExist());

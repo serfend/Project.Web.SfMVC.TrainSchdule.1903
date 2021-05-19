@@ -1,8 +1,10 @@
 ﻿using Abp.Extensions;
 using BLL.Extensions.Common;
+using BLL.Extensions.PermissionServicesExtension;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.Permission;
+using BLL.Services.Permission;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Permisstions;
@@ -46,7 +48,7 @@ namespace TrainSchdule.Controllers
             this.context = context;
             this.userActionServices = userActionServices;
             this.googleAuthService = googleAuthService;
-        }
+		}
     }
 	public partial class PermissionController
 	{
@@ -55,11 +57,11 @@ namespace TrainSchdule.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		[ProducesResponseType(typeof(EntityViewModel<IEnumerable<Permission>>), 0)]
+		[ProducesResponseType(typeof(EntitiesListViewModel<Permission>), 0)]
 		public IActionResult PermissionDictionary()
 		{
-			var t = permissionServices.DictPermissions.Select(i=>i.Value);
-			return new JsonResult(new EntityViewModel<IEnumerable<Permission>>(t));
+			var t = PermissionDictionaryExtensions.DictPermissions.Select(i=>i.Value); // 此处通过调用静态字段DictPermissions
+			return new JsonResult(new EntitiesListViewModel<Permission>(t));
 		}
 		/// <summary>
 		/// 获取当前用户被授予的角色和权限
@@ -74,9 +76,9 @@ namespace TrainSchdule.Controllers
 			if (currentId == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = usersService.GetById(currentId);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${targetUser.Id}权限");
-			var permission = context.PermissionsUsers.Where(p=>p.UserId==id).Select(i => i.ToModel());
-			var role = context.PermissionsUserRelates.Where(p=>p.UserId==id).Select(i => i.ToModel());
+			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${currentId}权限");
+			var permission = context.PermissionsUsers.Where(p=>p.UserId== currentId).Select(i => i.ToModel());
+			var role = context.PermissionsUserRelates.Where(p=>p.UserId== currentId).Select(i => i.ToModel());
 			return new JsonResult(new QueryPermissionsOutViewModel() { Data = new QueryPermissionsOutDataModel() { Permissions = permission, Roles = role } });
 		}
 		/// <summary>
@@ -92,8 +94,8 @@ namespace TrainSchdule.Controllers
 			if (currentId == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
 			var targetUser = usersService.GetById(currentId);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${targetUser.Id}权限");
-			var role = context.PermissionsRoles.Where(p=>p.CreateById==id).Select(i=>i.Name).Distinct().ToList().Select(i => permissionServices.RoleDetail(i)).Select(i=>i.Item1.ToModel(i.Item2,i.Item3,i.Item4));
+			var permit = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.Application.Item, PermissionType.Read, targetUser.CompanyInfo.CompanyCode, $"授权查询${currentId}权限");
+			var role = context.PermissionsRoles.Where(p=>p.CreateById== currentId).Select(i=>i.Name).Distinct().ToList().Select(i => permissionServices.RoleDetail(i)).Select(i=>i.Item1.ToModel(i.Item2,i.Item3,i.Item4));
 			return new JsonResult(new EntitiesListViewModel<PermissionsRoleViewModel>(role));
 		}
 		/// <summary>
@@ -127,10 +129,11 @@ namespace TrainSchdule.Controllers
 		/// 查看角色详情
 		/// </summary>
 		/// <returns></returns>
-		[HttpPost]
-		public IActionResult RoleDetail([FromBody] PermissionsRoleViewModel model)
+		[HttpGet]
+		[ProducesResponseType(typeof(EntityViewModel<PermissionsRoleViewModel>), 0)]
+		public IActionResult RoleDetail(string role)
 		{
-			var r = permissionServices.RoleDetail(model.Role);
+			var r = permissionServices.RoleDetail(role);
 			return new JsonResult(new EntityViewModel<PermissionsRoleViewModel>(r.Item1.ToModel(r.Item2, r.Item3, r.Item4)));
 		}
 		/// <summary>
@@ -142,7 +145,7 @@ namespace TrainSchdule.Controllers
 		public IActionResult Role([FromBody] PermissionsRoleViewModel model) {
 			var r = permissionServices.RoleModify(model.Role,currentUserService.CurrentUser.Id, model.IsRemove);
 			if (r == null) throw new ActionStatusMessageException(r.NotExist());
-			return RoleDetail(model);
+			return RoleDetail(model.Role);
 		}
 		/// <summary>
 		/// 角色关联权限/角色
@@ -178,7 +181,7 @@ namespace TrainSchdule.Controllers
 		[HttpPost]
 		public IActionResult CheckPermission([FromBody] PermissionCheckViewModel model) {
 			var user = usersService.CurrentQueryUser(model.User);
-			var result = permissionServices.CheckPermissions(user, model.Permission, model.PermissionType, model.Region);
+			var result = permissionServices.CheckPermissions(user.Id, model.Permission, model.PermissionType, model.Region);
 			return new JsonResult(result == null ?ActionStatusMessage.PermissionMessage.Permission.NotExist: new EntityViewModel<IPermissionDescription>(result));
 		}
 	}

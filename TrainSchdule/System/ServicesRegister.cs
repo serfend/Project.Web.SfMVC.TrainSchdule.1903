@@ -92,6 +92,9 @@ namespace TrainSchdule.System
 		/// <param name="services"></param>
 		private static void RegisterServices_Common(this IServiceCollection services)
 		{
+			services.AddTransient<IPermissionServices, PermissionServices>();
+
+
 			services.AddScoped<IEmailSender, EmailSender>();
 			services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 			services.AddScoped<ISignInServices, SignInServices>();
@@ -108,7 +111,6 @@ namespace TrainSchdule.System
 			services.AddSingleton<IVerifyService, VerifyService>();
 			services.AddSingleton<ICipperServices, CipperServices>();
 			services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-			services.AddSingleton<IPermissionServices, PermissionServices>();
 		}
 
 		/// <summary>

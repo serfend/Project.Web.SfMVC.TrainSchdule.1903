@@ -11,15 +11,6 @@ namespace BLL.Interfaces.Permission
 	public interface IPermissionServices
 	{
 		/// <summary>
-		/// 当前程序集所有权限
-		/// </summary>
-		/// <returns></returns>
-		List<Tuple<string, DAL.Entities.Permisstions.Permission>> AllPermissions { get; set; }
-		/// <summary>
-		/// 当前程序集所有权限字典
-		/// </summary>
-		Dictionary<string, DAL.Entities.Permisstions.Permission> DictPermissions { get; set; }
-		/// <summary>
 		/// 通过名称获取权限
 		/// </summary>
 		/// <param name="name"></param>
@@ -83,12 +74,12 @@ namespace BLL.Interfaces.Permission
 		/// <summary>
 		/// 权限判断，逐级到根节点
 		/// </summary>
-		/// <param name="user">指定用户</param>
+		/// <param name="userid">指定用户</param>
 		/// <param name="permission">判断权限</param>
 		/// <param name="permissionType">操作类型</param>
 		/// <param name="companyCode">单位作用域</param>
 		/// <returns></returns>
-		IPermissionDescription CheckPermissions(User user, string permission,PermissionType permissionType, string companyCode);
+		IPermissionDescription CheckPermissions(string userid, string permission,PermissionType permissionType, string companyCode);
 
 		/// <summary>
 		/// 获取权限最高层级单位
