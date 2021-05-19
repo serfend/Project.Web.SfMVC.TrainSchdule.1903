@@ -98,7 +98,8 @@ namespace TrainSchdule
 			BackgroundJob.Enqueue<UserActionServices>(ua => ua.Log(UserOperation.FromSystemReport, "#System#", "Start", true, ActionRank.Infomation));
 			RecurringJob.AddOrUpdate<ApplyClearJob>((a) => a.Run("OnJob"), Cron.Daily(16, 5));
 			RecurringJob.AddOrUpdate<ApplyIndayClearJob>((a) => a.Run("OnJob"), Cron.Daily(16, 0));
-			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => a.ReloadAllStatistics(new DateTime(DateTime.Today.Year, 1, 1), DateTime.Today.AddDays(1)), Cron.Daily(17, 30));
+			RecurringJob.AddOrUpdate<VacationStatisticsController>(a => 
+				a.ReloadAllStatistics(), Cron.Daily(17, 30));
 			
 			//Assembly ass = Assembly.GetAssembly(typeof(ICrontabJob));
 			//var jobs = ass.GetTypes()

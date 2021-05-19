@@ -18,6 +18,17 @@ namespace TrainSchdule.Controllers.Statistics
 	public partial class VacationStatisticsController
 	{
 		/// <summary>
+		/// 重新加载至今日
+		/// </summary>
+		/// <returns></returns>
+		[RequireHttps]
+		[HttpPost]
+		public IActionResult ReloadAllStatistics() {
+			var y = new DateTime(DateTime.Today.Year, 1, 1);
+			var d = DateTime.Today.AddDays(1);
+			return ReloadAllStatistics(y, d);
+		}
+		/// <summary>
 		/// 重新加载所有统计记录
 		/// </summary>
 		/// <returns></returns>
