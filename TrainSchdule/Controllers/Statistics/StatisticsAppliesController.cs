@@ -21,20 +21,22 @@ namespace TrainSchdule.Controllers.Statistics
 		/// 重新加载至今日
 		/// </summary>
 		/// <returns></returns>
+		[Route("ReloadAllStatistics")]
 		[RequireHttps]
 		[HttpPost]
 		public IActionResult ReloadAllStatistics() {
 			var y = new DateTime(DateTime.Today.Year, 1, 1);
 			var d = DateTime.Today.AddDays(1);
-			return ReloadAllStatistics(y, d);
+			return ReloadAllStatisticsByRange(y, d);
 		}
 		/// <summary>
 		/// 重新加载所有统计记录
 		/// </summary>
 		/// <returns></returns>
+		[Route("ReloadAllStatisticsByRange")]
 		[RequireHttps]
 		[HttpPost]
-		public IActionResult ReloadAllStatistics(DateTime from, DateTime to)
+		public IActionResult ReloadAllStatisticsByRange(DateTime from, DateTime to)
 		{
 			var ua = _userActionServices.Log(UserOperation.FromSystemReport, "#System#", $"更新统计情况", false);
 			if (HttpContext?.Connection?.RemoteIpAddress != HttpContext?.Connection?.LocalIpAddress) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
