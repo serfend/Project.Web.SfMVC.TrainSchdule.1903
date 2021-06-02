@@ -1,8 +1,12 @@
-﻿using BLL.Extensions.Common;
+﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.ClientDevice;
 using DAL.Data;
 using DAL.Entities.ClientDevice;
+using DAL.Entities.Permisstions;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.BBS;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.ClientDevices
 {
@@ -18,14 +23,18 @@ namespace TrainSchdule.Controllers.ClientDevices
     {
         private readonly ApplicationDbContext context;
         private readonly IUsersService usersService;
+        private readonly IUserActionServices userActionServices;
+        private readonly ICurrentUserService currentUserService;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientController(ApplicationDbContext context,IUsersService usersService)
+        public ClientController(ApplicationDbContext context, IUsersService usersService, IUserActionServices userActionServices, ICurrentUserService currentUserService)
         {
             this.context = context;
             this.usersService = usersService;
+            this.userActionServices = userActionServices;
+            this.currentUserService = currentUserService;
         }
     }
     /// <summary>
@@ -46,6 +55,12 @@ namespace TrainSchdule.Controllers.ClientDevices
             var r = context.ClientsDb.FirstOrDefault(i => i.MachineId == model.MachineId);
             var client =r ??new Client();
             model.ToModel(usersService, context.CompaniesDb,client);
+            if (!client.Company.Code.IsNullOrEmpty())
+                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, client.Company.Code, "终端新信息"))
+                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{client.Company.Code}", true));
+            if (!r.Company.Code.IsNullOrEmpty())
+                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, r.Company.Code, "终端原信息"))
+                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{r.Company.Code}", true));
             if (client.IsRemoved && r != null)
             {
                 r.Remove();
@@ -53,6 +68,10 @@ namespace TrainSchdule.Controllers.ClientDevices
             }
             else if (r == null) context.Clients.Add(client);
             else context.Clients.Update(client);
+            if (r.OwnerId != client.OwnerId || r.CompanyCode!=client.CompanyCode)
+            {
+                BackgroundJob.Schedule<IClientDeviceService>(s=>s.UpdateClientRelate(client),TimeSpan.FromSeconds(3));
+            }
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }

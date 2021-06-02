@@ -3,12 +3,15 @@ using Abp.Extensions;
 using Abp.Linq.Expressions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Interfaces.ClientDevice;
 using BLL.Interfaces.Common;
+using BLL.Interfaces.Permission;
 using DAL.Data;
 using DAL.DTO.ClientDevice;
 using DAL.Entities.ClientDevice;
 using DAL.Entities.Common.DataDictionary;
+using DAL.Entities.Permisstions;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,19 +21,23 @@ using System.Threading.Tasks;
 using TrainSchdule.System;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.ClientDevices
 {
     /// <summary>
     /// 病毒报告
     /// </summary>
-   [ApiController]
+    [ApiController]
     [Route("[controller]/[action]")]
-    public partial class ClientVirusController:Controller
+    public partial class ClientVirusController : Controller
     {
         private readonly ApplicationDbContext context;
         private readonly IDataDictionariesServices dataDictionariesServices;
         private readonly IClientVirusServices clientVirusServices;
+        private readonly IUserActionServices userActionServices;
+        private readonly IPermissionServices permissionServices;
+        private readonly ICurrentUserService currentUserService;
 
         /// <summary>
         /// 
@@ -38,14 +45,19 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <param name="context"></param>
         /// <param name="dataDictionariesServices"></param>
         /// <param name="clientVirusServices"></param>
-        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices,IClientVirusServices clientVirusServices)
+        /// <param name="userActionServices"></param>
+        /// <param name="currentUserService"></param>
+        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IClientVirusServices clientVirusServices, IUserActionServices userActionServices, ICurrentUserService currentUserService)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
             this.clientVirusServices = clientVirusServices;
+            this.userActionServices = userActionServices;
+            this.currentUserService = currentUserService;
         }
     }
-    public partial class ClientVirusController{
+    public partial class ClientVirusController
+    {
 
         /// <summary>
         /// 病毒编辑
@@ -54,7 +66,10 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusDto model)
         {
-            clientVirusServices.Edit(model);
+            var r = clientVirusServices.Edit(model);
+            if (!r.Company.IsNullOrEmpty())
+                if(!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, r.Company, "信息"))
+                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{r.Company}", true));
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }
@@ -64,11 +79,11 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Info([FromBody]VirusQueryDataModel model)
+        public IActionResult Info([FromBody] VirusQueryDataModel model)
         {
             var list = context.VirusesDb;
             var id = model.Id?.Value;
-            if (id != null) return new JsonResult(new EntityViewModel<VirusDto>(list.FirstOrDefault(i=>i.Id==id)?.ToModel()));
+            if (id != null) return new JsonResult(new EntityViewModel<VirusDto>(list.FirstOrDefault(i => i.Id == id)?.ToModel()));
             var createStart = model.Create?.Start;
             var createEnd = model.Create?.End;
             var companies = model.Companies?.Arrays;
@@ -76,7 +91,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             {
                 list = list.Where(i => i.Company != null);
                 var exp = PredicateBuilder.New<Virus>(false);
-                foreach(var c in companies)
+                foreach (var c in companies)
                     exp = exp.Or(i => i.Company.StartsWith(c));
                 list = list.Where(exp);
             }
@@ -104,8 +119,8 @@ namespace TrainSchdule.Controllers.ClientDevices
                 int status_int = status.Sum(i => i);
                 list = list.Where(i => ((int)i.Status & status_int) > 0);
             }
-                
-            var result = list.OrderByDescending(i=> (i.Status & VirusStatus.Unhandle)).ThenByDescending(i => i.Create).SplitPage(model.Pages);
+
+            var result = list.OrderByDescending(i => (i.Status & VirusStatus.Unhandle)).ThenByDescending(i => i.Create).SplitPage(model.Pages);
             return new JsonResult(new EntitiesListViewModel<VirusDto>(result.Item1.Select(i => i.ToModel()), result.Item2));
         }
     }

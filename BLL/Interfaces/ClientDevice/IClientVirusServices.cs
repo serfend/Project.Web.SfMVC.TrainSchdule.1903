@@ -10,7 +10,7 @@ namespace BLL.Interfaces.ClientDevice
 {
     public interface IClientVirusServices
     {
-        void Edit(VirusDto model);
+        Virus Edit(VirusDto model);
         /// <summary>
         /// 自动关联溯源
         /// </summary>

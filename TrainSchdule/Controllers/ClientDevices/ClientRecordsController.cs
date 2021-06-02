@@ -1,10 +1,12 @@
 ﻿using Abp.Extensions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.Entities.ClientDevice;
 using DAL.Entities.Common.DataDictionary;
+using DAL.Entities.Permisstions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.ClientDevices
 {
@@ -26,14 +29,18 @@ namespace TrainSchdule.Controllers.ClientDevices
     {
         private readonly ApplicationDbContext context;
         private readonly IDataDictionariesServices dataDictionariesServices;
+        private readonly IUserActionServices userActionServices;
+        private readonly ICurrentUserService currentUserService;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices)
+        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices,IUserActionServices userActionServices,ICurrentUserService currentUserService)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
+            this.userActionServices = userActionServices;
+            this.currentUserService = currentUserService;
         }
     }
 
@@ -52,6 +59,9 @@ namespace TrainSchdule.Controllers.ClientDevices
             var prev_status = client.HandleStatus;
             model.ToModel(context.Viruses, client);
             if (client.Virus == null) return new JsonResult(client.Virus.NotExist());
+            if (!client.Virus.Company.IsNullOrEmpty())
+                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, client.Virus.Company, "处置记录"))
+                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{client.Virus.Company}", true));
             if (client.IsRemoved && r != null)
             {
                 r.Remove();
@@ -133,6 +143,9 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Remark([FromBody] VirusHandleRecordDataModel model) {
             var record = context.VirusHandleRecordsDb.FirstOrDefault(i => i.Id == model.Id);
             if (record == null) return new JsonResult(record.NotExist());
+            if (!record.Virus.Company.IsNullOrEmpty())
+                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, record.Virus.Company, "病毒处置备注"))
+                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{record.Virus.Company}", true));
             record.Remark = model.Remark;
             context.VirusHandleRecords.Update(record);
             context.SaveChanges();

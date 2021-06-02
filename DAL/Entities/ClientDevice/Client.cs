@@ -35,7 +35,7 @@ namespace DAL.Entities.ClientDevice
         [ForeignKey("OwnerId")]
         public virtual UserInfo.User Owner { get; set; }
         /// <summary>
-        /// 负责人姓名【冗余】
+        /// 负责人姓名
         /// </summary>
         public string OwnerId { get; set; }
         /// <summary>
