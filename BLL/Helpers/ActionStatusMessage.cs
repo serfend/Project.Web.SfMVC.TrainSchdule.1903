@@ -4,6 +4,9 @@
 	{
 		public static readonly ApiResult Success = new ApiResult(0, null);
 		public static readonly ApiResult Fail = new ApiResult(-1, "失败");
+		public static readonly ApiResult CheckOverwrite = new ApiResult(-2, "已存在重复项目");
+
+		
 	}
 
 	public class ApiResult

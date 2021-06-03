@@ -53,12 +53,12 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Info([FromBody] ClientDeviceDataModel model)
         {
             var r = context.ClientsDb.FirstOrDefault(i => i.MachineId == model.MachineId);
-            var client =r ??new Client();
+            var client = r ?? new Client();
             model.ToModel(usersService, context.CompaniesDb,client);
-            if (!client.Company.Code.IsNullOrEmpty())
+            if (!client.Company?.Code.IsNullOrEmpty()??false)
                 if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, client.Company.Code, "终端新信息"))
                     throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{client.Company.Code}", true));
-            if (!r.Company.Code.IsNullOrEmpty())
+            if (!r.Company?.Code.IsNullOrEmpty()?? false)
                 if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, r.Company.Code, "终端原信息"))
                     throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{r.Company.Code}", true));
             if (client.IsRemoved && r != null)
@@ -68,9 +68,10 @@ namespace TrainSchdule.Controllers.ClientDevices
             }
             else if (r == null) context.Clients.Add(client);
             else context.Clients.Update(client);
+            BackgroundJob.Schedule<IClientDeviceService>(s => s.UpdateClientTags(r.Id,client.Id), TimeSpan.FromSeconds(3));
             if (r.OwnerId != client.OwnerId || r.CompanyCode!=client.CompanyCode)
             {
-                BackgroundJob.Schedule<IClientDeviceService>(s=>s.UpdateClientRelate(client),TimeSpan.FromSeconds(3));
+                BackgroundJob.Schedule<IClientDeviceService>(s=>s.UpdateClientRelate(client.Id),TimeSpan.FromSeconds(3));
             }
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);

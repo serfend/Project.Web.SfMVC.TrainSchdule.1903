@@ -1,5 +1,6 @@
 ﻿using BLL.Extensions.Common;
 using BLL.Interfaces;
+using DAL.DTO.ClientDevice;
 using DAL.Entities.ClientDevice;
 using DAL.QueryModel;
 using System;

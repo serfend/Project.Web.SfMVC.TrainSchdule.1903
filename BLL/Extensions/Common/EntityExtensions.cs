@@ -1,6 +1,7 @@
 ﻿using BLL.Helpers;
 using DAL.Entities;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.ClientDevice;
 using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.Entities.ZX.Grade;
@@ -23,6 +24,8 @@ namespace BLL.Extensions.Common
 		/// <returns></returns>
 		public static ApiResult NotExist(this IDbEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
 
+		public static ApiResult NotExist(this Client model) => ActionStatusMessage.ClientDevice.Client.NotExist;
+		public static ApiResult Exist(this Client model) => ActionStatusMessage.ClientDevice.Client.Exist;
 		public static ApiResult NotExist(this Permission model) => ActionStatusMessage.PermissionMessage.Permission.NotExist;
 		public static ApiResult Exist(this Permission model) => ActionStatusMessage.PermissionMessage.Permission.Exist;
 		public static ApiResult NotExist(this PermissionRoleRelatePermission model) => ActionStatusMessage.PermissionMessage.RoleRelatePermission.NotExist;

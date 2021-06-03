@@ -82,13 +82,29 @@ namespace TrainSchdule.ViewModels.Verify
 			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Permission.AuthUserNotExist);
 			return user;
 		}
+		/// <summary>
+		/// 获取授权人本人
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="authService"></param>
+		/// <param name="usersService"></param>
+		/// <param name="currentUser"></param>
+		/// <returns></returns>
+		public static DAL.Entities.UserInfo.User AuthUser(this GoogleAuthDataModel model, IGoogleAuthService authService, IUsersService usersService, DAL.Entities.UserInfo.User currentUser)
+		{
+			var default_u = "default-user-name";
+			var u = model.AuthUser(authService, default_u );
+			var user = u!=default_u? usersService.GetById(u):currentUser;
+			if (user == null) throw new ActionStatusMessageException(ActionStatusMessage.Account.Auth.Permission.AuthUserNotExist);
+			return user;
+		}
 
-        /// <summary>
-        /// 授权失败
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="appendMessage"></param>
-        /// <returns></returns>
-        public static ApiResult PermitDenied(this GoogleAuthDataModel model, string appendMessage = null) => appendMessage != null ? new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, appendMessage, true) : ActionStatusMessage.Account.Auth.Invalid.Default;
+		/// <summary>
+		/// 授权失败
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="appendMessage"></param>
+		/// <returns></returns>
+		public static ApiResult PermitDenied(this GoogleAuthDataModel model, string appendMessage = null) => appendMessage != null ? new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, appendMessage, true) : ActionStatusMessage.Account.Auth.Invalid.Default;
 	}
 }

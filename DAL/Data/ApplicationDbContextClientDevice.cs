@@ -12,6 +12,9 @@ namespace DAL.Data
     {
         public DbSet<Client> Clients { get; set; }
         public IQueryable<Client> ClientsDb => Clients.ToExistDbSet();
+        public DbSet<ClientTags> ClientTags { get; set; }
+        public IQueryable<ClientTags> ClientTagsDb => ClientTags.ToExistDbSet();
+        public DbSet<ClientWithTags> ClientWithTags { get; set; }
         public DbSet<Virus> Viruses { get; set; }
         public IQueryable<Virus> VirusesDb => Viruses.ToExistDbSet();
         public DbSet<VirusHandleRecord> VirusHandleRecords { get; set; }

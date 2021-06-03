@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210602064508_ClientTagsIdCache")]
+    partial class ClientTagsIdCache
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -836,11 +838,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("Create")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateCompany")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -862,36 +864,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId");
+
                     b.HasIndex("ParentId");
 
                     b.ToTable("ClientTags");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ClientDevice.ClientWithTags", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientTagsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("IsRemovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ClientTagsId");
-
-                    b.ToTable("ClientWithTags");
                 });
 
             modelBuilder.Entity("DAL.Entities.ClientDevice.Virus", b =>
@@ -4113,30 +4090,15 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.ClientDevice.ClientTags", b =>
                 {
+                    b.HasOne("DAL.Entities.ClientDevice.Client", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("ClientId");
+
                     b.HasOne("DAL.Entities.ClientDevice.ClientTags", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
 
                     b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("DAL.Entities.ClientDevice.ClientWithTags", b =>
-                {
-                    b.HasOne("DAL.Entities.ClientDevice.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DAL.Entities.ClientDevice.ClientTags", "ClientTags")
-                        .WithMany()
-                        .HasForeignKey("ClientTagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("ClientTags");
                 });
 
             modelBuilder.Entity("DAL.Entities.ClientDevice.Virus", b =>
@@ -4732,6 +4694,11 @@ namespace DAL.Migrations
                     b.Navigation("ApplyAllAuditStep");
 
                     b.Navigation("Response");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ClientDevice.Client", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("DAL.Entities.FileEngine.UploadCache", b =>
