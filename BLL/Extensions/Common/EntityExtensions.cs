@@ -23,7 +23,7 @@ namespace BLL.Extensions.Common
 		/// <param name="model"></param>
 		/// <returns></returns>
 		public static ApiResult NotExist(this IDbEntity model) => ActionStatusMessage.StaticMessage.ResourceNotExist;
-
+		public static ApiResult Exist(this IDbEntity model) => ActionStatusMessage.StaticMessage.ResourceAllReadyExist;
 		public static ApiResult NotExist(this Client model) => ActionStatusMessage.ClientDevice.Client.NotExist;
 		public static ApiResult Exist(this Client model) => ActionStatusMessage.ClientDevice.Client.Exist;
 		public static ApiResult NotExist(this Permission model) => ActionStatusMessage.PermissionMessage.Permission.NotExist;
@@ -42,6 +42,7 @@ namespace BLL.Extensions.Common
 		public static ApiResult NotExist(this RecallOrder model) => ActionStatusMessage.ApplyMessage.RecallMessage.NotExist;
 
 		public static ApiResult NotExist(this User model) => ActionStatusMessage.UserMessage.NotExist;
+		public static ApiResult Exist(this User model) => ActionStatusMessage.UserMessage.Exist;
 
 		public static ApiResult NotLogin(this User model) => ActionStatusMessage.Account.Auth.Invalid.NotLogin;
 

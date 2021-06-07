@@ -7,10 +7,18 @@ using System.Threading.Tasks;
 
 namespace DAL.Entities.ClientDevice
 {
-    public class ClientTags:BaseEntityGuid
+    public class ClientTags : BaseEntityGuid
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        /// <summary>
+        /// 标签的标记颜色
+        /// </summary>
+        public string Color { get; set; }
+        /// <summary>
+        /// 标签的作用域
+        /// </summary>
+        public string AppName { get; set; }
         /// <summary>
         /// 创建单位 用于限定权限
         /// </summary>
@@ -34,21 +42,25 @@ namespace DAL.Entities.ClientDevice
             if (c == null) return null;
             return new ClientTagDto()
             {
-                 Create=c.Create,
-                 Description=c.Description,
-                 CreateCompany=c.CreateCompany,
-                 Id=c.Id,
-                 IsRemoved=c.IsRemoved,
-                 IsRemovedDate=c.IsRemovedDate,
-                 Name=c.Name,
-                 ParentId=c.ParentId,
-                 Used=c.Used
+                AppName = c.AppName,
+                Color = c.Color,
+                Create = c.Create,
+                Description = c.Description,
+                CreateCompany = c.CreateCompany,
+                Id = c.Id,
+                IsRemoved = c.IsRemoved,
+                IsRemovedDate = c.IsRemovedDate,
+                Name = c.Name,
+                ParentId = c.ParentId,
+                Used = c.Used
             };
         }
         public static ClientTags ToModel(this ClientTagDto c)
         {
             return new ClientTags()
             {
+                AppName = c.AppName,
+                Color = c.Color,
                 Create = c.Create,
                 Description = c.Description,
                 CreateCompany = c.CreateCompany,

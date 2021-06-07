@@ -10,6 +10,14 @@ namespace DAL.DTO.ClientDevice
     public class ClientTagDto:BaseEntityGuid
     {
         public string Name { get; set; }
+        /// <summary>
+        /// 标签的标记颜色
+        /// </summary>
+        public string Color { get; set; }
+        /// <summary>
+        /// 标签的作用域
+        /// </summary>
+        public string AppName { get; set; }
         public string Description { get; set; }
         /// <summary>
         /// 创建单位 用于限定权限

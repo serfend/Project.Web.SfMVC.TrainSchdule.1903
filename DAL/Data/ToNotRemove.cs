@@ -9,7 +9,7 @@ namespace DAL.Data
 {
 	public static class ToNotRemove
 	{
-		public static IQueryable<T> ToExistDbSet<T>(this DbSet<T> dbSet) where T : BaseEntityGuid
+		public static IQueryable<T> ToExistDbSet<T>(this DbSet<T> dbSet) where T : BaseEntity
 		{
 			if (dbSet == null) return null;
 			return dbSet.Where(d => !d.IsRemoved);

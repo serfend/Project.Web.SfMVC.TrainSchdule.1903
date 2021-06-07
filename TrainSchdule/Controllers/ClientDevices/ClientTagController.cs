@@ -46,20 +46,26 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// 
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="appName"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Children(string id)
+        public IActionResult Children(string id, string appName = "default")
         {
             Guid? target;
+            var list = context.ClientTagsDb;
+            // 查询根节点时判断应用名称
             if (id.Equals("root"))
+            {
+                list = list.Where(t => t.AppName == appName);
                 target = null;
+            }
             else
             {
                 _ = Guid.TryParse(id, out var tmp);
                 if (tmp == Guid.Empty) target = null;
                 else target = tmp;
             }
-            var tags = context.ClientTagsDb.Where(c => c.ParentId == target).Select(i => i.ToDto());
+            var tags = list.Where(c => c.ParentId == target).Select(i => i.ToDto());
             return new JsonResult(new EntitiesListViewModel<ClientTagDto>(tags));
         }
 

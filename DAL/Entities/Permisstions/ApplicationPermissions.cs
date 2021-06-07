@@ -86,6 +86,11 @@ namespace DAL.Entities.Permisstions
 
                 public static Permission Item { get; set; }
             }
+            [Description("党团信息")]
+            public static class PartyInfo
+            {
+                public static Permission Item { get; set; }
+            }
         }
 
         [Description("单位")]
@@ -104,7 +109,24 @@ namespace DAL.Entities.Permisstions
             }
 
         }
-
+        [Description("党团")]
+        public static class Party {
+            public static Permission Item { get; set; }
+            [Description("党团单位")]
+            public static class Group
+            {
+                public static Permission Item { get; set; }
+            }
+            [Description("办会")]
+            public static class Execuable {
+                [Description("会议")]
+                public static class Conference
+                {
+                    public static Permission Item { get; set; }
+                }
+                public static Permission Item { get; set; }
+            }
+        }
         [Description("申请")]
         public static class Apply
         {
