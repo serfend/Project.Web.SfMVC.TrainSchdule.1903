@@ -2,6 +2,7 @@
 using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
+using System;
 using System.Linq;
 
 namespace BLL.Extensions
@@ -73,6 +74,7 @@ namespace BLL.Extensions
 				InviteBy = user.Application?.InvitedBy
 			};
 		}
+		public static IOrderedQueryable<User> OrderByCompanyAndTitleWithCache(this IQueryable<User> users) => users.OrderByDescending(u=>u.UserOrderRank);
 
 		/// <summary>
 		/// 按单位-资历的顺序依次排序
@@ -93,5 +95,6 @@ namespace BLL.Extensions
 		/// <param name="users"></param>
 		/// <returns></returns>
 		public static IOrderedQueryable<User> OrderByLevel(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Duties.Level).ThenByDescending(u => u.CompanyInfo.Title.Level).ThenBy(u=>u.BaseInfo.Time_Work);
+
 	}
 }
