@@ -116,7 +116,7 @@ namespace BLL.Services
 					.ToList();
 				users = userList.AsQueryable();
 			}
-			if (!isAdmin) users = users.OrderByCompanyAndTitle();
+			if (!isAdmin) users = users.OrderByCompanyAndTitleWithCache();
 			return users;
 		}
 		/// <summary>

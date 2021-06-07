@@ -114,7 +114,8 @@ namespace TrainSchdule
 			RecurringJob.AddOrUpdate<UserInfoRealnameSync>((a) => a.Run(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<FileServices>((u) => u.RemoveTimeoutUploadStatus(), Cron.Hourly);
 			RecurringJob.AddOrUpdate<VirusRelateClientJob>((u) => u.Run(), Cron.Hourly);
-			
+			RecurringJob.AddOrUpdate<UserOrderJob>((a) => a.Run(), Cron.Daily);
+
 			BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
 		}
 

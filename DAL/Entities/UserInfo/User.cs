@@ -46,7 +46,10 @@ namespace DAL.Entities.UserInfo
         [ForeignKey("ResumeInfoId")]
 		public virtual UserResumeInfo ResumeInfo { get; set; }
         public Guid? ResumeInfoId { get; set; }
-
+		/// <summary>
+		/// 【冗余】用户按职务等排序值
+		/// </summary>
+		public long UserOrderRank { get; set; }
 
         #endregion Properties
     }
