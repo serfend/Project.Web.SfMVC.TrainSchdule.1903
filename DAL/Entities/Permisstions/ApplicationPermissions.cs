@@ -110,7 +110,8 @@ namespace DAL.Entities.Permisstions
 
         }
         [Description("党团")]
-        public static class Party {
+        public static class Party
+        {
             public static Permission Item { get; set; }
             [Description("党团单位")]
             public static class Group
@@ -118,9 +119,15 @@ namespace DAL.Entities.Permisstions
                 public static Permission Item { get; set; }
             }
             [Description("办会")]
-            public static class Execuable {
+            public static class Confer
+            {
                 [Description("会议")]
-                public static class Conference
+                public static class NormalConfer
+                {
+                    public static Permission Item { get; set; }
+                }
+                [Description("操作记录")]
+                public static class ConferRecord
                 {
                     public static Permission Item { get; set; }
                 }

@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.ZZXT;
 using DAL.Entities.ZZXT;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace TrainSchdule.Controllers.Party
     /// <summary>
     /// 党组织
     /// </summary>
+
+    [Authorize]
+    [Route("[controller]/[action]")]
     public partial class PartyGroupController
     {
         private readonly ICurrentUserService currentUserService;
@@ -66,5 +70,7 @@ namespace TrainSchdule.Controllers.Party
             var users = context.UserPartyInfosDb.Where(u => u.PartyGroupId == guid).SplitPage(pageIndex,pageSize);
             return new JsonResult(new EntitiesListViewModel<UserPartyInfoDto>(users.Item1.Select(i=>i.ToDto()),users.Item2));
         } 
+
+
     }
 }

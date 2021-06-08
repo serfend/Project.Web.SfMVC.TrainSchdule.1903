@@ -16,6 +16,7 @@ namespace TrainSchdule.ViewModels.Party
         /// <summary>
         /// 
         /// </summary>
+        [Required( ErrorMessage = "会议标签项未填写" )]
         public ConferWithTagDataModel Data { get; set; }
     }
     /// <summary>

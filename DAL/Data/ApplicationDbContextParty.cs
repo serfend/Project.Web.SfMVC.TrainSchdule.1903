@@ -26,6 +26,8 @@ namespace DAL.Data
         /// 用户参会记录
         /// </summary>
         public DbSet<PartyUserRecord> PartyUserRecords { get; set; }
+        public IQueryable<PartyUserRecord> PartyUserRecordsDb => PartyUserRecords.ToExistDbSet();
+
 
     }
 }

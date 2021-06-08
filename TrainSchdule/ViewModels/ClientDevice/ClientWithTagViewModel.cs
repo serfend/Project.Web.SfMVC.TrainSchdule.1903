@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.ViewModels.ClientDevice
@@ -21,7 +22,7 @@ namespace TrainSchdule.ViewModels.ClientDevice
     /// <summary>
     /// 
     /// </summary>
-    public class ClientWithTagDataModel 
+    public class ClientWithTagDataModel
     {
         /// <summary>
         /// 终端id
@@ -38,12 +39,13 @@ namespace TrainSchdule.ViewModels.ClientDevice
     /// <summary>
     /// 
     /// </summary>
-    public class ClientTagDataModel : GoogleAuthViewModel
+    public class ClientTagDataModel : GoogleAuthViewModel, ICommonDataUpdate
+
     {
         /// <summary>
         /// 
         /// </summary>
-        [Required(ErrorMessage ="标签内容未填写")]
+        [Required(ErrorMessage = "标签内容未填写")]
         public ClientTagDto Data { get; set; }
         /// <summary>
         /// 是否允许覆盖
