@@ -12,8 +12,6 @@ namespace DAL.DTO.ZZXT
         public string Alias { get; set; }
         public DateTime Create { get; set; }
         public string Company { get; set; }
-        public string Chairman { get; set; }
-        public string ViceChairman { get; set; }
         public GroupType GroupType { get; set; }
     }
 }

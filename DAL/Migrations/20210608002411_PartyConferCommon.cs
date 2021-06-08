@@ -3,10 +3,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class Party : Migration
+    public partial class PartyConferCommon : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "AppName",
+                table: "ClientTags",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Color",
+                table: "ClientTags",
+                type: "nvarchar(max)",
+                nullable: true);
+
             migrationBuilder.AddColumn<long>(
                 name: "UserOrderRank",
                 table: "AppUsers",
@@ -21,6 +33,7 @@ namespace DAL.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateByCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Create = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsRemoved = table.Column<bool>(type: "bit", nullable: false),
@@ -29,6 +42,12 @@ namespace DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PartyBaseConference", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PartyBaseConference_Companies_CreateByCode",
+                        column: x => x.CreateByCode,
+                        principalTable: "Companies",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,8 +75,6 @@ namespace DAL.Migrations
                     Alias = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Create = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompanyCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ChairmanId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ViceChairmanId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     GroupType = table.Column<int>(type: "int", nullable: false),
                     IsRemoved = table.Column<bool>(type: "bit", nullable: false),
                     IsRemovedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -66,23 +83,38 @@ namespace DAL.Migrations
                 {
                     table.PrimaryKey("PK_PartyGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PartyGroups_AppUsers_ChairmanId",
-                        column: x => x.ChairmanId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PartyGroups_AppUsers_ViceChairmanId",
-                        column: x => x.ViceChairmanId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_PartyGroups_Companies_CompanyCode",
                         column: x => x.CompanyCode,
                         principalTable: "Companies",
                         principalColumn: "Code",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PartyConferWithTags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClientTagsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsRemoved = table.Column<bool>(type: "bit", nullable: false),
+                    IsRemovedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PartyConferWithTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PartyConferWithTags_ClientTags_ClientTagsId",
+                        column: x => x.ClientTagsId,
+                        principalTable: "ClientTags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PartyConferWithTags_PartyBaseConference_ConferId",
+                        column: x => x.ConferId,
+                        principalTable: "PartyBaseConference",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,8 +150,7 @@ namespace DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    userName = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     DutyId = table.Column<int>(type: "int", nullable: false),
                     DutyStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TypeInParty = table.Column<int>(type: "int", nullable: false),
@@ -133,8 +164,8 @@ namespace DAL.Migrations
                 {
                     table.PrimaryKey("PK_UserPartyInfos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserPartyInfos_AppUsers_userName",
-                        column: x => x.userName,
+                        name: "FK_UserPartyInfos_AppUsers_UserName",
+                        column: x => x.UserName,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -159,19 +190,24 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PartyGroups_ChairmanId",
-                table: "PartyGroups",
-                column: "ChairmanId");
+                name: "IX_PartyBaseConference_CreateByCode",
+                table: "PartyBaseConference",
+                column: "CreateByCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PartyConferWithTags_ClientTagsId",
+                table: "PartyConferWithTags",
+                column: "ClientTagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PartyConferWithTags_ConferId",
+                table: "PartyConferWithTags",
+                column: "ConferId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PartyGroups_CompanyCode",
                 table: "PartyGroups",
                 column: "CompanyCode");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PartyGroups_ViceChairmanId",
-                table: "PartyGroups",
-                column: "ViceChairmanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PartyUserRecords_ConferenceId",
@@ -199,13 +235,16 @@ namespace DAL.Migrations
                 column: "PartyGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserPartyInfos_userName",
+                name: "IX_UserPartyInfos_UserName",
                 table: "UserPartyInfos",
-                column: "userName");
+                column: "UserName");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "PartyConferWithTags");
+
             migrationBuilder.DropTable(
                 name: "PartyUserRecords");
 
@@ -220,6 +259,14 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "PartyGroups");
+
+            migrationBuilder.DropColumn(
+                name: "AppName",
+                table: "ClientTags");
+
+            migrationBuilder.DropColumn(
+                name: "Color",
+                table: "ClientTags");
 
             migrationBuilder.DropColumn(
                 name: "UserOrderRank",

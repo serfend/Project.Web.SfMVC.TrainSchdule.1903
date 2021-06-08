@@ -10,7 +10,7 @@ namespace DAL.Entities.ZZXT
 {
     public class UserPartyInfo:BaseEntityGuid
     {
-        [ForeignKey("userName")]
+        [ForeignKey("UserName")]
         public virtual UserInfo.User User { get; set; }
         public string UserName { get; set; }
         /// <summary>

@@ -15,11 +15,9 @@ namespace BLL.Extensions.Party
             return new PartyGroupDto()
             {
                    Alias=model.Alias,
-                   Chairman=model.ChairmanId,
                    Company= model.CompanyCode,
                    Create=model.Create,
                    GroupType=model.GroupType,
-                   ViceChairman=model.ViceChairmanId
             };
         }
     }

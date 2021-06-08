@@ -836,6 +836,12 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AppName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Create")
                         .HasColumnType("datetime2");
 
@@ -3751,6 +3757,9 @@ namespace DAL.Migrations
                     b.Property<DateTime>("Create")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CreateByCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -3766,9 +3775,38 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreateByCode");
+
                     b.ToTable("PartyBaseConference");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PartyBaseConference");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ZZXT.Conference.PartyConferWithTag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClientTagsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ConferId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IsRemovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientTagsId");
+
+                    b.HasIndex("ConferId");
+
+                    b.ToTable("PartyConferWithTags");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZZXT.PartyDuty", b =>
@@ -3807,9 +3845,6 @@ namespace DAL.Migrations
                     b.Property<string>("Alias")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ChairmanId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("CompanyCode")
                         .HasColumnType("nvarchar(450)");
 
@@ -3825,16 +3860,9 @@ namespace DAL.Migrations
                     b.Property<DateTime>("IsRemovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ViceChairmanId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ChairmanId");
-
                     b.HasIndex("CompanyCode");
-
-                    b.HasIndex("ViceChairmanId");
 
                     b.ToTable("PartyGroups");
                 });
@@ -3900,9 +3928,6 @@ namespace DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("userName")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -3913,7 +3938,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("PartyGroupId");
 
-                    b.HasIndex("userName");
+                    b.HasIndex("UserName");
 
                     b.ToTable("UserPartyInfos");
                 });
@@ -4853,25 +4878,41 @@ namespace DAL.Migrations
                         .HasForeignKey("GradePhySubjectId");
                 });
 
+            modelBuilder.Entity("DAL.Entities.ZZXT.Conference.PartyBaseConference", b =>
+                {
+                    b.HasOne("DAL.Entities.Company", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("CreateByCode");
+
+                    b.Navigation("CreateBy");
+                });
+
+            modelBuilder.Entity("DAL.Entities.ZZXT.Conference.PartyConferWithTag", b =>
+                {
+                    b.HasOne("DAL.Entities.ClientDevice.ClientTags", "ClientTags")
+                        .WithMany()
+                        .HasForeignKey("ClientTagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entities.ZZXT.Conference.PartyBaseConference", "Confer")
+                        .WithMany()
+                        .HasForeignKey("ConferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClientTags");
+
+                    b.Navigation("Confer");
+                });
+
             modelBuilder.Entity("DAL.Entities.ZZXT.PartyGroup", b =>
                 {
-                    b.HasOne("DAL.Entities.UserInfo.User", "Chairman")
-                        .WithMany()
-                        .HasForeignKey("ChairmanId");
-
                     b.HasOne("DAL.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyCode");
 
-                    b.HasOne("DAL.Entities.UserInfo.User", "ViceChairman")
-                        .WithMany()
-                        .HasForeignKey("ViceChairmanId");
-
-                    b.Navigation("Chairman");
-
                     b.Navigation("Company");
-
-                    b.Navigation("ViceChairman");
                 });
 
             modelBuilder.Entity("DAL.Entities.ZZXT.PartyUserRecord", b =>
@@ -4911,7 +4952,7 @@ namespace DAL.Migrations
 
                     b.HasOne("DAL.Entities.UserInfo.User", "User")
                         .WithMany()
-                        .HasForeignKey("userName");
+                        .HasForeignKey("UserName");
 
                     b.Navigation("Company");
 
