@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.Common;
+﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Extensions.Party;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -50,27 +51,50 @@ namespace TrainSchdule.Controllers.Party
         /// <param name="code"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult CompanyGroup(string code) {
+        public IActionResult CompanyGroup(string code)
+        {
             var currentUser = currentUserService.CurrentUser;
+            if (code.IsNullOrEmpty()) code = currentUser.CompanyInfo.CompanyCode;
             var group = context.PartyGroups.Where(g => g.CompanyCode == code);
-            return new JsonResult(new EntitiesListViewModel<PartyGroupDto>(group.Select(g=>g.ToDto())));
+            return new JsonResult(new EntitiesListViewModel<PartyGroupDto>(group.Select(g => g.ToDto())));
         }
         /// <summary>
         /// 获取党组织的成员
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="groupid"></param>
+        /// <param name="company"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Members(string id, int pageIndex = 0, int pageSize = 20)
+        public IActionResult Members(string groupid, string company, int pageIndex = 0, int pageSize = 20)
         {
-            Guid.TryParse(id, out var guid);
-            if (guid.Equals(Guid.Empty)) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.IdIsNull);
-            var users = context.UserPartyInfosDb.Where(u => u.PartyGroupId == guid).SplitPage(pageIndex,pageSize);
-            return new JsonResult(new EntitiesListViewModel<UserPartyInfoDto>(users.Item1.Select(i=>i.ToDto()),users.Item2));
-        } 
+            var list = GetMembers(groupid, company);
+            var users = list.SplitPage(pageIndex, pageSize);
+            return new JsonResult(new EntitiesListDataModel<UserPartyInfoDto>(users.Item1.Select(i => i.ToDto()), users.Item2));
+        }
 
-
+        /// <summary>
+        /// 获取党组织成员类别统计
+        /// </summary>
+        /// <param name="groupid"></param>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult MemberStatistics(string groupid, string company) {
+            var list = GetMembers(groupid, company);
+            var result = list
+                .GroupBy(i => i.TypeInParty, (a, b) => new { a, c = b.Count() })
+                .ToDictionary(x => x.a, x => x.c);
+            return new JsonResult(new EntityViewModel<Dictionary<int, int>>(result));
+        }
+        private IQueryable<UserPartyInfo> GetMembers(string groupid,string company)
+        {
+            var list = context.UserPartyInfosDb;
+            Guid.TryParse(groupid, out var groupGuid);
+            if (!groupGuid.Equals(Guid.Empty)) list = list.Where(u => u.PartyGroupId == groupGuid);
+            if (!company.IsNullOrEmpty()) list = list.Where(u => u.CompanyCode == company);
+            return list;
+        }
     }
 }
