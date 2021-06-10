@@ -23,6 +23,11 @@ namespace DAL.Data
                 {
                     Name=partyTypeInParty,
                     Description="政治面貌"
+                },
+                new CommonDataGroup()
+                {
+                    Name=PartyConferRecordType,
+                    Description="会议记录内容的类型"
                 }
             });
         }
@@ -105,6 +110,29 @@ namespace DAL.Data
 
             #endregion actions
         }
+        public const string PartyConferRecordType = "PartyConferRecordType";
+        private void Configuration_PartyConferRecordType(ModelBuilder builder)
+        {
 
+            var data = builder.Entity<CommonDataDictionary>();
+            var index = 0;
+            var actions = new List<CommonDataDictionary>(){
+                new CommonDataDictionary(){Alias="一般发言", Description="发言或讲话", },
+                 new CommonDataDictionary(){Alias="谈话人",},
+                 new CommonDataDictionary(){Alias="被谈话人",},
+                 new CommonDataDictionary(){Alias="推荐人",},
+                 new CommonDataDictionary(){Alias="介绍人",},
+                 new CommonDataDictionary(){Alias="学习笔记",},
+                };
+            foreach (var d in actions)
+            {
+                d.Id = dataId++;
+                d.Value = index++;
+                d.Key = index.ToString();
+                d.Color = "#333333";
+                d.GroupName = PartyConferRecordType;
+            }
+            data.HasData(actions);
+        }
     }
 }

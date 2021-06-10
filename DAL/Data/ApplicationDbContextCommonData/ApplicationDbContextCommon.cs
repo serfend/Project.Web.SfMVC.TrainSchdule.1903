@@ -40,6 +40,7 @@ namespace DAL.Data
 			Configuration_ClientStatus(builder);
 			Configuration_ZX(builder);
 			Configuration_PartyTypeInParty(builder);
+			Configuration_PartyConferRecordType(builder);
 		}
 	}
 }
