@@ -25,7 +25,7 @@ namespace DAL.Entities.ZZXT
         /// <summary>
         /// 政治面貌
         /// </summary>
-        public TypeInParty TypeInParty { get; set; }
+        public int TypeInParty { get; set; }
         /// <summary>
         /// 单位代码 冗余PartyGroup.Company
         /// </summary>
@@ -40,42 +40,5 @@ namespace DAL.Entities.ZZXT
         /// 转入时间
         /// </summary>
         public DateTime Create { get; set; }
-    }
-    public enum TypeInParty
-    {
-        /// <summary>
-        /// 无
-        /// </summary>
-        None=0,
-        /// <summary>
-        /// 群众
-        /// </summary>
-        [Description("群众")]
-        Masses = 1,
-        /// <summary>
-        /// 少先队员
-        /// </summary>
-        [Description("少先队员")]
-        MemberL1 = 2,
-        /// <summary>
-        /// 团员
-        /// </summary>
-        [Description("团员")]
-        MemberL2 = 4,
-        /// <summary>
-        /// 入党积极分子
-        /// </summary>
-        [Description("入党积极分子")]
-        MemberL3V1 = 8,
-        /// <summary>
-        /// 预备党员
-        /// </summary>
-        [Description("预备党员")]
-        MemberL3V2 = 10,
-        /// <summary>
-        /// 党员
-        /// </summary>
-        [Description("党员")]
-        MemberL3V3 = 12
     }
 }

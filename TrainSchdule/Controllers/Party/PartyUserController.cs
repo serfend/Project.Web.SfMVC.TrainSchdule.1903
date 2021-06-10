@@ -3,10 +3,13 @@ using BLL.Extensions.Common;
 using BLL.Extensions.Party;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.DTO.ZZXT;
+using DAL.Entities.Common.DataDictionary;
 using DAL.Entities.Permisstions;
 using DAL.Entities.ZZXT;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,6 +25,7 @@ namespace TrainSchdule.Controllers.Party
     /// 党团用户信息
     /// </summary>
     [Route("[controller]")]
+    [Authorize]
     public partial class PartyUserController : Controller
     {
         /// <summary>
@@ -44,7 +48,7 @@ namespace TrainSchdule.Controllers.Party
             var labor = model.Labor?.Start;
             if (labor != null) list = list.Where(u => u.DutyId == labor);
             var type = model.TypeInParty?.Start;
-            if (type != null) list = list.Where(u => u.TypeInParty == (TypeInParty)type);
+            if (type != null) list = list.Where(u => u.TypeInParty == type);
             var result = list.OrderByDescending(u => u.User.UserOrderRank).SplitPage(model.Page);
             return new JsonResult(new EntitiesListViewModel<UserPartyInfoDto>(result.Item1.Select(i => i.ToDto()), result.Item2));
         }
@@ -117,11 +121,26 @@ namespace TrainSchdule.Controllers.Party
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
+        [Route("PartyDuties")]
         [HttpGet]
         public IActionResult PartyDuties(string name, int pageIndex = 0, int pageSize = 20)
         {
-            var duties = context.PartyDutiesDb.Where(d => d.Name.Contains(name)).SplitPage(pageIndex, pageSize);
+            var list = context.PartyDutiesDb;
+            if (!name.IsNullOrEmpty()) list = list.Where(d => d.Name.Contains(name));
+            var duties = list.SplitPage(pageIndex, pageSize);
             return new JsonResult(new EntitiesListViewModel<PartyDuty>(duties.Item1, duties.Item2));
+        }
+        /// <summary>
+        /// 获取政治面貌枚举
+        /// </summary>
+        /// <returns></returns>
+        [Route("TypesInParty")]
+        [HttpGet]
+        public IActionResult TypesInParty() {
+            var list = dataDictionariesServices.GetByGroupName(ApplicationDbContext.partyTypeInParty)
+                .ToList();
+            return new JsonResult(new EntitiesListViewModel<CommonDataDictionary>(list));
+
         }
     }
     public partial class PartyUserController
@@ -130,17 +149,19 @@ namespace TrainSchdule.Controllers.Party
         private readonly IUserActionServices userActionServices;
         private readonly IUsersService usersService;
         private readonly IGoogleAuthService googleAuthService;
+        private readonly IDataDictionariesServices dataDictionariesServices;
         private readonly ApplicationDbContext context;
 
         /// <summary>
         /// 
         /// </summary>
-        public PartyUserController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, ApplicationDbContext context)
+        public PartyUserController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, IDataDictionariesServices dataDictionariesServices, ApplicationDbContext context)
         {
             this.currentUserService = currentUserService;
             this.userActionServices = userActionServices;
             this.usersService = usersService;
             this.googleAuthService = googleAuthService;
+            this.dataDictionariesServices = dataDictionariesServices;
             this.context = context;
         }
     }

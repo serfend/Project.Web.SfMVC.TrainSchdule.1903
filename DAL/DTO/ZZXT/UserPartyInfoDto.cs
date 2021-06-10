@@ -36,7 +36,7 @@ namespace DAL.DTO.ZZXT
         /// <summary>
         /// 政治面貌
         /// </summary>
-        public TypeInParty Zzmm { get; set; }
+        public int Zzmm { get; set; }
         /// <summary>
         /// 党小组号
         /// </summary>
