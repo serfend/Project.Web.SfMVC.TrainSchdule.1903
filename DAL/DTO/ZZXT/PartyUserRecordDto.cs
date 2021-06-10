@@ -14,5 +14,6 @@ namespace DAL.DTO.ZZXT
         public PartyUserRecordType Type { get; set; }
         public string UserId { get; set; }
         public Guid ConferenceId { get; set; }
+        public DateTime Create { get; set; }
     }
 }

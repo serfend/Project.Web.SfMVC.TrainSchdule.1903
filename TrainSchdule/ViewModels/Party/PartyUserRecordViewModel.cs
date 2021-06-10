@@ -1,4 +1,5 @@
-﻿using DAL.Entities.ZZXT;
+﻿using DAL.DTO.ZZXT;
+using DAL.Entities.ZZXT;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,13 +13,28 @@ namespace TrainSchdule.ViewModels.Party
     /// <summary>
     /// 
     /// </summary>
+    public class PartyConferRecordContentViewModel : GoogleAuthViewModel, ICommonDataUpdate
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required(ErrorMessage = "记录内容未填写")]
+        public PartyConferRecordContentDto Data { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool AllowOverwrite { get; set; }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     public class PartyUserRecordViewModel : GoogleAuthViewModel, ICommonDataUpdate
     {
         /// <summary>
         /// 
         /// </summary>
         [Required(ErrorMessage = "用户记录未填写")]
-        public PartyUserRecord Data { get; set; }
+        public PartyUserRecordDto Data { get; set; }
         /// <summary>
         /// 
         /// </summary>

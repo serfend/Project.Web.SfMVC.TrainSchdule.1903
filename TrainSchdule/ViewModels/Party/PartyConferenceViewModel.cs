@@ -18,7 +18,7 @@ namespace TrainSchdule.ViewModels.Party
         /// 
         /// </summary>
         [Required(ErrorMessage = "会议信息未填写")]
-        public PartyConference Data { get; set; }
+        public PartyBaseConference Data { get; set; }
         /// <summary>
         /// 
         /// </summary>
