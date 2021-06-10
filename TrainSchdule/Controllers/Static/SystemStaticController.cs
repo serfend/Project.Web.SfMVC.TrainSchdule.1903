@@ -21,6 +21,7 @@ namespace TrainSchdule.Controllers
 	/// <summary>
 	/// 系统内部的静态
 	/// </summary>
+	[Route("[controller]/[action]")]
 	public class SystemStaticController : Controller
 	{
 		private readonly IConfiguration configuration;
