@@ -10,8 +10,6 @@ namespace DAL.Data
 {
 	public partial class ApplicationDbContext
 	{
-		public DbSet<CommonDataGroup> CommonDataGroups { get; set; }
-		public DbSet<CommonDataDictionary> CommonDataDictionaries { get; set; }
 
 		private const string applyStatus = "ApplyStatus";
 		private const string applyAuditStatus = "ApplyAuditStatus";
@@ -27,12 +25,12 @@ namespace DAL.Data
 		private static string ToHtml(Color c) => string.Format("#{0:x2}{1:x2}{2:x2}{3:x2}", c.R, c.G, c.B, c.A);
 
 		/// <summary>
-		/// 数据字典 分组数据
+		/// 休假
 		/// </summary>
 		/// <param name="builder"></param>
-		private void Configuration_Common_Group(ModelBuilder builder)
-		{
-			Configuration_Common_Group_Client(builder);
+		private void Configuration_Common_Applies(ModelBuilder builder)
+        {
+
 			var group = builder.Entity<CommonDataGroup>();
 			group.HasData(new List<CommonDataGroup>() {
 				new CommonDataGroup()
@@ -60,7 +58,6 @@ namespace DAL.Data
 				}
 			});
 		}
-
 		/// <summary>
 		/// 数据字典 申请的操作数据
 		/// </summary>
@@ -255,16 +252,5 @@ namespace DAL.Data
 			data.HasData(status);
 		}
 
-		private void Configuration_Common(ModelBuilder builder)
-		{
-			var data = builder.Entity<CommonDataDictionary>();
-			data.HasIndex(d => d.Key);
-
-			Configuration_Common_Group(builder);
-			Configuration_Actions(builder);
-			Configuration_Status(builder);
-			Configuration_ExecuteStatus(builder);
-			Configuration_ClientStatus(builder);
-		}
 	}
 }

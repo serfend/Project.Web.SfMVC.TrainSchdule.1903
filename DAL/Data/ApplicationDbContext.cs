@@ -75,10 +75,7 @@ namespace DAL.Data
 			builder.Entity<UserAction>().HasIndex(s => s.Date);
 			builder.Entity<ApplicationUpdateRecord>().HasIndex(s => s.Create);
 
-			Configuration_Statistics(builder);
-			Configuration_Applies(builder);
 			Configuration_Common(builder);
-			Configuration_ZX(builder);
 		}
 
 		#endregion Logic
