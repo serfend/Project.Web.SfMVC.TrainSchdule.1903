@@ -21,6 +21,7 @@ namespace DAL.Data
         /// </summary>
         public DbSet<PartyGroup> PartyGroups { get; set; }
         public DbSet<PartyBaseConference> PartyConferences { get; set; }
+        public IQueryable<PartyBaseConference> PartyConferencesDb => PartyConferences.ToExistDbSet();
         public DbSet<PartyConferWithTag> PartyConferWithTags { get; set; }
         /// <summary>
         /// 用户参会记录

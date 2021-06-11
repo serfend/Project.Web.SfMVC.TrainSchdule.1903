@@ -41,6 +41,7 @@ namespace DAL.Data
 			Configuration_ZX(builder);
 			Configuration_PartyTypeInParty(builder);
 			Configuration_PartyConferRecordType(builder);
+			Configuration_PartyConferType(builder);
 		}
 	}
 }

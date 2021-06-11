@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.Common;
+﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Extensions.Party;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -23,7 +24,7 @@ namespace TrainSchdule.Controllers.Party
     /// <summary>
     /// 会议管理
     /// </summary>
-    public partial class PartyConferenceController:Controller
+    public partial class PartyConferenceController : Controller
     {
 
         /// <summary>
@@ -71,17 +72,34 @@ namespace TrainSchdule.Controllers.Party
         /// <summary>
         /// 获取单位所办会议列表
         /// </summary>
-        /// <param name="companyCode"></param>
+        /// <param name="company">所属单位代码</param>
+        /// <param name="partyGroup">所属党组织 填写时覆盖<paramref name="company"/>字段
+        /// <param name="conferType">会议类型值</param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult CompanyConferList(string companyCode,int pageIndex=0,int pageSize=10) {
-            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, companyCode, "会议列表");
-            if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{companyCode}", true));
-            var conferences = context.PartyConferences.Where(i => i.CreateByCode == companyCode);
-            var result = conferences.SplitPage(pageIndex, pageSize);
-            return new JsonResult(new EntitiesListViewModel<PartyBaseConference>(result.Item1,result.Item2));
+        public IActionResult CompanyConferList(string company,string partyGroup, int conferType, int pageIndex = 0, int pageSize = 10)
+        {
+            var list = context.PartyConferencesDb;
+            var useCompany = partyGroup.IsNullOrEmpty();
+            string toAuthCompany;
+            if (!useCompany)
+            {
+                Guid.TryParse(partyGroup, out var groupGuid);
+                var group = context.PartyGroups.FirstOrDefault(g => g.Id == groupGuid);
+                if (group == null) throw new ActionStatusMessageException(group.NotExist());
+                toAuthCompany = group.CompanyCode;
+            }
+            else
+                toAuthCompany = company;
+            list = list.Where(u => u.CreateByCode == toAuthCompany);
+            list = list.Where(u => u.Type == conferType);
+            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, company, "会议列表");
+            if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{company}", true));
+
+            var result = list.SplitPage(pageIndex, pageSize);
+            return new JsonResult(new EntitiesListViewModel<PartyBaseConference>(result.Item1, result.Item2));
         }
         /// <summary>
         /// 更新会议
@@ -89,10 +107,10 @@ namespace TrainSchdule.Controllers.Party
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Confer([FromBody]PartyConferenceViewModel model)
+        public IActionResult Confer([FromBody] PartyConferenceViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.UpdateGuidEntity(context.PartyConferences, c => c.Id == model.Data.Id, c => c.CreateByCode, model.Auth, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Write, "常规会议", googleAuthService, usersService, currentUserService, userActionServices);
+            var action = model.Data.UpdateGuidEntity(context.PartyConferences, c => c.Id == model.Data.Id, c => c.CreateByCode, model.Auth, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Write, "会议", googleAuthService, usersService, currentUserService, userActionServices);
             if (action == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
