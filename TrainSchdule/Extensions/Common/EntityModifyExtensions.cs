@@ -22,7 +22,6 @@ namespace TrainSchdule.Extensions.Common
         /// 编辑实体
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="KeyType"></typeparam>
         /// <param name="item"></param>
         /// <param name="db"></param>
         /// <param name="queryItemGetter"></param>

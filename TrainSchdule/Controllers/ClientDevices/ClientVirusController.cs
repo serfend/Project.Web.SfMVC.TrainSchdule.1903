@@ -36,7 +36,6 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly IDataDictionariesServices dataDictionariesServices;
         private readonly IClientVirusServices clientVirusServices;
         private readonly IUserActionServices userActionServices;
-        private readonly IPermissionServices permissionServices;
         private readonly ICurrentUserService currentUserService;
 
         /// <summary>
