@@ -27,7 +27,8 @@ namespace DAL.Data
 			var connectionString = Configuration.GetConnectionString("DefaultConnection");
 			var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			optionsBuilder.UseLazyLoadingProxies()
-				   .UseSqlServer(connectionString);
+				   .UseSqlServer(connectionString)
+				   .EnableSensitiveDataLogging();
 			return new ApplicationDbContext(optionsBuilder.Options);
 		}
 	}
