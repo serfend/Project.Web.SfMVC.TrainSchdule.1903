@@ -163,7 +163,11 @@ namespace BLL.Services.ApplyServices.DailyApply
             {
                 var time = appSetting.LastSubmitApplyTime ?? DateTime.MinValue;
                 // 若1分钟内连续提交两次，则下次提交限定到10分钟后
-                if (time > DateTime.Now.AddMinutes(10)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{time.Subtract(DateTime.Now.AddMinutes(10)).Seconds}秒后再发布", true));
+                if (time > DateTime.Now.AddMinutes(10))
+                {
+                    int time_left = (int)time.Subtract(DateTime.Now.AddMinutes(10)).TotalSeconds;
+                    throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{time_left}秒后再发布", true));
+                }
                 else if (time.AddMinutes(1) > DateTime.Now)
                     appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
                 else
