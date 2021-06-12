@@ -122,10 +122,10 @@ namespace BLL.Extensions.ApplyExtensions
 		/// <returns></returns>
 		public static IQueryable<T> CheckDb<T>(this IQueryable<T> db, string companyCode, DateTime vStart, DateTime vEnd) where T : IStatisticsBase
 		{
-			if (companyCode == null) return db.Where(a => false);
-			return db.Where(s => s.Target >= vStart)
+			var list = companyCode == null ? db.Where(a => false):db.Where(s => s.Target >= vStart)
 				.Where(s => s.Target <= vEnd)
 				.Where(s => s.CompanyCode == companyCode);
+			return list.OrderByDescending(v => v.Target);
 		}
 
 		/// <summary>
