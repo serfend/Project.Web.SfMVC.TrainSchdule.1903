@@ -1,4 +1,5 @@
-﻿using BLL.Extensions;
+﻿using Abp.Extensions;
+using BLL.Extensions;
 using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.DTO.User;
@@ -41,15 +42,14 @@ namespace BLL.Services
 			 {
 				 int totalCount = 0;
 				 var list = new List<Company>();
-				 if (user?.CompanyInfo?.Company != null)
+				 var companyCode = user.CompanyInfo.CompanyCode;
+				 if (!companyCode.IsNullOrEmpty())
 				 {
 					 list = _context.CompanyManagers.Where(m => m.UserId == user.Id).Select(m => m.Company).ToList();
 					 // 所在单位的主管拥有此单位的管理权
-					 var companyCode = user.CompanyInfo.CompanyCode;
-					 if (user.CompanyInfo.Duties.IsMajorManager && list.All(c => c.Code != companyCode))
-					 {
+					 var isManager = user.CompanyInfo.Duties.IsMajorManager;
+					 if (isManager && list.All(c => c.Code != companyCode))
 						 list.Add(user.CompanyInfo.Company);
-					 }
 					 totalCount = list.Count;
 				 }
 				 return new Tuple<IEnumerable<Company>, int>(list, totalCount);
