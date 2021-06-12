@@ -61,24 +61,5 @@ namespace BLL.Services.ClientDevice
             client.TraceAlias = trace.Alias;
             context.Viruses.Update(client);
         }
-        public Virus Edit(VirusDto model)
-        {
-            if (model.Key.IsNullOrEmpty()) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.IdIsNull);
-            var r = context.VirusesDb.FirstOrDefault(i => i.Key == model.Key);
-            var client = r ?? new Virus() { Status = VirusStatus.Unhandle };
-            model.ToModel(context.Clients, client);
-            if (client.IsRemoved && r != null)
-            {
-                context.Viruses.Update(r);
-                r.Remove();
-            }
-            if (r == null)
-            {
-                RelateVirusTrace(client);
-                context.Viruses.Add(client);
-            }
-            else context.Viruses.Update(client);
-            return r;
-        }
     }
 }

@@ -149,6 +149,7 @@ namespace TrainSchdule.System
 		private static void RegisterServices_Client(this IServiceCollection services)
         {
 			services.AddScoped<IClientVirusServices, ClientVirusServices>();
-        }
+			services.AddScoped<IClientDeviceService, ClientDeviceService>();
+		}
 	}
 }

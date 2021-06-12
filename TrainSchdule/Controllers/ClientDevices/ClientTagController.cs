@@ -120,8 +120,19 @@ namespace TrainSchdule.Controllers.ClientDevices
             var item = model.Data.ToModel();
             if (item.CreateCompany == null)
                 item.CreateCompany = currentUserService.CurrentUser.CompanyInfo?.CompanyCode;
-            var action = item.UpdateGuidEntity(context.ClientTags, c => c.Id == model.Data.Id, c => c.CreateCompany, model.Auth, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, "标签内容", googleAuthService, usersService, currentUserService, userActionServices);
-            if (action == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
+            var action = item.UpdateGuidEntity(context.ClientTags, c => c.Id == model.Data.Id, c => c.CreateCompany, model.Auth, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, "标签内容", (cur, prev) =>
+            {
+                prev.AppName = cur.AppName;
+                prev.Color = cur.Color;
+                prev.CreateCompany = cur.CreateCompany;
+                prev.Description = cur.Description;
+                prev.Name = cur.Name;
+                prev.ParentId = cur.ParentId;
+            }, newItem =>
+            {
+                newItem.Create = DateTime.Now;
+            }, googleAuthService, usersService, currentUserService, userActionServices);
+            if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }

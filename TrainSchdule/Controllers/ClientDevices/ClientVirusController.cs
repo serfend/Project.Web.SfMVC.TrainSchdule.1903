@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.System;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
@@ -34,6 +35,8 @@ namespace TrainSchdule.Controllers.ClientDevices
     {
         private readonly ApplicationDbContext context;
         private readonly IDataDictionariesServices dataDictionariesServices;
+        private readonly IUsersService usersService;
+        private readonly IGoogleAuthService googleAuthService;
         private readonly IClientVirusServices clientVirusServices;
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
@@ -41,15 +44,12 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="dataDictionariesServices"></param>
-        /// <param name="clientVirusServices"></param>
-        /// <param name="userActionServices"></param>
-        /// <param name="currentUserService"></param>
-        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IClientVirusServices clientVirusServices, IUserActionServices userActionServices, ICurrentUserService currentUserService)
+        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices,IUsersService usersService,IGoogleAuthService googleAuthService, IClientVirusServices clientVirusServices, IUserActionServices userActionServices, ICurrentUserService currentUserService)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
+            this.usersService = usersService;
+            this.googleAuthService = googleAuthService;
             this.clientVirusServices = clientVirusServices;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
@@ -65,10 +65,21 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusDto model)
         {
-            var r = clientVirusServices.Edit(model);
-            if (!r.Company.IsNullOrEmpty())
-                if(!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, r.Company, "信息"))
-                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{r.Company}", true));
+            var r = model.ToModel(context.ClientsDb).UpdateGuidEntity(context.Viruses, v => v.Key == model.Key, v => v.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒",(cur,prev)=> {
+                prev.ClientMachineId = cur.ClientMachineId;
+                prev.Key = cur.Key;
+                prev.Sha1 = cur.Sha1;
+                prev.ClientIp = cur.ClientIp;
+                prev.Create = cur.Create;
+                prev.FileName = cur.FileName;
+                prev.Type = cur.Type;
+            },newItem=> {
+                newItem.Create = DateTime.Now;
+            }, googleAuthService, usersService, currentUserService, userActionServices);
+            if(r.Item1 == EntityModifyExtensions.ActionType.Add)
+            {
+                r.Item2.Status = VirusStatus.Unhandle;
+            }
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }

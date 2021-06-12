@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
@@ -25,26 +26,30 @@ namespace TrainSchdule.Controllers.ClientDevices
     /// </summary>
     [Route("[controller]/[action]")]
     [ApiController]
-    public partial class ClientRecordsController:Controller
+    public partial class ClientRecordsController : Controller
     {
         private readonly ApplicationDbContext context;
         private readonly IDataDictionariesServices dataDictionariesServices;
+        private readonly IUsersService usersService;
+        private readonly IGoogleAuthService googleAuthService;
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices,IUserActionServices userActionServices,ICurrentUserService currentUserService)
+        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices, ICurrentUserService currentUserService)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
+            this.usersService = usersService;
+            this.googleAuthService = googleAuthService;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
         }
     }
 
-    public partial class ClientRecordsController 
+    public partial class ClientRecordsController
     {
         /// <summary>
         /// 处置记录编辑
@@ -54,58 +59,52 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusHandleRecordDataModel model)
         {
-            var r = context.VirusHandleRecords.FirstOrDefault(i => i.Id == model.Id);
-            var client = r ?? new VirusHandleRecord();
+            var client = model.ToModel(context.Viruses);
             var prev_status = client.HandleStatus;
-            model.ToModel(context.Viruses, client);
+            var update = client.UpdateGuidEntity(context.VirusHandleRecords, v => v.Id == model.Id, v => v.Virus.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒记录", (cur, prev) =>
+            {
+                prev.HandleStatus = cur.HandleStatus;
+                prev.Create = cur.Create;
+                prev.VirusKey = cur.VirusKey;
+                //prev.Remark = cur.Remark;
+            }, newItem => { }, googleAuthService, usersService, currentUserService, userActionServices);
             if (client.Virus == null) return new JsonResult(client.Virus.NotExist());
-            if (!client.Virus.Company.IsNullOrEmpty())
-                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, client.Virus.Company, "处置记录"))
-                    throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{client.Virus.Company}", true));
-            if (client.IsRemoved && r != null)
+            while (update.Item1 != EntityModifyExtensions.ActionType.Remove)
             {
-                r.Remove();
-                context.VirusHandleRecords.Update(r);
-            }
-            else
-            {
-                if(prev_status==client.HandleStatus) return new JsonResult(ActionStatusMessage.Success);
+                if (prev_status == client.HandleStatus) break;
                 var lastest = context.VirusHandleRecordsDb.Where(i => i.VirusKey == client.VirusKey).OrderByDescending(i => i.Create).FirstOrDefault();
-                if (lastest==null||lastest.Create <= client.Create)
+                if (lastest != null && lastest.Create > client.Create) break;
+                if (client.HandleStatus.IsSuccess())
                 {
-                    if (client.HandleStatus.IsSuccess())
+                    client.Virus.HandleDate = client.Create;
+                    if (client.Virus.Status.HasFlag(VirusStatus.Unhandle)) client.Virus.Status -= VirusStatus.Unhandle;
+                    client.Virus.Status |= VirusStatus.Success;
+                }
+                else
+                {
+                    switch (client.HandleStatus)
                     {
-                        client.Virus.HandleDate = DateTime.Now;
-                        if (client.Virus.Status.HasFlag(VirusStatus.Unhandle)) client.Virus.Status -= VirusStatus.Unhandle;
-                        client.Virus.Status |= VirusStatus.Success;
-                    }
-                    else
-                    {
-                        switch (client.HandleStatus)
-                        {
-                            case VirusHandleStatus.ClientDeviceVirusMessage:
-                                {
-                                    client.Virus.Status |= VirusStatus.MessageSend;
-                                    break;
-                                }
-                            case VirusHandleStatus.ClientDeviceVirusNotify:
-                                {
-                                    client.Virus.Status |= VirusStatus.ClientNotify;
-                                    break;
-                                }
-                            case VirusHandleStatus.ClientDeviceVirusNewFail:
-                            case VirusHandleStatus.ClientDeviceVirusNewUnhandle:
-                                {
-                                    if (client.Virus.Status.HasFlag(VirusStatus.Success)) client.Virus.Status -= VirusStatus.Success;
-                                    client.Virus.Status |= VirusStatus.Unhandle;
-                                    break;
-                                }
-                        }
+                        case VirusHandleStatus.ClientDeviceVirusMessage:
+                            {
+                                client.Virus.Status |= VirusStatus.MessageSend;
+                                break;
+                            }
+                        case VirusHandleStatus.ClientDeviceVirusNotify:
+                            {
+                                client.Virus.Status |= VirusStatus.ClientNotify;
+                                break;
+                            }
+                        case VirusHandleStatus.ClientDeviceVirusNewFail:
+                        case VirusHandleStatus.ClientDeviceVirusNewUnhandle:
+                            {
+                                if (client.Virus.Status.HasFlag(VirusStatus.Success)) client.Virus.Status -= VirusStatus.Success;
+                                client.Virus.Status |= VirusStatus.Unhandle;
+                                break;
+                            }
                     }
                 }
-                if (r == null) context.VirusHandleRecords.Add(client);
-                else context.VirusHandleRecords.Update(client);
                 context.Viruses.Update(client.Virus);
+                break;
             }
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
@@ -140,7 +139,8 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <param name="model">id,remark</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Remark([FromBody] VirusHandleRecordDataModel model) {
+        public IActionResult Remark([FromBody] VirusHandleRecordDataModel model)
+        {
             var record = context.VirusHandleRecordsDb.FirstOrDefault(i => i.Id == model.Id);
             if (record == null) return new JsonResult(record.NotExist());
             if (!record.Virus.Company.IsNullOrEmpty())
@@ -153,14 +153,15 @@ namespace TrainSchdule.Controllers.ClientDevices
         }
     }
 
-   public partial class ClientRecordsController
+    public partial class ClientRecordsController
     {
         /// <summary>
         /// 获取状态列表
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult RecordStatusDict() {
+        public IActionResult RecordStatusDict()
+        {
             var dict = dataDictionariesServices.GetByGroupName(ApplicationDbContext.clientVirusHandleStatus);
             return new JsonResult(new EntityViewModel<Dictionary<string, CommonDataDictionary>>(new Dictionary<string, CommonDataDictionary>(dict.Select(s => new KeyValuePair<string, CommonDataDictionary>(s.Value.ToString(), s)))));
         }

@@ -2,16 +2,19 @@
 using Abp.Linq.Expressions;
 using BLL.Extensions.Common;
 using BLL.Helpers;
+using BLL.Interfaces;
 using BLL.Interfaces.ClientDevice;
 using DAL.Data;
 using DAL.DTO.ClientDevice;
 using DAL.Entities.ClientDevice;
+using DAL.Entities.Permisstions;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels.ClientDevice;
 using TrainSchdule.ViewModels.System;
 
@@ -26,16 +29,22 @@ namespace TrainSchdule.Controllers.ClientDevices
     {
         private readonly ApplicationDbContext context;
         private readonly IClientVirusServices clientVirusServices;
+        private readonly IUsersService usersService;
+        private readonly ICurrentUserService currentUserService;
+        private readonly IGoogleAuthService googleAuthService;
+        private readonly IUserActionServices userActionServices;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="clientVirusServices"></param>
-        public ClientVirusTypeController(ApplicationDbContext context, IClientVirusServices clientVirusServices)
+        public ClientVirusTypeController(ApplicationDbContext context, IClientVirusServices clientVirusServices,IUsersService usersService,ICurrentUserService currentUserService,IGoogleAuthService googleAuthService,IUserActionServices userActionServices)
         {
             this.context = context;
             this.clientVirusServices = clientVirusServices;
+            this.usersService = usersService;
+            this.currentUserService = currentUserService;
+            this.googleAuthService = googleAuthService;
+            this.userActionServices = userActionServices;
         }
     }
 
@@ -48,16 +57,15 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusTypeDataModel model)
         { 
-            var r = context.VirusTracesDb.FirstOrDefault(i => i.Id == model.Id);
-            var client = r ?? new VirusTrace();
-            model.ToModel(client);
-            if (client.IsRemoved && r != null)
-            {
-                r.Remove();
-                context.VirusTraces.Update(r);
-            }
-            else if (r == null) context.VirusTraces.Add(client);
-            else context.VirusTraces.Update(client);
+            var r = model.ToModel().UpdateGuidEntity(context.VirusTraces, v => v.Id == model.Id, null, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒类型", (cur, prev) => {
+                prev.Alias = cur.Alias;
+                prev.Description = cur.Description;
+                prev.Sha1 = cur.Sha1;
+                prev.WarningLevel = cur.WarningLevel;
+                prev.Type = cur.Type;
+            },(newItem)=> {
+                newItem.Create = DateTime.Now;
+            }, googleAuthService, usersService, currentUserService, userActionServices);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }
