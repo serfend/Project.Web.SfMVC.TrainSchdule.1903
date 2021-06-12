@@ -121,7 +121,7 @@ namespace TrainSchdule.Controllers.Zx
                 return new JsonResult(new EntitiesListViewModel<string>(notExistUser));
 
             // check if exist
-            var currentListRaw = context.NormalRates.ToExistDbSet()
+            var currentListRaw = context.NormalRates.ToExistQueryable()
                   .Where(i => i.RatingType == model.RatingType)
                   .Where(i => i.RatingCycleCount == model.RatingCycleCount)
                   .ToList();
@@ -200,7 +200,7 @@ namespace TrainSchdule.Controllers.Zx
         [HttpPost]
         public IActionResult Info([FromBody] MemberRateQueryModel model)
         {
-            var list = context.NormalRates.ToExistDbSet();
+            var list = context.NormalRates.ToExistQueryable();
             var currentUser = currentUserService.CurrentUser;
             
             var ratingCycleCount = model.RatingCycleCount?.Start;

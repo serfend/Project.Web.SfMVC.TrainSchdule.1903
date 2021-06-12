@@ -24,7 +24,7 @@ namespace BLL.Services.Common
         }
         public AppUserRelate Action(string from,string target, Relation relation, bool isAppend)
         {
-            var item = context.AppUserRelates.ToExistDbSet().Where(r => r.FromId == from).Where(r => r.ToId == target).FirstOrDefault();
+            var item = context.AppUserRelates.ToExistQueryable().Where(r => r.FromId == from).Where(r => r.ToId == target).FirstOrDefault();
             if (item == null)
             {
                 item = new AppUserRelate() {Create=DateTime.Now,FromId=from,ToId=target };

@@ -11,17 +11,17 @@ namespace DAL.Data
     partial class ApplicationDbContext
     {
         public DbSet<Client> Clients { get; set; }
-        public IQueryable<Client> ClientsDb => Clients.ToExistDbSet();
+        public IQueryable<Client> ClientsDb => Clients.ToExistQueryable();
         public DbSet<ClientTags> ClientTags { get; set; }
-        public IQueryable<ClientTags> ClientTagsDb => ClientTags.ToExistDbSet();
+        public IQueryable<ClientTags> ClientTagsDb => ClientTags.ToExistQueryable();
         public DbSet<ClientWithTags> ClientWithTags { get; set; }
         public DbSet<Virus> Viruses { get; set; }
-        public IQueryable<Virus> VirusesDb => Viruses.ToExistDbSet();
+        public IQueryable<Virus> VirusesDb => Viruses.ToExistQueryable();
         public DbSet<VirusHandleRecord> VirusHandleRecords { get; set; }
-        public IQueryable<VirusHandleRecord> VirusHandleRecordsDb => VirusHandleRecords.ToExistDbSet();
+        public IQueryable<VirusHandleRecord> VirusHandleRecordsDb => VirusHandleRecords.ToExistQueryable();
         public DbSet<VirusTrace> VirusTraces { get; set; }
-        public IQueryable<VirusTrace> VirusTracesDb => VirusTraces.ToExistDbSet();
+        public IQueryable<VirusTrace> VirusTracesDb => VirusTraces.ToExistQueryable();
         public DbSet<VirusTypeDispatch> VirusTypeDispatches { get; set; }
-        public IQueryable<VirusTypeDispatch> VirusTypeDispatchesDb => VirusTypeDispatches.ToExistDbSet();
+        public IQueryable<VirusTypeDispatch> VirusTypeDispatchesDb => VirusTypeDispatches.ToExistQueryable();
     }
 }

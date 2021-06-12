@@ -88,7 +88,7 @@ namespace BLL.Services.Common
         }
         public Tuple<IQueryable<AppMessage>, int> Query(MessageQueryItem item)
         {
-            var list = context.BBSMessages.ToExistDbSet();
+            var list = context.BBSMessages.ToExistQueryable();
             var create = item.Create;
             if(create.Start!=DateTime.MinValue && create.End != DateTime.MinValue)
                 list = list.Where(i => i.Create >= create.Start).Where(i => i.Create <= create.End);

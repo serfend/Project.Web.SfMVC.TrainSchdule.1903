@@ -31,7 +31,7 @@ namespace DAL.Data
 		public DbSet<Settle> AppUserSocialInfoSettles { get; set; }
 		public DbSet<Moment> AppUserSocialInfoSettleMoments { get; set; }
 		public DbSet<AppUsersSettleModifyRecord> AppUsersSettleModifyRecord { get; set; }
-		public IQueryable<AppUsersSettleModifyRecord> AppUsersSettleModifyRecordDb => AppUsersSettleModifyRecord.ToExistDbSet();
+		public IQueryable<AppUsersSettleModifyRecord> AppUsersSettleModifyRecordDb => AppUsersSettleModifyRecord.ToExistQueryable();
 
 		public DbSet<UserDiyInfo> AppUserDiyInfos { get; set; }
 		public DbSet<Avatar> AppUserDiyAvatars { get; set; }
