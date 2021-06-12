@@ -49,12 +49,14 @@ namespace DAL.Entities.ApplyInfo
 
 	public enum Transportation
 	{
-		其他 = -1,
+		未知 = -1,
 		火车 = 0,
 		飞机 = 1,
 		汽车 = 2,
 		出租车 = 3,
 		私家车 = 6,
-		地铁=8
+		地铁=8,
+		步行=12,
+		其他=15
 	}
 }
