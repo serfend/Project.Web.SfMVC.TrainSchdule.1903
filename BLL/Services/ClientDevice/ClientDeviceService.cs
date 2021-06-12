@@ -13,22 +13,20 @@ namespace BLL.Services.ClientDevice
     public class ClientDeviceService : IClientDeviceService
     {
         private readonly ApplicationDbContext context;
+        private readonly IMemoryCache memoryCache;
 
-        public ClientDeviceService(ApplicationDbContext context)
+        public ClientDeviceService(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             this.context = context;
+            this.memoryCache = memoryCache;
         }
         public void UpdateClientRelate(Guid client)
         {
             // -------------------TODO 实现缓存和限流 本方法 -------------------
             const string UpdateClientRelateKey = "UpdateClientRelate";
-            var _cache = new MemoryCache(new MemoryCacheOptions()
-            {
-                ExpirationScanFrequency = TimeSpan.FromMinutes(30)
-            });
-            var cache = _cache.Get<DateTime?>(UpdateClientRelateKey);
-            if (cache == null || cache > DateTime.Now) return;
-            _cache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
+            var cache = memoryCache.Get<DateTime?>(UpdateClientRelateKey);
+            if (cache != null && cache > DateTime.Now) return;
+            memoryCache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
             // -------------------TODO 实现缓存和限流 -------------------
 
             var clientItem = context.ClientsDb.FirstOrDefault(c => c.Id == client);
@@ -49,13 +47,9 @@ namespace BLL.Services.ClientDevice
         {
             // -------------------TODO 实现缓存和限流 本方法 -------------------
             const string UpdateClientRelateKey = "UpdateClientTags";
-            var _cache = new MemoryCache(new MemoryCacheOptions()
-            {
-                ExpirationScanFrequency = TimeSpan.FromMinutes(30)
-            });
-            var cache = _cache.Get<DateTime?>(UpdateClientRelateKey);
-            if (cache == null || cache > DateTime.Now) return;
-            _cache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
+            var cache = memoryCache.Get<DateTime?>(UpdateClientRelateKey);
+            if (cache != null && cache > DateTime.Now) return;
+            memoryCache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
             // -------------------TODO 实现缓存和限流 -------------------
 
 
