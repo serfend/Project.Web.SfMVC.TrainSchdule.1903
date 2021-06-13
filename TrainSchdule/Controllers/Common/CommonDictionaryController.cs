@@ -10,6 +10,7 @@ namespace TrainSchdule.Controllers.Common
     /// 通用字典管理
     /// </summary>
     [Route("[controller]")]
+    [ApiController]
     public class CommonDictionaryController:Controller
     {
     }

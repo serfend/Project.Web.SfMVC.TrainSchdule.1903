@@ -19,6 +19,7 @@ namespace TrainSchdule.Controllers.Static
 	/// 通用设置管理
 	/// </summary>
 	[Route("[controller]")]
+	[ApiController]
 	public partial class CommonController : Controller
 	{
 		private readonly ApplicationDbContext context;
