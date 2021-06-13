@@ -25,9 +25,9 @@ namespace BLL.Crontab
 		public void Run()
 		{
 			var users = context.AppUsersDb.OrderByCompanyAndTitle().ToList();
-			int index = 0;
+			long index = 0;
 			foreach(var u in users)
-				u.UserOrderRank = long.MaxValue - index;
+				u.UserOrderRank = index--;
 			context.AppUsers.UpdateRange(users);
 			context.SaveChanges();
 		}
