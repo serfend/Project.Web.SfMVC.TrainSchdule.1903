@@ -18,5 +18,6 @@ namespace DAL.Data
 		public DbSet<ShortUrl> CommonShortUrl { get; set; }
 		public IQueryable<ShortUrl> CommonShortUrlDb => CommonShortUrl.ToExistQueryable().Where(c => c.Expire > DateTime.Now);
 		public DbSet<ShortUrlStatistics> CommonShortUrlStatistics { get; set; }
+		public DbSet<CommonNavigate> CommonNavigates { get; set; }
 	}
 }

@@ -11,8 +11,21 @@ namespace DAL.Entities.Common
     /// </summary>
     public class CommonNavigate:BaseEntityGuid
     {
+        /// <summary>
+        /// 父菜单名称
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 别名
+        /// </summary>
         public string Alias { get; set; }
+        /// <summary>
+        /// 描述
+        /// </summary>
         public string Description { get; set; }
         /// <summary>
         /// 使用远程图片
@@ -22,6 +35,10 @@ namespace DAL.Entities.Common
         /// 使用现有图标 Icon与此项应只设置一个
         /// </summary>
         public string Svg { get; set; }
+
+        /// <summary>
+        /// 跳转url
+        /// </summary>
         public string Url { get; set; }
     }
 
