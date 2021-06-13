@@ -60,25 +60,28 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Info([FromBody] VirusHandleRecordDataModel model)
         {
             var client = model.ToModel(context.Viruses);
-            var prev_status = client.HandleStatus;
+            VirusHandleStatus prev_status = VirusHandleStatus.None;
             var update = client.UpdateGuidEntity(context.VirusHandleRecords, v => v.Id == model.Id, v => v.Virus.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒记录", (cur, prev) =>
             {
+                prev_status = prev.HandleStatus;
                 prev.HandleStatus = cur.HandleStatus;
                 prev.Create = cur.Create;
                 prev.VirusKey = cur.VirusKey;
                 //prev.Remark = cur.Remark;
             }, newItem => { }, googleAuthService, usersService, currentUserService, userActionServices);
-            if (client.Virus == null) return new JsonResult(client.Virus.NotExist());
+            var clientVirus = client.Virus;
+            if (clientVirus == null) return new JsonResult(clientVirus.NotExist());
             while (update.Item1 != EntityModifyExtensions.ActionType.Remove)
             {
                 if (prev_status == client.HandleStatus) break;
-                var lastest = context.VirusHandleRecordsDb.Where(i => i.VirusKey == client.VirusKey).OrderByDescending(i => i.Create).FirstOrDefault();
-                if (lastest != null && lastest.Create > client.Create) break;
+                var list = context.VirusHandleRecordsDb.Where(i => i.VirusKey == client.VirusKey).OrderByDescending(i => i.Create);
+                var latest = list.FirstOrDefault();
+                if (latest != null && latest.Create > client.Create) break;
                 if (client.HandleStatus.IsSuccess())
                 {
-                    client.Virus.HandleDate = client.Create;
-                    if (client.Virus.Status.HasFlag(VirusStatus.Unhandle)) client.Virus.Status -= VirusStatus.Unhandle;
-                    client.Virus.Status |= VirusStatus.Success;
+                    clientVirus.HandleDate = client.Create;
+                    if (clientVirus.Status.HasFlag(VirusStatus.Unhandle)) clientVirus.Status -= VirusStatus.Unhandle;
+                    clientVirus.Status |= VirusStatus.Success;
                 }
                 else
                 {
@@ -86,24 +89,24 @@ namespace TrainSchdule.Controllers.ClientDevices
                     {
                         case VirusHandleStatus.ClientDeviceVirusMessage:
                             {
-                                client.Virus.Status |= VirusStatus.MessageSend;
+                                clientVirus.Status |= VirusStatus.MessageSend;
                                 break;
                             }
                         case VirusHandleStatus.ClientDeviceVirusNotify:
                             {
-                                client.Virus.Status |= VirusStatus.ClientNotify;
+                                clientVirus.Status |= VirusStatus.ClientNotify;
                                 break;
                             }
                         case VirusHandleStatus.ClientDeviceVirusNewFail:
                         case VirusHandleStatus.ClientDeviceVirusNewUnhandle:
                             {
-                                if (client.Virus.Status.HasFlag(VirusStatus.Success)) client.Virus.Status -= VirusStatus.Success;
-                                client.Virus.Status |= VirusStatus.Unhandle;
+                                if (clientVirus.Status.HasFlag(VirusStatus.Success)) clientVirus.Status -= VirusStatus.Success;
+                                clientVirus.Status |= VirusStatus.Unhandle;
                                 break;
                             }
                     }
                 }
-                context.Viruses.Update(client.Virus);
+                context.Viruses.Update(clientVirus);
                 break;
             }
             context.SaveChanges();
