@@ -121,7 +121,7 @@ namespace TrainSchdule.Controllers
 			{
 				Data = new EntitiesListDataModel<CompanyChildDataModel>()
 				{
-					List = list.Values.OrderByDescending(c => c.Priority).Select(c => c.ToCompanyModel()),
+					List = list.Values.OrderBy(c => c.PrioritySum).Select(c => c.ToCompanyModel()),
 					TotalCount = totalCount + manageCount
 				}
 			});

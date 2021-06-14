@@ -81,14 +81,14 @@ namespace BLL.Extensions
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderByDescending(u => u.CompanyInfo.Company.Priority).OrderByLevel();
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.PrioritySum).OrderByLevel();
 
 		/// <summary>
 		/// 按单位-资历的顺序依次排序
 		/// </summary>
 		/// <param name="users"></param>
 		/// <returns></returns>
-		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.ThenByDescending(u => u.CompanyInfo.Company.Priority).OrderByLevel();
+		public static IOrderedQueryable<User> OrderByCompanyAndTitle(this IOrderedQueryable<User> users) => users.OrderBy(u => u.CompanyInfo.Company.PrioritySum).OrderByLevel();
 		/// <summary>
 		/// 按职务等级-职级等级-工作时间依次排序
 		/// </summary>

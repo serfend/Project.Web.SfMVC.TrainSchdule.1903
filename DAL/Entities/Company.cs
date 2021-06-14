@@ -14,9 +14,13 @@ namespace DAL.Entities
 		public string Name { get; set; }
 
 		/// <summary>
-		/// 优先级
+		/// 优先级 0-255 升序
 		/// </summary>
-		public int Priority { get; set; }
+		public byte Priority { get; set; }
+		/// <summary>
+		/// 全局优先值 自动计算
+		/// </summary>
+		public uint PrioritySum { get; set; }
 
 		/// <summary>
 		/// 单位标识，用于进行分组，以##分割

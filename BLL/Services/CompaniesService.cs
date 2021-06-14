@@ -62,7 +62,7 @@ namespace BLL.Services
 				var childCodeLength = code.Length + 1;
 				list = list.Where(x => x.Code.Length == childCodeLength).Where(x => x.Code.StartsWith(code));
 			}
-			return list.OrderByDescending(x => x.Priority).ToList();
+			return list.OrderBy(x => x.PrioritySum).ToList();
 		}
 
 		public Company FindParent(string code)
