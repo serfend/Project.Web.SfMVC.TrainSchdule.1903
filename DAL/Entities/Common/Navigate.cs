@@ -16,6 +16,10 @@ namespace DAL.Entities.Common
         /// </summary>
         public string Parent { get; set; }
         /// <summary>
+        /// 优先级
+        /// </summary>
+        public int Priority { get; set; }
+        /// <summary>
         /// 名称
         /// </summary>
         public string Name { get; set; }

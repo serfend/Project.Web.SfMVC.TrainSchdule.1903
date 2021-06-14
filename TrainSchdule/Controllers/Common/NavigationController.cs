@@ -28,7 +28,7 @@ namespace TrainSchdule.Controllers.Common
         [HttpGet]
         public IActionResult List(string menuName)
         {
-            return new JsonResult(new EntitiesListViewModel<CommonNavigate>(context.CommonNavigates.Where(n => n.Parent == menuName)));
+            return new JsonResult(new EntitiesListViewModel<CommonNavigate>(context.CommonNavigates.Where(n => n.Parent == menuName).OrderByDescending(i=>i.Priority)));
         }
         /// <summary>
         /// 更新菜单
@@ -38,13 +38,14 @@ namespace TrainSchdule.Controllers.Common
         [HttpPost]
         public IActionResult Info([FromBody] CommonNavigateViewModel model)
         {
-            model.Data.UpdateGuidEntity(context.CommonNavigates, c => c.Name == model.Data.Name,v => "root", model.Auth,ApplicationPermissions.Resources.Item,PermissionType.Write,"菜单",(cur,prev)=> {
-                cur.Description = prev.Description;
-                cur.Alias = prev.Alias;
-                cur.Icon = prev.Icon;
-                cur.Parent = prev.Parent;
-                cur.Svg = prev.Svg;
-                cur.Url = prev.Url;
+            model.Data.UpdateGuidEntity(context.CommonNavigates, c => c.Name == model.Data.Name,v => "root", model.Auth,ApplicationPermissions.Resources.Item,PermissionType.Write,"菜单",(cur,prev) => {
+                prev.Description = cur.Description;
+                prev.Alias = cur.Alias;
+                prev.Icon = cur.Icon;
+                prev.Parent = cur.Parent;
+                prev.Priority = cur.Priority;
+                prev.Svg = cur.Svg;
+                prev.Url = cur.Url;
             },newItem=> { },googleAuthService,usersService,currentUserService,userActionServices);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
