@@ -61,7 +61,7 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             var client = model.ToModel(context.Viruses);
             VirusHandleStatus prev_status = VirusHandleStatus.None;
-            var update = client.UpdateGuidEntity(context.VirusHandleRecords, v => v.Id == model.Id, v => v.Virus.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒记录", (cur, prev) =>
+            var update = client.UpdateGuidEntity(context.VirusHandleRecords, v => v.Id == model.Id, v => v.Virus?.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒记录", (cur, prev) =>
             {
                 prev_status = prev.HandleStatus;
                 prev.HandleStatus = cur.HandleStatus;
