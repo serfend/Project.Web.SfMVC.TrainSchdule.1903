@@ -33,7 +33,10 @@ namespace BLL.Services.ClientDevice
             if (clientItem == null) return;
             var company = clientItem.CompanyCode;
             var owner = clientItem.OwnerId;
-            var virues = context.VirusesDb.Where(v => v.ClientMachineId == clientItem.MachineId).ToList();
+            var virues = context.VirusesDb
+                .Where(v => v.ClientMachineId == clientItem.MachineId)
+                .Where(v => v.Company != company || v.Owner != owner)
+                .ToList();
             virues.ForEach(v =>
             {
                 v.Company = company;
@@ -59,13 +62,19 @@ namespace BLL.Services.ClientDevice
 
             var prevClientItem = context.ClientsDb.FirstOrDefault(c => c.Id == prevClient);
             if (prevClientItem == null) return;
-            var prevTags = context.ClientWithTags.Where(c=>c.ClientId == prevClient).Select(t=>t.ClientTags).ToList();
+            var prevTags = context.ClientWithTags
+                .Where(c => c.ClientId == prevClient)
+                .Select(t => t.ClientTags)
+                .ToList();
             prevTags.ForEach(t =>
             {
                 t.Used--;
             });
             context.ClientTags.UpdateRange(prevTags);
-            var tags = context.ClientWithTags.Where(c => c.ClientId == client).Select(t => t.ClientTags).ToList();
+            var tags = context.ClientWithTags
+                .Where(c => c.ClientId == client)
+                .Select(t => t.ClientTags)
+                .ToList();
             tags.ForEach(t =>
             {
                 t.Used++;
