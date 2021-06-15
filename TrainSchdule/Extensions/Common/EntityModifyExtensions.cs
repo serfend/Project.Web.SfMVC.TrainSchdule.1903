@@ -38,7 +38,7 @@ namespace TrainSchdule.Extensions.Common
         /// <param name="usersService">用户服务</param>
         /// <param name="currentUserService">当前用户服务</param>
         /// <param name="userActionServices">用户行为记录服务</param>
-        public static (ActionType, T) UpdateGuidEntity<T>(this T item, DbSet<T> db, Expression<Func<T, bool>> queryItemGetter, Func<T, string> companyGetter, GoogleAuthDataModel auth, Permission permission, PermissionType operation, string description,Action<T,T> beforeModify,Action<T> beforeAdd, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices) where T : BaseEntityGuid
+        public static (ActionType, T) UpdateGuidEntity<T>(this T item, DbSet<T> db, Expression<Func<T, bool>> queryItemGetter, Func<T, string> companyGetter, GoogleAuthDataModel auth, Permission permission, PermissionType operation, string description, Action<T, T> beforeModify, Action<T> beforeAdd, IGoogleAuthService googleAuthService, IUsersService usersService, ICurrentUserService currentUserService, IUserActionServices userActionServices) where T : BaseEntityGuid
         {
             string permit_fail_company = null;
             var prevItem = db.Where(c => !c.IsRemoved).FirstOrDefault(queryItemGetter);
@@ -51,13 +51,14 @@ namespace TrainSchdule.Extensions.Common
             {
                 if (prevItem == null) throw new ActionStatusMessageException(item.NotExist());
                 prevCompany = companyGetter(prevItem);
-                permit_fail_company = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, prevCompany, $"通用更新原信息:{description}") ? null : prevCompany;
-                permit_fail_company = userActionServices.Permission(authUser, permission, PermissionType.Write, prevCompany, $"{action}:{description}") ? null : prevCompany;
-                if (permit_fail_company == null)
+                var permit = userActionServices.Permission(authUser, permission, PermissionType.Write, prevCompany, $"{action}:{description}");
+                if (permit)
                 {
                     prevItem.Remove();
                     db.Update(prevItem);
                 }
+                else
+                    permit_fail_company = prevCompany;
             }
             else
             {
@@ -65,27 +66,32 @@ namespace TrainSchdule.Extensions.Common
                 if (prevItem != null)
                 {
                     action = ActionType.Update;
-                    permit_fail_company = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, prevCompany, $"通用更新原信息:{description}") ? null : prevCompany;
-                    if (permit_fail_company == null) permit_fail_company = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, company, $"通用更新新信息:{description}") ? null : company;
-                    if (permit_fail_company == null)
+                    var permit = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, prevCompany, $"通用更新原信息:{description}");
+                    if (permit) permit = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, company, $"通用更新新信息:{description}");
+                    else permit_fail_company = prevCompany;
+                    if (permit)
                     {
                         beforeModify?.Invoke(item, prevItem);
-                            db.Update(prevItem);
+                        db.Update(prevItem);
                     }
+                    else
+                        permit_fail_company = company;
                 }
                 else
                 {
                     action = ActionType.Add;
-                    permit_fail_company = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, company, $"通用新增:{description}") ? null : company;
-                    if (permit_fail_company == null)
+                    var permit = userActionServices.Permission(currentUserService.CurrentUser, permission, PermissionType.Write, company, $"通用新增:{description}");
+                    if (permit)
                     {
                         beforeAdd?.Invoke(item);
                         db.Add(item);
                     }
+                    else
+                        permit_fail_company = company;
                 }
             }
 
-            if (permit_fail_company != null) throw new ActionStatusMessageException(new ApiResult(auth.PermitDenied(), $"授权到{permit_fail_company}", true));
+            if (permit_fail_company != null) throw new ActionStatusMessageException(new ApiResult(auth.PermitDenied(), $"需要授权[{permit_fail_company}]时被拒绝", true));
             return (action, item);
         }
         /// <summary>

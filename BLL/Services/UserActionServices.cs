@@ -56,7 +56,7 @@ namespace BLL.Services
             if (authUser == null) return false;
             var authUserId = authUser.Id;
             targetUserCompanyCode = targetUserCompanyCode?.ToUpper() ?? string.Empty;
-            var a = Log(UserOperation.Permission, authUserId, $"授权到{targetUserCompanyCode}执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
+            var a = Log(UserOperation.Permission, authUserId, $"授权到[{targetUserCompanyCode}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
             var permit = permissionServices.CheckPermissions(authUserId, permission.Key, operation, targetUserCompanyCode);
             if (permit != null)
             {
