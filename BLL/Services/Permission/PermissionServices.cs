@@ -38,7 +38,8 @@ namespace BLL.Services.Permission
 			while (permissionNodes.Count > 0)
 			{
 				var current = string.Join('.', permissionNodes);
-				var permit = userPermission.Where(i => i.Name == current).Where(i=>companyCode.StartsWith(i.Region)).Where(i=> i.Type.HasFlag(permissionType));
+				var permit = userPermission.Where(i => i.Name == current).Where(i=> i.Type.HasFlag(permissionType));
+				if (!companyCode.IsNullOrEmpty()) permit = permit.Where(i => companyCode.StartsWith(i.Region)); // 如果传入空单位，则只要有此权限即可通过
 				var r = permit.FirstOrDefault();
 				if (r!=null) return new PermissionBaseItem() { 
 					Name = r.Name,
