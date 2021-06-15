@@ -1,6 +1,7 @@
 ﻿using BLL.Extensions;
 using BLL.Interfaces;
 using DAL.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,10 +38,10 @@ namespace BLL.Crontab
             {
                 var level_companies = companies.Where(c => c.Code.Length == now_length).ToList();
                 if (level_companies.Count == 0) break;
-				foreach(var c in level_companies)
+                foreach (var c in level_companies)
                 {
                     var last_level_code = c.Code.Substring(0, now_length - 1);
-                    var prev_level_sum = sum_dict.ContainsKey(last_level_code)?sum_dict[last_level_code]:0;
+                    var prev_level_sum = sum_dict.ContainsKey(last_level_code) ? sum_dict[last_level_code] : 0;
                     var cur_level_sum = (prev_level_sum << 1) + c.Priority;
                     c.PrioritySum = cur_level_sum;
                     sum_dict[c.Code] = cur_level_sum;
@@ -52,9 +53,14 @@ namespace BLL.Crontab
         private void OrderUsers()
         {
             var users = context.AppUsersDb.OrderByCompanyAndTitle().ToList();
+            var min_priority = -users.Count - 1;
+            var all_users = context.AppUsers.ToList();
+            var dict = new Dictionary<string, long>();
             long index = 0;
             foreach (var u in users)
-                u.UserOrderRank = index--;
+                dict[u.Id] = index--;
+            foreach (var u in all_users)
+                u.UserOrderRank = dict.ContainsKey(u.Id) ? dict[u.Id] : min_priority;
             context.AppUsers.UpdateRange(users);
         }
     }
