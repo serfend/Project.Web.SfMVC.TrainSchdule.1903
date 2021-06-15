@@ -5,6 +5,7 @@ using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Data;
 using DAL.DTO.ZZXT;
+using DAL.Entities.Permisstions;
 using DAL.Entities.ZZXT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrainSchdule.Extensions.Common;
+using TrainSchdule.ViewModels.Party;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.Party
@@ -45,6 +48,27 @@ namespace TrainSchdule.Controllers.Party
 
     public partial class PartyGroupController
     {
+
+        /// <summary>
+        /// 党组织编辑
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Info([FromBody] PartyGroupViewModel model)
+        {
+            var item = model.Data.ToModel(context);
+            item.UpdateGuidEntity(context.PartyGroups, c => c.Id == model.Data.Id, c => c.CompanyCode, model.Auth, ApplicationPermissions.Party.Group.Item, PermissionType.Write, "党小组", (cur, prev) =>
+            {
+                prev.Alias = cur.Alias;
+                prev.Company = cur.Company;
+                prev.GroupType = cur.GroupType;
+            }, newItem =>
+            {
+                newItem.Create = DateTime.Now;
+            }, googleAuthService, usersService, currentUserService, userActionServices);
+            return new JsonResult(ActionStatusMessage.Success);
+        }
         /// <summary>
         /// 获取单位的党组织
         /// </summary>
@@ -81,14 +105,15 @@ namespace TrainSchdule.Controllers.Party
         /// <param name="company"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult MemberStatistics(string groupid, string company) {
+        public IActionResult MemberStatistics(string groupid, string company)
+        {
             var list = GetMembers(groupid, company);
             var result = list
                 .GroupBy(i => i.TypeInParty, (a, b) => new { a, c = b.Count() })
                 .ToDictionary(x => x.a, x => x.c);
             return new JsonResult(new EntityViewModel<Dictionary<int, int>>(result));
         }
-        private IQueryable<UserPartyInfo> GetMembers(string groupid,string company)
+        private IQueryable<UserPartyInfo> GetMembers(string groupid, string company)
         {
             var list = context.UserPartyInfosDb;
             Guid.TryParse(groupid, out var groupGuid);

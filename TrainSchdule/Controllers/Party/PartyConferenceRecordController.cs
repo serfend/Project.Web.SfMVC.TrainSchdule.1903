@@ -53,7 +53,7 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecord([FromBody] PartyUserRecordViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.ToModel().UpdateGuidEntity(context.PartyUserRecords, c => c.Id == model.Data.Id, c => c.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "用户操作记录", (cur, prev) =>
+            var action = model.Data.ToModel(context).UpdateGuidEntity(context.PartyUserRecords, c => c.Id == model.Data.Id, c => c.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "用户操作记录", (cur, prev) =>
             {
                 prev.ConferenceId = cur.ConferenceId;
                 prev.Type = cur.Type;
@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecordContent([FromBody] PartyConferRecordContentViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.ToModel().UpdateGuidEntity(context.PartyUserRecordContents, c => c.Id == model.Data.Id, c => c.Record.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "操作记录内容", (cur, prev) =>
+            var action = model.Data.ToModel(context).UpdateGuidEntity(context.PartyUserRecordContents, c => c.Id == model.Data.Id, c => c.Record.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "操作记录内容", (cur, prev) =>
             {
                 prev.Content = cur.Content;
                 prev.ContentType = cur.ContentType;

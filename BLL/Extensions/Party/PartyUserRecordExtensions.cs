@@ -1,4 +1,5 @@
-﻿using DAL.DTO.ZZXT;
+﻿using DAL.Data;
+using DAL.DTO.ZZXT;
 using DAL.Entities.ZZXT;
 using System;
 using System.Collections.Generic;
@@ -24,15 +25,17 @@ namespace BLL.Extensions.Party
             };
         }
 
-        public static PartyUserRecord ToModel(this PartyUserRecordDto model, PartyUserRecord raw = null)
+        public static PartyUserRecord ToModel(this PartyUserRecordDto model, ApplicationDbContext context, PartyUserRecord raw = null)
         {
             if (raw == null) raw = new PartyUserRecord();
-            raw.ConferenceId = model.ConferenceId;
+            raw.Conference = context.PartyConferencesDb.FirstOrDefault(c => c.Id == model.Id);
+            if (raw.Conference != null) raw.ConferenceId = model.ConferenceId;
             raw.Create = model.Create;
             raw.Id = model.Id;
             raw.IsRemoved = model.IsRemoved;
             raw.Type = model.Type;
-            raw.UserId = model.UserId;
+            raw.User = context.AppUsersDb.FirstOrDefault(u => u.Id == model.UserId);
+            if (raw.User != null) raw.UserId = model.UserId;
             return raw;
         }
 
@@ -51,10 +54,11 @@ namespace BLL.Extensions.Party
             };
         }
 
-        public static PartyUserRecordContent ToModel(this PartyConferRecordContentDto model, PartyUserRecordContent raw = null)
+        public static PartyUserRecordContent ToModel(this PartyConferRecordContentDto model, ApplicationDbContext context, PartyUserRecordContent raw = null)
         {
             if (raw == null) raw = new PartyUserRecordContent();
-            raw.RecordId = model.RecordId;
+            raw.Record = context.PartyUserRecordsDb.FirstOrDefault(r => r.Id == model.RecordId);
+            if (raw.Record != null) raw.RecordId = model.RecordId;
             raw.IsRemovedDate = model.IsRemovedDate;
             raw.ContentType = model.ContentType;
             raw.Content = model.Content;
