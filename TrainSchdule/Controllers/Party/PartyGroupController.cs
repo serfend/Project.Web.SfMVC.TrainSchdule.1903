@@ -73,13 +73,15 @@ namespace TrainSchdule.Controllers.Party
         /// 获取单位的党组织
         /// </summary>
         /// <param name="code"></param>
+        /// <param name="groupType"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult CompanyGroup(string code)
+        public IActionResult CompanyGroup(string code,int groupType=-1)
         {
             var currentUser = currentUserService.CurrentUser;
             if (code.IsNullOrEmpty()) code = currentUser.CompanyInfo.CompanyCode;
             var group = context.PartyGroups.Where(g => g.CompanyCode == code);
+            if (groupType!=-1) group = group.Where(g => (int)g.GroupType == groupType);
             return new JsonResult(new EntitiesListViewModel<PartyGroupDto>(group.Select(g => g.ToDto())));
         }
         /// <summary>
