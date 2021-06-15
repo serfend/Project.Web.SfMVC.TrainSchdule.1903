@@ -68,7 +68,6 @@ namespace TrainSchdule.Controllers.ClientDevices
             },newItem=> { }, googleAuthService, usersService, currentUserService, userActionServices);
             var prevClientId = r?.Id;
             var clientId = client.Id;
-            if(prevClientId!=null) BackgroundJob.Schedule<IClientDeviceService>(s => s.UpdateClientTags(prevClientId.Value, clientId), TimeSpan.FromSeconds(3));
             if (update.Item1 != EntityModifyExtensions.ActionType.Remove && (prevClientId == null || r.OwnerId != client.OwnerId || r.CompanyCode != client.CompanyCode))
             {
                 BackgroundJob.Schedule<IClientDeviceService>(s => s.UpdateClientRelate(clientId), TimeSpan.FromSeconds(3));
