@@ -14,7 +14,7 @@ namespace DAL.Data
         public DbSet<UserPartyInfo> UserPartyInfos { get; set; }
         public IQueryable<UserPartyInfo> UserPartyInfosDb => UserPartyInfos.ToExistQueryable();
         public DbSet<PartyDuty> PartyDuties { get; set; }
-        public IQueryable<PartyDuty> PartyDutiesDb => PartyDuties.ToExistQueryable();
+        public IQueryable<PartyDuty> PartyDutiesDb => PartyDuties.ToExistQueryable().OrderBy(d => d.Priority);
 
         /// <summary>
         /// 党小组
@@ -34,7 +34,7 @@ namespace DAL.Data
         /// </summary>
         public DbSet<PartyUserRecordContent> PartyUserRecordContents { get; set; }
         public IQueryable<PartyUserRecordContent> PartyUserRecordContentsDb => PartyUserRecordContents.ToExistQueryable();
-        
+
 
 
     }
