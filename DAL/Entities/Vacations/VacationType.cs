@@ -71,6 +71,11 @@ namespace DAL.Entities.Vacations
 		/// TODO 疫情定制 - 请假是否需要跟踪出行方式
 		/// </summary>
 		public bool NeedTrace { get; set; }
+		/// <summary>
+		/// 默认申请时间，使用js回调
+		/// js:(now)=>start,end
+		/// </summary>
+		public string DefaultDateRange { get; set; }
 	}
 	public class VacationType : VacationTypeBase 
 	{
