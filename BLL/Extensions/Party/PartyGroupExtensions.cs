@@ -15,6 +15,7 @@ namespace BLL.Extensions.Party
         {
             return new PartyGroupDto()
             {
+                Id = model.Id,
                 Alias = model.Alias,
                 Company = model.CompanyCode,
                 Create = model.Create,
