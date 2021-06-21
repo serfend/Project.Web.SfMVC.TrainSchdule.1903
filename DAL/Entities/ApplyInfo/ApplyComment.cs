@@ -21,10 +21,12 @@ namespace DAL.Entities.ApplyInfo
 		public virtual User ModifyBy { get; set; }
 		public string ModifyById { get; set; }
 		public int Likes { get; set; }
-
+		public virtual ApplyComment Reply { get; set; }
+		public Guid ReplyId { get; set; }
 		/// <summary>
 		/// 作用到
 		/// </summary>
 		public string Apply { get; set; }
-	}
+
+    }
 }
