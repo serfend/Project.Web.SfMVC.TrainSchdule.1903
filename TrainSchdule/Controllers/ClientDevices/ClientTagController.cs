@@ -2,6 +2,7 @@
 using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.DTO.ClientDevice;
 using DAL.Entities;
@@ -30,17 +31,19 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly ICurrentUserService currentUserService;
         private readonly IGoogleAuthService googleAuthService;
         private readonly IUsersService usersService;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientTagController(ApplicationDbContext context, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService, IUsersService usersService)
+        public ClientTagController(ApplicationDbContext context, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService, IUsersService usersService, IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
             this.googleAuthService = googleAuthService;
             this.usersService = usersService;
+            this.dataUpdateServices = dataUpdateServices;
         }
         /// <summary>
         /// 
@@ -120,18 +123,33 @@ namespace TrainSchdule.Controllers.ClientDevices
             var item = model.Data.ToModel();
             if (item.CreateCompany == null)
                 item.CreateCompany = currentUserService.CurrentUser.CompanyInfo?.CompanyCode;
-            var action = item.UpdateGuidEntity(context.ClientTags, c => c.Id == model.Data.Id, c => c.CreateCompany, model.Auth, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, "标签内容", (cur, prev) =>
+            var currentUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
+            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<ClientTags>()
             {
-                prev.AppName = cur.AppName;
-                prev.Color = cur.Color;
-                prev.CreateCompany = cur.CreateCompany;
-                prev.Description = cur.Description;
-                prev.Name = cur.Name;
-                prev.ParentId = cur.ParentId;
-            }, newItem =>
-            {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+                Item = item,
+                AuthUser = currentUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.AppName = cur.AppName;
+                    prev.Color = cur.Color;
+                    prev.CreateCompany = cur.CreateCompany;
+                    prev.Description = cur.Description;
+                    prev.Name = cur.Name;
+                    prev.ParentId = cur.ParentId;
+                },
+                Db = context.ClientTags,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<ClientTags>()
+                {
+                    CompanyGetter = c => c.CreateCompany,
+                    Description = "标签内容",
+                    Permission = ApplicationPermissions.Client.Manage.Info.Item,
+                },
+                QueryItemGetter = c => c.Id == model.Data.Id
+            });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);

@@ -49,6 +49,8 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IRecallOrderServices recallOrderServices;
 		private readonly IUserActionServices userActionServices;
         private readonly IDataDictionariesServices dataDictionariesServices;
+        private readonly IDataUpdateServices dataUpdateServices;
+        private readonly ICommonDataUpdate commonDataUpdate;
 
         /// <summary>
         ///
@@ -66,7 +68,8 @@ namespace TrainSchdule.Controllers.Apply
         /// <param name="recallOrderServices"></param>
         /// <param name="userActionServices"></param>
         /// <param name="dataDictionariesServices"></param>
-        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService,IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices)
+        /// <param name="dataUpdateServices"></param>
+        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService,IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices,IDataUpdateServices dataUpdateServices)
 		{
 			this.usersService = usersService;
 			this.currentUserService = currentUserService;
@@ -80,6 +83,7 @@ namespace TrainSchdule.Controllers.Apply
 			this.recallOrderServices = recallOrderServices;
 			this.userActionServices = userActionServices;
             this.dataDictionariesServices = dataDictionariesServices;
+            this.dataUpdateServices = dataUpdateServices;
         }
 
 		#endregion filed

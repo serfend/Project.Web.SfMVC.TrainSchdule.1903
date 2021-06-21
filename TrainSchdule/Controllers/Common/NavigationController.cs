@@ -1,5 +1,6 @@
 ﻿using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.Entities.Common;
 using DAL.Entities.Permisstions;
@@ -38,15 +39,31 @@ namespace TrainSchdule.Controllers.Common
         [HttpPost]
         public IActionResult Info([FromBody] CommonNavigateViewModel model)
         {
-            model.Data.UpdateGuidEntity(context.CommonNavigates, c => c.Name == model.Data.Name,v => "root", model.Auth,ApplicationPermissions.Resources.Item,PermissionType.Write,"菜单",(cur,prev) => {
-                prev.Description = cur.Description;
-                prev.Alias = cur.Alias;
-                prev.Icon = cur.Icon;
-                prev.Parent = cur.Parent;
-                prev.Priority = cur.Priority;
-                prev.Svg = cur.Svg;
-                prev.Url = cur.Url;
-            },newItem=> { },googleAuthService,usersService,currentUserService,userActionServices);
+            var currentUser = currentUserService.CurrentUser;
+            dataUpdateServices.Update(new BLL.Extensions.Common.EntityModifyExtensions.DataUpdateModel<CommonNavigate>() { 
+                Item = model.Data,
+                AuthUser = currentUser,
+                BeforeAdd = v => { },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.Alias = cur.Alias;
+                    prev.Description = cur.Description;
+                    prev.Icon = cur.Icon;
+                    prev.Parent = cur.Parent;
+                    prev.Priority = cur.Priority;
+                    prev.Svg = cur.Svg;
+                    prev.Url = cur.Url;
+                },
+                Db = context.CommonNavigates,
+                PermissionJudgeItem = new BLL.Extensions.Common.EntityModifyExtensions.PermissionJudgeItem<CommonNavigate>()
+                {
+                    CompanyGetter = c=> "root",
+                    Description = "菜单",
+                    Flag = BLL.Extensions.Common.EntityModifyExtensions.PermissionFlag.None,
+                    Permission = ApplicationPermissions.Resources.Menu.Item,
+                },
+                QueryItemGetter = c=>c.Name == model.Data.Name
+            });
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }
@@ -76,17 +93,19 @@ namespace TrainSchdule.Controllers.Common
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
         private readonly IGoogleAuthService googleAuthService;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public NavigationController(ApplicationDbContext context, IUsersService usersService, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService)
+        public NavigationController(ApplicationDbContext context, IUsersService usersService, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService,IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.usersService = usersService;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
             this.googleAuthService = googleAuthService;
+            this.dataUpdateServices = dataUpdateServices;
         }
     }
 }

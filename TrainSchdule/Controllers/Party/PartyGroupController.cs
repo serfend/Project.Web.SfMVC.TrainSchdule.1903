@@ -3,6 +3,7 @@ using BLL.Extensions.Common;
 using BLL.Extensions.Party;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.DTO.ZZXT;
 using DAL.Entities.Permisstions;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels.Party;
 using TrainSchdule.ViewModels.System;
+using TrainSchdule.ViewModels.Verify;
 
 namespace TrainSchdule.Controllers.Party
 {
@@ -31,17 +33,19 @@ namespace TrainSchdule.Controllers.Party
         private readonly IUserActionServices userActionServices;
         private readonly IUsersService usersService;
         private readonly IGoogleAuthService googleAuthService;
+        private readonly IDataUpdateServices dataUpdateServices;
         private readonly ApplicationDbContext context;
 
         /// <summary>
         /// 
         /// </summary>
-        public PartyGroupController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, ApplicationDbContext context)
+        public PartyGroupController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, IDataUpdateServices dataUpdateServices, ApplicationDbContext context)
         {
             this.currentUserService = currentUserService;
             this.userActionServices = userActionServices;
             this.usersService = usersService;
             this.googleAuthService = googleAuthService;
+            this.dataUpdateServices = dataUpdateServices;
             this.context = context;
         }
     }
@@ -57,16 +61,31 @@ namespace TrainSchdule.Controllers.Party
         [HttpPost]
         public IActionResult Info([FromBody] PartyGroupViewModel model)
         {
+            var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
             var item = model.Data.ToModel(context);
-            item.UpdateGuidEntity(context.PartyGroups, c => c.Id == model.Data.Id, c => c.CompanyCode, model.Auth, ApplicationPermissions.Party.Group.Item, PermissionType.Write, "党小组", (cur, prev) =>
+            dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyGroup>()
             {
-                prev.Alias = cur.Alias;
-                prev.Company = cur.Company;
-                prev.GroupType = cur.GroupType;
-            }, newItem =>
-            {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+                AuthUser = authUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.Alias = cur.Alias;
+                    prev.Company = cur.Company;
+                    prev.GroupType = cur.GroupType;
+                },
+                Db = context.PartyGroups,
+                Item = model.Data.ToModel(context),
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<PartyGroup>()
+                {
+                    CompanyGetter = c => c.CompanyCode,
+                    Description = "党小组",
+                    Permission = ApplicationPermissions.Party.Group.Item
+                },
+                QueryItemGetter = v => v.Id == model.Data.Id
+            });
             return new JsonResult(ActionStatusMessage.Success);
         }
         /// <summary>
@@ -76,12 +95,12 @@ namespace TrainSchdule.Controllers.Party
         /// <param name="groupType"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult CompanyGroup(string code,int groupType=-1)
+        public IActionResult CompanyGroup(string code, int groupType = -1)
         {
             var currentUser = currentUserService.CurrentUser;
             if (code.IsNullOrEmpty()) code = currentUser.CompanyInfo.CompanyCode;
             var group = context.PartyGroups.Where(g => g.CompanyCode == code);
-            if (groupType!=-1) group = group.Where(g => (int)g.GroupType == groupType);
+            if (groupType != -1) group = group.Where(g => (int)g.GroupType == groupType);
             return new JsonResult(new EntitiesListViewModel<PartyGroupDto>(group.Select(g => g.ToDto())));
         }
         /// <summary>

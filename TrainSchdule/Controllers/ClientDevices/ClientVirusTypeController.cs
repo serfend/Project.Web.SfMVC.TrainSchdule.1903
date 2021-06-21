@@ -4,6 +4,7 @@ using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.ClientDevice;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.DTO.ClientDevice;
 using DAL.Entities.ClientDevice;
@@ -33,11 +34,12 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly ICurrentUserService currentUserService;
         private readonly IGoogleAuthService googleAuthService;
         private readonly IUserActionServices userActionServices;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientVirusTypeController(ApplicationDbContext context, IClientVirusServices clientVirusServices,IUsersService usersService,ICurrentUserService currentUserService,IGoogleAuthService googleAuthService,IUserActionServices userActionServices)
+        public ClientVirusTypeController(ApplicationDbContext context, IClientVirusServices clientVirusServices,IUsersService usersService,ICurrentUserService currentUserService,IGoogleAuthService googleAuthService,IUserActionServices userActionServices,IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.clientVirusServices = clientVirusServices;
@@ -45,6 +47,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             this.currentUserService = currentUserService;
             this.googleAuthService = googleAuthService;
             this.userActionServices = userActionServices;
+            this.dataUpdateServices = dataUpdateServices;
         }
     }
 
@@ -56,16 +59,32 @@ namespace TrainSchdule.Controllers.ClientDevices
         /// <returns></returns>
         [HttpPut]
         public IActionResult Info([FromBody] VirusTypeDataModel model)
-        { 
-            var r = model.ToModel().UpdateGuidEntity(context.VirusTraces, v => v.Id == model.Id, null, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒类型", (cur, prev) => {
-                prev.Alias = cur.Alias;
-                prev.Description = cur.Description;
-                prev.Sha1 = cur.Sha1;
-                prev.WarningLevel = cur.WarningLevel;
-                prev.Type = cur.Type;
-            },(newItem)=> {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+        {
+            var currentUser = currentUserService.CurrentUser;
+            dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<VirusTrace>() {
+                Item = model.ToModel(),
+                AuthUser = currentUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.Alias = cur.Alias;
+                    prev.Description = cur.Description;
+                    prev.Sha1 = cur.Sha1;
+                    prev.WarningLevel = cur.WarningLevel;
+                    prev.Type = cur.Type;
+                },
+                Db = context.VirusTraces,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<VirusTrace>()
+                {
+                    CompanyGetter = c=>null,
+                    Description = "病毒类型",
+                    Permission = ApplicationPermissions.Client.Virus.Info.Item
+                },
+                QueryItemGetter = c=>c.Id == model.Id
+            });
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
         }

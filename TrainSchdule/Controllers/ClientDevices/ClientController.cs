@@ -3,6 +3,7 @@ using BLL.Extensions.Common;
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.ClientDevice;
+using BLL.Interfaces.Common;
 using DAL.Data;
 using DAL.Entities.ClientDevice;
 using DAL.Entities.Permisstions;
@@ -27,17 +28,19 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
         private readonly IGoogleAuthService googleAuthService;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientController(ApplicationDbContext context, IUsersService usersService, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService)
+        public ClientController(ApplicationDbContext context, IUsersService usersService, IUserActionServices userActionServices, ICurrentUserService currentUserService, IGoogleAuthService googleAuthService, IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.usersService = usersService;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
             this.googleAuthService = googleAuthService;
+            this.dataUpdateServices = dataUpdateServices;
         }
     }
     /// <summary>
@@ -57,15 +60,30 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             var r = context.ClientsDb.FirstOrDefault(i => i.MachineId == model.MachineId);
             var client = r ?? new Client();
+            var currentUser = currentUserService.CurrentUser;
             model.ToModel(usersService, context.CompaniesDb, client);
-            var update = client.UpdateGuidEntity(context.Clients, c => c.MachineId == model.MachineId, c => c.CompanyCode, null, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, "终端",(cur,prev)=> {
-                prev.CompanyCode = cur.CompanyCode;
-                prev.DeviceType = cur.DeviceType;
-                prev.FutherInfo = cur.FutherInfo;
-                prev.Ip = cur.Ip;
-                prev.OwnerId = cur.OwnerId;
-                prev.Mac = cur.Mac;
-            },newItem=> { }, googleAuthService, usersService, currentUserService, userActionServices);
+            var update = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<Client>()
+            {
+                Item = client,
+                AuthUser = currentUser,
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.CompanyCode = cur.CompanyCode;
+                    prev.DeviceType = cur.DeviceType;
+                    prev.FutherInfo = cur.FutherInfo;
+                    prev.Ip = cur.Ip;
+                    prev.OwnerId = cur.OwnerId;
+                    prev.Mac = cur.Mac;
+                },
+                Db = context.Clients,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<Client>()
+                {
+                    CompanyGetter = c => c.CompanyCode,
+                    Description = "终端",
+                    Permission = ApplicationPermissions.Client.Manage.Info.Item
+                },
+                QueryItemGetter = c => c.MachineId == model.MachineId
+            });
             var prevClientId = r?.Id;
             var clientId = client.Id;
             if (update.Item1 != EntityModifyExtensions.ActionType.Remove && (prevClientId == null || r.OwnerId != client.OwnerId || r.CompanyCode != client.CompanyCode))

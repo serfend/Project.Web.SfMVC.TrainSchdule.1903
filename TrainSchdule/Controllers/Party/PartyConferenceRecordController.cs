@@ -3,6 +3,7 @@ using BLL.Extensions.Party;
 using BLL.Helpers;
 using DAL.DTO.ZZXT;
 using DAL.Entities.Permisstions;
+using DAL.Entities.ZZXT;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -53,15 +54,29 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecord([FromBody] PartyUserRecordViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.ToModel(context).UpdateGuidEntity(context.PartyUserRecords, c => c.Id == model.Data.Id, c => c.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "用户操作记录", (cur, prev) =>
+            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecord>()
             {
-                prev.ConferenceId = cur.ConferenceId;
-                prev.Type = cur.Type;
-                prev.UserId = cur.UserId;
-            }, newItem =>
-            {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+                AuthUser = authUser,
+                BeforeAdd = v =>
+                 {
+                     v.Create = DateTime.Now;
+                 },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.ConferenceId = cur.ConferenceId;
+                    prev.Type = cur.Type;
+                    prev.UserId = cur.UserId;
+                },
+                Db = context.PartyUserRecords,
+                Item = model.Data.ToModel(context),
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecord>()
+                {
+                    CompanyGetter = c => c.User.CompanyInfo.CompanyCode,
+                    Description = "用户操作记录",
+                    Permission = ApplicationPermissions.Party.Confer.ConferRecord.Item,
+                },
+                QueryItemGetter = c => c.Id == model.Data.Id
+            });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
@@ -82,15 +97,29 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecordContent([FromBody] PartyConferRecordContentViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.ToModel(context).UpdateGuidEntity(context.PartyUserRecordContents, c => c.Id == model.Data.Id, c => c.Record.User.CompanyInfo.CompanyCode, model.Auth, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Write, "操作记录内容", (cur, prev) =>
+            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecordContent>()
             {
-                prev.Content = cur.Content;
-                prev.ContentType = cur.ContentType;
-                prev.RecordId = cur.RecordId;
-            }, newItem =>
-            {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+                AuthUser = authUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.Content = cur.Content;
+                    prev.ContentType = cur.ContentType;
+                    prev.RecordId = cur.RecordId;
+                },
+                Db = context.PartyUserRecordContents,
+                Item = model.Data.ToModel(context),
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecordContent>()
+                {
+                    CompanyGetter = c => c.Record.User.CompanyInfo.CompanyCode,
+                    Description = "操作记录内容",
+                    Permission = ApplicationPermissions.Party.Confer.ConferRecord.Item
+                },
+                QueryItemGetter = c => c.Id == model.Data.Id
+            });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);

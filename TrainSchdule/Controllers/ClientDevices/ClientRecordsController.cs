@@ -34,11 +34,12 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly IGoogleAuthService googleAuthService;
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices, ICurrentUserService currentUserService)
+        public ClientRecordsController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IUsersService usersService, IGoogleAuthService googleAuthService, IUserActionServices userActionServices, ICurrentUserService currentUserService, IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
@@ -46,6 +47,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             this.googleAuthService = googleAuthService;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
+            this.dataUpdateServices = dataUpdateServices;
         }
     }
 
@@ -60,15 +62,30 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Info([FromBody] VirusHandleRecordDataModel model)
         {
             var client = model.ToModel(context.Viruses);
+            var currentUser = currentUserService.CurrentUser;
             VirusHandleStatus prev_status = VirusHandleStatus.None;
-            var update = client.UpdateGuidEntity(context.VirusHandleRecords, v => v.Id == model.Id, v => v.Virus?.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒记录", (cur, prev) =>
+            var update = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<VirusHandleRecord>()
             {
-                prev_status = prev.HandleStatus;
-                prev.HandleStatus = cur.HandleStatus;
-                prev.Create = cur.Create;
-                prev.VirusKey = cur.VirusKey;
-                //prev.Remark = cur.Remark;
-            }, newItem => { }, googleAuthService, usersService, currentUserService, userActionServices);
+                Item = client,
+                AuthUser = currentUser,
+                BeforeModify = (cur, prev) =>
+                {
+                    prev_status = prev.HandleStatus;
+                    prev.HandleStatus = cur.HandleStatus;
+                    prev.Create = cur.Create;
+                    prev.VirusKey = cur.VirusKey;
+                    //prev.Remark = cur.Remark;
+                },
+                Db = context.VirusHandleRecords,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<VirusHandleRecord>()
+                {
+                    CompanyGetter = c => c.Virus?.Company,
+                    Description = "病毒记录",
+                    Permission = ApplicationPermissions.Client.Virus.Info.Item
+                },
+                QueryItemGetter = c => c.Id == model.Id
+            });
+
             var clientVirus = client.Virus;
             if (clientVirus == null) return new JsonResult(clientVirus.NotExist());
             while (update.Item1 != EntityModifyExtensions.ActionType.Remove)

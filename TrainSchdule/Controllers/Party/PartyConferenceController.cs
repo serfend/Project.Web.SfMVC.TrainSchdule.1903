@@ -113,16 +113,30 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult Confer([FromBody] PartyConferenceViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = model.Data.UpdateGuidEntity(context.PartyConferences, c => c.Id == model.Data.Id, c => c.CreateByCode, model.Auth, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Write, "会议", (cur, prev) =>
+            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyBaseConference>()
             {
-                prev.Content = cur.Content;
-                prev.CreateByCode = cur.CreateByCode;
-                prev.Title = cur.Title;
-                prev.Type = cur.Type;
-            }, newItem =>
-            {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
+                AuthUser = authUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.Content = cur.Content;
+                    prev.CreateByCode = cur.CreateByCode;
+                    prev.Title = cur.Title;
+                    prev.Type = cur.Type;
+                },
+                Db = context.PartyConferences,
+                Item = model.Data,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<PartyBaseConference>()
+                {
+                    CompanyGetter = c => c.CreateByCode,
+                    Description = "会议",
+                    Permission = ApplicationPermissions.Party.Confer.NormalConfer.Item,
+                },
+                QueryItemGetter = c => c.Id == model.Data.Id
+            });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
@@ -138,18 +152,20 @@ namespace TrainSchdule.Controllers.Party
         private readonly IUsersService usersService;
         private readonly IGoogleAuthService googleAuthService;
         private readonly IDataDictionariesServices dataDictionariesServices;
+        private readonly IDataUpdateServices dataUpdateServices;
         private readonly ApplicationDbContext context;
 
         /// <summary>
         /// 
         /// </summary>
-        public PartyConferenceController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, IDataDictionariesServices dataDictionariesServices, ApplicationDbContext context)
+        public PartyConferenceController(ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IGoogleAuthService googleAuthService, IDataDictionariesServices dataDictionariesServices, IDataUpdateServices dataUpdateServices, ApplicationDbContext context)
         {
             this.currentUserService = currentUserService;
             this.userActionServices = userActionServices;
             this.usersService = usersService;
             this.googleAuthService = googleAuthService;
             this.dataDictionariesServices = dataDictionariesServices;
+            this.dataUpdateServices = dataUpdateServices;
             this.context = context;
         }
     }

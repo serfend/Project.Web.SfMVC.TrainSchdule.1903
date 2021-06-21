@@ -40,11 +40,12 @@ namespace TrainSchdule.Controllers.ClientDevices
         private readonly IClientVirusServices clientVirusServices;
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
+        private readonly IDataUpdateServices dataUpdateServices;
 
         /// <summary>
         /// 
         /// </summary>
-        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices,IUsersService usersService,IGoogleAuthService googleAuthService, IClientVirusServices clientVirusServices, IUserActionServices userActionServices, ICurrentUserService currentUserService)
+        public ClientVirusController(ApplicationDbContext context, IDataDictionariesServices dataDictionariesServices, IUsersService usersService, IGoogleAuthService googleAuthService, IClientVirusServices clientVirusServices, IUserActionServices userActionServices, ICurrentUserService currentUserService, IDataUpdateServices dataUpdateServices)
         {
             this.context = context;
             this.dataDictionariesServices = dataDictionariesServices;
@@ -53,6 +54,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             this.clientVirusServices = clientVirusServices;
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
+            this.dataUpdateServices = dataUpdateServices;
         }
     }
     public partial class ClientVirusController
@@ -65,18 +67,36 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusDto model)
         {
-            var r = model.ToModel(context.ClientsDb).UpdateGuidEntity(context.Viruses, v => v.Key == model.Key, v => v.Company, null, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, "病毒",(cur,prev)=> {
-                prev.ClientMachineId = cur.ClientMachineId;
-                prev.Key = cur.Key;
-                prev.Sha1 = cur.Sha1;
-                prev.ClientIp = cur.ClientIp;
-                prev.Create = cur.Create;
-                prev.FileName = cur.FileName;
-                prev.Type = cur.Type;
-            },newItem=> {
-                newItem.Create = DateTime.Now;
-            }, googleAuthService, usersService, currentUserService, userActionServices);
-            if(r.Item1 == EntityModifyExtensions.ActionType.Add)
+            var currentrUser = currentUserService.CurrentUser;
+            var r = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<Virus>()
+            {
+                Item = model.ToModel(context.ClientsDb),
+                AuthUser = currentrUser,
+                BeforeAdd = v =>
+                {
+                    v.Create = DateTime.Now;
+                },
+                BeforeModify = (cur, prev) =>
+                {
+                    prev.ClientMachineId = cur.ClientMachineId;
+                    prev.Key = cur.Key;
+                    prev.Sha1 = cur.Sha1;
+                    prev.ClientIp = cur.ClientIp;
+                    prev.Create = cur.Create;
+                    prev.FileName = cur.FileName;
+                    prev.Type = cur.Type;
+                },
+                Db = context.Viruses,
+                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<Virus>()
+                {
+                    CompanyGetter = c => c.Company,
+                    Description = "病毒",
+                    Flag = EntityModifyExtensions.PermissionFlag.None,
+                    Permission = ApplicationPermissions.Client.Virus.Item
+                },
+                QueryItemGetter = v => v.Key == model.Key
+            });
+            if (r.Item1 == EntityModifyExtensions.ActionType.Add)
             {
                 r.Item2.Status = VirusStatus.Unhandle;
             }
