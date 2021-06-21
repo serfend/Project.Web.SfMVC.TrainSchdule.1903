@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BLL.Extensions.Common.EntityModifyExtensions;
 
 namespace BLL.Services
 {
@@ -51,31 +52,51 @@ namespace BLL.Services
             return ua;
         }
 
-        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description)
+        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => Permission(authUser, permission, operation, new List<string>() { targetUserCompanyCode }, description);
+        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description)
         {
-            if (authUser == null) return false;
+            var authUserId = authUser.Id;
+            var a = Log(UserOperation.Permission, authUserId, $"授权到[{string.Join(',',targetUserCompanyCodes)}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
+
+            IEnumerable<(PermissionResult, IPermissionDescription)> result= new List<(PermissionResult, IPermissionDescription) >();
+            foreach(var c in targetUserCompanyCodes)
+            {
+                var r = GetPermissionResult(authUser, permission, operation, c);
+                if (r.Item1 == PermissionResult.Deny)
+                {
+                    Status(a, false, $"失败[{c}]");
+                    return false;
+                }
+            }
+            Status(a, true, string.Join(',',result.Select(i=> {
+                string desc = string.Empty;
+                if (i.Item2 != null)
+                {
+                    var t = i.Item2;
+                    desc = $"{t.Name}:${t.Region}:{t.Type}";
+                }
+                return $"[{i.Item1}]{desc}";
+            })));
+            return true;
+        }
+        public enum PermissionResult
+        {
+            Deny = 0,
+            AsDirect = 1,
+            AsMajor = 2,
+            AsManager = 3
+        }
+        public (PermissionResult,IPermissionDescription) GetPermissionResult(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode) {
+            if (authUser == null) return (PermissionResult.Deny,null);
             var authUserId = authUser.Id;
             targetUserCompanyCode = targetUserCompanyCode?.ToUpper() ?? string.Empty;
-            var a = Log(UserOperation.Permission, authUserId, $"授权到[{targetUserCompanyCode}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
             var permit = permissionServices.CheckPermissions(authUserId, permission.Key, operation, targetUserCompanyCode);
-            if (permit != null)
-            {
-                Status(a, true, $"@直接权限:{permit.Name},{permit.Region},{permit.Type}");
-                return true;
-            }
+            if (permit != null) return (PermissionResult.AsDirect, permit);
             var checkCompanyMajor = authUser.CheckCompanyMajor(targetUserCompanyCode);
-            if (checkCompanyMajor)
-            {
-                Status(a, true, $"单位主管");
-                return true;
-            }
+            if (checkCompanyMajor) return (PermissionResult.AsMajor, null);
             var checkCompanyManager = authUser.CheckCompanyManager(targetUserCompanyCode, userServiceDetail);
-            if (checkCompanyManager)
-            {
-                Status(a, true, $"单位管理");
-                return true;
-            }
-            return false;
+            if (checkCompanyManager) return (PermissionResult.AsManager, null);
+            return (PermissionResult.Deny,null);
         }
         public async Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model)
         {

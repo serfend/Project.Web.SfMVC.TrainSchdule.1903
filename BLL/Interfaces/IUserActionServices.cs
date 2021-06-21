@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BLL.Extensions.Common.EntityModifyExtensions;
 
 namespace BLL.Interfaces
 {
@@ -50,6 +51,8 @@ namespace BLL.Interfaces
 		/// <param name="description">描述</param>
 		/// <returns></returns>
 		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description);
+		bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description);
+		
 		Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
 	}
 }

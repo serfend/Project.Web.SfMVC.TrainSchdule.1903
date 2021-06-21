@@ -45,6 +45,8 @@ namespace DAL.Entities.Permisstions
     {
         None = 0,
         Read = 1,
-        Write = 2
+        Write = 2,
+        BanRead = 4,
+        BanWrite = 8
     }
 }
