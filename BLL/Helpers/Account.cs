@@ -8,7 +8,7 @@
 			{
 				public static class Invalid
 				{
-					public static readonly ApiResult Default = new ApiResult(12100, "访问被拒绝");
+					public static readonly ApiResult Default = new ApiResult(12100, "授权访问失败，请检查登录权限。");
 					public static readonly ApiResult Unknown = new ApiResult(12110, "存在不存在的操作");
 					public static readonly ApiResult NotLogin = new ApiResult(12120, "用户未登录");
 					public static readonly ApiResult CipperInvalid = new ApiResult(12130, "无效的加密验证信息");
