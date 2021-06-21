@@ -280,6 +280,11 @@ namespace DAL.Entities.Permisstions
         public static class Resources
         {
             public static Permission Item { get; set; }
+            [Description("菜单")]
+            public static class Menu
+            {
+                public static Permission Item { get; set; }
+            }
             [Description("短网址")]
             public static class ShortUrl
             {
