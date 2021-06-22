@@ -27,24 +27,30 @@ namespace BLL.Services.Common
         }
 
 
-        public (ActionType,T) Update<T>(DataUpdateModel<T> model) where T : BaseEntityGuid
+        public (ActionType, T) Update<T>(DataUpdateModel<T> model) where T : BaseEntityGuid
         {
-
+            var directAllow = model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteDirectAllow);
             string permit_fail_company = null;
             var prevItem = model.Db.Where(c => !c.IsRemoved).FirstOrDefault(model.QueryItemGetter);
             var prevCompany = prevItem == null ? null : model.PermissionJudgeItem.CompanyGetter(prevItem);
+            if (prevItem != null
+                && model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteSelfDirectAllow)
+                && ((model.PermissionJudgeItem.UserGetter?.Invoke(prevItem) ?? string.Empty) == model.AuthUser.Id)
+                )
+                directAllow = true;
             var company = model.PermissionJudgeItem.CompanyGetter(model.Item);
-            ActionType action = ActionType.Remove;
             if (model.Item.IsRemoved)
             {
                 if (prevItem == null) throw new ActionStatusMessageException(model.Item.NotExist());
                 prevCompany = model.PermissionJudgeItem.CompanyGetter(prevItem);
-                    var checkIsBan = model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.GlobalReverse) || model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteReverse);
-                var permit = userActionServices.Permission(model.AuthUser, model.PermissionJudgeItem.Permission, PermissionType.Write, prevCompany, $"{action}:{model.PermissionJudgeItem.Description}") ^ checkIsBan;
+                var checkIsBan = model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.GlobalReverse) || model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteReverse);
+                var permit = directAllow ? true : userActionServices.Permission(model.AuthUser, model.PermissionJudgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.Write, prevCompany, $"通用移除:{model.PermissionJudgeItem.Description}");
+                if (directAllow) userActionServices.Log(DAL.Entities.UserInfo.UserOperation.UpdateInfo, model.AuthUser.Id, $"通用直接操作移除{model.PermissionJudgeItem.Description}", true, DAL.Entities.UserInfo.ActionRank.Infomation);
                 if (permit)
                 {
                     prevItem.Remove();
                     model.Db.Update(prevItem);
+                    return (ActionType.Remove, prevItem);
                 }
                 else
                     permit_fail_company = prevCompany;
@@ -54,34 +60,38 @@ namespace BLL.Services.Common
                 if (model.Item == null) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.IdIsNull);
                 if (prevItem != null)
                 {
-                    action = ActionType.Update;
                     var checkIsBan = model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.GlobalReverse) || model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteReverse);
-                    var permit = userActionServices.Permission(currentUserService.CurrentUser, model.PermissionJudgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.BanRead, new List<string>() { prevCompany, company }, $"通用更新:{model.PermissionJudgeItem.Description}") ^ checkIsBan;
+                    var permit = directAllow ? true : userActionServices.Permission(currentUserService.CurrentUser, model.PermissionJudgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.Write, new List<string>() { prevCompany, company }, $"通用更新:{model.PermissionJudgeItem.Description}");
+                    if (directAllow) userActionServices.Log(DAL.Entities.UserInfo.UserOperation.UpdateInfo, model.AuthUser.Id, $"通用直接操作更新{model.PermissionJudgeItem.Description}", true, DAL.Entities.UserInfo.ActionRank.Infomation);
+
                     if (permit)
                     {
                         model.BeforeModify?.Invoke(model.Item, prevItem);
                         model.Db.Update(prevItem);
+                        return (ActionType.Update, prevItem);
                     }
                     else
                         permit_fail_company = company;
                 }
                 else
                 {
-                    action = ActionType.Add;
                     var checkIsBan = model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.GlobalReverse) || model.PermissionJudgeItem.Flag.HasFlag(PermissionFlag.WriteReverse);
-                    var permit = userActionServices.Permission(currentUserService.CurrentUser, model.PermissionJudgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.BanRead, company, $"通用新增:{model.PermissionJudgeItem.Description}");
+                    var permit = directAllow ? true : userActionServices.Permission(currentUserService.CurrentUser, model.PermissionJudgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.Write, company, $"通用新增:{model.PermissionJudgeItem.Description}");
+                    if (directAllow) userActionServices.Log(DAL.Entities.UserInfo.UserOperation.UpdateInfo, model.AuthUser.Id, $"通用直接操作新增:{model.PermissionJudgeItem.Description}", true, DAL.Entities.UserInfo.ActionRank.Infomation);
+
                     if (permit)
                     {
                         model.BeforeAdd.Invoke(model.Item);
                         model.Db.Add(model.Item);
+                        return (ActionType.Add, model.Item);
                     }
                     else
                         permit_fail_company = company;
                 }
             }
             if (permit_fail_company != null) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default, $"需要授权[{permit_fail_company}]时被拒绝", true));
-            
-            return (action,prevItem);
+
+            return (ActionType.Update, prevItem);
         }
     }
 }

@@ -28,6 +28,10 @@ namespace BLL.Extensions.Common
             /// </summary>
             public Func<T, string> CompanyGetter { get; set; }
             /// <summary>
+            /// 定义如何获取到目标人
+            /// </summary>
+            public Func<T,string> UserGetter { get; set; }
+            /// <summary>
             /// 授权权限
             /// </summary>
             public Permission Permission { get; set; }
@@ -59,6 +63,22 @@ namespace BLL.Extensions.Common
             /// 
             /// </summary>
             WriteReverse = 4,
+            /// <summary>
+            /// 直接放行读取
+            /// </summary>
+            ReadDirectAllow = 8,
+            /// <summary>
+            /// 直接放行编辑
+            /// </summary>
+            WriteDirectAllow = 16,
+            /// <summary>
+            /// 直接放行读取本人内容
+            /// </summary>
+            ReadSelfDirectAllow = 32,
+            /// <summary>
+            /// 直接放行操作本人内容
+            /// </summary>
+            WriteSelfDirectAllow = 64
         }
 
         /// <summary>

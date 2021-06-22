@@ -57,12 +57,12 @@ namespace BLL.Services
         {
             var authUserId = authUser.Id;
             var a = Log(UserOperation.Permission, authUserId, $"授权到[{string.Join(',',targetUserCompanyCodes)}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
-
+            var isBanTest = operation.HasFlag(PermissionType.BanRead) || operation.HasFlag(PermissionType.BanWrite);
             IEnumerable<(PermissionResult, IPermissionDescription)> result= new List<(PermissionResult, IPermissionDescription) >();
             foreach(var c in targetUserCompanyCodes)
             {
                 var r = GetPermissionResult(authUser, permission, operation, c);
-                if (r.Item1 == PermissionResult.Deny)
+                if ((!isBanTest&& r.Item1 == PermissionResult.Deny) ||(isBanTest&&r.Item1==PermissionResult.AsDirect))
                 {
                     Status(a, false, $"失败[{c}]");
                     return false;

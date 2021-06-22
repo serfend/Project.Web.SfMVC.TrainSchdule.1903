@@ -101,6 +101,7 @@ namespace TrainSchdule.System
 			services.AddScoped<IFileServices, FileServices>();
 			services.AddScoped<IDWZServices, DWZServices>();
 			services.AddScoped<IDataDictionariesServices, DataDictionariesServices>();
+			services.AddScoped<IDataUpdateServices, DataUpdateServices>();
 
 			services.AddScoped<IAppMessageServices, AppMessageServices>();
 			services.AddScoped<IAppUserMessageInfoServices, AppUserMessageInfoServices>();
