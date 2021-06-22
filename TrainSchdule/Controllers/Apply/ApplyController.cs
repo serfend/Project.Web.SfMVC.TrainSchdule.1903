@@ -50,25 +50,9 @@ namespace TrainSchdule.Controllers.Apply
 		private readonly IUserActionServices userActionServices;
         private readonly IDataDictionariesServices dataDictionariesServices;
         private readonly IDataUpdateServices dataUpdateServices;
-        private readonly ICommonDataUpdate commonDataUpdate;
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="usersService"></param>
-        /// <param name="currentUserService"></param>
-        /// <param name="applyService"></param>
-        /// <param name="applyInDayService"></param>
-        /// <param name="applyServiceCreate"></param>
-        /// <param name="vacationCheckServices"></param>
-        /// <param name="context"></param>
-        /// <param name="companiesService"></param>
-        /// <param name="verifyService"></param>
-        /// <param name="authService"></param>
-        /// <param name="recallOrderServices"></param>
-        /// <param name="userActionServices"></param>
-        /// <param name="dataDictionariesServices"></param>
-        /// <param name="dataUpdateServices"></param>
+		/// <summary>
+		/// 
+		/// </summary>
         public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService,IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices,IDataUpdateServices dataUpdateServices)
 		{
 			this.usersService = usersService;

@@ -38,6 +38,7 @@ namespace DAL.Data
 		public DbSet<ApplyComment> ApplyComments { get; set; }
 		public IQueryable<ApplyComment> ApplyCommentsDb => ApplyComments.Where(c => !c.IsRemoved);
 		public DbSet<ApplyCommentLike> ApplyCommentLikes { get; set; }
+		public IQueryable<ApplyCommentLike> ApplyCommentLikesDb => ApplyCommentLikes.Where(c => !c.IsRemoved);
 
 		private void Configuration_Applies(ModelBuilder builder)
 		{

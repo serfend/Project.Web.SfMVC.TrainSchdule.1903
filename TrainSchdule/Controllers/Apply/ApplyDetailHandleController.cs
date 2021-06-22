@@ -27,14 +27,15 @@ namespace TrainSchdule.Controllers.Apply
         [HttpGet]
         public IActionResult Comment(string id, int pageIndex = 0, int pageSize = 20, string order = null)
         {
-            var list_raw = context.ApplyCommentsDb.Where(a => a.Apply == id);
+            var list_raw = context.ApplyCommentsDb.Where(a => a.Apply == id).Where(a => a.ReplyId == null);
             Tuple<IQueryable<ApplyComment>, int> list;
             if ("as_date" == order) list = list_raw.OrderByDescending(a => a.Create).SplitPage(pageIndex, pageSize);
             else list = list_raw.OrderByDescending(a => a.Likes).SplitPage(pageIndex, pageSize);
             // TODO if need to extend , then put it to services
-            var db = context.ApplyCommentLikes.AsQueryable();
+            var db = context.ApplyCommentLikesDb;
+            var dbComments = context.ApplyCommentsDb;
             var currentUser = currentUserService.CurrentUser?.Id;
-            return new JsonResult(new EntitiesListViewModel<ApplyCommentVDataModel>(list.Item1.AsEnumerable().Select(i => i.ToDataModel(db, currentUser)), list.Item2));
+            return new JsonResult(new EntitiesListViewModel<ApplyCommentVDataModel>(list.Item1.AsEnumerable().Select(i => i.ToDataModel(db, dbComments, currentUser, 1)), list.Item2));
         }
 
         /// <summary>
@@ -47,9 +48,10 @@ namespace TrainSchdule.Controllers.Apply
         {
             var actionUser = currentUserService.CurrentUser;
             if (actionUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
+            var item = model.Data.ToModel(context.ApplyCommentsDb);
             var m = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<ApplyComment>()
             {
-                Item = model.Data.ToModel(context.ApplyCommentsDb),
+                Item = item,
                 Db = context.ApplyComments,
                 AuthUser = model.Auth.AuthUser(authService, usersService, actionUser),
                 BeforeAdd = (e) =>
@@ -61,20 +63,20 @@ namespace TrainSchdule.Controllers.Apply
                 {
                     prev.Content = cur.Content;
                     prev.ModifyBy = actionUser;
-                    prev.Reply = cur.Reply;
+                    prev.ReplyId = cur.ReplyId;
                     prev.LastModify = DateTime.Now;
                 },
                 PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<ApplyComment>()
                 {
-                    CompanyGetter = c=>c.From.CompanyInfo.CompanyCode,
+                    CompanyGetter = c => c?.From?.CompanyInfo?.CompanyCode ?? string.Empty,
                     Description = "评论",
-                    Flag = EntityModifyExtensions.PermissionFlag.GlobalReverse,
+                    Flag =  EntityModifyExtensions.PermissionFlag.WriteSelfDirectAllow | EntityModifyExtensions.PermissionFlag.GlobalReverse,
                     Permission = ApplicationPermissions.Apply.Vacation.AttachInfo.Item,
                 },
-                QueryItemGetter = c=>c.Id == model.Data.Id
+                QueryItemGetter = c => c.Id == model.Data.Id
             });
             context.SaveChanges();
-            return new JsonResult(new EntityViewModel<ApplyCommentVDataModel>(m.Item2.ToDataModel(context.ApplyCommentLikes, actionUser.Id)));
+            return new JsonResult(new EntityViewModel<ApplyCommentVDataModel>(m.Item2.ToDataModel(context.ApplyCommentLikesDb, context.ApplyCommentsDb, actionUser.Id, 1)));
         }
 
         /// <summary>

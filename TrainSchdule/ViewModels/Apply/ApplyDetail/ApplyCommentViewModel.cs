@@ -24,12 +24,15 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// </summary>
         /// <param name="i"></param>
         /// <param name="likesDb">点赞库</param>
+        /// <param name="commentsDb"></param>
         /// <param name="currentUser">当前登录的用户</param>
+        /// <param name="deep"></param>
         /// <returns></returns>
-        public static ApplyCommentVDataModel ToDataModel(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, string currentUser) =>
+        public static ApplyCommentVDataModel ToDataModel(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, IQueryable<ApplyComment> commentsDb, string currentUser, int deep = 0) =>
              new ApplyCommentVDataModel()
              {
                  Id = i.Id,
+                 Reply = i.ReplyId,
                  Apply = i.Apply,
                  Content = i.Content,
                  Create = i.Create,
@@ -37,7 +40,12 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
                  LastModify = i.LastModify,
                  ModifyBy = i.ModifyBy.ToSummaryDto(),
                  Like = i.Likes,
-                 MyLike = currentUser == null ? false : likesDb.Where(like => like.CommentId == i.Id).Any(like => like.CreateById == currentUser)
+                 MyLike = currentUser == null ? false : likesDb.Where(like => like.CommentId == i.Id).Any(like => like.CreateById == currentUser),
+                 Replies = deep > 0 ? commentsDb
+                     .Where(c => c.ReplyId == i.Id)
+                     .ToList()
+                     .Select(i => i.ToDataModel(likesDb, commentsDb, currentUser, deep - 1))
+                 : null
              };
         /// <summary>
         /// 
@@ -49,9 +57,13 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
             raw.Apply = model.Apply;
             raw.Content = model.Content;
             raw.Create = DateTime.Now;
-            raw.Reply = model.Reply.Equals(Guid.Empty) ? null : comments.FirstOrDefault(c => c.Id == model.Reply);
+            raw.IsRemoved = model.IsRemove;
+            if (model.Reply != null)
+            {
+                var target = comments.FirstOrDefault(c => c.Id == model.Reply);
+                if (target != null) raw.ReplyId = model.Reply;
+            }
             return raw;
-
         }
     }
 
@@ -89,7 +101,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// <summary>
         /// 若修改/删除 则填写
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
 
         /// <summary>
         /// 作用对象
@@ -98,7 +110,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// <summary>
         /// 回复某评论 使用则无需填写Apply
         /// </summary>
-        public Guid Reply { get; set; }
+        public Guid? Reply { get; set; }
         /// <summary>
         /// 是否是删除
         /// </summary>
@@ -107,7 +119,6 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// <summary>
         ///
         /// </summary>
-        [Required(ErrorMessage = "内容未填写")]
         public string Content { get; set; }
     }
 
@@ -120,7 +131,14 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         ///
         /// </summary>
         public Guid Id { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid? Reply { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<ApplyCommentVDataModel> Replies { get; set; }
         /// <summary>
         ///
         /// </summary>

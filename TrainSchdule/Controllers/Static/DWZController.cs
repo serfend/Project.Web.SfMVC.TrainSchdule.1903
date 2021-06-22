@@ -120,7 +120,7 @@ namespace TrainSchdule.Controllers
 		public async Task<IActionResult> Create([FromBody] ShortUrlCreateDataModel model)
 		{
 			var c = currentUserService.CurrentUser;
-			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.Write, string.Empty,"创建短网址");
+			var permit = userActionServices.Permission(c, ApplicationPermissions.Resources.ShortUrl.Item, PermissionType.BanWrite, string.Empty,"创建短网址");
 			if (!permit) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			try
 			{
