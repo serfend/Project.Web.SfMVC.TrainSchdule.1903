@@ -76,7 +76,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     prev.Mac = cur.Mac;
                 },
                 Db = context.Clients,
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<Client>()
+                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<Client>()
                 {
                     CompanyGetter = c => c.CompanyCode,
                     Description = "终端",

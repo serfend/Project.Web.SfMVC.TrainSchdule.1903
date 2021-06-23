@@ -15,6 +15,8 @@ using TrainSchdule.Extensions.Common;
 using TrainSchdule.ViewModels.Apply.ApplyDetail;
 using TrainSchdule.ViewModels.System;
 using TrainSchdule.ViewModels.Verify;
+using static BLL.Extensions.Common.EntityModifyExtensions;
+using static TrainSchdule.ViewModels.Apply.ApplyDetail.ApplyCommentExtensions;
 
 namespace TrainSchdule.Controllers.Apply
 {
@@ -35,9 +37,24 @@ namespace TrainSchdule.Controllers.Apply
             var db = context.ApplyCommentLikesDb;
             var dbComments = context.ApplyCommentsDb;
             var currentUser = currentUserService.CurrentUser?.Id;
-            return new JsonResult(new EntitiesListViewModel<ApplyCommentVDataModel>(list.Item1.AsEnumerable().Select(i => i.ToDataModel(db, dbComments, currentUser, 1)), list.Item2));
+            // 默认返回头三条
+            return new JsonResult(new EntitiesListViewModel<ApplyCommentVDataModel>(list.Item1.AsEnumerable().Select(i => i.ToDataModel(db, dbComments, currentUser, 1, 0, 3)), list.Item2));
         }
-
+        /// <summary>
+        /// 指定假期的评论
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Replies(string id, int pageIndex = 0, int pageSize = 20)
+        {
+            var db = context.ApplyCommentLikesDb;
+            var dbComments = context.ApplyCommentsDb;
+            var currentUser = currentUserService.CurrentUser?.Id;
+            var success = Guid.TryParse(id, out var guid);
+            if (!success) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.IdIsNull);
+            var i = dbComments.FirstOrDefault(u => u.Id == guid);
+            return new JsonResult(new EntityViewModel<ApplyCommentVDataModel>(i.ToDataModel(db, dbComments, currentUser, 1, pageIndex, pageSize)));
+        }
         /// <summary>
         /// 添加/删除假期评论
         /// </summary>
@@ -49,7 +66,7 @@ namespace TrainSchdule.Controllers.Apply
             var actionUser = currentUserService.CurrentUser;
             if (actionUser == null) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.NotLogin);
             var item = model.Data.ToModel(context.ApplyCommentsDb);
-            var m = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<ApplyComment>()
+            var m = dataUpdateServices.Update(new DataUpdateModel<ApplyComment>()
             {
                 Item = item,
                 Db = context.ApplyComments,
@@ -66,12 +83,21 @@ namespace TrainSchdule.Controllers.Apply
                     prev.ReplyId = cur.ReplyId;
                     prev.LastModify = DateTime.Now;
                 },
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<ApplyComment>()
+                RemoveJudge = new PermissionJudgeItem<ApplyComment>()
+                {
+                    Flag = PermissionFlag.WriteSelfDirectAllow
+                },
+                AddJudge = new PermissionJudgeItem<ApplyComment>()
+                {
+                    Flag = PermissionFlag.WriteSelfDirectAllow
+                },
+                UpdateJudge = new PermissionJudgeItem<ApplyComment>()
                 {
                     CompanyGetter = c => c?.From?.CompanyInfo?.CompanyCode ?? string.Empty,
                     Description = "评论",
-                    Flag =  EntityModifyExtensions.PermissionFlag.WriteSelfDirectAllow | EntityModifyExtensions.PermissionFlag.GlobalReverse,
+                    Flag = PermissionFlag.ReadSelfDirectAllow,
                     Permission = ApplicationPermissions.Apply.Vacation.AttachInfo.Item,
+                    UserGetter = c => c.From?.Id
                 },
                 QueryItemGetter = c => c.Id == model.Data.Id
             });

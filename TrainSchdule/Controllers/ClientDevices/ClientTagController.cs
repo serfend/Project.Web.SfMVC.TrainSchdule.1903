@@ -142,7 +142,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     prev.ParentId = cur.ParentId;
                 },
                 Db = context.ClientTags,
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<ClientTags>()
+                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<ClientTags>()
                 {
                     CompanyGetter = c => c.CreateCompany,
                     Description = "标签内容",

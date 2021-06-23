@@ -1,5 +1,6 @@
 ﻿using Abp.Extensions;
 using BLL.Extensions;
+using BLL.Extensions.Common;
 using BLL.Extensions.CreateClientInfo;
 using BLL.Helpers;
 using BLL.Interfaces;
@@ -55,6 +56,7 @@ namespace BLL.Services
         public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => Permission(authUser, permission, operation, new List<string>() { targetUserCompanyCode }, description);
         public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description)
         {
+            if (authUser == null) throw new ActionStatusMessageException(authUser.NotLogin());
             var authUserId = authUser.Id;
             var a = Log(UserOperation.Permission, authUserId, $"授权到[{string.Join(',',targetUserCompanyCodes)}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
             var isBanTest = operation.HasFlag(PermissionType.BanRead) || operation.HasFlag(PermissionType.BanWrite);

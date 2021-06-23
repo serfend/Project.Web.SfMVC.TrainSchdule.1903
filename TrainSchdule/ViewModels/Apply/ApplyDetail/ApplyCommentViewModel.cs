@@ -1,4 +1,5 @@
 ﻿using BLL.Extensions;
+using BLL.Extensions.Common;
 using BLL.Helpers;
 using DAL.DTO.Apply;
 using DAL.DTO.User;
@@ -20,6 +21,26 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
     public static class ApplyCommentExtensions
     {
         /// <summary>
+        /// 获取指定目标的评论
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="likesDb"></param>
+        /// <param name="commentsDb"></param>
+        /// <param name="currentUser"></param>
+        /// <param name="deep"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public static Tuple<IEnumerable<ApplyCommentVDataModel>, int> Replies(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, IQueryable<ApplyComment> commentsDb, string currentUser, int deep = 0, int pageIndex = 0, int pageSize = 3)
+        {
+            var list = commentsDb
+                     .Where(c => c.ReplyId == i.Id)
+                     .OrderByDescending(c => c.Create)
+                     .SplitPage(pageIndex, pageSize);
+            var result = list.Item1.AsEnumerable().Select(i => i.ToDataModel(likesDb, commentsDb, currentUser, deep - 1, pageIndex, pageSize)).ToList();
+            return new Tuple<IEnumerable<ApplyCommentVDataModel>, int>(result, list.Item2);
+        }
+        /// <summary>
         ///
         /// </summary>
         /// <param name="i"></param>
@@ -27,26 +48,24 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// <param name="commentsDb"></param>
         /// <param name="currentUser">当前登录的用户</param>
         /// <param name="deep"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public static ApplyCommentVDataModel ToDataModel(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, IQueryable<ApplyComment> commentsDb, string currentUser, int deep = 0) =>
-             new ApplyCommentVDataModel()
-             {
-                 Id = i.Id,
-                 Reply = i.ReplyId,
-                 Apply = i.Apply,
-                 Content = i.Content,
-                 Create = i.Create,
-                 From = i.From.ToSummaryDto(),
-                 LastModify = i.LastModify,
-                 ModifyBy = i.ModifyBy.ToSummaryDto(),
-                 Like = i.Likes,
-                 MyLike = currentUser == null ? false : likesDb.Where(like => like.CommentId == i.Id).Any(like => like.CreateById == currentUser),
-                 Replies = deep > 0 ? commentsDb
-                     .Where(c => c.ReplyId == i.Id)
-                     .ToList()
-                     .Select(i => i.ToDataModel(likesDb, commentsDb, currentUser, deep - 1))
-                 : null
-             };
+        public static ApplyCommentVDataModel ToDataModel(this ApplyComment i, IQueryable<ApplyCommentLike> likesDb, IQueryable<ApplyComment> commentsDb, string currentUser, int deep = 0, int pageIndex = 0, int pageSize = 3)
+        => new ApplyCommentVDataModel()
+        {
+            Id = i.Id,
+            Reply = i.ReplyId,
+            Apply = i.Apply,
+            Content = i.Content,
+            Create = i.Create,
+            From = i.From.ToSummaryDto(),
+            LastModify = i.LastModify,
+            ModifyBy = i.ModifyBy.ToSummaryDto(),
+            Like = i.Likes,
+            MyLike = currentUser == null ? false : likesDb.Where(like => like.CommentId == i.Id).Any(like => like.CreateById == currentUser),
+            Replies = deep > 0 ? i.Replies(likesDb, commentsDb, currentUser, deep, pageIndex, pageSize) : new Tuple<IEnumerable<ApplyCommentVDataModel>, int>(new List<ApplyCommentVDataModel>(), 0)
+        };
         /// <summary>
         /// 
         /// </summary>x
@@ -138,7 +157,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// <summary>
         /// 
         /// </summary>
-        public IEnumerable<ApplyCommentVDataModel> Replies { get; set; }
+        public Tuple<IEnumerable<ApplyCommentVDataModel>, int> Replies { get; set; }
         /// <summary>
         ///
         /// </summary>

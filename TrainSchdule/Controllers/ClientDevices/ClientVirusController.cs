@@ -87,7 +87,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     prev.Type = cur.Type;
                 },
                 Db = context.Viruses,
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<Virus>()
+                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<Virus>()
                 {
                     CompanyGetter = c => c.Company,
                     Description = "病毒",

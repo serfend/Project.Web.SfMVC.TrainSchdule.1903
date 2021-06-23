@@ -117,9 +117,21 @@ namespace BLL.Extensions.Common
             /// </summary>
             public Expression<Func<T, bool>> QueryItemGetter { get; set; }
             /// <summary>
-            /// 权限要求
+            /// 更新 权限要求（默认权限）
             /// </summary>
-            public PermissionJudgeItem<T> PermissionJudgeItem { get; set; }
+            public PermissionJudgeItem<T> UpdateJudge { get; set; }
+            /// <summary>
+            /// 读取 权限要求
+            /// </summary>
+            public PermissionJudgeItem<T> ReadJudge { get; set; }
+            /// <summary>
+            /// 移除 权限要求
+            /// </summary>
+            public PermissionJudgeItem<T> RemoveJudge { get; set; }
+            /// <summary>
+            /// 添加 权限要求
+            /// </summary>
+            public PermissionJudgeItem<T> AddJudge { get; set; }
             /// <summary>
             /// 授权人
             /// </summary>

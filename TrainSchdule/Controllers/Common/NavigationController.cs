@@ -55,7 +55,7 @@ namespace TrainSchdule.Controllers.Common
                     prev.Url = cur.Url;
                 },
                 Db = context.CommonNavigates,
-                PermissionJudgeItem = new BLL.Extensions.Common.EntityModifyExtensions.PermissionJudgeItem<CommonNavigate>()
+                UpdateJudge =  new BLL.Extensions.Common.EntityModifyExtensions.PermissionJudgeItem<CommonNavigate>()
                 {
                     CompanyGetter = c=> "root",
                     Description = "菜单",

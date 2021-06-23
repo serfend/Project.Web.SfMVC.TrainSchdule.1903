@@ -77,7 +77,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     //prev.Remark = cur.Remark;
                 },
                 Db = context.VirusHandleRecords,
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<VirusHandleRecord>()
+                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<VirusHandleRecord>()
                 {
                     CompanyGetter = c => c.Virus?.Company,
                     Description = "病毒记录",

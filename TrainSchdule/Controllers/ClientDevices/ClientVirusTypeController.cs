@@ -77,7 +77,7 @@ namespace TrainSchdule.Controllers.ClientDevices
                     prev.Type = cur.Type;
                 },
                 Db = context.VirusTraces,
-                PermissionJudgeItem = new EntityModifyExtensions.PermissionJudgeItem<VirusTrace>()
+                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<VirusTrace>()
                 {
                     CompanyGetter = c=>null,
                     Description = "病毒类型",
