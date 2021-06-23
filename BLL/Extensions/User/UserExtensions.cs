@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using Abp.Extensions;
+using BLL.Interfaces;
 using DAL.DTO.User;
 using DAL.Entities.UserInfo;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,7 @@ namespace BLL.Extensions
 		public static bool CheckCompanyManager(this User user,string targetCompany, IUserServiceDetail userServiceDetail)
         {
 			var results = userServiceDetail.InMyManage(user).Result;
-			if (targetCompany == null && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
+			if (targetCompany.IsNullOrEmpty() && results.Item2 > 0) return true; // 如果无授权对象，则有任意单位权限即可
 			else if (results.Item2 > 0 && results.Item1.Any(c => targetCompany.Length >= c.Code.Length && targetCompany.StartsWith(c.Code)))
 				return true;
 			return false;
