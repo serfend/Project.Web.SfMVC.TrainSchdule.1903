@@ -1,4 +1,5 @@
-﻿using BLL.Extensions.Common;
+﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Interfaces;
 using DAL.DTO.ClientDevice;
 using DAL.Entities.ClientDevice;
@@ -135,10 +136,10 @@ namespace TrainSchdule.ViewModels.BBS
         {
             if (raw == null) raw = new Client();
             raw.Company = companies.FirstOrDefault(i => i.Code == client.Company);
-            if(client.Company==null || raw.Company!=null) raw.CompanyCode = client.Company;
+            if (client.Company == null || raw.Company != null) raw.CompanyCode = client.Company;
             if (client.OwnerRealName != null)
                 raw.Owner = usersService.GetUserByRealname(client.OwnerRealName, false).FirstOrDefault();
-            else raw.Owner = usersService.GetById(client.Owner);
+            else raw.Owner = client.Owner.IsNullOrEmpty() ? null : usersService.GetById(client.Owner);
             raw.OwnerId = raw.Owner?.Id;
             raw.DeviceType = client.DeviceType ?? raw.DeviceType;
             raw.Ip = client.Ip ?? raw.Ip;
