@@ -40,7 +40,7 @@ namespace TrainSchdule.Controllers.Party
             var currentUser = currentUserService.CurrentUser;
             var list = context.UserPartyInfosDb;
             var company = model.Company?.Value ?? currentUser.CompanyInfo.CompanyCode;
-            var permit = userActionServices.Permission(currentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Read, company, "党团信息");
+            var permit = userActionServices.Permission(currentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Read, new List<string> { company }, "党团信息", out var failCompany);
             if (!currentUser.CompanyInfo.CompanyCode.StartsWith(company) && permit) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
             list = list.Where(u => u.CompanyCode == company);
             Guid.TryParse(model.Group?.Value, out var group);
@@ -67,7 +67,7 @@ namespace TrainSchdule.Controllers.Party
             if (prev != null) throw new ActionStatusMessageException(prev.Exist());
             var comp = user.CompanyInfo.CompanyCode;
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            if (!userActionServices.Permission(authUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, comp, "党团创建")) throw new ActionStatusMessageException(model.Auth.PermitDenied());
+            if (!userActionServices.Permission(authUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, new List<string> { comp }, "党团创建", out var failCompany)) throw new ActionStatusMessageException(model.Auth.PermitDenied());
             var p = model.Data.ToModel(context);
             context.UserPartyInfos.Add(p);
             context.SaveChanges();
@@ -87,7 +87,7 @@ namespace TrainSchdule.Controllers.Party
             var prev = context.UserPartyInfosDb.FirstOrDefault(p => p.UserName == model.Data.UserName);
             if (prev == null) throw new ActionStatusMessageException(prev.NotExist());
             var comp = prev.User.CompanyInfo.CompanyCode;
-            if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, comp, "党团修改")) throw new ActionStatusMessageException(model.Auth.PermitDenied());
+            if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, new List<string> { comp }, "党团修改", out var failCompany)) throw new ActionStatusMessageException(model.Auth.PermitDenied());
             model.Data.ToModel(context, prev);
             context.Update(prev);
             context.SaveChanges();
@@ -105,7 +105,7 @@ namespace TrainSchdule.Controllers.Party
             var prev = context.UserPartyInfosDb.FirstOrDefault(p => p.UserName == userid);
             if (prev == null) throw new ActionStatusMessageException(prev.NotExist());
             var comp = prev.User.CompanyInfo.CompanyCode;
-            if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, comp, "党团修改")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+            if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.User.PartyInfo.Item, PermissionType.Write, new List<string> { comp }, "党团修改", out var failCompany)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
             prev.Remove();
             context.UserPartyInfos.Update(prev);
             context.SaveChanges();
@@ -136,7 +136,8 @@ namespace TrainSchdule.Controllers.Party
         /// <returns></returns>
         [Route("TypesInParty")]
         [HttpGet]
-        public IActionResult TypesInParty() {
+        public IActionResult TypesInParty()
+        {
             var list = dataDictionariesServices.GetByGroupName(ApplicationDbContext.partyTypeInParty)
                 .ToList();
             return new JsonResult(new EntitiesListViewModel<CommonDataDictionary>(list));

@@ -95,7 +95,7 @@ namespace TrainSchdule.Controllers.ClientDevices
         {
             var client = context.ClientsDb.FirstOrDefault(c => c.MachineId == model.Data.MachineId);
             if (client == null) throw new ActionStatusMessageException(client.NotExist());
-            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, client.CompanyCode, "标签列表");
+            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Manage.Info.Item, PermissionType.Write, new List<string>() { client.CompanyCode }, "标签列表", out var failCompany);
             if (!p) throw new ActionStatusMessageException(new ApiResult(model.Auth.PermitDenied(), $"授权到{client.CompanyCode}", true));
             var list = context.ClientWithTags.Where(c => c.ClientId == client.Id);
             context.ClientWithTags.RemoveRange(list);

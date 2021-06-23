@@ -38,7 +38,7 @@ namespace TrainSchdule.Controllers.Party
             var confer = context.PartyConferences.FirstOrDefault(c => c.Id == guid);
             if (confer == null) throw new ActionStatusMessageException(confer.NotExist());
             var companyCode = confer.CreateByCode;
-            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, companyCode, "用户参会记录列表");
+            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, new List<string> { companyCode }, "用户参会记录列表", out var failCompany);
             if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{companyCode}", true));
             var list = context.PartyUserRecordsDb.Where(r => r.ConferenceId == guid);
             var result = list.SplitPage(pageIndex, pageSize);
@@ -69,14 +69,14 @@ namespace TrainSchdule.Controllers.Party
                 },
                 Db = context.PartyUserRecords,
                 Item = model.Data.ToModel(context),
-                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecord>()
+                UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecord>()
                 {
-                    CompanyGetter = c=>c.User.CompanyInfo.CompanyCode,
+                    CompanyGetter = c => c.User.CompanyInfo.CompanyCode,
                     Description = "用户操作记录",
                     Permission = ApplicationPermissions.Party.Confer.ConferRecord.Item,
                 },
-                QueryItemGetter = c=>c.Id == model.Data.Id
-            }) ;
+                QueryItemGetter = c => c.Id == model.Data.Id
+            });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
             return new JsonResult(ActionStatusMessage.Success);
@@ -97,7 +97,8 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecordContent([FromBody] PartyConferRecordContentViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
-            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecordContent>() {
+            var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecordContent>()
+            {
                 AuthUser = authUser,
                 BeforeAdd = v =>
                 {
@@ -111,13 +112,13 @@ namespace TrainSchdule.Controllers.Party
                 },
                 Db = context.PartyUserRecordContents,
                 Item = model.Data.ToModel(context),
-                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecordContent>()
+                UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecordContent>()
                 {
-                    CompanyGetter = c=>c.Record.User.CompanyInfo.CompanyCode,
+                    CompanyGetter = c => c.Record.User.CompanyInfo.CompanyCode,
                     Description = "操作记录内容",
                     Permission = ApplicationPermissions.Party.Confer.ConferRecord.Item
                 },
-                QueryItemGetter = c=>c.Id==model.Data.Id
+                QueryItemGetter = c => c.Id == model.Data.Id
             });
             if (action.Item1 == EntityModifyExtensions.ActionType.Update && !model.AllowOverwrite) return new JsonResult(ActionStatusMessage.CheckOverwrite);
             context.SaveChanges();
@@ -142,7 +143,7 @@ namespace TrainSchdule.Controllers.Party
                 var record = context.PartyUserRecordsDb.FirstOrDefault(i => i.Id == recordGuid);
                 if (record == null) throw new ActionStatusMessageException(record.NotExist());
                 var companyCode = record.Conference.CreateByCode;
-                var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Read, companyCode, "记录内容");
+                var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Read, new List<string> { companyCode }, "记录内容", out var failCompany);
                 if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{companyCode}", true));
                 list = list.Where(i => i.RecordId == recordGuid);
             }
@@ -151,7 +152,7 @@ namespace TrainSchdule.Controllers.Party
                 var confer = context.PartyConferences.FirstOrDefault(i => i.Id == conferGuid);
                 if (confer == null) throw new ActionStatusMessageException(confer.NotExist());
                 var companyCode = confer.CreateByCode;
-                var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Read, companyCode, "记录内容");
+                var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.ConferRecord.Item, PermissionType.Read, new List<string> { companyCode }, "记录内容", out var failCompany);
                 if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{companyCode}", true));
                 list = list.Where(i => i.Record.ConferenceId == conferGuid);
             }

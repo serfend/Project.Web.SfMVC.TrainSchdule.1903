@@ -73,7 +73,7 @@ namespace TrainSchdule.Controllers.Zx
 			var authUser = auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser?.Id);
 			if (authUser == null) throw new ActionStatusMessageException(ActionStatusMessage.UserMessage.NotExist);
 			if (permission == null) permission = ApplicationPermissions.Grade.Subject.Item;
-			if (!userActionServices.Permission(authUser, permission, operation, targetCompany, description)) throw new ActionStatusMessageException(auth.PermitDenied());
+			if (!userActionServices.Permission(authUser, permission, operation, new List<string> { targetCompany }, description, out var failCompany)) throw new ActionStatusMessageException(auth.PermitDenied());
 			return authUser;
 		}
 

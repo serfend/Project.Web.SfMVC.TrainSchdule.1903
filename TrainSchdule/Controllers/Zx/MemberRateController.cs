@@ -50,7 +50,7 @@ namespace TrainSchdule.Controllers.Zx
         /// <param name="userActionServices"></param>
         /// <param name="usersService"></param>
         /// <param name="dataDictionariesServices"></param>
-        public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices,IUsersService usersService, IDataDictionariesServices dataDictionariesServices)
+        public MemberRateController(ApplicationDbContext context, ICurrentUserService currentUserService, IUserActionServices userActionServices, IUsersService usersService, IDataDictionariesServices dataDictionariesServices)
         {
             this.context = context;
             this.currentUserService = currentUserService;
@@ -90,8 +90,8 @@ namespace TrainSchdule.Controllers.Zx
         {
             var currentUser = currentUserService.CurrentUser;
             var c = context.CompaniesDb.FirstOrDefault(i => i.Code == model.Company);
-            if (c==null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
-            if(!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  model.Company, "批量授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{c.Name}的数据"));
+            if (c == null) throw new ActionStatusMessageException(ActionStatusMessage.CompanyMessage.NotExist);
+            if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, new List<string> { model.Company }, "批量授权录入", out var failCompany)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{c.Name}的数据"));
             // convert to data
             var notExistUser = new List<string>();
             var authList = new HashSet<string>();
@@ -101,22 +101,22 @@ namespace TrainSchdule.Controllers.Zx
                 if (f.User == null) notExistUser.Add(i.UserCid);
                 return f;
             }).ToList();
-            foreach(var i in list)
+            var umax = model.Company; // 全局指定的单位
+            var authCompany = new List<string>()
+            {
+                umax
+            };
+            foreach (var i in list)
             {
                 i.RatingCycleCount = model.RatingCycleCount;
                 i.RatingType = model.RatingType;
-                var umax = model.Company; // 全局指定的单位
                 if (i.CompanyCode == null) i.CompanyCode = umax; // 默认选中
-                var ccode = i.CompanyCode; // 表格中指定的单位
-                umax = ccode == null ? umax : (ccode.StartsWith(umax) ? umax : ccode); // 取高权限
-                var ucode = i.User.CompanyInfo.CompanyCode; // 用户的单位
-                umax = ucode == null ? umax : (ucode.StartsWith(umax) ? umax : ucode); // 取高权限
-                if (!authList.Contains(umax))
-                {
-                    if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, umax, "单点授权录入")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权录入{i.User?.BaseInfo?.RealName ?? i.UserId}的数据"));
-                    authList.Add(umax);
-                }
+                else authCompany.Add(i.CompanyCode);
+                var userCompany = i.User.CompanyInfo.CompanyCode;
+                if (userCompany != null) authCompany.Add(userCompany);
             }
+            authCompany = authCompany.Distinct().ToList();
+            if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, authCompany, "单点授权录入",out var authFailCompany)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"授权到[{list.FirstOrDefault(c => c.CompanyCode == failCompany)?.User.BaseInfo.RealName}]失败"));
             if (notExistUser.Any())
                 return new JsonResult(new EntitiesListViewModel<string>(notExistUser));
 
@@ -132,18 +132,14 @@ namespace TrainSchdule.Controllers.Zx
             {
                 if (model.Confirm)
                 {
-                    foreach (var r in currentListRaw)
+                    var companies = currentListRaw.Select(r => r.CompanyCode).Distinct();
+                    var permit = userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write, companies, "单点授权修改", out var currentFailCompany);
+                    if (!permit) throw new ActionStatusMessageException(new GoogleAuthViewModel().Auth.PermitDenied());
+                    currentListRaw.ForEach(v =>
                     {
-                        var modifyCompany = r.CompanyCode;
-                        bool can_remove = true;
-                        if (!authList.Contains(modifyCompany))
-                        {
-                            if (userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Write,  modifyCompany, "单点授权修改")) authList.Add(modifyCompany);
-                            else
-                                can_remove = false;// throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied($"无权修改{r.User?.BaseInfo?.RealName ?? r.UserId}的数据"));
-                        }
-                        if(can_remove)r.Remove();
-                    }
+                        v.Remove();
+                    });
+                    context.UpdateRange(currentListRaw);
                 }
                 else
                 {
@@ -202,35 +198,37 @@ namespace TrainSchdule.Controllers.Zx
         {
             var list = context.NormalRates.ToExistQueryable();
             var currentUser = currentUserService.CurrentUser;
-            
+
             var ratingCycleCount = model.RatingCycleCount?.Start;
             var ratingType = model.RatingType?.Start;
-            if(ratingType != null && ratingCycleCount!=null)
-                list = list.Where(i => (int)i.RatingType == ratingType).Where(i=>i.RatingCycleCount==ratingCycleCount);
+            if (ratingType != null && ratingCycleCount != null)
+                list = list.Where(i => (int)i.RatingType == ratingType).Where(i => i.RatingCycleCount == ratingCycleCount);
             var user = model.User?.Value;
             if (user != null)
             {
                 var userCompany = usersService.GetById(user)?.CompanyInfo?.CompanyCode;
-                if (user != currentUser.Id) {
-                    if(!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read, userCompany, $"查询{user}")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+                if (user != currentUser.Id)
+                {
+                    if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read, new List<string>() { userCompany }, $"查询{user}", out var failCompany)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 }
                 list = list.Where(i => i.UserId == user);
             }
             var company = model.Company?.Value;
             if (user == null && company == null)
                 company = currentUser.CompanyInfo.CompanyCode;
-            if (company != null)  {
-               if(! userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read,  company,"查询")) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
+            if (company != null)
+            {
+                if (!userActionServices.Permission(currentUser, ApplicationPermissions.Grade.MemberRate.Detail.Item, PermissionType.Read, new List<string>() { company }, "查询", out var companyFailCompany)) throw new ActionStatusMessageException(new GoogleAuthDataModel().PermitDenied());
                 list = list.Where(i => i.CompanyCode.StartsWith(company));
             }
             list = list
-                .OrderBy(i=>i.RatingType)
-                .ThenByDescending(i=>i.RatingCycleCount)
-                .ThenBy(i=>i.Rank)
+                .OrderBy(i => i.RatingType)
+                .ThenByDescending(i => i.RatingCycleCount)
+                .ThenBy(i => i.Rank)
                 .ThenByDescending(i => i.Level)
                 .ThenByDescending(i => i.Create);
             var r = list.SplitPage(model.Page);
-            return new JsonResult(new EntitiesListViewModel<MemberRateDataModel>(r.Item1.Select(i=>i.ToDataModel()),r.Item2));
+            return new JsonResult(new EntitiesListViewModel<MemberRateDataModel>(r.Item1.Select(i => i.ToDataModel()), r.Item2));
         }
     }
 

@@ -26,7 +26,7 @@ namespace TrainSchdule.Controllers.BBS
 	/// </summary>
 	[Route("[controller]/[action]")]
     [Authorize]
-    public partial class BBSMessageController:Controller
+    public partial class BBSMessageController : Controller
     {
         private readonly ApplicationDbContext context;
         private readonly ICurrentUserService currentUserService;
@@ -48,7 +48,7 @@ namespace TrainSchdule.Controllers.BBS
         /// <param name="appUserRelateServices"></param>
         /// <param name="userActionServices"></param>
         /// <param name="googleAuthService"></param>
-        public BBSMessageController(ApplicationDbContext context,ICurrentUserService currentUserService, IAppMessageServices appMessageServices, IAppUserMessageInfoServices appUserMessageInfoServices,IUsersService usersService,IAppUserRelateServices appUserRelateServices, IUserActionServices userActionServices,IGoogleAuthService googleAuthService)
+        public BBSMessageController(ApplicationDbContext context, ICurrentUserService currentUserService, IAppMessageServices appMessageServices, IAppUserMessageInfoServices appUserMessageInfoServices, IUsersService usersService, IAppUserRelateServices appUserRelateServices, IUserActionServices userActionServices, IGoogleAuthService googleAuthService)
         {
             this.context = context;
             this.currentUserService = currentUserService;
@@ -81,9 +81,10 @@ namespace TrainSchdule.Controllers.BBS
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AppMessageSetting([FromBody] UserAppMessageInfoViewModel model) {
+        public IActionResult AppMessageSetting([FromBody] UserAppMessageInfoViewModel model)
+        {
             var user = currentUserService.CurrentUser;
-            var info = appUserMessageInfoServices.GetInfo(user.Id) ;
+            var info = appUserMessageInfoServices.GetInfo(user.Id);
             info.Setting = model.Setting;
             context.UserAppMessageInfos.Update(info);
             context.SaveChanges();
@@ -95,11 +96,12 @@ namespace TrainSchdule.Controllers.BBS
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Send([FromBody]NewMessageModel model) {
+        public IActionResult Send([FromBody] NewMessageModel model)
+        {
             var user = currentUserService.CurrentUser;
             var target = usersService.GetById(model.To);
             var _ = target ?? throw new ActionStatusMessageException(target.NotExist());
-            var msg = appMessageServices.Send(user.Id, model.To, model.Content,false).ToViewModel();
+            var msg = appMessageServices.Send(user.Id, model.To, model.Content, false).ToViewModel();
             return new JsonResult(new EntityViewModel<AppMessageViewModel>(msg));
         }
         /// <summary>
@@ -107,7 +109,8 @@ namespace TrainSchdule.Controllers.BBS
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetUnread() {
+        public IActionResult GetUnread()
+        {
             var user = currentUserService.CurrentUser;
             var unreads = appMessageServices.GetUnread(user.Id);
             var list = unreads.Select(i => i.ToModel<BBSMessageShadowDataModel>()).ToList();
@@ -120,8 +123,9 @@ namespace TrainSchdule.Controllers.BBS
         /// <param name="to"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetDetail(string from,string to) {
-            var details = appMessageServices.GetDetail(from,to).Select(i=>i.ToViewModel());
+        public IActionResult GetDetail(string from, string to)
+        {
+            var details = appMessageServices.GetDetail(from, to).Select(i => i.ToViewModel());
             return new JsonResult(new EntitiesListViewModel<AppMessageViewModel>(details));
         }
         /// <summary>
@@ -130,16 +134,17 @@ namespace TrainSchdule.Controllers.BBS
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult List([FromBody] QueryAppMessageModel model) {
+        public IActionResult List([FromBody] QueryAppMessageModel model)
+        {
             var currentUser = currentUserService.CurrentUser;
-            var from = model.Item.From?.Value==null? currentUser : usersService.GetById(model.Item.From.Value);
+            var from = model.Item.From?.Value == null ? currentUser : usersService.GetById(model.Item.From.Value);
             if (from == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
             if (model.Auth?.AuthByUserID.IsNullOrEmpty() == false)
-                currentUser = model.Auth.AuthUser(googleAuthService,usersService, currentUser.Id);
+                currentUser = model.Auth.AuthUser(googleAuthService, usersService, currentUser.Id);
 
-            if(!userActionServices.Permission(from, ApplicationPermissions.Activity.AppMessage.Item, PermissionType.Read, from.CompanyInfo.CompanyCode, $"消息查询:{JsonConvert.SerializeObject(model)}"))throw new ActionStatusMessageException(model.Auth.PermitDenied());
+            if (!userActionServices.Permission(from, ApplicationPermissions.Activity.AppMessage.Item, PermissionType.Read, new List<string> { from.CompanyInfo.CompanyCode }, $"消息查询:{JsonConvert.SerializeObject(model)}", out var failCompany)) throw new ActionStatusMessageException(model.Auth.PermitDenied());
             var result = appMessageServices.Query(model.Item);
-            return new JsonResult(new EntitiesListViewModel<AppMessageViewModel>(result.Item1.Select(i=>i.ToViewModel()), result.Item2));
+            return new JsonResult(new EntitiesListViewModel<AppMessageViewModel>(result.Item1.Select(i => i.ToViewModel()), result.Item2));
         }
         /// <summary>
         /// 操作消息
@@ -153,7 +158,7 @@ namespace TrainSchdule.Controllers.BBS
         public IActionResult Action([FromBody] BBSMessageActionModel model)
         {
             var user = currentUserService.CurrentUser;
-            var result = appMessageServices.Action(user.Id,model.Message, model.Action).ToViewModel();
+            var result = appMessageServices.Action(user.Id, model.Message, model.Action).ToViewModel();
             return new JsonResult(new EntityViewModel<AppMessageViewModel>(result));
         }
     }
@@ -180,14 +185,14 @@ namespace TrainSchdule.Controllers.BBS
         /// <returns></returns>
         [Route("{user}/{direction}")]
         [HttpGet]
-        public IActionResult UserRelation(string user,string direction)
+        public IActionResult UserRelation(string user, string direction)
         {
-            var directionIsFollow = "follow"== direction;
+            var directionIsFollow = "follow" == direction;
             var list = appUserRelateServices.RelateUser(user, directionIsFollow);
-            return new JsonResult(new EntitiesListViewModel<IEnumerable<string>>(list.Select(i=>new List<string> {
+            return new JsonResult(new EntitiesListViewModel<IEnumerable<string>>(list.Select(i => new List<string> {
                 directionIsFollow?i.ToId:i.FromId,
                 ((int)i.Relation).ToString()
-            }))) ;
+            })));
         }
     }
 }

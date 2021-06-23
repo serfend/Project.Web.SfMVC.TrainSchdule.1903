@@ -93,7 +93,7 @@ namespace BLL.Services.Common
             var direct = directAllow
                 || (!checkIsBan && directSelfAllow);
             var permit = direct
-                || userActionServices.Permission(currentUserService.CurrentUser, judgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.Write, companies, $"通用{description}:{judgeItem.Description}");
+                || userActionServices.Permission(currentUserService.CurrentUser, judgeItem.Permission, checkIsBan ? PermissionType.BanWrite : PermissionType.Write, companies, $"通用{description}:{judgeItem.Description}", out var failCompany);
             var desc = directAllow ? "通用放行所有" : "通用放行个人";
             if (direct) userActionServices.Log(DAL.Entities.UserInfo.UserOperation.UpdateInfo, model.AuthUser.Id, $"{desc}{description}:{judgeItem.Description}", true, DAL.Entities.UserInfo.ActionRank.Infomation);
             return permit;

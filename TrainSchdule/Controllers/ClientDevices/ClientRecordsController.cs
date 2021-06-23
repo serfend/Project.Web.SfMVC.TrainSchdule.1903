@@ -164,7 +164,7 @@ namespace TrainSchdule.Controllers.ClientDevices
             var record = context.VirusHandleRecordsDb.FirstOrDefault(i => i.Id == model.Id);
             if (record == null) return new JsonResult(record.NotExist());
             if (!record.Virus.Company.IsNullOrEmpty())
-                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, record.Virus.Company, "病毒处置备注"))
+                if (!userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Client.Virus.Info.Item, PermissionType.Write, new List<string>() { record.Virus.Company }, "病毒处置备注", out var failCompany))
                     throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{record.Virus.Company}", true));
             record.Remark = model.Remark;
             context.VirusHandleRecords.Update(record);

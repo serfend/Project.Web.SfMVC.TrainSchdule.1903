@@ -54,7 +54,7 @@ namespace TrainSchdule.Controllers.Party
             if (guid.Equals(Guid.Empty)) throw new ActionStatusMessageException(ActionStatusMessage.StaticMessage.IdIsNull);
             var client = context.PartyConferences.FirstOrDefault(c => c.Id == guid);
             if (client == null) throw new ActionStatusMessageException(client.NotExist());
-            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Write, client.CreateByCode, "标签列表");
+            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Write, new List<string> { client.CreateByCode }, "标签列表", out var failCompany);
             if (!p) throw new ActionStatusMessageException(new ApiResult(model.Auth.PermitDenied(), $"授权到{client.CreateByCode}", true));
             var list = context.PartyConferWithTags.Where(c => c.ClientTagsId == client.Id);
             context.PartyConferWithTags.RemoveRange(list);
@@ -98,7 +98,7 @@ namespace TrainSchdule.Controllers.Party
                 toAuthCompany = company;
             list = list.Where(u => u.CreateByCode == toAuthCompany);
             list = list.Where(u => u.Type == conferType);
-            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, company, "会议列表");
+            var p = userActionServices.Permission(currentUserService.CurrentUser, ApplicationPermissions.Party.Confer.NormalConfer.Item, PermissionType.Read, new List<string> { company }, "会议列表", out var failCompany);
             if (!p) throw new ActionStatusMessageException(new ApiResult(new GoogleAuthDataModel().PermitDenied(), $"授权到{company}", true));
 
             var result = list.SplitPage(pageIndex, pageSize);
@@ -129,7 +129,7 @@ namespace TrainSchdule.Controllers.Party
                 },
                 Db = context.PartyConferences,
                 Item = model.Data,
-                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<PartyBaseConference>()
+                UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyBaseConference>()
                 {
                     CompanyGetter = c => c.CreateByCode,
                     Description = "会议",

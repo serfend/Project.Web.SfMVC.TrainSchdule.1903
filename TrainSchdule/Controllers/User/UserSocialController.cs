@@ -82,7 +82,7 @@ namespace TrainSchdule.Controllers
 
 			var targetUser = context.AppUsersDb.FirstOrDefault(u => u.SocialInfo.Settle.PrevYealyLengthHistory.FirstOrDefault(r => r.Code == new_record_id) != null);
 			if (targetUser == null) return new JsonResult(ActionStatusMessage.UserMessage.NotExist);
-			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write,targetUser.CompanyInfo.CompanyCode,"修改指定记录");
+			var permit = userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write, new List<string> { targetUser.CompanyInfo.CompanyCode },"修改指定记录", out var failCompany);
 			if (!permit) return new JsonResult(model.Auth.PermitDenied());
 			var record = userServiceDetail.ModifySettleModifyRecord(newR.Code, (r) =>
 			{
@@ -130,7 +130,7 @@ namespace TrainSchdule.Controllers
 			var user = usersService.GetById(userid);
 			if (user == null) return new JsonResult(user.NotExist());
 			if (data?.Settle == null) return new JsonResult(ActionStatusMessage.StaticMessage.ResourceNotExist);
-			if (!userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write,  user.CompanyInfo.CompanyCode, $"修改{user.Id}")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+			if (!userActionServices.Permission(authUser, ApplicationPermissions.User.SocialInfo.Item, PermissionType.Write,new List<string> { user.CompanyInfo.CompanyCode }, $"修改{user.Id}", out var failCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			user.SocialInfo.Settle = data.Settle.ToModel(context.AdminDivisions, user.SocialInfo.Settle);
 			context.AppUserSocialInfoSettles.Update(user.SocialInfo.Settle);
 			context.SaveChanges();

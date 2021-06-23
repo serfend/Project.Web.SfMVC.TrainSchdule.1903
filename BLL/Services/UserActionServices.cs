@@ -53,24 +53,26 @@ namespace BLL.Services
             return ua;
         }
 
-        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => Permission(authUser, permission, operation, new List<string>() { targetUserCompanyCode }, description);
-        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description)
+        //public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => Permission(authUser, permission, operation, new List<string>() { targetUserCompanyCode }, description);
+        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description,out string failCompany)
         {
             if (authUser == null) throw new ActionStatusMessageException(authUser.NotLogin());
             var authUserId = authUser.Id;
-            var a = Log(UserOperation.Permission, authUserId, $"授权到[{string.Join(',',targetUserCompanyCodes)}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
+            var a = Log(UserOperation.Permission, authUserId, $"授权到[{string.Join(',', targetUserCompanyCodes)}]执行{permission?.Key}@{operation} {description}", false, ActionRank.Danger);
             var isBanTest = operation.HasFlag(PermissionType.BanRead) || operation.HasFlag(PermissionType.BanWrite);
-            IEnumerable<(PermissionResult, IPermissionDescription)> result= new List<(PermissionResult, IPermissionDescription) >();
-            foreach(var c in targetUserCompanyCodes)
+            IEnumerable<(PermissionResult, IPermissionDescription)> result = new List<(PermissionResult, IPermissionDescription)>();
+            foreach (var c in targetUserCompanyCodes)
             {
                 var r = GetPermissionResult(authUser, permission, operation, c);
-                if ((!isBanTest&& r.Item1 == PermissionResult.Deny) ||(isBanTest&&r.Item1==PermissionResult.AsDirect))
+                if ((!isBanTest && r.Item1 == PermissionResult.Deny) || (isBanTest && r.Item1 == PermissionResult.AsDirect))
                 {
                     Status(a, false, $"失败[{c}]");
+                    failCompany = c;
                     return false;
                 }
             }
-            Status(a, true, string.Join(',',result.Select(i=> {
+            Status(a, true, string.Join(',', result.Select(i =>
+            {
                 string desc = string.Empty;
                 if (i.Item2 != null)
                 {
@@ -79,6 +81,7 @@ namespace BLL.Services
                 }
                 return $"[{i.Item1}]{desc}";
             })));
+            failCompany = null;
             return true;
         }
         public enum PermissionResult
@@ -88,8 +91,9 @@ namespace BLL.Services
             AsMajor = 2,
             AsManager = 3
         }
-        public (PermissionResult,IPermissionDescription) GetPermissionResult(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode) {
-            if (authUser == null) return (PermissionResult.Deny,null);
+        public (PermissionResult, IPermissionDescription) GetPermissionResult(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode)
+        {
+            if (authUser == null) return (PermissionResult.Deny, null);
             var authUserId = authUser.Id;
             targetUserCompanyCode = targetUserCompanyCode?.ToUpper() ?? string.Empty;
             var permit = permissionServices.CheckPermissions(authUserId, permission.Key, operation, targetUserCompanyCode);
@@ -98,7 +102,7 @@ namespace BLL.Services
             if (checkCompanyMajor) return (PermissionResult.AsMajor, null);
             var checkCompanyManager = authUser.CheckCompanyManager(targetUserCompanyCode, userServiceDetail);
             if (checkCompanyManager) return (PermissionResult.AsManager, null);
-            return (PermissionResult.Deny,null);
+            return (PermissionResult.Deny, null);
         }
         public async Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model)
         {

@@ -39,17 +39,14 @@ namespace TrainSchdule.Controllers.Apply
 			if (auditUser == null) throw new ActionStatusMessageException(auditUser.NotLogin());
 			// 检查查询的单位范围，如果范围是空，则需要root权限
 			var permitCompanies = model.CreateCompany?.Arrays ?? new List<string>() { "root" };
-			foreach (var c in permitCompanies)
+			var permission = entityType switch
 			{
-				var permission = entityType switch
-				{
-					"vacation" => ApplicationPermissions.Apply.Vacation.Detail.Item,
-					_ => ApplicationPermissions.Apply.ApplyInday.Detail.Item
-				};
-				var permit = userActionServices.Permission(auditUser, permission, PermissionType.Read, c, "审批列表");
-				var cItem = companiesService.GetById(c);
-				if (!permit) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({c})的权限"));
-			}
+				"vacation" => ApplicationPermissions.Apply.Vacation.Detail.Item,
+				_ => ApplicationPermissions.Apply.ApplyInday.Detail.Item
+			};
+			var permit = userActionServices.Permission(auditUser, permission, PermissionType.Read, permitCompanies, "审批列表", out var failCompany);
+			var cItem = companiesService.GetById(failCompany);
+			if (!permit) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.Account.Auth.Invalid.Default.Status, $"不具有{cItem?.Name}({failCompany})的权限"));
 		}
         /// <summary>
         /// 条件快速查询
@@ -118,7 +115,7 @@ namespace TrainSchdule.Controllers.Apply
 
 			if (id != null && id != currentUser.Id)
 			{
-				if (!userActionServices.Permission(currentUser, entityType=="vacation" ? ApplicationPermissions.Apply.Vacation.Detail.Item: ApplicationPermissions.Apply.ApplyInday.Detail.Item, PermissionType.Read,c.CompanyInfo.CompanyCode, $"{c.Id}的申请")) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
+				if (!userActionServices.Permission(currentUser, entityType=="vacation" ? ApplicationPermissions.Apply.Vacation.Detail.Item: ApplicationPermissions.Apply.ApplyInday.Detail.Item, PermissionType.Read,new List<string>() { c.CompanyInfo.CompanyCode }, $"{c.Id}的申请", out var failCompany)) return new JsonResult(ActionStatusMessage.Account.Auth.Invalid.Default);
 			}
 			if (entityType == "vacation")
 			{
