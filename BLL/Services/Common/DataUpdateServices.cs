@@ -2,6 +2,7 @@
 using BLL.Helpers;
 using BLL.Interfaces;
 using BLL.Interfaces.Common;
+using DAL.Data;
 using DAL.Entities;
 using DAL.Entities.Permisstions;
 using System;
@@ -18,12 +19,14 @@ namespace BLL.Services.Common
         private readonly IUserActionServices userActionServices;
         private readonly ICurrentUserService currentUserService;
         private readonly IUsersService usersService;
+        private readonly ApplicationDbContext context;
 
-        public DataUpdateServices(IUserActionServices userActionServices, ICurrentUserService currentUserService, IUsersService usersService)
+        public DataUpdateServices(IUserActionServices userActionServices, ICurrentUserService currentUserService, IUsersService usersService,ApplicationDbContext context)
         {
             this.userActionServices = userActionServices;
             this.currentUserService = currentUserService;
             this.usersService = usersService;
+            this.context = context;
         }
         private PermissionJudgeItem<T> DefaultJudgeItem<T>(PermissionJudgeItem<T> target, PermissionJudgeItem<T> defaultItem) where T : BaseEntityGuid
         {
@@ -58,9 +61,9 @@ namespace BLL.Services.Common
             var judgeItem = model.UpdateJudge;
             var prevCompany = prevItem == null ? null : judgeItem.CompanyGetter(prevItem);
             var company = judgeItem.CompanyGetter(model.Item);
-            model.BeforeModify?.Invoke(model.Item, prevItem);
             if (PermissionCheck(model, prevItem, judgeItem, new List<string>() { prevCompany, company }, "更新"))
             {
+                model.BeforeModify?.Invoke(model.Item, prevItem);
                 model.Db.Update(prevItem);
                 return (ActionType.Update, prevItem);
             }
@@ -72,9 +75,9 @@ namespace BLL.Services.Common
         {
             var judgeItem = DefaultJudgeItem(model.AddJudge, model.UpdateJudge);
             var company = judgeItem.CompanyGetter(model.Item);
-            model.BeforeAdd?.Invoke(model.Item);
             if (PermissionCheck(model, model.Item, judgeItem, new List<string>() { company }, "新增"))
             {
+                model.BeforeAdd?.Invoke(model.Item);
                 model.Db.Add(model.Item);
                 return (ActionType.Add, model.Item);
             }

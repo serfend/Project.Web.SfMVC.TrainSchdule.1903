@@ -68,9 +68,10 @@ namespace TrainSchdule.Controllers.ClientDevices
         public IActionResult Info([FromBody] VirusDto model)
         {
             var currentrUser = currentUserService.CurrentUser;
+            var item = model.ToModel(context.ClientsDb);
             var r = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<Virus>()
             {
-                Item = model.ToModel(context.ClientsDb),
+                Item = item,
                 AuthUser = currentrUser,
                 BeforeAdd = v =>
                 {
@@ -87,7 +88,11 @@ namespace TrainSchdule.Controllers.ClientDevices
                     prev.Type = cur.Type;
                 },
                 Db = context.Viruses,
-                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<Virus>()
+                AddJudge = new EntityModifyExtensions.PermissionJudgeItem<Virus>()
+                {
+                    CompanyGetter = c => item.Company
+                },
+                UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<Virus>()
                 {
                     CompanyGetter = c => c.Company,
                     Description = "病毒",

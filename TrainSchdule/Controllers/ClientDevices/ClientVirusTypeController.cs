@@ -60,9 +60,10 @@ namespace TrainSchdule.Controllers.ClientDevices
         [HttpPut]
         public IActionResult Info([FromBody] VirusTypeDataModel model)
         {
+            var item = model.ToModel();
             var currentUser = currentUserService.CurrentUser;
             dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<VirusTrace>() {
-                Item = model.ToModel(),
+                Item = item,
                 AuthUser = currentUser,
                 BeforeAdd = v =>
                 {

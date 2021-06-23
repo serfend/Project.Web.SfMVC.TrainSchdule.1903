@@ -54,5 +54,9 @@ namespace BLL.Interfaces
         bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description, out string failCompany);
 
         Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
+        /// <summary>
+        /// 直接存储内容
+        /// </summary>
+        void DirectSaveUserAction(string userActionContent, bool isAdd);
     }
 }

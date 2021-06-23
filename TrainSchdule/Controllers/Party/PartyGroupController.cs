@@ -78,7 +78,11 @@ namespace TrainSchdule.Controllers.Party
                 },
                 Db = context.PartyGroups,
                 Item = model.Data.ToModel(context),
-                UpdateJudge =  new EntityModifyExtensions.PermissionJudgeItem<PartyGroup>()
+                AddJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyGroup>()
+                {
+                    CompanyGetter = c => item.CompanyCode
+                },
+                UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyGroup>()
                 {
                     CompanyGetter = c => c.CompanyCode,
                     Description = "党小组",

@@ -11,8 +11,10 @@ using DAL.Entities.Common;
 using DAL.Entities.Permisstions;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,13 +50,12 @@ namespace BLL.Services
             ua.Success = success;
             ua.Description = description;
             ua.Rank = rank;
-            this.context.UserActions.Add(ua);
-            this.context.SaveChanges();
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(ua), true));
             return ua;
         }
 
         //public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, string targetUserCompanyCode, string description) => Permission(authUser, permission, operation, new List<string>() { targetUserCompanyCode }, description);
-        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description,out string failCompany)
+        public bool Permission(User authUser, DAL.Entities.Permisstions.Permission permission, PermissionType operation, IEnumerable<string> targetUserCompanyCodes, string description, out string failCompany)
         {
             if (authUser == null) throw new ActionStatusMessageException(authUser.NotLogin());
             var authUserId = authUser.Id;
@@ -134,11 +135,19 @@ namespace BLL.Services
             action.Success = success;
             if (description != null) description = $"$${description}";
             action.Description = $"{action.Description}{description}";
-            context.UserActions.Update(action);
-            context.SaveChanges();
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(action), false));
             return action;
         }
+        public void DirectSaveUserAction(string userActionContent, bool isAdd)
+        {
+            var ua = JsonConvert.DeserializeObject<UserAction>(userActionContent);
+            if (isAdd)
+                this.context.UserActions.Add(ua);
+            else
+                context.UserActions.Update(ua);
 
+            this.context.SaveChanges();
+        }
         public ApiResult LogNewActionInfo(UserAction action, ApiResult message)
         {
             Status(action, message.Status == 0, message.Message.IsNullOrEmpty() ? null : message.Message);

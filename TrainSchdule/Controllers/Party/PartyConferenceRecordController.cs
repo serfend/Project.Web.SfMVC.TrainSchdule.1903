@@ -54,6 +54,7 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecord([FromBody] PartyUserRecordViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
+            var item = model.Data.ToModel(context);
             var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecord>()
             {
                 AuthUser = authUser,
@@ -68,7 +69,11 @@ namespace TrainSchdule.Controllers.Party
                     prev.UserId = cur.UserId;
                 },
                 Db = context.PartyUserRecords,
-                Item = model.Data.ToModel(context),
+                Item = item,
+                AddJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecord>()
+                {
+                    CompanyGetter = c => item.User?.CompanyInfo.CompanyCode
+                },
                 UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecord>()
                 {
                     CompanyGetter = c => c.User.CompanyInfo.CompanyCode,
@@ -97,6 +102,7 @@ namespace TrainSchdule.Controllers.Party
         public IActionResult ConferRecordContent([FromBody] PartyConferRecordContentViewModel model)
         {
             var authUser = model.Auth.AuthUser(googleAuthService, usersService, currentUserService.CurrentUser);
+            var item = model.Data.ToModel(context);
             var action = dataUpdateServices.Update(new EntityModifyExtensions.DataUpdateModel<PartyUserRecordContent>()
             {
                 AuthUser = authUser,
@@ -111,7 +117,11 @@ namespace TrainSchdule.Controllers.Party
                     prev.RecordId = cur.RecordId;
                 },
                 Db = context.PartyUserRecordContents,
-                Item = model.Data.ToModel(context),
+                Item = item,
+                AddJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecordContent>()
+                {
+                    CompanyGetter = c => item.Record?.User?.CompanyInfo.CompanyCode
+                },
                 UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyUserRecordContent>()
                 {
                     CompanyGetter = c => c.Record.User.CompanyInfo.CompanyCode,

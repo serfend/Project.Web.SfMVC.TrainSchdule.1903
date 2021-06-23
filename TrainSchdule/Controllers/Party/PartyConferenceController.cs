@@ -129,6 +129,10 @@ namespace TrainSchdule.Controllers.Party
                 },
                 Db = context.PartyConferences,
                 Item = model.Data,
+                AddJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyBaseConference>()
+                {
+                    CompanyGetter = c => model.Data.CreateByCode
+                },
                 UpdateJudge = new EntityModifyExtensions.PermissionJudgeItem<PartyBaseConference>()
                 {
                     CompanyGetter = c => c.CreateByCode,
