@@ -61,13 +61,10 @@ namespace BLL.Crontab
                 var sameRegion = context.ClientsDb
                     .Where(client => client.CompanyCode != null)
                     .Where(client => client.Ip != null)
-                    .Where(client => client.IpInt >> 8 == ips)
+                    .Where(client => client.IpInt % 256 == ips)
                     .ToList();
-                var nearest = sameRegion.Aggregate(
-                    (curMin, x) =>
-                        (curMin == null
-                        || Math.Abs(ipin - (x.IpInt >> 8)) < Math.Abs(ipin - (curMin.IpInt >> 8))
-                    ? x : curMin));
+                var nearest = sameRegion.OrderBy(x=> Math.Abs(ipin - (x.IpInt >> 8))).FirstOrDefault();
+                if (nearest == null) continue;
                 callback.Invoke(c, nearest);
             }
         }
