@@ -144,7 +144,19 @@ namespace BLL.Services
             if (isAdd)
                 this.context.UserActions.Add(ua);
             else
-                context.UserActions.Update(ua);
+            {
+                var prev = context.UserActionsDb.FirstOrDefault(a => a.Date == ua.Date);
+                if (prev != null)
+                {
+                    prev.Description = ua.Description;
+                    prev.Success = ua.Success;
+                    prev.Rank = ua.Rank;
+                    prev.UserName = ua.UserName;
+                    context.UserActions.Update(prev);
+                }
+                else
+                    context.UserActions.Update(ua);
+            }
 
             this.context.SaveChanges();
         }
