@@ -31,7 +31,7 @@ namespace BLL.Crontab
                 .Where(c => c.CompanyCode == null)
                 .Where(c => c.Ip != null)
                 .Where(c => c.Ip != string.Empty)
-                .Take(100).ToList();
+                .ToList();
             RelateProperty(clients, (prev, refererTo) =>
             {
                 prev.CompanyCode = refererTo.CompanyCode;
@@ -44,7 +44,7 @@ namespace BLL.Crontab
                 .Where(c => c.OwnerId == null)
                 .Where(c => c.Ip != null)
                 .Where(c => c.Ip != string.Empty)
-                .Take(100).ToList();
+                .ToList();
             var companies = clients
                 .Where(c => c.CompanyCode != null)
                 .Select(c => c.CompanyCode)
@@ -105,14 +105,16 @@ namespace BLL.Crontab
         {
             foreach (var c in clients)
             {
-                var ips = c.IpInt >> 8;
-                var ipin = c.IpInt & 0xff;
+                var ips = c.Ip.Split('.');
+                if (ips.Length < 4) continue;
+                var ipRegion = string.Join('.', ips.Take(3));
+                var ipD = int.Parse(ips[3]);
                 var sameRegion = context.ClientsDb
                     .Where(client => client.CompanyCode != null)
                     .Where(client => client.Ip != null)
-                    .Where(client => client.IpInt % 256 == ips)
+                    .Where(client => client.Ip.StartsWith(ipRegion) )
                     .ToList();
-                var nearest = sameRegion.OrderBy(x => Math.Abs(ipin - (x.IpInt >> 8))).FirstOrDefault();
+                var nearest = sameRegion.OrderBy(x => Math.Abs(ipD - int.Parse(x.Ip.Split('.')[3]))).FirstOrDefault();
                 if (nearest == null) continue;
                 callback.Invoke(c, nearest);
             }

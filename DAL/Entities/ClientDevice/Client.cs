@@ -20,7 +20,7 @@ namespace DAL.Entities.ClientDevice
         /// <summary>
         /// 终端ip值
         /// </summary>
-        public int IpInt { get; set; }
+        public uint IpInt { get; set; }
         /// <summary>
         /// 终端mac
         /// </summary>
