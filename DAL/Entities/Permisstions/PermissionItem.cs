@@ -21,6 +21,7 @@ namespace DAL.Entities.Permisstions
         /// 【冗余】权限类型
         /// </summary>
         public PermissionType Type { get; set; }
+        string ToString() => $"{Name}[{Region}]@{Type}";
     }
     public  class PermissionBaseItem: IPermissionDescription
     {
@@ -42,6 +43,8 @@ namespace DAL.Entities.Permisstions
         /// 是否是自身角色的权限
         /// </summary>
         public bool IsSelf { get; set; }
+        public override string ToString() => $"{Name}({IsSelf})[{Region}]@{Type}";
+
     }
     public class PermissionGuidBaseItem : BaseEntityGuid ,IPermissionDescription
     {

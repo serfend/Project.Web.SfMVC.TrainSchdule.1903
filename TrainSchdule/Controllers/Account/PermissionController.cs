@@ -184,7 +184,8 @@ namespace TrainSchdule.Controllers
         public IActionResult CheckPermission([FromBody] PermissionCheckViewModel model)
         {
             var user = usersService.CurrentQueryUser(model.User);
-            var result = permissionServices.CheckPermissions(user.Id, model.Permission, model.PermissionType, model.Region);
+            var result = permissionServices.CheckPermissions(user.Id, model.Permission, model.PermissionType, model.Region) ?? new PermissionBaseItem();
+            userActionServices.Log(UserOperation.Permission, user.Id, $"检查权限[{model.Region}]{model.Permission}@{model.PermissionType},{result}", true);
             return new JsonResult(result == null ? ActionStatusMessage.PermissionMessage.Permission.NotExist : new EntityViewModel<IPermissionDescription>(result));
         }
     }
