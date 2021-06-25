@@ -35,7 +35,7 @@ namespace BLL.Crontab
             RelateProperty(clients, (prev, refererTo) =>
             {
                 prev.CompanyCode = refererTo.CompanyCode;
-                userActionServices.Log(UserOperation.UserInfoUpdate, refererTo.Ip, $"绑定到:[{prev.CompanyCode}]", true);
+                userActionServices.Log(UserOperation.UserInfoUpdate, prev.Ip, $"依据[{refererTo.Ip}]绑定到:[{prev.CompanyCode}]", true);
             });
         }
         public void RelateClientMajor()

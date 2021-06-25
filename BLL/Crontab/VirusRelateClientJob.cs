@@ -18,10 +18,33 @@ namespace BLL.Crontab
         {
             this.context = context;
         }
-        public void Run()
+        public void RelateClientInfo(DateTime date)
         {
             var virusDb = context.VirusesDb;
-            var date = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+            // 未能标记信息的终端项
+            var unRelateToClientsVirus = virusDb
+                .Where(v => v.Client != null)
+                .Where(v => v.Owner == null || v.Company == null)
+                .Where(v => v.Create >= date)
+                .ToList();
+
+            var clientDb = context.ClientsDb;
+            var clientDictCache = new Dictionary<string, Client>();
+            // 标记这些项
+            unRelateToClientsVirus.ForEach(v =>
+            {
+                var client = v.Client;
+                if (client != null)
+                {
+                    v.Company = client.CompanyCode;
+                    v.Owner = client.OwnerId;
+                    context.Viruses.Update(v);
+                }
+            });
+        }
+        public void RelateClient(DateTime date)
+        {
+            var virusDb = context.VirusesDb;
             // 未能标记终端的项
             var unRelateToClientsVirus = virusDb
                 .Where(v => v.Client == null)
@@ -45,6 +68,12 @@ namespace BLL.Crontab
                     context.Viruses.Update(v);
                 }
             });
+        }
+        public void Run()
+        {
+            var date = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+            RelateClientInfo(date);
+            RelateClient(date);
             context.SaveChanges();
         }
     }
