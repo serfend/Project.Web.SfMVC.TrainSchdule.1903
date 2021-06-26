@@ -314,7 +314,7 @@ namespace BLL.Services.ApplyServices
                 list = db.Where(a => a.BaseInfo.CreateById == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
             else if (model.CreateFor != null)
                 list = db.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
-            if (model.RequestCounts != null)
+            if (model.RequestCounts != null && model.RequestCounts.End > 0)
             {
                 var now = DateTime.Now;
                 var groupByRequestCount = list.GroupBy(i => i.BaseInfo.FromId, (a, b) => new { a, c = b.Count() })

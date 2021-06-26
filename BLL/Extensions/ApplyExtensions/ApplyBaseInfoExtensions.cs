@@ -12,6 +12,8 @@ namespace BLL.Extensions.ApplyExtensions
 				CompanyName = model?.CompanyName,
 				DutiesName = model.DutiesName,
 				RealName = model.RealName,
+				UserId = model.FromId,
+				Phone = model.Social.Phone
 			};
 		}
 	}

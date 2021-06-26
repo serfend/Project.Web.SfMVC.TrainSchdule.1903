@@ -24,6 +24,7 @@ namespace BLL.Extensions.ApplyExtensions
 			var b = new ApplyDetailDto<Q>()
 			{
 				Base = model.BaseInfo.From.ToSummaryDto(),
+				BaseInfo = model.BaseInfo.ToDto(),
 				Company = model.BaseInfo.Company,
 				Create = model.Create,
 				Duties = model.BaseInfo.Duties,
@@ -52,19 +53,19 @@ namespace BLL.Extensions.ApplyExtensions
 			if (model == null) return null;
 			var b = new ApplySummaryDto<Q>()
 			{
-				Create = model?.Create,
+				Create = model.Create,
 				Status = model.Status,
 				MainStatus=model.MainStatus,
 				Base = model.BaseInfo.ToDto(),
-				UserBase = model.BaseInfo.From.ToSummaryDto(),
+				//UserBase = model.BaseInfo.From.ToSummaryDto(),
 				Id = model.Id,
 				Request = request,
 				ExecuteStatus = model.ExecuteStatus,
 				ExecuteStatusId = model.ExecuteStatusDetailId,
 				RecallId = model.RecallId,
-				NowStep = model?.NowAuditStep?.ToDtoModel(),
-				Steps = model?.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
-				AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程"
+				//NowStep = model.NowAuditStep?.ToDtoModel(),
+				//Steps = model.ApplyAllAuditStep?.Select(a => a.ToDtoModel()).OrderBy(l => l.Index),
+				//AuditStreamSolution = model?.ApplyAuditStreamSolutionRule?.Solution?.Name ?? "已失效的审批流程"
 			};
 			// 不显示已撤回的信息
 			if (b.Status == AuditStatus.Withdrew)

@@ -25,7 +25,7 @@ namespace BLL.Services.ApplyServices.DailyApply
     {
         public IEnumerable<ApplyInday> QueryApplies(QueryApplyDataModel model, bool getAllAppliesPermission, out int totalCount)
         {
-            
+
             var db = context.AppliesIndayDb;
             var list = db.AsQueryable();
             totalCount = 0;
@@ -104,7 +104,7 @@ namespace BLL.Services.ApplyServices.DailyApply
             else if (model.CreateFor != null)
                 list = db.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
 
-            if (model.RequestCounts != null)
+            if (model.RequestCounts != null && model.RequestCounts.End > 0)
             {
                 var now = DateTime.Now;
                 var groupByRequestCount = list.GroupBy(i => i.BaseInfo.FromId, (a, b) => new { a, c = b.Count() })
@@ -204,7 +204,7 @@ namespace BLL.Services.ApplyServices.DailyApply
             return true;
         }
 
-       
+
 
         public ApplyInday GetById(Guid id) => context.AppliesIndayDb.Where(a => a.Id == id).FirstOrDefault();
 
@@ -249,10 +249,11 @@ namespace BLL.Services.ApplyServices.DailyApply
         {
 
             if (model == null) return null;
-			var type = model.RequestType ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
+            var type = model.RequestType ?? throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.VacationTypeNotExist);
             if (type.Disabled) throw new ActionStatusMessageException(ActionStatusMessage.ApplyMessage.Request.InvalidVacationType);
-            
-            if (type.PermitCrossDay < model.StampReturn?.Date.Subtract(model.StampLeave?.Date ?? DateTime.MinValue).Days) {
+
+            if (type.PermitCrossDay < model.StampReturn?.Date.Subtract(model.StampLeave?.Date ?? DateTime.MinValue).Days)
+            {
                 var desc = type.PermitCrossDay <= 0 ? "不允许跨日请假" : $"最多允许请假{type.PermitCrossDay}天";
                 throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Request.CrossDayNotPermit, desc, true));
             }
