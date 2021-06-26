@@ -90,6 +90,14 @@ namespace DAL.QueryModel
 		/// 休假结束时间
 		/// </summary>
 		public QueryByDate StampReturn { get; set; }
+		/// <summary>
+		/// 在当前搜索范围内申请次数
+		/// </summary>
+		public QueryByIntOrEnum RequestCounts { get; set; }
+		/// <summary>
+		/// 地点
+		/// </summary>
+		public QueryByIntOrEnum VacationAdminDivision { get; set; }
 
 	}
 }

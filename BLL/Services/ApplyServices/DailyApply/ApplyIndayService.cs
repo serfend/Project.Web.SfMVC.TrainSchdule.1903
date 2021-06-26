@@ -72,7 +72,8 @@ namespace BLL.Services.ApplyServices.DailyApply
                 list = list.Where(a => (a.Create >= model.Create.Start && a.Create <= model.Create.End));
                 anyDateFilterIsLessThan30Days |= model.Create.End.Subtract(model.Create.Start).Days <= 360;
             }
-
+            if (model.VacationAdminDivision != null)
+                list = list.Where(a => a.RequestInfo.VacationPlaceCode.ToString().StartsWith(model.VacationAdminDivision.Start.ToString().Trim('0')));
             ////  默认查询到下周六前的的申请
             //if (model.StampLeave == null)
             //{
@@ -99,12 +100,20 @@ namespace BLL.Services.ApplyServices.DailyApply
             }
             // 若精确按id或按人查询，则直接导出
             if (model.CreateBy != null)
-            {
                 list = db.Where(a => a.BaseInfo.CreateById == model.CreateBy.Value || a.BaseInfo.CreateBy.BaseInfo.RealName == (model.CreateBy.Value));
-            }
             else if (model.CreateFor != null)
-            {
                 list = db.Where(a => a.BaseInfo.FromId == model.CreateFor.Value || a.BaseInfo.From.BaseInfo.RealName == (model.CreateFor.Value));
+
+            if (model.RequestCounts != null)
+            {
+                var now = DateTime.Now;
+                var groupByRequestCount = list.GroupBy(i => i.BaseInfo.FromId, (a, b) => new { a, c = b.Count() })
+                    .Where(c => c.c >= model.RequestCounts.Start);
+                if (model.RequestCounts.End >= model.RequestCounts.Start)
+                    groupByRequestCount = groupByRequestCount.Where(c => c.c <= model.RequestCounts.End);
+                var groupByRequestCountResult = groupByRequestCount.ToDictionary(x => x.a, x => x.c);
+                var users = groupByRequestCountResult.Select(a => a.Key);
+                list = list.Where(a => users.Contains(a.BaseInfo.FromId));
             }
             list = list.OrderByDescending(a => a.Create).ThenByDescending(a => a.Status);
             var result = list.SplitPage(model.Pages);
