@@ -59,7 +59,8 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
             Apply = i.Apply,
             Content = i.Content,
             Create = i.Create,
-            From = i.From.ToSummaryDto(),
+            From = i.AnonymousNick != null ? null : i.From.ToSummaryDto(),
+            AnonymousNick = i.AnonymousNick,
             LastModify = i.LastModify,
             ModifyBy = i.ModifyBy.ToSummaryDto(),
             Like = i.Likes,
@@ -77,6 +78,7 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
             raw.Content = model.Content;
             raw.Create = DateTime.Now;
             raw.IsRemoved = model.IsRemove;
+            raw.AnonymousNick = model.AnonymousNick;
             if (model.Reply != null)
             {
                 var target = comments.FirstOrDefault(c => c.Id == model.Reply);
@@ -134,11 +136,14 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         /// 是否是删除
         /// </summary>
         public bool IsRemove { get; set; }
-
         /// <summary>
         ///
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 匿名昵称
+        /// </summary>
+        public string AnonymousNick { get; set; }
     }
 
     /// <summary>
@@ -162,6 +167,10 @@ namespace TrainSchdule.ViewModels.Apply.ApplyDetail
         ///
         /// </summary>
         public UserSummaryDto From { get; set; }
+        /// <summary>
+        /// 匿名昵称
+        /// </summary>
+        public string AnonymousNick { get; set; }
 
         /// <summary>
         ///

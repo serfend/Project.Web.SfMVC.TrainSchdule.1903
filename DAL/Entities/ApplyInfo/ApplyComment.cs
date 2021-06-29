@@ -26,6 +26,9 @@ namespace DAL.Entities.ApplyInfo
 		/// 作用到
 		/// </summary>
 		public string Apply { get; set; }
-
+		/// <summary>
+		/// 当设置此项则表示为匿名评论
+		/// </summary>
+		public string AnonymousNick { get; set; }
     }
 }

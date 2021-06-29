@@ -81,6 +81,7 @@ namespace TrainSchdule.Controllers.Apply
                     prev.Content = cur.Content;
                     prev.ModifyBy = actionUser;
                     prev.ReplyId = cur.ReplyId;
+                    prev.AnonymousNick = cur.AnonymousNick;
                     prev.LastModify = DateTime.Now;
                 },
                 RemoveJudge = new PermissionJudgeItem<ApplyComment>()
