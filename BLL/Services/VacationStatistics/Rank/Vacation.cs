@@ -46,6 +46,7 @@ namespace BLL.Services.VacationStatistics.Rank
         }
         public List<StatisticsApplyRankItem> ReloadVacationRank(DateTime date)
         {
+            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[休假日更新]{date}", true);
             var list = new List<StatisticsApplyRankItem>();
             if (date == DateTime.MinValue) date = DateTime.Now;
             ReloadVacationRankWithType((type, ratingType, db) =>
@@ -64,6 +65,7 @@ namespace BLL.Services.VacationStatistics.Rank
         }
         public List<StatisticsApplyRankItem> ReloadVacationRank(string entityType, int round, bool isFinal, RatingType type, IQueryable<Apply> db)
         {
+            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[按期数更新]{entityType}{type}@{round}", true);
             var result = new List<StatisticsApplyRankItem>();
             var record = context.StatisticsApplyRankRecords
                 .Where(a => a.RatingType == type)

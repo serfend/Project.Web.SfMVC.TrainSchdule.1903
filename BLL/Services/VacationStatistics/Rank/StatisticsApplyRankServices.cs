@@ -46,6 +46,7 @@ namespace BLL.Services.VacationStatistics.Rank
     {
         public void SaveResultList(List<StatisticsApplyRankItem> list)
         {
+            userActionServices.Log(UserOperation.FromSystemReport, null, $"保存排行榜统计数据数量:{list.Count}", true);
             Func<StatisticsApplyRankItem, Func<StatisticsApplyRankItem, bool>> expBuilder = record =>
             {
                 var exp = PredicateBuilder.New<StatisticsApplyRankItem>(true);
@@ -78,7 +79,7 @@ namespace BLL.Services.VacationStatistics.Rank
 
         public void Reload()
         {
-            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[日更新1]", true);
+            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[日更新]", true);
             ReloadVacationRank(DateTime.Now);
             ReloadIndayRank(DateTime.Now);
             context.SaveChanges();
