@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210627080613_StatisticsAppliesRank")]
+    partial class StatisticsAppliesRank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3442,7 +3444,7 @@ namespace DAL.Migrations
                     b.ToTable("VacationDescriptions");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRankItem", b =>
+            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRank", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3455,8 +3457,9 @@ namespace DAL.Migrations
                     b.Property<string>("CompanyCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LastRank")
-                        .HasColumnType("int");
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
@@ -3470,9 +3473,6 @@ namespace DAL.Migrations
                     b.Property<int>("RatingType")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Target")
                         .HasColumnType("datetime2");
 
@@ -3481,62 +3481,14 @@ namespace DAL.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserRealName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("StatisticsApplyRanks");
-                });
 
-            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRankRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ApplyType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FinnalResult")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RatingCycleCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RatingType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Target")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StatisticsApplyRankRecords");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("StatisticsApplyRank");
                 });
 
             modelBuilder.Entity("DAL.Entities.Vacations.Statistics.StatisticsDailyProcessRate", b =>
@@ -4550,6 +4502,19 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRankRecord", b =>
+                {
+                    b.HasBaseType("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRank");
+
+                    b.Property<bool>("FinnalResult")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("datetime2");
+
+                    b.HasDiscriminator().HasValue("StatisticsApplyRankRecord");
+                });
+
             modelBuilder.Entity("DAL.Entities.ApplyInfo.Apply", b =>
                 {
                     b.HasOne("DAL.Entities.ApplyInfo.ApplyAuditStreamSolutionRule", "ApplyAuditStreamSolutionRule")
@@ -5265,16 +5230,7 @@ namespace DAL.Migrations
                     b.Navigation("Settle");
                 });
 
-            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRankItem", b =>
-                {
-                    b.HasOne("DAL.Entities.UserInfo.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRankRecord", b =>
+            modelBuilder.Entity("DAL.Entities.Vacations.Statistics.Rank.StatisticsApplyRank", b =>
                 {
                     b.HasOne("DAL.Entities.UserInfo.User", "User")
                         .WithMany()

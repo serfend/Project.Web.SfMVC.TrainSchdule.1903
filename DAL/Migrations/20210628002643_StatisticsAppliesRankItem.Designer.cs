@@ -4,14 +4,16 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210628002643_StatisticsAppliesRankItem")]
+    partial class StatisticsAppliesRankItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3455,9 +3457,6 @@ namespace DAL.Migrations
                     b.Property<string>("CompanyCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LastRank")
-                        .HasColumnType("int");
-
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
@@ -3470,9 +3469,6 @@ namespace DAL.Migrations
                     b.Property<int>("RatingType")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Target")
                         .HasColumnType("datetime2");
 
@@ -3481,9 +3477,6 @@ namespace DAL.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserRealName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
