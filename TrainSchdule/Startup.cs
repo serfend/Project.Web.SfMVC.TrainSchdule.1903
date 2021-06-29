@@ -117,6 +117,8 @@ namespace TrainSchdule
             RecurringJob.AddOrUpdate<VirusRelateClientJob>((u) => u.Run(), Cron.Hourly);
             RecurringJob.AddOrUpdate<UserOrderJob>((a) => a.Run(), Cron.Daily(18, 0));
             RecurringJob.AddOrUpdate<ClientRelateJob>((a) => a.Run(), Cron.Daily(18, 30));
+            RecurringJob.AddOrUpdate<AppliesRankJob>((a) => a.Run(), Cron.Daily(20, 30));
+            RecurringJob.AddOrUpdate<AppliesRankReloadYearJob>((a) => a.Run(), Cron.Weekly(DayOfWeek.Sunday, 20));
 
             BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
         }

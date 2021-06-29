@@ -7,6 +7,7 @@ using BLL.Interfaces.Common;
 using BLL.Interfaces.File;
 using BLL.Interfaces.GameR3;
 using BLL.Interfaces.IVacationStatistics;
+using BLL.Interfaces.IVacationStatistics.Rank;
 using BLL.Interfaces.Permission;
 using BLL.Interfaces.ZX;
 using BLL.Interfaces.ZX.IGrade;
@@ -21,6 +22,7 @@ using BLL.Services.File;
 using BLL.Services.GameR3;
 using BLL.Services.Permission;
 using BLL.Services.VacationStatistics;
+using BLL.Services.VacationStatistics.Rank;
 using BLL.Services.ZX;
 using BLL.Services.ZX.Grade;
 using Microsoft.AspNetCore.Http;
@@ -130,6 +132,7 @@ namespace TrainSchdule.System
 			services.AddScoped<IStatisrticsAppliesServices, StatisrticsAppliesServices>();
 			services.AddScoped<IStatisticsAppliesProcessServices, StatisticsAppliesProcessServices>();
 			services.AddScoped<IStatisticsDailyProcessServices, StatisticsDailyProcessServices>();
+			services.AddScoped<IStatisticsApplyRankServices, StatisticsApplyRankServices>();
 			services.AddScoped<IApplyAuditStreamServices, ApplyAuditStreamRepositoryServices>();
 			services.AddScoped<IAuditStreamServices, AuditStreamServices>();
 		}
