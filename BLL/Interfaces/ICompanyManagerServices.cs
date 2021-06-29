@@ -32,7 +32,8 @@ namespace BLL.Interfaces
 		/// 获取单位的成员
 		/// </summary>
 		/// <param name="code"></param>
+		/// <param name="asManage">是否查询编制单位</param>
 		/// <returns></returns>
-		IQueryable<User> GetMembers(string code);
+		IQueryable<User> GetMembers(string code,bool asManage);
 	}
 }

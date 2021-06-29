@@ -86,6 +86,7 @@ namespace BLL.Extensions
             var companyInfo = user.CompanyInfo ?? new UserCompanyInfo() { Company = new DAL.Entities.Company(), Duties = new DAL.Entities.Duties(), Title = new UserCompanyTitle() };
             var baseInfo = user.BaseInfo ?? new UserBaseInfo() { Gender = GenderEnum.Unknown };
             var company = companyInfo.Company;
+            var companyOfManage = companyInfo.CompanyOfManage;
             var duties = companyInfo.Duties;
             return new UserSummaryDto()
             {
@@ -93,8 +94,8 @@ namespace BLL.Extensions
                 Avatar = diyInfo.Avatar?.Id.ToString(),
                 CompanyCode = companyInfo.CompanyCode,
                 CompanyName = company?.Name ?? "无单位",
-                CompanyOfManageCode = companyInfo.CompanyCode,
-                CompanyOfManageName = company?.Name ?? "无单位",
+                CompanyOfManageCode = companyInfo.CompanyOfManageCode,
+                CompanyOfManageName = companyOfManage?.Name ?? "无单位",
                 Cid = baseInfo.Cid,
                 DutiesCode = duties?.Code,
                 DutiesName = duties?.Name ?? "无职务",
