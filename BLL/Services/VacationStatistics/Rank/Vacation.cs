@@ -2,6 +2,7 @@
 using BLL.Extensions;
 using BLL.Extensions.Common;
 using DAL.Entities.ApplyInfo;
+using DAL.Entities.UserInfo;
 using DAL.Entities.Vacations.Statistics.Rank;
 using DAL.Entities.ZX.MemberRate;
 using System;
@@ -21,6 +22,7 @@ namespace BLL.Services.VacationStatistics.Rank
             var list = new List<StatisticsApplyRankItem>();
             ReloadVacationRankWithType((type, ratingType, db) =>
             {
+                userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[{type}.{ratingType}]", true);
                 var startRound = start.RoundOfDateTime(ratingType);
                 var endRound = end.RoundOfDateTime(ratingType);
                 for (var i = startRound; i < endRound; i = i.NextRound(ratingType))
@@ -50,6 +52,7 @@ namespace BLL.Services.VacationStatistics.Rank
             {
                 list.AddRange(ReloadVacationRank(type, date, ratingType, db));
             });
+            SaveResultList(list);
             return list;
         }
         public List<StatisticsApplyRankItem> ReloadVacationRank(string entityType, DateTime start, RatingType type, IQueryable<Apply> db)

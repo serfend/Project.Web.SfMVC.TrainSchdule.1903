@@ -70,6 +70,7 @@ namespace BLL.Services.VacationStatistics.Rank
         }
         public void ReloadRange(DateTime start, DateTime end)
         {
+            userActionServices.Log(UserOperation.FromSystemReport, null, "重新加载排行榜", true);
             ReloadIndayRange(start, end);
             ReloadVacationRange(start, end);
             context.SaveChanges();
@@ -77,6 +78,7 @@ namespace BLL.Services.VacationStatistics.Rank
 
         public void Reload()
         {
+            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[日更新1]", true);
             ReloadVacationRank(DateTime.Now);
             ReloadIndayRank(DateTime.Now);
             context.SaveChanges();
