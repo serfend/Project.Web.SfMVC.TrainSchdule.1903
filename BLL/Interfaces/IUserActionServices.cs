@@ -56,7 +56,9 @@ namespace BLL.Interfaces
         Task<IEnumerable<UserAction>> Query(QueryUserActionViewModel model);
         /// <summary>
         /// 直接存储内容
+        /// 需要传入index以判断当前编辑次数
+        /// 杜绝错误写入
         /// </summary>
-        void DirectSaveUserAction(string userActionContent, bool isAdd);
+        void DirectSaveUserAction(string userActionContent);
     }
 }

@@ -50,7 +50,7 @@ namespace BLL.Services
             ua.Success = success;
             ua.Description = description;
             ua.Rank = rank;
-            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(ua), true));
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(ua)));
             return ua;
         }
 
@@ -135,29 +135,31 @@ namespace BLL.Services
             action.Success = success;
             if (description != null) description = $"$${description}";
             action.Description = $"{action.Description}{description}";
-            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(action), false));
+            action.Index++;
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(action)));
             return action;
         }
-        public void DirectSaveUserAction(string userActionContent, bool isAdd)
+        public void DirectSaveUserAction(string userActionContent)
         {
             var ua = JsonConvert.DeserializeObject<UserAction>(userActionContent);
-            if (isAdd)
+            var index = ua.Index;
+            if (index==0)
                 this.context.UserActions.Add(ua);
             else
             {
                 var prev = context.UserActionsDb.FirstOrDefault(a => a.Date == ua.Date);
-                if (prev != null)
+                if (prev != null && prev.Index == index - 1)
                 {
                     prev.Description = ua.Description;
                     prev.Success = ua.Success;
                     prev.Rank = ua.Rank;
                     prev.UserName = ua.UserName;
+                    prev.Index = ua.Index;
                     context.UserActions.Update(prev);
                 }
                 else
                 {
-                    ua.Description += "【异常】";
-                    context.UserActions.Update(ua);
+                    BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(userActionContent));
                 }
             }
 

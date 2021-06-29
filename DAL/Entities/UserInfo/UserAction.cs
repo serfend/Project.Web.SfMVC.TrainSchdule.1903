@@ -47,6 +47,10 @@ namespace DAL.Entities.UserInfo
         public string Ip { get; set; }
         public string Device { get; set; }
         public string UA { get; set; }
+        /// <summary>
+        /// 编辑次数
+        /// </summary>
+        public int Index { get; set; }
     }
 
     public enum UserOperation
