@@ -283,6 +283,7 @@ namespace BLL.Services
 			};
 			var company = user.CompanyInfo;
 			company.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyCode);
+			company.CompanyOfManage = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyOfManageCode);
 			company.Duties = _context.Duties.FirstOrDefault(d => d.Name == user.CompanyInfo.Duties.Name);
 			
 			var title = user.CompanyInfo.Title;

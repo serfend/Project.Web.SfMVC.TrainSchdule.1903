@@ -155,7 +155,10 @@ namespace BLL.Services
                     context.UserActions.Update(prev);
                 }
                 else
+                {
+                    ua.Description += "【异常】";
                     context.UserActions.Update(ua);
+                }
             }
 
             this.context.SaveChanges();

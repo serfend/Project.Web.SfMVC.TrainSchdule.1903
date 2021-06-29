@@ -54,6 +54,10 @@ namespace TrainSchdule.ViewModels.User
 		///
 		/// </summary>
 		public UserCompanyDataModel Company { get; set; }
+		/// <summary>
+		/// 编制单位
+		/// </summary>
+		public UserCompanyDataModel CompanyOfManage { get; set; }
 
 		/// <summary>
 		///
@@ -129,6 +133,12 @@ namespace TrainSchdule.ViewModels.User
 					Name = model.Company?.Name,
 					Parent = companiesService.FindParent(model.CompanyCode)?.Name,
 					CompanyTags = model.Company?.Tag?.Split("##")
+				},
+				CompanyOfManage = new UserCompanyDataModel() {
+					Code = model.CompanyOfManageCode,
+					Name = model.CompanyOfManage?.Name,
+					Parent = companiesService.FindParent(model.CompanyOfManageCode)?.Name,
+					CompanyTags = model.CompanyOfManage?.Tag?.Split("##")
 				},
 				Duties = model.Duties?.Name
 			};

@@ -12,7 +12,11 @@ namespace DAL.Entities.UserInfo
 		[ForeignKey("CompanyCode")]
 		public virtual Company Company { get; set; }
 		public string CompanyCode { get; set; }
-
+		/// <summary>
+		/// 用户的编制单位
+		/// </summary>
+		public virtual Company CompanyOfManage { get; set; }
+		public string CompanyOfManageCode { get; set; }
 		//[Required(ErrorMessage = "未输入职务信息")]
 		public virtual Duties Duties { get; set; }
 

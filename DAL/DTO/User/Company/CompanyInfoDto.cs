@@ -13,7 +13,10 @@ namespace DAL.DTO.User
 		/// 用户所处的单位
 		/// </summary>
 		public virtual DAL.Entities.Company Company { get; set; }
-
+		/// <summary>
+		/// 用户的编制单位
+		/// </summary>
+		public virtual DAL.Entities.Company CompanyOfManage { get; set; }
 		[Required(ErrorMessage = "未输入职务信息")]
 		public virtual Duties Duties { get; set; }
 
