@@ -53,10 +53,10 @@ namespace BLL.Services.ApplyServices
             if (appSetting != null)
             {
                 var time = appSetting.LastSubmitApplyTime ?? DateTime.MinValue;
-                // 若1分钟内连续提交两次，则下次提交限定到10分钟后
-                if (time > DateTime.Now.AddMinutes(10)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{Math.Floor(time.Subtract(DateTime.Now.AddMinutes(10)).TotalSeconds)}秒后再发布", true));
+                // 若1分钟内连续提交两次，则下次提交限定到5分钟后
+                if (time > DateTime.Now.AddMinutes(5)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{Math.Floor(time.Subtract(DateTime.Now.AddMinutes(5)).TotalSeconds)}秒后再发布", true));
                 else if (time.AddMinutes(1) > DateTime.Now)
-                    appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
+                    appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(10);
                 else
                     appSetting.LastSubmitApplyTime = DateTime.Now;
             }
