@@ -14,9 +14,11 @@ using DAL.Entities.Vacations.Statistics.Rank;
 using DAL.Entities.ZX.MemberRate;
 using DAL.QueryModel;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -49,40 +51,61 @@ namespace BLL.Services.VacationStatistics.Rank
     {
         public void SaveResultList(List<StatisticsApplyRankItem> list)
         {
-            Dictionary<string, Tuple<string, string>> userStatusCache = new Dictionary<string, Tuple<string, string>>();
+            Dictionary<string, Tuple<string, string, string>> userStatusCache = new Dictionary<string, Tuple<string, string, string>>();
             var ua = userActionServices.Log(UserOperation.FromSystemReport, null, $"处理排行榜统计数据:{list.Count}", false);
-            Func<StatisticsApplyRankItem, Expression<Func<StatisticsApplyRankItem, bool>>> expBuilder = record =>
+            int no_user_id_count = 0;
+            int no_last_record_count = 0;
+            int no_db_last_record_count = 0;
+            Expression<Func<StatisticsApplyRankItem, bool>> expBuilder(StatisticsApplyRankItem record)
             {
                 var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
-                Expression<Func<StatisticsApplyRankItem, bool>> expression = i => i.ApplyType == record.ApplyType
+                return i => i.ApplyType == record.ApplyType
                && i.CompanyCode == record.CompanyCode
                && i.UserId == record.UserId
                && i.RatingType == record.RatingType
                && i.RatingCycleCount == lastRound;
-                return expression;
-            };
+            }
+            int step = (int)1e3;
             for (var i = 0; i < list.Count; i++)
             {
-                if (i % 1e3 == 0)
+                if (i % step == 0)
+                {
                     userActionServices.Status(ua, true, JsonConvert.SerializeObject(new { c = i, t = DateTime.Now }));
+                    if (i > 0) context.StatisticsApplyRanks.AddRange(list.Skip(i - step).Take(step));
+                    context.SaveChanges();
+                }
                 var record = list[i];
+                if (record.UserId == null) record.UserId = record.User?.Id;
+                if (record.UserId == null)
+                {
+                    no_user_id_count++;
+                    continue;
+                }
+
                 var exp = expBuilder(record);
                 var last = list.Where(exp.Compile()).FirstOrDefault();
-                if (last == null) last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
-                record.LastRank = last?.Rank ?? -1;
-                if (record.UserId == null) record.UserId = record.User?.Id;
-                if (record.UserId == null) continue;
+                if (last == null)
+                {
+                    no_last_record_count++;
+                    last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
+                }
+                if (last != null) record.LastRank = last.Rank;
+                else
+                {
+                    record.LastRank = -1;
+                    no_db_last_record_count++;
+                }
                 if (!userStatusCache.ContainsKey(record.UserId))
                 {
-                    var item = new Tuple<string, string>(record.User.GetUserStatus(context), record.User.BaseInfo.RealName);
+                    var item = new Tuple<string, string, string>(record.User.GetUserStatus(context), record.User.BaseInfo.RealName, record.User.CompanyInfo.Company?.Name);
                     userStatusCache[record.UserId] = item;
                 }
                 var recordItem = userStatusCache[record.UserId];
                 record.Status = recordItem.Item1;
                 record.UserRealName = recordItem.Item2;
+                record.UserCompany = recordItem.Item3;
             }
-            userActionServices.Status(ua, true, $"完成:{DateTime.Now}");
-            context.StatisticsApplyRanks.AddRange(list);
+            userActionServices.Status(ua, true, $"完成:{DateTime.Now},{nameof(no_db_last_record_count)}{no_db_last_record_count},{nameof(no_last_record_count)}{no_last_record_count},{nameof(no_user_id_count)}{no_user_id_count}");
         }
         public void ReloadRange(DateTime start, DateTime end)
         {
@@ -106,11 +129,13 @@ namespace BLL.Services.VacationStatistics.Rank
         private readonly IUserActionServices userActionServices;
         private readonly List<Tuple<string, IQueryable<Apply>>> vacationTypes;
         private readonly List<Tuple<string, IQueryable<ApplyInday>>> indayTypes;
+        public int RankCount = 50;
 
-
-        public StatisticsApplyRankServices(ApplicationDbContext context, IUserActionServices userActionServices)
+        public StatisticsApplyRankServices(ApplicationDbContext context, IConfiguration configuration, IUserActionServices userActionServices)
         {
+
             this.context = context;
+            RankCount = configuration?.GetSection("Configuration")?.GetSection("App")?.GetSection("Apply")?.GetValue<int>("RankCount") ?? RankCount;
             this.userActionServices = userActionServices;
             this.vacationTypes = context.VacationTypes
                 .Where(a => !a.Disabled)

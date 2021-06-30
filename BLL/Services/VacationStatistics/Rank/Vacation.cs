@@ -123,6 +123,7 @@ namespace BLL.Services.VacationStatistics.Rank
                 int index = 1;
                 var entityTypeCount = $"{entityType}@c";
                 foreach (var u in usersByCount)
+                {
                     result.Add(new StatisticsApplyRankItem()
                     {
                         ApplyType = entityTypeCount,
@@ -133,9 +134,13 @@ namespace BLL.Services.VacationStatistics.Rank
                         RatingType = type,
                         User = u.u,
                     });
+                    if (index > RankCount) break;
+                }
+                    
                 index = 1;
                 var entityTypeLength = $"{entityType}@l";
                 foreach (var u in usersByLength)
+                {
                     result.Add(new StatisticsApplyRankItem()
                     {
                         ApplyType = entityTypeLength,
@@ -146,6 +151,8 @@ namespace BLL.Services.VacationStatistics.Rank
                         RatingType = type,
                         User = u.u
                     });
+                    if (index > RankCount) break;
+                }
             }
             return result;
         }
