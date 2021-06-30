@@ -21,6 +21,10 @@ namespace DAL.Entities.Vacations.Statistics.Rank
         /// 用户真实姓名
         /// </summary>
         public string UserRealName { get; set; }
+        /// <summary>
+        /// 用户单位
+        /// </summary>
+        public string UserCompany { get; set; }
     }
     public class StatisticsApplyRank : IRank
     {

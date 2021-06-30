@@ -25,6 +25,7 @@ namespace BLL.Extensions.Statistics
                     Status = item.Status,
                     LastRank = item.LastRank,
                     RealName = item.User.BaseInfo.RealName,
+                    Company = item.User.CompanyInfo.Company?.Name,
                     User = item.UserId,
                     Level = item.Level
                 },
@@ -35,6 +36,7 @@ namespace BLL.Extensions.Statistics
                     LastRank = i.LastRank,
                     Status = i.Status,
                     RealName = i.UserRealName,
+                    Company = i.UserCompany,
                     User = i.UserId,
                     Level = i.Level,
                 })

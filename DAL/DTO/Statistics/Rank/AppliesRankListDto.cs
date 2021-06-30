@@ -21,6 +21,7 @@ namespace DAL.DTO.Statistics.Rank
     {
         public string User { get; set; }
         public string RealName { get; set; }
+        public string Company { get; set; }
         /// <summary>
         /// 状态 检查是否在申请进行中
         /// </summary>

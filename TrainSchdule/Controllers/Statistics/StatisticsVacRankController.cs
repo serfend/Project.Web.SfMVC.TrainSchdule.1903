@@ -82,12 +82,14 @@ namespace TrainSchdule.Controllers.Statistics
             var list = rankServices.QueryRankList(model, out var totalCount);
             model.User = new QueryByString() { Value = currentUser.Id };
             var self = rankServices.QueryRankList(model, out var _);
-            var dto = new Tuple<IEnumerable<StatisticsApplyRankItem>, StatisticsApplyRankItem>(list, self.FirstOrDefault() ?? new StatisticsApplyRankItem() { 
+            var dto = new Tuple<IEnumerable<StatisticsApplyRankItem>, StatisticsApplyRankItem>(list, self.FirstOrDefault() ?? new StatisticsApplyRankItem()
+            {
                 User = currentUser,
                 UserId = currentUser.Id,
                 Rank = -1,
                 Status = "无排名",
-                UserRealName = currentUser.BaseInfo.RealName
+                UserRealName = currentUser.BaseInfo.RealName,
+                UserCompany = currentUser.CompanyInfo.Company?.Name
             });
             return new JsonResult(new EntityViewModel<AppliesRankListDto>(dto.ToDto(totalCount)));
         }
