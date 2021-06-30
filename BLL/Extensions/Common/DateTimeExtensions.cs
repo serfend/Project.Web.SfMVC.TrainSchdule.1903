@@ -35,7 +35,7 @@ namespace BLL.Extensions.Common
             var result = ratingType switch
             {
                 RatingType.Once => 0,
-                RatingType.Daily => (int)Math.Ceiling(date.Subtract(d).TotalDays),
+                RatingType.Daily => (int)Math.Floor(date.Subtract(d).TotalDays),
                 RatingType.Weekly => (date.Year - d.Year - (date.DayOfYear < 7 ? 1 : 0)) * 100 + Cal.GetWeekOfYear(date, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday),
                 RatingType.Monthly => (date.Year - d.Year) * 100 + date.Month,
                 RatingType.Seasonly => (date.Year - d.Year) * 10 + date.Month / 3,
