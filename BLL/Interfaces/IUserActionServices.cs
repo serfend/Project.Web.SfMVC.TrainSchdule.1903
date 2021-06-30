@@ -59,6 +59,6 @@ namespace BLL.Interfaces
         /// 需要传入index以判断当前编辑次数
         /// 杜绝错误写入
         /// </summary>
-        void DirectSaveUserAction(string userActionContent);
+        void DirectSaveUserAction(string userActionContent, int TryTimes);
     }
 }

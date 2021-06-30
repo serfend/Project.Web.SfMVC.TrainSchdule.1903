@@ -50,7 +50,7 @@ namespace BLL.Services
             ua.Success = success;
             ua.Description = description;
             ua.Rank = rank;
-            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(ua)));
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(ua), 10));
             return ua;
         }
 
@@ -136,15 +136,15 @@ namespace BLL.Services
             if (description != null) description = $"$${description}";
             action.Description = $"{action.Description}{description}";
             action.Index++;
-            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(action)));
+            BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(JsonConvert.SerializeObject(action), 10));
             return action;
         }
-        public void DirectSaveUserAction(string userActionContent)
+        public void DirectSaveUserAction(string userActionContent, int TryTimes)
         {
             var ua = JsonConvert.DeserializeObject<UserAction>(userActionContent);
             var index = ua.Index;
-            if (index==0)
-                this.context.UserActions.Add(ua);
+            if (index == 0)
+                context.UserActions.Add(ua);
             else
             {
                 var prev = context.UserActionsDb.FirstOrDefault(a => a.Date == ua.Date);
@@ -159,7 +159,8 @@ namespace BLL.Services
                 }
                 else
                 {
-                    BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(userActionContent));
+                    if (TryTimes <= 0) return;
+                    BackgroundJob.Enqueue<IUserActionServices>(s => s.DirectSaveUserAction(userActionContent, TryTimes - 1));
                 }
             }
 
