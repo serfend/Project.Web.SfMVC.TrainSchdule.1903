@@ -14,12 +14,12 @@ namespace BLL.Extensions
 {
     public static partial class UserExtensions
     {
-        public static string GetUserStatus(this User user, ApplicationDbContext context)
+        public static string GetUserStatus(this User user, ApplicationDbContext context, DateTime? now = null)
         {
-            var now = DateTime.Now;
-            var vac = user.OnVacation(context.AppliesDb, now);
+            if (now == null) now = DateTime.Now;
+            var vac = user.OnVacation(context.AppliesDb, now.Value);
             if (vac) return "休假中";
-            var inday = user.OnInday(context.AppliesIndayDb, now);
+            var inday = user.OnInday(context.AppliesIndayDb, now.Value);
             if (inday) return "请假中";
             return null;
         }

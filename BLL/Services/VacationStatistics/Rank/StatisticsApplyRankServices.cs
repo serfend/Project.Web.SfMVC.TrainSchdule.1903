@@ -13,9 +13,12 @@ using DAL.Entities.Vacations;
 using DAL.Entities.Vacations.Statistics.Rank;
 using DAL.Entities.ZX.MemberRate;
 using DAL.QueryModel;
+using Hangfire;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,27 +49,39 @@ namespace BLL.Services.VacationStatistics.Rank
     {
         public void SaveResultList(List<StatisticsApplyRankItem> list)
         {
-            userActionServices.Log(UserOperation.FromSystemReport, null, $"保存排行榜统计数据数量:{list.Count}", true);
-            Func<StatisticsApplyRankItem, Func<StatisticsApplyRankItem, bool>> expBuilder = record =>
+            Dictionary<string, Tuple<string, string>> userStatusCache = new Dictionary<string, Tuple<string, string>>();
+            var ua = userActionServices.Log(UserOperation.FromSystemReport, null, $"处理排行榜统计数据:{list.Count}", false);
+            Func<StatisticsApplyRankItem, Expression<Func<StatisticsApplyRankItem, bool>>> expBuilder = record =>
             {
-                var exp = PredicateBuilder.New<StatisticsApplyRankItem>(true);
                 var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
-                exp = exp.And(i => i.ApplyType == record.ApplyType)
-                .And(i => i.CompanyCode == record.CompanyCode)
-                .And(i => i.UserId == record.UserId)
-                .And(i => i.RatingType == record.RatingType)
-                .And(i => i.RatingCycleCount == lastRound);
-                return exp;
+                Expression<Func<StatisticsApplyRankItem, bool>> expression = i => i.ApplyType == record.ApplyType
+               && i.CompanyCode == record.CompanyCode
+               && i.UserId == record.UserId
+               && i.RatingType == record.RatingType
+               && i.RatingCycleCount == lastRound;
+                return expression;
             };
-            list.ForEach(record =>
+            for (var i = 0; i < list.Count; i++)
             {
+                if (i % 1e3 == 0)
+                    userActionServices.Status(ua, true, JsonConvert.SerializeObject(new { c = i, t = DateTime.Now }));
+                var record = list[i];
                 var exp = expBuilder(record);
-                var last = list.Where(exp).FirstOrDefault();
+                var last = list.Where(exp.Compile()).FirstOrDefault();
                 if (last == null) last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
                 record.LastRank = last?.Rank ?? -1;
-                record.Status = record.User.GetUserStatus(context);
-                record.UserRealName = record.User.BaseInfo.RealName;
-            });
+                if (record.UserId == null) record.UserId = record.User?.Id;
+                if (record.UserId == null) continue;
+                if (!userStatusCache.ContainsKey(record.UserId))
+                {
+                    var item = new Tuple<string, string>(record.User.GetUserStatus(context), record.User.BaseInfo.RealName);
+                    userStatusCache[record.UserId] = item;
+                }
+                var recordItem = userStatusCache[record.UserId];
+                record.Status = recordItem.Item1;
+                record.UserRealName = recordItem.Item2;
+            }
+            userActionServices.Status(ua, true, $"完成:{DateTime.Now}");
             context.StatisticsApplyRanks.AddRange(list);
         }
         public void ReloadRange(DateTime start, DateTime end)
