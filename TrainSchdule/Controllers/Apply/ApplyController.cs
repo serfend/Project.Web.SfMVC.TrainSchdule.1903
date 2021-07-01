@@ -19,6 +19,7 @@ using DAL.Entities.Vacations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using TrainSchdule.Extensions;
 using TrainSchdule.ViewModels;
 using TrainSchdule.ViewModels.Apply;
@@ -50,10 +51,12 @@ namespace TrainSchdule.Controllers.Apply
         private readonly IUserActionServices userActionServices;
         private readonly IDataDictionariesServices dataDictionariesServices;
         private readonly IDataUpdateServices dataUpdateServices;
+        private readonly IRedisCacheClient cacheClient;
+
         /// <summary>
         /// 
         /// </summary>
-        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService, IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices, IDataUpdateServices dataUpdateServices)
+        public ApplyController(IUsersService usersService, ICurrentUserService currentUserService, IApplyVacationService applyService, IApplyInDayService applyInDayService, IApplyServiceCreate applyServiceCreate, IVacationCheckServices vacationCheckServices, ApplicationDbContext context, ICompaniesService companiesService, IVerifyService verifyService, IGoogleAuthService authService, IRecallOrderServices recallOrderServices, IUserActionServices userActionServices, IDataDictionariesServices dataDictionariesServices, IDataUpdateServices dataUpdateServices,IRedisCacheClient cacheClient)
         {
             this.usersService = usersService;
             this.currentUserService = currentUserService;
@@ -68,6 +71,7 @@ namespace TrainSchdule.Controllers.Apply
             this.userActionServices = userActionServices;
             this.dataDictionariesServices = dataDictionariesServices;
             this.dataUpdateServices = dataUpdateServices;
+            this.cacheClient = cacheClient;
         }
 
         #endregion filed

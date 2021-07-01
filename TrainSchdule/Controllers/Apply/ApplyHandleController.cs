@@ -63,7 +63,7 @@ namespace TrainSchdule.Controllers.Apply
 		{
 			var list = context.Applies.Where(a => a.IsRemoved).OrderByDescending(a => a.IsRemovedDate);
 			var result = list.SplitPage<DAL.Entities.ApplyInfo.Apply>(pageIndex, pageSize);
-			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList().Select(c => c.ToSummaryDto(c.RequestInfo)),result.Item2));
+			return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList().Select(c => c.ToSummaryDto(c.RequestInfo, cacheClient)),result.Item2));
 		}
 
 		/// <summary>

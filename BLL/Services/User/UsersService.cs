@@ -277,10 +277,6 @@ namespace BLL.Services
 			var application = user.Application;
 			application.Create = DateTime.Now;
 			application.AuthKey = new Random().Next(1000, 99999).ToString().GetHashCode().ToString();
-			application.ApplicationSetting = new UserApplicationSetting()
-			{
-				LastSubmitApplyTime = DateTime.Now
-			};
 			var company = user.CompanyInfo;
 			company.Company = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyCode);
 			company.CompanyOfManage = _context.CompaniesDb.FirstOrDefault(c => c.Code == company.CompanyOfManageCode);
@@ -426,7 +422,6 @@ namespace BLL.Services
 			}
 			if (user.Application != null)
 			{
-				if (user.Application.ApplicationSetting != null) _context.AppUserApplicationSettings.Remove(user.Application.ApplicationSetting);
 			}
 			if (user.CompanyInfo != null) _context.AppUserCompanyInfos.Remove(user.CompanyInfo);
 

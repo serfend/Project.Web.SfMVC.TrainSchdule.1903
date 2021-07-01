@@ -85,12 +85,12 @@ namespace TrainSchdule.Controllers.Apply
 			CheckValidQuery(model, entityType);
             if (entityType == "vacation")
             {
-				var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
+				var list = applyService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo, cacheClient));
 				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(list, totalCount));
 			}
             else
             {
-				var list = applyInDayService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo));
+				var list = applyInDayService.QueryApplies(model, false, out var totalCount).Select(a => a.ToSummaryDto(a.RequestInfo, cacheClient));
 				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyIndayRequest>>(list, totalCount));
 			}
 		}
@@ -127,7 +127,7 @@ namespace TrainSchdule.Controllers.Apply
 				list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
 				var result = list.SplitPage(pages);
 				userActionServices.Status(ua, true);
-				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo, cacheClient)), result.Item2));
 			}
 			else
 			{
@@ -139,7 +139,7 @@ namespace TrainSchdule.Controllers.Apply
 				list = list.OrderByDescending(a => a.RequestInfo.StampLeave).ThenByDescending(a => a.Status);
 				var result = list.SplitPage(pages);
 				userActionServices.Status(ua, true);
-				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyIndayRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo)), result.Item2));
+				return new JsonResult(new EntitiesListViewModel<ApplySummaryDto<ApplyIndayRequest>>(result.Item1.ToList()?.Select(a => a.ToSummaryDto(a.RequestInfo, cacheClient)), result.Item2));
 			}
 
 		}
@@ -211,13 +211,13 @@ namespace TrainSchdule.Controllers.Apply
             var ids = result.Item1.Select(i => i.Id);
             if (entityType == "vacation")
             {
-				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((DAL.Entities.ApplyInfo.Apply)a).RequestInfo));
+				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((DAL.Entities.ApplyInfo.Apply)a).RequestInfo, cacheClient));
 				var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyRequest>>(result_items, result.Item2);
 				return new JsonResult(f_result);
             }
             else
             {
-				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((ApplyInday)a).RequestInfo));
+				var result_items = result.Item1.ToList()?.Select(a => a.ToSummaryDto(((ApplyInday)a).RequestInfo, cacheClient));
 				var f_result = new EntitiesListDataModel<ApplySummaryDto<ApplyIndayRequest>>(result_items, result.Item2);
 				return new JsonResult(f_result);
 			}
