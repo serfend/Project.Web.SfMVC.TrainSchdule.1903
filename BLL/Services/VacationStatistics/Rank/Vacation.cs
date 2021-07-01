@@ -129,12 +129,12 @@ namespace BLL.Services.VacationStatistics.Rank
                         ApplyType = entityTypeCount,
                         CompanyCode = c,
                         Level = u.c,
-                        Rank = index++,
+                        Rank = index,
                         RatingCycleCount = round,
                         RatingType = type,
                         User = u.u,
                     });
-                    if (index > RankCount) break;
+                    if (index++ > RankCount) break;
                 }
                     
                 index = 1;
@@ -146,12 +146,12 @@ namespace BLL.Services.VacationStatistics.Rank
                         ApplyType = entityTypeLength,
                         CompanyCode = c,
                         Level = u.l,
-                        Rank = index++,
+                        Rank = index,
                         RatingCycleCount = round,
                         RatingType = type,
                         User = u.u
                     });
-                    if (index > RankCount) break;
+                    if (index++ > RankCount) break;
                 }
             }
             return result;

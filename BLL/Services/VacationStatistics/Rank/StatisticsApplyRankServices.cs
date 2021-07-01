@@ -56,14 +56,21 @@ namespace BLL.Services.VacationStatistics.Rank
             int no_user_id_count = 0;
             int no_last_record_count = 0;
             int no_db_last_record_count = 0;
+            Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>> expDict = new Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>>();
             Expression<Func<StatisticsApplyRankItem, bool>> expBuilder(StatisticsApplyRankItem record)
             {
-                var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
-                return i => i.ApplyType == record.ApplyType
-               && i.CompanyCode == record.CompanyCode
-               && i.UserId == record.UserId
-               && i.RatingType == record.RatingType
-               && i.RatingCycleCount == lastRound;
+                var key = $"{record.RatingType}{record.RatingCycleCount}";
+                if (!expDict.ContainsKey(key))
+                {
+
+                    var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
+                    expDict[key] = i => i.ApplyType == record.ApplyType
+                   && i.CompanyCode == record.CompanyCode
+                   && i.UserId == record.UserId
+                   && i.RatingType == record.RatingType
+                   && i.RatingCycleCount == lastRound;
+                }
+                return expDict[key];
             }
             int step = (int)1e3;
             for (var i = 0; i < list.Count; i++)
@@ -105,7 +112,9 @@ namespace BLL.Services.VacationStatistics.Rank
                 record.UserRealName = recordItem.Item2;
                 record.UserCompany = recordItem.Item3;
             }
+            context.StatisticsApplyRanks.AddRange(list.Skip(step * (list.Count / step)).Take(list.Count % step));
             userActionServices.Status(ua, true, $"完成:{DateTime.Now},{nameof(no_db_last_record_count)}{no_db_last_record_count},{nameof(no_last_record_count)}{no_last_record_count},{nameof(no_user_id_count)}{no_user_id_count}");
+            context.SaveChanges();
         }
         public void ReloadRange(DateTime start, DateTime end)
         {
@@ -135,7 +144,8 @@ namespace BLL.Services.VacationStatistics.Rank
         {
 
             this.context = context;
-            RankCount = configuration?.GetSection("Configuration")?.GetSection("App")?.GetSection("Apply")?.GetValue<int>("RankCount") ?? RankCount;
+            var cfg_RankCount = configuration?.GetSection("Configuration")?.GetSection("App")?.GetSection("Apply")?.GetValue<int>("RankCount") ?? RankCount;
+            RankCount = cfg_RankCount > 0 ? cfg_RankCount : RankCount;
             this.userActionServices = userActionServices;
             this.vacationTypes = context.VacationTypes
                 .Where(a => !a.Disabled)
