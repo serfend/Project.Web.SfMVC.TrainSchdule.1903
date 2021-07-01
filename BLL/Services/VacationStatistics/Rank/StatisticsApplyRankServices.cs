@@ -49,29 +49,47 @@ namespace BLL.Services.VacationStatistics.Rank
     }
     public partial class StatisticsApplyRankServices
     {
+        /// <summary>
+        /// 算法写的太龊了，希望后人给改改
+        /// 为了实现效率高，列表中 applyType, ratingCycleCount, ratingType三个字段须一致
+        /// </summary>
+        /// <param name="list"></param>
         public void SaveResultList(List<StatisticsApplyRankItem> list)
         {
+            if (list.Count == 0) return;
             Dictionary<string, Tuple<string, string, string>> userStatusCache = new Dictionary<string, Tuple<string, string, string>>();
-            var ua = userActionServices.Log(UserOperation.FromSystemReport, null, $"处理排行榜统计数据:{list.Count}", false);
+            var ua = userActionServices.Log(UserOperation.FromSystemReport, null, $"处理排行榜统计数据:{list.Count}", list.Count == 0);
             int no_user_id_count = 0;
             int no_last_record_count = 0;
             int no_db_last_record_count = 0;
-            Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>> expDict = new Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>>();
-            Expression<Func<StatisticsApplyRankItem, bool>> expBuilder(StatisticsApplyRankItem record)
-            {
-                var key = $"{record.RatingType}{record.RatingCycleCount}";
-                if (!expDict.ContainsKey(key))
-                {
+            //Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>> expDict = new Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>>();
+            //Expression<Func<StatisticsApplyRankItem, bool>> expBuilder(StatisticsApplyRankItem record)
+            //{
+            //    var key = $"{record.RatingType}{record.RatingCycleCount}";
+            //    if (!expDict.ContainsKey(key))
+            //    {
 
-                    var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
-                    expDict[key] = i => i.ApplyType == record.ApplyType
-                   && i.CompanyCode == record.CompanyCode
-                   && i.UserId == record.UserId
-                   && i.RatingType == record.RatingType
-                   && i.RatingCycleCount == lastRound;
-                }
-                return expDict[key];
-            }
+            //        var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
+            //        expDict[key] = i => i.ApplyType == record.ApplyType
+            //       && i.CompanyCode == record.CompanyCode
+            //       && i.UserId == record.UserId
+            //       && i.RatingType == record.RatingType
+            //       && i.RatingCycleCount == lastRound;
+            //    }
+            //    return expDict[key];
+            //}
+            var cacheList = context.StatisticsApplyRanks
+                .Where(i => i.ApplyType == list[0].ApplyType)
+                .Where(i => i.RatingCycleCount == list[0].RatingCycleCount - 1)
+                .Where(i => i.RatingType == list[0].RatingType)
+                .Select(i => new
+                {
+                    key = $"{i.CompanyCode}@{i.UserId}",
+                    rank = i.Rank
+                });
+            var cacheDict = new Dictionary<string, int>();
+            foreach (var i in cacheList)
+                cacheDict[i.key] = i.rank;
             int step = (int)1e3;
             for (var i = 0; i < list.Count; i++)
             {
@@ -88,20 +106,22 @@ namespace BLL.Services.VacationStatistics.Rank
                     no_user_id_count++;
                     continue;
                 }
-
-                var exp = expBuilder(record);
-                var last = list.Where(exp.Compile()).FirstOrDefault();
-                if (last == null)
-                {
-                    no_last_record_count++;
-                    last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
-                }
-                if (last != null) record.LastRank = last.Rank;
-                else
-                {
-                    record.LastRank = -1;
-                    no_db_last_record_count++;
-                }
+                //var exp = expBuilder(record);
+                //var last = list.Where(exp.Compile()).FirstOrDefault();
+                //if (last == null)
+                //{
+                //    no_last_record_count++;
+                //    last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
+                //}
+                //if (last != null) record.LastRank = last.Rank;
+                //else
+                //{
+                //    record.LastRank = -1;
+                //    no_db_last_record_count++;
+                //}
+                var key = $"{record.CompanyCode}@{record.UserId}";
+                if (!cacheDict.ContainsKey(key)) cacheDict[key] = -1;
+                record.LastRank = cacheDict[key];
                 if (!userStatusCache.ContainsKey(record.UserId))
                 {
                     var item = new Tuple<string, string, string>(record.User.GetUserStatus(context), record.User.BaseInfo.RealName, record.User.CompanyInfo.Company?.Name);

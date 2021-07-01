@@ -27,11 +27,10 @@ namespace BLL.Services.VacationStatistics.Rank
                 var endRound = end.RoundOfDateTime(ratingType);
                 for (var i = startRound; i < endRound; i = i.NextRound(ratingType))
                 {
-                    list.AddRange(ReloadVacationRank(type, i, true, ratingType, db));
+                    SaveResultList(ReloadVacationRank(type, i, true, ratingType, db));
                 }
-                list.AddRange(ReloadVacationRank(type, endRound, false, ratingType, db));
+                SaveResultList(ReloadVacationRank(type, endRound, false, ratingType, db));
             });
-            SaveResultList(list);
         }
         public void ReloadVacationRankWithType(Action<string, RatingType, IQueryable<Apply>> reloadMethod)
         {
@@ -51,9 +50,8 @@ namespace BLL.Services.VacationStatistics.Rank
             if (date == DateTime.MinValue) date = DateTime.Now;
             ReloadVacationRankWithType((type, ratingType, db) =>
             {
-                list.AddRange(ReloadVacationRank(type, date, ratingType, db));
+                SaveResultList(ReloadVacationRank(type, date, ratingType, db));
             });
-            SaveResultList(list);
             return list;
         }
         public List<StatisticsApplyRankItem> ReloadVacationRank(string entityType, DateTime start, RatingType type, IQueryable<Apply> db)
