@@ -1,4 +1,5 @@
 ﻿using Abp.Extensions;
+using BLL.Extensions.Common;
 using BLL.Extensions.Statistics;
 using BLL.Interfaces;
 using BLL.Interfaces.IVacationStatistics.Rank;
@@ -15,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using TrainSchdule.ViewModels.Statistics;
 using TrainSchdule.ViewModels.System;
 
 namespace TrainSchdule.Controllers.Statistics
@@ -100,15 +102,94 @@ namespace TrainSchdule.Controllers.Statistics
         [HttpGet]
         public IActionResult RankTypes()
         {
-            var type = typeof(RatingType);
-            var dict = new List<Tuple<int, string, string, string>>();
-            foreach (RatingType s in Enum.GetValues(type))
+            var dict = new List<RatingTypeDataModel>();
+            foreach (RatingType s in ratingTypes)
             {
-                MemberInfo[] mi = type.GetMember(s.ToString());
+                MemberInfo[] mi = ratingType.GetMember(s.ToString());
                 if (mi != null && mi.Length > 0 && Attribute.GetCustomAttribute(mi[0], typeof(DisplayAttribute)) is DisplayAttribute attr)
-                    if (s.ToString() != "Once") dict.Add(new Tuple<int, string, string, string>((int)s, s.ToString(), attr.Name, attr.ShortName));
+                    if (s.ToString() != "Once") dict.Add(new RatingTypeDataModel()
+                    {
+                        Id = (int)s,
+                        Name = s.ToString(),
+                        Alias = attr.Name,
+                        ShortAlias = attr.ShortName
+                    });
             }
-            return new JsonResult(new EntitiesListViewModel<Tuple<int, string, string, string>>(dict));
+            return new JsonResult(new EntitiesListViewModel<RatingTypeDataModel>(dict));
+        }
+    }
+
+    public partial class StatisticsVacRankController
+    {
+        private static Type ratingType = typeof(RatingType);
+        private static Array ratingTypes = Enum.GetValues(ratingType);
+
+        /// <summary>
+        /// 日期转期数
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult DateToRound(DateTime date)
+        {
+            var list = new List<RatingType>();
+            foreach (RatingType s in ratingTypes)
+                list.Add(s);
+            return new JsonResult(new EntitiesListViewModel<RatingRoundDescriptionDataModel>(list.Select(i =>
+            {
+                var attr = (ratingType.GetMember(i.ToString())?[0]?.GetCustomAttribute(typeof(DisplayAttribute)) as DisplayAttribute);
+                int round = date.RoundOfDateTime(i);
+                var r = new RatingRoundDescriptionDataModel()
+                {
+                    Date = date,
+                    Round = round,
+                    Type = new RatingTypeDataModel()
+                    {
+                        Id = (int)i,
+                        Name = i.ToString(),
+                        Alias = attr?.Name,
+                        ShortAlias = attr?.ShortName,
+                    },
+                    RoundToRoundIndex = round.RoundToRoundIndex(i),
+                    RoundIndexToRound = round.RoundIndexToRound(i),
+                    NextRound = round.NextRound(i),
+                    LastRound = round.NextRound(i, -1),
+                };
+                return r;
+            })));
+        }
+        /// <summary>
+        /// 期数转日期
+        /// </summary>
+        /// <param name="round"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult RoundToDate(int round)
+        {
+            var list = new List<RatingType>();
+            foreach (RatingType s in ratingTypes)
+                list.Add(s);
+            return new JsonResult(new EntitiesListViewModel<RatingRoundDescriptionDataModel>(list.Select(i =>
+            {
+                var attr = (ratingType.GetMember(i.ToString())?[0]?.GetCustomAttribute(typeof(DisplayAttribute)) as DisplayAttribute);
+                var r = new RatingRoundDescriptionDataModel()
+                {
+                    Date = round.DateTimeRangeOfRound(i).Item1,
+                    Round = round,
+                    Type = new RatingTypeDataModel()
+                    {
+                        Id = (int)i,
+                        Name = i.ToString(),
+                        Alias = attr?.Name,
+                        ShortAlias = attr?.ShortName,
+                    },
+                    RoundToRoundIndex = round.RoundToRoundIndex(i),
+                    RoundIndexToRound = round.RoundIndexToRound(i),
+                    NextRound = round.NextRound(i),
+                    LastRound = round.NextRound(i, -1),
+                };
+                return r;
+            })));
         }
     }
 }
