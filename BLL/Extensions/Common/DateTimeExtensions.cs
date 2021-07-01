@@ -47,7 +47,7 @@ namespace BLL.Extensions.Common
             var result = ratingType switch
             {
                 RatingType.Once => 0,
-                RatingType.Daily => 1000 * d.AddDays(roundIndex).Year + d.AddDays(roundIndex).DayOfYear,
+                RatingType.Daily => 1000 * d.AddDays(roundIndex).Year + d.AddDays(roundIndex).DayOfYear-1,
                 RatingType.Weekly => roundIndex > 1e5 ? 0 : Cal.AddWeeks(d, roundIndex).Year * 100 + Cal.GetWeekOfYear(Cal.AddWeeks(d, roundIndex), CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday),
                 RatingType.Monthly => 100 * (roundIndex / 12) + roundIndex % 12,
                 RatingType.Seasonly => 10 * (roundIndex / 4) + roundIndex % 4,

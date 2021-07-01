@@ -87,7 +87,6 @@ namespace TrainSchdule.System
 			services.AddScoped<IR3UsersServices, R3UsersServices>();
 			services.AddScoped<IGameR3Services, R3HandleServices>();
 		}
-
 		/// <summary>
 		/// 通用组件
 		/// </summary>

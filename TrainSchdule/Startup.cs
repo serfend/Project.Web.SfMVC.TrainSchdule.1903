@@ -24,6 +24,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Newtonsoft;
 using TrainSchdule.Controllers.Statistics;
 using TrainSchdule.Crontab;
 using TrainSchdule.System;
@@ -122,7 +124,12 @@ namespace TrainSchdule
 
             BackgroundJob.Schedule<ApplyClearJob>((a) => a.Run("OnStart"), TimeSpan.FromMinutes(5));
         }
-
+        private void AddRedisServices(IServiceCollection services)
+        {
+            var redisConfiguration = Configuration.GetSection("Configuration").GetSection("Redis").Get<RedisConfiguration>();
+            services.AddControllersWithViews();
+            services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
+        }
         /// <summary>
         ///
         /// </summary>
@@ -139,6 +146,7 @@ namespace TrainSchdule
 
             AddAllowCorsServices(services);
             AddHangfireServices(services);
+            AddRedisServices(services);
             AddSwaggerServices(services);
             services.Configure<IdentityOptions>(options =>
             {

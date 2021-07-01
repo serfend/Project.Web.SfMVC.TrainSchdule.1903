@@ -16,6 +16,7 @@ using DAL.QueryModel;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -57,39 +58,8 @@ namespace BLL.Services.VacationStatistics.Rank
         public void SaveResultList(List<StatisticsApplyRankItem> list)
         {
             if (list.Count == 0) return;
-            Dictionary<string, Tuple<string, string, string>> userStatusCache = new Dictionary<string, Tuple<string, string, string>>();
             var ua = userActionServices.Log(UserOperation.FromSystemReport, null, $"处理排行榜统计数据:{list.Count}", list.Count == 0);
             int no_user_id_count = 0;
-            int no_last_record_count = 0;
-            int no_db_last_record_count = 0;
-            //Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>> expDict = new Dictionary<string, Expression<Func<StatisticsApplyRankItem, bool>>>();
-            //Expression<Func<StatisticsApplyRankItem, bool>> expBuilder(StatisticsApplyRankItem record)
-            //{
-            //    var key = $"{record.RatingType}{record.RatingCycleCount}";
-            //    if (!expDict.ContainsKey(key))
-            //    {
-
-            //        var lastRound = record.RatingCycleCount.NextRound(record.RatingType, -1);
-            //        expDict[key] = i => i.ApplyType == record.ApplyType
-            //       && i.CompanyCode == record.CompanyCode
-            //       && i.UserId == record.UserId
-            //       && i.RatingType == record.RatingType
-            //       && i.RatingCycleCount == lastRound;
-            //    }
-            //    return expDict[key];
-            //}
-            var cacheList = context.StatisticsApplyRanks
-                .Where(i => i.ApplyType == list[0].ApplyType)
-                .Where(i => i.RatingCycleCount == list[0].RatingCycleCount - 1)
-                .Where(i => i.RatingType == list[0].RatingType)
-                .Select(i => new
-                {
-                    key = $"{i.CompanyCode}@{i.UserId}",
-                    rank = i.Rank
-                });
-            var cacheDict = new Dictionary<string, int>();
-            foreach (var i in cacheList)
-                cacheDict[i.key] = i.rank;
             int step = (int)1e3;
             for (var i = 0; i < list.Count; i++)
             {
@@ -106,34 +76,25 @@ namespace BLL.Services.VacationStatistics.Rank
                     no_user_id_count++;
                     continue;
                 }
-                //var exp = expBuilder(record);
-                //var last = list.Where(exp.Compile()).FirstOrDefault();
-                //if (last == null)
-                //{
-                //    no_last_record_count++;
-                //    last = context.StatisticsApplyRanks.Where(exp).FirstOrDefault();
-                //}
-                //if (last != null) record.LastRank = last.Rank;
-                //else
-                //{
-                //    record.LastRank = -1;
-                //    no_db_last_record_count++;
-                //}
-                var key = $"{record.CompanyCode}@{record.UserId}";
-                if (!cacheDict.ContainsKey(key)) cacheDict[key] = -1;
-                record.LastRank = cacheDict[key];
-                if (!userStatusCache.ContainsKey(record.UserId))
+                var usrStatusKey = $"com:user:apply:status:{record.UserId}";
+                var exist = redisCacheClient.Db7.ExistsAsync(usrStatusKey).Result;
+                if (!exist)
                 {
                     var item = new Tuple<string, string, string>(record.User.GetUserStatus(context), record.User.BaseInfo.RealName, record.User.CompanyInfo.Company?.Name);
-                    userStatusCache[record.UserId] = item;
+                    redisCacheClient.Db7.AddAsync(usrStatusKey, item, TimeSpan.FromMinutes(30)).Wait();
                 }
-                var recordItem = userStatusCache[record.UserId];
+                var recordItem = redisCacheClient.Db7.GetAsync<Tuple<string, string, string>>(usrStatusKey).Result;
                 record.Status = recordItem.Item1;
                 record.UserRealName = recordItem.Item2;
                 record.UserCompany = recordItem.Item3;
+                var rankKey = $"com:sts:apply:rank:{record.UserId}:{record.ApplyType}.{record.CompanyCode}.{record.RatingType}.";
+                var rankKeyLast = $"{rankKey}{record.RatingCycleCount.NextRound(record.RatingType, -1)}";
+                exist = redisCacheClient.Db7.ExistsAsync(rankKeyLast).Result;
+                record.LastRank = exist ? redisCacheClient.Db7.GetAsync<int>(rankKeyLast).Result : -1;
+                redisCacheClient.Db7.AddAsync($"{rankKey}{record.RatingCycleCount}", record.Rank,TimeSpan.FromDays(7)).Wait();
             }
             context.StatisticsApplyRanks.AddRange(list.Skip(step * (list.Count / step)).Take(list.Count % step));
-            userActionServices.Status(ua, true, $"完成:{DateTime.Now},{nameof(no_db_last_record_count)}{no_db_last_record_count},{nameof(no_last_record_count)}{no_last_record_count},{nameof(no_user_id_count)}{no_user_id_count}");
+            userActionServices.Status(ua, true, $"完成:{DateTime.Now},{nameof(no_user_id_count)}{no_user_id_count}");
             context.SaveChanges();
         }
         public void ReloadRange(DateTime start, DateTime end)
@@ -156,17 +117,19 @@ namespace BLL.Services.VacationStatistics.Rank
     {
         private readonly ApplicationDbContext context;
         private readonly IUserActionServices userActionServices;
+        private readonly IRedisCacheClient redisCacheClient;
         private readonly List<Tuple<string, IQueryable<Apply>>> vacationTypes;
         private readonly List<Tuple<string, IQueryable<ApplyInday>>> indayTypes;
         public int RankCount = 50;
 
-        public StatisticsApplyRankServices(ApplicationDbContext context, IConfiguration configuration, IUserActionServices userActionServices)
+        public StatisticsApplyRankServices(ApplicationDbContext context, IConfiguration configuration, IUserActionServices userActionServices, IRedisCacheClient redisCacheClient)
         {
 
             this.context = context;
             var cfg_RankCount = configuration?.GetSection("Configuration")?.GetSection("App")?.GetSection("Apply")?.GetValue<int>("RankCount") ?? RankCount;
             RankCount = cfg_RankCount > 0 ? cfg_RankCount : RankCount;
             this.userActionServices = userActionServices;
+            this.redisCacheClient = redisCacheClient;
             this.vacationTypes = context.VacationTypes
                 .Where(a => !a.Disabled)
                 .Select(a => a.Name).ToList().Select(i => new Tuple<string, IQueryable<Apply>>(

@@ -22,15 +22,15 @@ namespace BLL.Services.VacationStatistics.Rank
             var list = new List<StatisticsApplyRankItem>();
             ReloadIndayRankWithType((type, ratingType, db) =>
             {
-                userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[{type}.{ratingType}]", true);
                 var startRound = start.RoundOfDateTime(ratingType);
                 var endRound = end.RoundOfDateTime(ratingType);
                 for (var i = startRound; i < endRound; i = i.NextRound(ratingType))
                 {
-                    SaveResultList(ReloadIndayRank(type, i, true, ratingType, db));
+                    list.AddRange(ReloadIndayRank(type, i, true, ratingType, db));
                 }
-                SaveResultList(ReloadIndayRank(type, endRound, false, ratingType, db));
+                list.AddRange(ReloadIndayRank(type, endRound, false, ratingType, db));
             });
+            SaveResultList(list);
         }
         public void ReloadIndayRankWithType(Action<string, RatingType, IQueryable<ApplyInday>> reloadMethod)
         {
@@ -50,8 +50,9 @@ namespace BLL.Services.VacationStatistics.Rank
             if (date == DateTime.MinValue) date = DateTime.Now;
             ReloadIndayRankWithType((type, ratingType, db) =>
             {
-                SaveResultList(ReloadIndayRank(type, date, ratingType, db));
+                list.AddRange(ReloadIndayRank(type, date, ratingType, db));
             });
+            SaveResultList(list);
             return list;
         }
         public List<StatisticsApplyRankItem> ReloadIndayRank(string entityType, DateTime start, RatingType type, IQueryable<ApplyInday> db)
@@ -63,7 +64,6 @@ namespace BLL.Services.VacationStatistics.Rank
         }
         public List<StatisticsApplyRankItem> ReloadIndayRank(string entityType, int round, bool isFinal, RatingType type, IQueryable<ApplyInday> db)
         {
-            userActionServices.Log(UserOperation.FromSystemReport, null, $"加载排行榜:[按期数更新]{entityType}{type}@{round}", true);
             var result = new List<StatisticsApplyRankItem>();
             var record = context.StatisticsApplyRankRecords
                 .Where(a => a.RatingType == type)
