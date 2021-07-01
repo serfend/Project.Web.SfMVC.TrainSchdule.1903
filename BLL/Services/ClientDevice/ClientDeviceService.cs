@@ -2,6 +2,7 @@
 using DAL.Data;
 using DAL.Entities.ClientDevice;
 using Microsoft.Extensions.Caching.Memory;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,21 +14,19 @@ namespace BLL.Services.ClientDevice
     public class ClientDeviceService : IClientDeviceService
     {
         private readonly ApplicationDbContext context;
-        private readonly IMemoryCache memoryCache;
+        private readonly IRedisCacheClient redisCacheClient;
 
-        public ClientDeviceService(ApplicationDbContext context, IMemoryCache memoryCache)
+        public ClientDeviceService(ApplicationDbContext context, IRedisCacheClient redisCacheClient)
         {
             this.context = context;
-            this.memoryCache = memoryCache;
+            this.redisCacheClient = redisCacheClient;
         }
         public void UpdateClientRelate(Guid client)
         {
-            // -------------------TODO 实现缓存和限流 本方法 -------------------
-            const string UpdateClientRelateKey = "UpdateClientRelate";
-            var cache = memoryCache.Get<DateTime?>(UpdateClientRelateKey);
-            if (cache != null && cache > DateTime.Now) return;
-            memoryCache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
-            // -------------------TODO 实现缓存和限流 -------------------
+            const string UpdateClientRelateKey = "com:job:client:relate";
+            var cache = redisCacheClient.Db7.ExistsAsync(UpdateClientRelateKey).Result;
+            if (cache) return;
+            redisCacheClient.Db7.AddAsync(UpdateClientRelateKey, DateTime.Now, TimeSpan.FromSeconds(10));
 
             var clientItem = context.ClientsDb.FirstOrDefault(c => c.Id == client);
             if (clientItem == null) return;
@@ -48,13 +47,10 @@ namespace BLL.Services.ClientDevice
 
         public void UpdateClientTags(Guid prevClient, Guid client)
         {
-            // -------------------TODO 实现缓存和限流 本方法 -------------------
-            const string UpdateClientRelateKey = "UpdateClientTags";
-            var cache = memoryCache.Get<DateTime?>(UpdateClientRelateKey);
-            if (cache != null && cache > DateTime.Now) return;
-            memoryCache.Set<DateTime?>(UpdateClientRelateKey, DateTime.Now.AddSeconds(10));
-            // -------------------TODO 实现缓存和限流 -------------------
-
+            const string UpdateClientRelateKey = "com:job:client:relate-tag";
+            var cache = redisCacheClient.Db7.ExistsAsync(UpdateClientRelateKey).Result;
+            if (cache) return;
+            redisCacheClient.Db7.AddAsync(UpdateClientRelateKey, DateTime.Now, TimeSpan.FromSeconds(10));
 
 
             var clientItem = context.ClientsDb.FirstOrDefault(c => c.Id == client);

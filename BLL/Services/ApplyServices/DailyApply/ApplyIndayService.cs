@@ -12,6 +12,7 @@ using DAL.Entities.ApplyInfo;
 using DAL.Entities.ApplyInfo.DailyApply;
 using DAL.Entities.UserInfo;
 using DAL.QueryModel;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,12 +127,14 @@ namespace BLL.Services.ApplyServices.DailyApply
         private readonly ApplicationDbContext context;
         private readonly IUsersService usersService;
         private readonly IAuditStreamServices auditStreamServices;
+        private readonly IRedisCacheClient redisCacheClient;
 
-        public ApplyIndayService(ApplicationDbContext context, IUsersService usersService, IAuditStreamServices auditStreamServices)
+        public ApplyIndayService(ApplicationDbContext context, IUsersService usersService, IAuditStreamServices auditStreamServices, IRedisCacheClient redisCacheClient)
         {
             this.context = context;
             this.usersService = usersService;
             this.auditStreamServices = auditStreamServices;
+            this.redisCacheClient = redisCacheClient;
         }
         public IQueryable<ApplyInday> CheckIfHaveSameRangeVacation(ApplyInday apply)
         {
@@ -167,23 +170,15 @@ namespace BLL.Services.ApplyServices.DailyApply
         public ApplyInday Create(ApplyInday item)
         {
             if (item == null) return null;
-            var appSetting = item.BaseInfo.From.Application.ApplicationSetting;
-            if (appSetting != null)
-            {
-                var time = appSetting.LastSubmitApplyTime ?? DateTime.MinValue;
-                // 若1分钟内连续提交两次，则下次提交限定到10分钟后
-                if (time > DateTime.Now.AddMinutes(10))
-                {
-                    int time_left = (int)time.Subtract(DateTime.Now.AddMinutes(10)).TotalSeconds;
-                    throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{time_left}秒后再发布", true));
-                }
-                else if (time.AddMinutes(1) > DateTime.Now)
-                    appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(20);
-                else
-                    appSetting.LastSubmitApplyTime = DateTime.Now;
-            }
+            var key = $"com:apply:inday:submit:last:{item.BaseInfo.FromId}";
+            var time = redisCacheClient.Db7.GetAsync<DateTime>(key).Result;
+            // 若1分钟内连续提交两次，则下次提交限定到5分钟后
+            if (time > DateTime.Now.AddMinutes(5)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{Math.Floor(time.Subtract(DateTime.Now.AddMinutes(5)).TotalSeconds)}秒后再发布", true));
+            else if (time.AddMinutes(1) > DateTime.Now)
+                redisCacheClient.Db7.AddAsync(key, DateTime.Now.AddMinutes(10));
+            else
+                redisCacheClient.Db7.AddAsync(key, DateTime.Now);
             context.AppliesInday.Add(item);
-            context.AppUserApplicationSettings.Update(appSetting);
             context.SaveChanges();
             return item;
         }

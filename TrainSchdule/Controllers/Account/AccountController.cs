@@ -509,7 +509,6 @@ namespace TrainSchdule.Controllers
             var app = targetUser.Application;
             app.Email = model.Data.Email;
             app.AuthKey = model.Data.AuthKey;
-            app.ApplicationSetting.LastSubmitApplyTime = model.Data.ApplicationSetting.LastSubmitApplyTime;
             context.AppUserApplicationInfos.Update(app);
             await context.SaveChangesAsync();
             _userActionServices.Status(ua, true);

@@ -19,6 +19,7 @@ using DAL.Entities.Vacations;
 using DAL.QueryModel;
 using ExcelReport;
 using ExcelReport.Driver.NPOI;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace BLL.Services.ApplyServices
 {
@@ -31,10 +32,11 @@ namespace BLL.Services.ApplyServices
         private readonly ICompanyManagerServices companyManagerServices;
         private readonly IVacationCheckServices vacationCheckServices;
         private readonly IAuditStreamServices auditStreamServices;
+        private readonly IRedisCacheClient redisCacheClient;
 
         #endregion Fileds
 
-        public ApplyService(ApplicationDbContext context, IUsersService usersService, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices, IAuditStreamServices auditStreamServices)
+        public ApplyService(ApplicationDbContext context, IUsersService usersService, ICompanyManagerServices companyManagerServices, IVacationCheckServices vacationCheckServices, IAuditStreamServices auditStreamServices, IRedisCacheClient redisCacheClient)
         {
             this.context = context;
             this.usersService = usersService;
@@ -42,6 +44,7 @@ namespace BLL.Services.ApplyServices
             this.companyManagerServices = companyManagerServices;
             this.vacationCheckServices = vacationCheckServices;
             this.auditStreamServices = auditStreamServices;
+            this.redisCacheClient = redisCacheClient;
         }
 
         public Apply GetById(Guid id) => context.AppliesDb.Where(a => a.Id == id).FirstOrDefault();
@@ -49,19 +52,15 @@ namespace BLL.Services.ApplyServices
         public Apply Create(Apply item)
         {
             if (item == null) return null;
-            var appSetting = item.BaseInfo.From.Application.ApplicationSetting;
-            if (appSetting != null)
-            {
-                var time = appSetting.LastSubmitApplyTime ?? DateTime.MinValue;
-                // 若1分钟内连续提交两次，则下次提交限定到5分钟后
-                if (time > DateTime.Now.AddMinutes(5)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{Math.Floor(time.Subtract(DateTime.Now.AddMinutes(5)).TotalSeconds)}秒后再发布", true));
-                else if (time.AddMinutes(1) > DateTime.Now)
-                    appSetting.LastSubmitApplyTime = DateTime.Now.AddMinutes(10);
-                else
-                    appSetting.LastSubmitApplyTime = DateTime.Now;
-            }
+            var key = $"com:apply:vac:submit:last:{item.BaseInfo.FromId}";
+            var time = redisCacheClient.Db7.GetAsync<DateTime>(key).Result;
+            // 若1分钟内连续提交两次，则下次提交限定到5分钟后
+            if (time > DateTime.Now.AddMinutes(5)) throw new ActionStatusMessageException(new ApiResult(ActionStatusMessage.ApplyMessage.Operation.Submit.Crash, $"请{Math.Floor(time.Subtract(DateTime.Now.AddMinutes(5)).TotalSeconds)}秒后再发布", true));
+            else if (time.AddMinutes(1) > DateTime.Now)
+                redisCacheClient.Db7.AddAsync(key, DateTime.Now.AddMinutes(10));
+            else
+                redisCacheClient.Db7.AddAsync(key, DateTime.Now);
             context.Applies.Add(item);
-            context.AppUserApplicationSettings.Update(appSetting);
             context.SaveChanges();
             return item;
         }

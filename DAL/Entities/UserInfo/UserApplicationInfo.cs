@@ -16,6 +16,5 @@ namespace DAL.Entities.UserInfo
 		/// </summary>
 		public string UserRemoveReason { get; set; }
 
-		public virtual UserApplicationSetting ApplicationSetting { get; set; }
 	}
 }
